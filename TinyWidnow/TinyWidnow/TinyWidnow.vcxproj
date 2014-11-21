@@ -13,6 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7D8DD8FD-39F1-4AAB-AF11-735EE2613306}</ProjectGuid>
     <RootNamespace>TinyWidnow</RootNamespace>
+    <ProjectName>TinyWindow</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
