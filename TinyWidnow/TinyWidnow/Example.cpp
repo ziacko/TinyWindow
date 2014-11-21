@@ -1,10 +1,21 @@
 #include "TinyWindow.h"
 
+void blarg(GLuint Key, GLboolean KeyState)
+{
+	if (Key == ' ' && KeyState == KEYSTATE_DOWN)
+	{
+		printf("Penish\n");
+	}
+}
+
+
 int main()
 {
 	WindowManager::Initialize();
 
 	WindowManager::AddWindow("Example");
+
+	WindowManager::SetWindowOnKeyEvent("Example", blarg);
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
