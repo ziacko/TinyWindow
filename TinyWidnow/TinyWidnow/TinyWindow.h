@@ -30,6 +30,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #include <stdio.h>
 #include <stdlib.h>
 #include <list>
+#include <limits.h>
+#include <string.h>
 
 #define KEYSTATE_DOWN 1
 #define KEYSTATE_UP 0
@@ -166,7 +168,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-		XCloseDisplay(GetInstance()->m_Display);
+		XCloseDisplay(GetInstance()->CurrentDisplay);
 #endif
 
 		delete Instance;
@@ -190,7 +192,7 @@ public:
 			GetInstance()->Windows.push_back(NewWindow);
 			NewWindow->ID = GetNumWindows() - 1;
 
-			Windows_InitializeWindow(NewWindow);
+			InitializeWindow(NewWindow);
 			
 			return GetInstance();
 		}
@@ -242,8 +244,8 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-		GetInstance()->ScreenResolution[0] = WidthOfScreen(XDefaultScreenOfDisplay(GetInstance()->m_Display));
-		GetInstance()->ScreenResolution[1] = HeightOfScreen(XDefaultScreenOfDisplay(GetInstance()->m_Display));
+		GetInstance()->ScreenResolution[0] = WidthOfScreen(XDefaultScreenOfDisplay(GetInstance()->CurrentDisplay));
+		GetInstance()->ScreenResolution[1] = HeightOfScreen(XDefaultScreenOfDisplay(GetInstance()->CurrentDisplay));
 
 		return GetInstance()->ScreenResolution;
 #endif
@@ -308,8 +310,8 @@ public:
 	{
 		if (IsValid(WindowName))
 		{
-			GetWindowByName(WindowName)->Resolution[0];
-			GetWindowByName(WindowName)->Resolution[1];
+			GetWindowByName(WindowName)->Resolution[0] = Width;
+			GetWindowByName(WindowName)->Resolution[1] = Height;
 #if defined(CURRENT_OS_WINDOWS)
 			Windows_SetWindowResolution(GetWindowByName(WindowName));
 #endif
@@ -447,7 +449,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-			Linux_SetMousePosition(GetWindowByName(WindowName));
+			Linux_SetMousePositionInWindow(GetWindowByName(WindowName));
 #endif
 		}
 	}
@@ -462,7 +464,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-			Linux_SetMousePosition(GetWindowByIndex(WindowIndex));
+			Linux_SetMousePositionInWindow(GetWindowByIndex(WindowIndex));
 #endif
 		}
 	}
@@ -517,7 +519,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-			glXSwapBuffers(GetDisplay(), GetWindowByName(WindowName)->DeviceContextHandle);
+			glXSwapBuffers(GetDisplay(), GetWindowByName(WindowName)->WindowHandle);
 #endif
 		}
 	}
@@ -530,7 +532,7 @@ public:
 #endif 
 
 #if defined(CURRENT_OS_LINUX)
-			glXSwapBuffers(GetDisplay(), GetWindowByIndex(WindowIndex)->DeviceContextHandle);
+			glXSwapBuffers(GetDisplay(), GetWindowByIndex(WindowIndex)->WindowHandle);
 #endif
 		}
 	}
@@ -542,6 +544,8 @@ public:
 		{
 			return (GetWindowByName(WindowName)->CurrentState == WINDOWSTATE_FULLSCREEN);
 		}
+
+		return GL_FALSE;
 	}
 	static GLboolean GetWindowIsFullScreen(GLuint WindowIndex)
 	{
@@ -549,6 +553,8 @@ public:
 		{
 			return (GetWindowByIndex(WindowIndex)->CurrentState == WINDOWSTATE_FULLSCREEN);
 		}
+
+		return 	GL_FALSE;
 	}	
 	static void SetFullScreen(const char* WindowName, GLboolean NewState)
 	{
@@ -559,7 +565,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-			Linux_FullScreen(GetWindowByName(WindowName), NewState);
+			Linux_Fullscreen(GetWindowByName(WindowName), NewState);
 #endif
 		}
 	}
@@ -571,7 +577,7 @@ public:
 			Windows_FullScreen(GetWindowByIndex(WindowIndex), NewState);
 #endif
 #if defined(CURRENT_OS_LINUX)
-			Linux_FullScreen(GetWindowByIndex(WindowIndex), NewState);
+			Linux_Fullscreen(GetWindowByIndex(WindowIndex), NewState);
 #endif
 		}
 	}
@@ -672,7 +678,7 @@ public:
 	{
 		if (WindowExists(WindowIndex))
 		{
-			GetWindowByIndex(WindowIndex)->Name;
+			return GetWindowByIndex(WindowIndex)->Name;
 		}
 	}
 	static GLuint GetWindowIndex(const char*  WindowName)
@@ -693,7 +699,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-			XStoreName(GetDisplay(), GetWindowByName(WindowName)->WindowHandle, NewTitle)
+			XStoreName(GetDisplay(), GetWindowByName(WindowName)->WindowHandle, NewTitle);
 #endif
 		}
 	}
@@ -706,7 +712,7 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-			XStoreName(GetDisplay(), GetWindowByIndex(WindowIndex), NewName);
+			XStoreName(GetDisplay(), GetWindowByIndex(WindowIndex)->WindowHandle, NewName);
 #endif
 		}
 	}
@@ -1067,6 +1073,8 @@ public:
 			XVisualInfo* VisualInfo;
 			GLint* Attributes;
 
+			XSetWindowAttributes SetAttributes;
+
 			//these atomics are needed to change window states via the extended window manager
 			Atom AtomState; //_NET_WM_STATE
 			Atom AtomHidden;// _NET_WM_STATE_HIDDEN
@@ -1195,6 +1203,17 @@ public:
 		{
 			return WindowManager::Instance;
 		}
+	}
+
+	static void InitializeWindow(TWindow* SelectedWindow)
+	{
+#if defined(CURRENT_OS_WINDOWS)
+		Windows_InitializeWindow(SelectedWindow);
+#endif
+
+#if defined(CURRENT_OS_LINUX)
+		Linux_InitializeWindow(SelectedWindow);
+#endif
 	}
 
 	static void InitializeGL(TWindow* SelectedWindow)
@@ -2147,7 +2166,10 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-	static TWindow* GetWindowByHandle(TWindow WindowHandle)
+	Display* CurrentDisplay;
+	XEvent Event;
+	
+	static TWindow* GetWindowByHandle(Window WindowHandle)
 	{
 		for(auto iter : GetInstance()->Windows)
 		{
@@ -2253,28 +2275,41 @@ public:
 
 	static void Linux_Initialize()
 	{
-		GetInstance()->m_Display = XOpenDisplay(0);
+		GetInstance()->CurrentDisplay = XOpenDisplay(0);
 
-		if(!GetInstance()->m_Display)
+		if(!GetInstance()->CurrentDisplay)
 		{
 			printf("Cannot Connect to X server\n");
 			exit(0);
 		}
 
-		GetInstance()->ScreenResolution[0] = WidthOfScreen(XScreenOfDisplay(GetInstance()->m_Display, 
-			DefaultScreen(GetInstance()->m_Display)));
+		GetInstance()->ScreenResolution[0] = WidthOfScreen(XScreenOfDisplay(GetInstance()->CurrentDisplay, 
+			DefaultScreen(GetInstance()->CurrentDisplay)));
 
-		GetInstance()->ScreenResolution[1] = HeightOfScreen(XScreenOfDisplay(GetInstance()->m_Display,
-			DefaultScreen(GetInstance()->m_Display)));
+		GetInstance()->ScreenResolution[1] = HeightOfScreen(XScreenOfDisplay(GetInstance()->CurrentDisplay,
+			DefaultScreen(GetInstance()->CurrentDisplay)));
+	}
+
+	static void Linux_InitializeAtomics(TWindow* SelectedWindow)
+	{
+		SelectedWindow->AtomState = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE", GL_FALSE);
+		SelectedWindow->AtomFullScreen = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_FULLSCREEN", GL_FALSE);
+		SelectedWindow->AtomMaxHorz = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_MAXIMIZED_HORZ", GL_FALSE);
+		SelectedWindow->AtomMaxVert = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_MAXIMIZED_VERT", GL_FALSE);
+		SelectedWindow->AtomClose = XInternAtom(WindowManager::GetDisplay(), "WM_DELETE_WINDOW", GL_FALSE);
+		SelectedWindow->AtomHidden = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_HIDDEN", GL_FALSE);
+		SelectedWindow->AtomActive = XInternAtom(WindowManager::GetDisplay(), "_NET_ACTIVE_WINDOW", GL_FALSE);
+		SelectedWindow->AtomDemandsAttention = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_DEMANDS_ATTENTION", GL_FALSE);	
+		SelectedWindow->AtomFocused = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_FOCUSED", GL_FALSE);
 	}
 
 	static void Linux_InitializeWindow(TWindow* SelectedWindow)
 	{
 		SelectedWindow->Attributes = new GLuint[5]{GLX_RGBA, GLX_DEPTH_SIZE, 
-			SelectedWindow->DepthBits, GLX_DOUBLEBUFFER, GLX_STENCIL_SIZE,
+			SelectedWindow->DepthBits, GLX_DOUBLEBUFFER,/* GLX_STENCIL_SIZE,
 			SelectedWindow->StencilBits, GLX_RED_SIZE, SelectedWindow->ColourBits, 
 			GLX_GREEN_SIZE, SelectedWindow->ColourBits, GLX_RED_SIZE, SelectedWindow->ColourBits, 
-			GLX_ALPHA_SIZE, ColourBits / 4, None};
+			GLX_ALPHA_SIZE, SelectedWindow->ColourBits / 4,*/ None};
 
 		if (!WindowManager::GetDisplay())
 		{
@@ -2293,7 +2328,7 @@ public:
 
 		SelectedWindow->SetAttributes.colormap = XCreateColormap(WindowManager::GetDisplay(),
 			DefaultRootWindow(WindowManager::GetDisplay()),
-			VisualInfo->visual, AllocNone);
+			SelectedWindow->VisualInfo->visual, AllocNone);
 
 		SelectedWindow->SetAttributes.event_mask = ExposureMask | KeyPressMask 
 			| KeyReleaseMask | MotionNotify | ButtonPressMask | ButtonReleaseMask
@@ -2301,18 +2336,18 @@ public:
 			Button4MotionMask | Button5MotionMask | PointerMotionMask | FocusChangeMask
 			| VisibilityChangeMask | PropertyChangeMask | SubstructureNotifyMask;
 
-		WindowHandle = XCreateWindow(WindowManager::GetInstance()->m_Display,
-			XDefaultRootWindow(WindowManager::GetInstance()->m_Display), 0, 0,
-			Resolution[0], Resolution[1],
-			0, VisualInfo->depth, InputOutput,
-			VisualInfo->visual, CWColormap | CWEventMask,
+		SelectedWindow->WindowHandle = XCreateWindow(WindowManager::GetInstance()->CurrentDisplay,
+			XDefaultRootWindow(WindowManager::GetInstance()->CurrentDisplay), 0, 0,
+			SelectedWindow->Resolution[0], SelectedWindow->Resolution[1],
+			0, SelectedWindow->VisualInfo->depth, InputOutput,
+			SelectedWindow->VisualInfo->visual, CWColormap | CWEventMask,
 			&SelectedWindow->SetAttributes);
 
 		XMapWindow(WindowManager::GetDisplay(), SelectedWindow->WindowHandle);
 		XStoreName(WindowManager::GetDisplay(), SelectedWindow->WindowHandle,
 			SelectedWindow->Name);
 
-		InitializeAtomics();
+		Linux_InitializeAtomics(SelectedWindow);
 
 		XSetWMProtocols(WindowManager::GetDisplay(),
 			SelectedWindow->WindowHandle, &SelectedWindow->AtomClose, GL_TRUE);	
@@ -2332,23 +2367,12 @@ public:
 		XWindowAttributes l_Attributes;
 
 		XGetWindowAttributes(WindowManager::GetDisplay(),
-			WindowHandle, &l_Attributes);
+			SelectedWindow->WindowHandle, &l_Attributes);
 		SelectedWindow->Position[0] = l_Attributes.x;
 		SelectedWindow->Position[1] = l_Attributes.y;
 	}
 
-	static void Linux_InitializeAtomics(TWindow* SelectedWindow)
-	{
-		SelectedWindow->AtomState = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE", GL_FALSE);
-		SelectedWindow->AtomFullScreen = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_FULLSCREEN", GL_FALSE);
-		SelectedWindow->AtomMaxHorz = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_MAXIMIZED_HORZ", GL_FALSE);
-		SelectedWindow->AtomMaxVert = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_MAXIMIZED_VERT", GL_FALSE);
-		SelectedWindow->AtomClose = XInternAtom(WindowManager::GetDisplay(), "WM_DELETE_WINDOW", GL_FALSE);
-		SelectedWindow->AtomHidden = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_HIDDEN", GL_FALSE);
-		SelectedWindow->AtomActive = XInternAtom(WindowManager::GetDisplay(), "_NET_ACTIVE_WINDOW", GL_FALSE);
-		SelectedWindow->AtomDemandsAttention = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_DEMANDS_ATTENTION", GL_FALSE);	
-		SelectedWindow->AtomFocused = XInternAtom(WindowManager::GetDisplay(), "_NET_WM_STATE_FOCUSED", GL_FALSE);
-	}
+
 
 	static void Linux_ShutdownWindow(TWindow* SelectedWindow)
 	{
@@ -2360,13 +2384,13 @@ public:
 		glXDestroyContext(WindowManager::GetDisplay(), SelectedWindow->Context);
 		XUnmapWindow(WindowManager::GetDisplay(), SelectedWindow->WindowHandle);
 		XDestroyWindow(WindowManager::GetDisplay(), SelectedWindow->WindowHandle);
-		WindowHandle = 0;
-		Context = 0;
+		SelectedWindow->WindowHandle = 0;
+		SelectedWindow->Context = 0;
 	}
 
 	static void Linux_Shutdown()
 	{
-		XCloseDisplay(GetInstance()->m_Display);
+		XCloseDisplay(GetInstance()->CurrentDisplay);
 	}
 
 	static void Linux_Fullscreen(TWindow* SelectedWindow, bool NewState)
@@ -2427,51 +2451,49 @@ public:
 	{
 		if(NewState)
 		{
-			XMapWindow(WindowManager::GetDisplay(), WindowHandle);
+			XMapWindow(WindowManager::GetDisplay(), SelectedWindow->WindowHandle);
 		}
 
 		else
 		{
-			XUnmapWindow(WindowManager::GetDisplay(), WindowHandle);
+			XUnmapWindow(WindowManager::GetDisplay(), SelectedWindow->WindowHandle);
 		}
 	}
 
-	static void Linux_SetMousePosition(TWindow* SelectedWindow, GLuint X, GLuint Y)
+	static void Linux_SetMousePositionInWindow(TWindow* SelectedWindow)
 	{
 		XWarpPointer(
-			WindowManager::GetInstance()->m_Display,
+			WindowManager::GetInstance()->CurrentDisplay,
 			SelectedWindow->WindowHandle, SelectedWindow->WindowHandle,
 			SelectedWindow->Position[0], SelectedWindow->Position[1],
 			SelectedWindow->Resolution[0], SelectedWindow->Resolution[1],
-			X, Y);
+			SelectedWindow->MousePosition[0], SelectedWindow->MousePosition[1]);
 	}
 
-	static void Linux_SetPosition(TWindow* Selected, GLuint X, GLuint Y)
+	static void Linux_SetWindowPosition(TWindow* Selected)
 	{
 		XWindowChanges l_WindowChanges;
 
-		l_WindowChanges.x = X;
-		l_WindowChanges.y = Y;
+		l_WindowChanges.x = Selected->Position[0];
+		l_WindowChanges.y = Selected->Position[1];
 
 		XConfigureWindow(
 			WindowManager::GetDisplay(),
 			Selected->WindowHandle, CWX | CWY, &l_WindowChanges);
 	}
 
-	static void Linux_SetResolution(TWindow* Selected, GLuint Width, GLuint Height)
+	static void Linux_SetWindowResolution(TWindow* Selected)
 	{
-		Selected->Resolution[0] = Width;
-		Selected->Resolution[1] = Height;
 		XResizeWindow(WindowManager::GetDisplay(),
 			Selected->WindowHandle, Selected->Resolution[0], Selected->Resolution[1]);	
 	}
 
 	static void Linux_PollForEvents()
 	{
-		XNextEvent(GetInstance()->m_Display, &GetInstance()->m_Event);
+		XNextEvent(GetInstance()->CurrentDisplay, &GetInstance()->Event);
 
-		XEvent l_Event = GetInstance()->m_Event;
-		Window* l_Window = GetWindowByEvent(l_Event);
+		XEvent l_Event = GetInstance()->Event;
+		TWindow* l_Window = GetWindowByEvent(l_Event);
 
 		switch (l_Event.type)
 		{
@@ -2484,13 +2506,13 @@ public:
 		{
 			printf("blarg");
 
-			if(Foundation_Tools::IsValid(l_Window->DestroyedEvent))
+			if(IsValid(l_Window->DestroyedEvent))
 			{
 				l_Window->DestroyedEvent();
 			}
 
 			printf("Window was destroyed\n");		
-			l_Window->Shutdown();
+			ShutdownWindow(l_Window);
 
 			break;
 		}
@@ -2500,7 +2522,7 @@ public:
 		printf("Window was created\n");
 		l_Window->InitializeGL();
 
-		if(Foundation_Tools::IsValid(l_Window->m_OnCreated))
+		if(IsValid(l_Window->m_OnCreated))
 		{
 		l_Window->m_OnCreated();
 		}
@@ -2511,12 +2533,12 @@ public:
 		case KeyPress:
 		{			
 			GLuint l_FunctionKeysym = XKeycodeToKeysym(
-				GetInstance()->m_Display, l_Event.xkey.keycode, 1);
+				GetInstance()->CurrentDisplay, l_Event.xkey.keycode, 1);
 
 			if(l_FunctionKeysym <= 255)
 			{
 				l_Window->Keys[l_FunctionKeysym] = KEYSTATE_DOWN;	
-				if(Foundation_Tools::IsValid(l_Window->KeyEvent))
+				if(IsValid(l_Window->KeyEvent))
 				{
 					l_Window->KeyEvent(l_FunctionKeysym, KEYSTATE_DOWN);
 				}
@@ -2524,12 +2546,11 @@ public:
 
 			else
 			{
-				l_Window->Keys[
-					l_Window->Linux_TranslateKey(l_FunctionKeysym)] = KEYSTATE_DOWN;
+				l_Window->Keys[Linux_TranslateKey(l_FunctionKeysym)] = KEYSTATE_DOWN;
 
-				if(Foundation_Tools::IsValid(l_Window->KeyEvent))
+				if(IsValid(l_Window->KeyEvent))
 				{
-					l_Window->KeyEvent(GetWindowByEvent(l_Event)->Linux_TranslateKey(l_FunctionKeysym),  KEYSTATE_DOWN);
+					l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym),  KEYSTATE_DOWN);
 				}
 			}
 
@@ -2539,30 +2560,30 @@ public:
 		case KeyRelease:
 		{
 			GLboolean l_IsRetriggered = GL_FALSE;
-			if(XEventsQueued(GetInstance()->m_Display, QueuedAfterReading))
+			if(XEventsQueued(GetInstance()->CurrentDisplay, QueuedAfterReading))
 			{
 				XEvent l_NextEvent;
-				XPeekEvent(GetInstance()->m_Display, &l_NextEvent);
+				XPeekEvent(GetInstance()->CurrentDisplay, &l_NextEvent);
 
 				if(l_NextEvent.type == KeyPress && 
 					l_NextEvent.xkey.time == l_Event.xkey.time && 
 					l_NextEvent.xkey.keycode == l_Event.xkey.keycode)
 				{
-					XNextEvent(GetInstance()->m_Display, &l_Event);
+					XNextEvent(GetInstance()->CurrentDisplay, &l_Event);
 					l_IsRetriggered = GL_TRUE;
 				}
 			}
 
 			if(!l_IsRetriggered)
 			{
-				GLuint l_FunctionKeysym = XKeycodeToKeysym(GetInstance()->m_Display,
+				GLuint l_FunctionKeysym = XKeycodeToKeysym(GetInstance()->CurrentDisplay,
 					l_Event.xkey.keycode, 1);
 
 				if(l_FunctionKeysym <= 255)
 				{
 					l_Window->Keys[l_FunctionKeysym] = KEYSTATE_UP;
 
-					if(Foundation_Tools::IsValid(l_Window->KeyEvent))
+					if(IsValid(l_Window->KeyEvent))
 					{
 						l_Window->KeyEvent(l_FunctionKeysym, KEYSTATE_UP);
 					}
@@ -2570,20 +2591,17 @@ public:
 
 				else
 				{
-					l_Window->Keys[
-						l_Window->Linux_TranslateKey(l_FunctionKeysym)] = KEYSTATE_UP;
+					l_Window->Keys[Linux_TranslateKey(l_FunctionKeysym)] = KEYSTATE_UP;
 
-					if(Foundation_Tools::IsValid(l_Window->KeyEvent))
+					if(IsValid(l_Window->KeyEvent))
 					{
-						l_Window->KeyEvent(GetWindowByEvent(l_Event)->
-							Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_UP);
+						l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_UP);
 					}
 				}
 
-				if(Foundation_Tools::IsValid(l_Window->KeyEvent))
+				if(IsValid(l_Window->KeyEvent))
 				{
-					l_Window->KeyEvent(GetWindowByEvent(l_Event)->
-						Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_UP);
+					l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_UP);
 				}
 			}
 
@@ -2598,7 +2616,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_LEFTBUTTON] = MOUSE_BUTTONDOWN;	
 
-				if(Foundation_Tools::IsValid(l_Window->MouseButtonEvent))
+				if(IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_LEFTBUTTON, MOUSE_BUTTONDOWN);
 				}
@@ -2609,7 +2627,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_MIDDLEBUTTON] = MOUSE_BUTTONDOWN;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseButtonEvent))
+				if(IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_MIDDLEBUTTON, MOUSE_BUTTONDOWN);
 				}
@@ -2620,7 +2638,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_RIGHTBUTTON] = MOUSE_BUTTONDOWN;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseButtonEvent))
+				if(IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_RIGHTBUTTON, MOUSE_BUTTONDOWN);
 				}
@@ -2631,7 +2649,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_SCROLL_UP] = MOUSE_BUTTONDOWN;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseWheelEvent))
+				if(IsValid(l_Window->MouseWheelEvent))
 				{
 					l_Window->MouseWheelEvent(MOUSE_SCROLL_UP);
 				}
@@ -2642,7 +2660,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_SCROLL_DOWN] = MOUSE_BUTTONDOWN;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseWheelEvent))
+				if(IsValid(l_Window->MouseWheelEvent))
 				{
 					l_Window->MouseWheelEvent(MOUSE_SCROLL_DOWN);
 				}
@@ -2666,7 +2684,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_LEFTBUTTON] = MOUSE_BUTTONUP;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseButtonEvent))
+				if(IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_LEFTBUTTON, MOUSE_BUTTONUP);
 				}
@@ -2677,7 +2695,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_MIDDLEBUTTON] = MOUSE_BUTTONUP;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseButtonEvent))
+				if(IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_MIDDLEBUTTON, MOUSE_BUTTONUP);
 				}
@@ -2688,7 +2706,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_RIGHTBUTTON] = MOUSE_BUTTONUP;
 
-				if(Foundation_Tools::IsValid(l_Window->MouseButtonEvent))
+				if(IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_RIGHTBUTTON, MOUSE_BUTTONUP);
 				}
@@ -2729,7 +2747,7 @@ public:
 			GetInstance()->ScreenMousePosition[0] = l_Event.xmotion.x_root;
 			GetInstance()->ScreenMousePosition[1] = l_Event.xmotion.y_root;
 
-			if(Foundation_Tools::IsValid(l_Window->MouseMoveEvent))
+			if(IsValid(l_Window->MouseMoveEvent))
 			{
 				l_Window->MouseMoveEvent(l_Event.xmotion.x, 
 					l_Event.xmotion.y, l_Event.xmotion.x_root, 
@@ -2742,9 +2760,9 @@ public:
 		case FocusOut:
 		{
 			l_Window->InFocus = GL_FALSE;
-			if(Foundation_Tools::IsValid(l_Window->OnFocusEvent))
+			if(IsValid(l_Window->FocusEvent))
 			{
-				l_Window->OnFocusEvent(
+				l_Window->FocusEvent(
 					l_Window->InFocus);
 			}
 			break;
@@ -2755,9 +2773,9 @@ public:
 		{
 			l_Window->InFocus = GL_TRUE;
 
-			if(Foundation_Tools::IsValid(l_Window->OnFocusEvent))
+			if(IsValid(l_Window->FocusEvent))
 			{
-				l_Window->OnFocusEvent(l_Window->InFocus);
+				l_Window->FocusEvent(l_Window->InFocus);
 			}
 			break;
 		}
@@ -2767,8 +2785,8 @@ public:
 		case ResizeRequest:
 		{			
 			glViewport(0, 0,
-				l_Window->GetResolution()[0],
-				l_Window->GetResolution()[1]);
+				l_Window->Resolution[0],
+				l_Window->Resolution[1]);
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
@@ -2786,7 +2804,7 @@ public:
 			if((GLuint)l_Event.xconfigure.width != l_Window->Resolution[0] 
 				|| (GLuint)l_Event.xconfigure.height != l_Window->Resolution[1])
 			{
-				if(Foundation_Tools::IsValid(l_Window->ResizeEvent))
+				if(IsValid(l_Window->ResizeEvent))
 				{
 					l_Window->ResizeEvent(l_Event.xconfigure.width, l_Event.xconfigure.height);
 				}
@@ -2799,7 +2817,7 @@ public:
 			if((GLuint)l_Event.xconfigure.x != l_Window->Position[0]
 				|| (GLuint)l_Event.xconfigure.y != l_Window->Position[1])
 			{
-				if(Foundation_Tools::IsValid(l_Window->MovedEvent))
+				if(IsValid(l_Window->MovedEvent))
 				{
 					l_Window->MovedEvent(l_Event.xconfigure.x, l_Event.xconfigure.y);
 				}
@@ -2836,7 +2854,7 @@ public:
 					if(l_Property == l_Window->AtomHidden)
 					{
 						printf("window hidden \n");
-						if(Foundation_Tools::IsValid(l_Window->MinimizedEvent))
+						if(IsValid(l_Window->MinimizedEvent))
 						{								
 							l_Window->MinimizedEvent();
 						}
@@ -2846,7 +2864,7 @@ public:
 						l_Property == l_Window->AtomMaxVert)
 					{
 						printf("window maximized \n");
-						if(Foundation_Tools::IsValid(l_Window->MaximizedEvent))
+						if(IsValid(l_Window->MaximizedEvent))
 						{
 
 							l_Window->MaximizedEvent();
@@ -2878,7 +2896,7 @@ public:
 		case ClientMessage:
 		{
 			const char* l_AtomName = XGetAtomName(WindowManager::GetDisplay(), l_Event.xclient.message_type);
-			if(Foundation_Tools::IsValid(l_AtomName))
+			if(IsValid(l_AtomName))
 			{
 				printf("%s\n", l_AtomName);
 			}
@@ -2888,8 +2906,9 @@ public:
 				printf("window closed\n");
 				l_Window->ShouldClose = GL_TRUE;
 				l_Window->DestroyedEvent();
-				l_Window->Shutdown();
-				//XDestroyWindow(GetInstance()->m_Display, l_Event.xclient.window);
+				ShutdownWindow(l_Window);
+				
+				//XDestroyWindow(GetInstance()->CurrentDisplay, l_Event.xclient.window);
 				break;
 			}
 
@@ -2924,21 +2943,20 @@ public:
 	}
 	static void Linux_SetMousePositionInScreen(GLuint X, GLuint Y)
 	{
-		XWarpPointer(GetInstance()->m_Display, None,
-			XDefaultRootWindow(GetInstance()->m_Display), 0, 0, 
+		XWarpPointer(GetInstance()->CurrentDisplay, None,
+			XDefaultRootWindow(GetInstance()->CurrentDisplay), 0, 0, 
 			GetScreenResolution()[0], 
 			GetScreenResolution()[1], 
 			X, Y);
 	}
 	static Display* GetDisplay()
 	{
-		return GetInstance()->m_Display;
+		return GetInstance()->CurrentDisplay;
 	}
 
-	Display* m_Display;
-	XEvent m_Event;
 
-	static const char* Linux_GetEventType(XEvent Event);
+
+	static const char* Linux_GetEventType(XEvent Event)
 	{
 		switch (Event.type)
 		{
@@ -3099,7 +3117,7 @@ public:
 		}
 	}
 
-	static GLuint Linux_TranslateKey(GLuint KeySym);
+	static GLuint Linux_TranslateKey(GLuint KeySym)
 	{
 		switch (KeySym)
 		{
