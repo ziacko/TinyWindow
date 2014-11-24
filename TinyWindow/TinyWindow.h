@@ -7,6 +7,7 @@
 #include <gl/GL.h>
 #include <io.h>
 #include <fcntl.h>
+#include "../dependencies/wglext.h"
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //this automatically loads the OpenGL library if you are using Visual studio 
@@ -18,13 +19,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #if defined(__linux__) || defined(__GNUG__) || defined(__GNUC__) || defined(__clang__)
 #define CURRENT_OS_LINUX
 #include <GL/glx.h>
-#include <GL/glext.h>
-#include <GL/glx.h>
-#include <GL/glu.h>
 #include <X11/X.h>
-#include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
+#include "../dependencies/glext.h"
 #endif
 
 #include <stdio.h>
@@ -135,14 +133,11 @@ class WindowManager
 {
 public:
 
-	WindowManager()
-	{
-		ScreenResolution[0] = 0;
-		ScreenResolution[1] = 0;
-	}
+	WindowManager(){}
 
 	~WindowManager()
 	{
+		//delete each window in the list
 		if (!GetInstance()->Windows.empty())
 		{
 			for (GLuint l_Iter = 0; l_Iter <= GetInstance()->Windows.size() - 1; l_Iter++)
@@ -166,7 +161,7 @@ public:
 
 #if defined(CURRENT_OS_WINDOWS)
 #endif
-
+		//apparently Win32 doesnt need s shut down procedure?
 #if defined(CURRENT_OS_LINUX)
 		XCloseDisplay(GetInstance()->CurrentDisplay);
 #endif
@@ -196,6 +191,8 @@ public:
 			
 			return GetInstance();
 		}
+
+		//if a vlid window name was not giver return 0;
 		return nullptr;
 	}
 
@@ -537,7 +534,40 @@ public:
 		}
 	}
 
-	//sets and gets for full screen
+	static void MakeWindowCurrentContext(const char* WindowName)
+	{
+		if(IsValid(WindowName))
+		{
+
+#if defined(CURRENT_OS_WINDOWS)
+			wglMakeCurrent(GetWindowByName(WindowName)->DeviceContextHandle, 
+					GetWindowByName(WindowName)->GLRenderingContextHandle);		
+#endif
+
+#if defined(CURRENT_OS_LINUX)
+			glXMakeCurrent(GetDisplay(), GetWindowByName(WindowName)->WindowHandle,
+				   	GetWindowByName(WindowName)->Context); 
+#endif
+		}
+	}
+
+	static void MakeWindowCurrentContext(GLuint WindowIndex)
+	{
+		if(WindowExists(WindowIndex))
+		{
+#if defined(CURRENT_OS_WINDOWS)
+			wglMakeCurrent(GetWindowByIndex(WindowIndex)->DeviceContextHandle,
+					GetWindowByIndex(WindowIndex)->GLRenderingContextHandle);
+#endif
+
+#if defined(CURRENT_OS_LINUX)
+			glXMakeCurrent(GetDisplay(), GetWindowByIndex(WindowIndex)->WindowHandle,
+					GetWindowByIndex(WindowIndex)->Context);
+#endif
+		}
+	}
+
+	//sets and gets for fscreen
 	static GLboolean GetWindowIsFullScreen(const char* WindowName)
 	{
 		if (IsValid(WindowName))
@@ -681,6 +711,7 @@ public:
 			return GetWindowByIndex(WindowIndex)->Name;
 		}
 	}
+
 	static GLuint GetWindowIndex(const char*  WindowName)
 	{
 		if (IsValid(WindowName))
@@ -738,7 +769,6 @@ public:
 		{
 #if defined(CURRENT_OS_WINDOWS)
 			Windows_Focus(GetWindowByName(WindowName), NewState);
-
 #endif
 
 #if defined(CURRENT_OS_LINUX)
@@ -980,6 +1010,56 @@ public:
 		}
 	}
 
+	static GLint GetWindowCurrentSyncState(const char* WindowName)
+	{
+		if(IsValid(WindowName))
+		{
+			return GetWindowByName(WindowName)->CurrentSyncSetting;
+		}
+
+		return 0;
+	}
+
+	static GLint GetWindowCurrentSyncState(GLuint WindowIndex)
+	{
+		if(WindowExists(WindowIndex))
+		{
+			return GetWindowByIndex(WindowIndex)->CurrentSyncSetting;
+		}
+
+		return 0;
+	}
+
+	static void ToggleVerticalSync(const char* WindowName, GLint SyncSetting)
+	{
+		if(IsValid(WindowName))
+		{
+			GetWindowByName(WindowName)->CurrentSyncSetting = SyncSetting;
+
+#if defined(CURRENT_OS_WINDOWS)
+			Windows_ToggleVerticalSync(GetWindowByName(WindowName));
+#endif
+
+#if defined(CURRENT_OS_LINUX)
+			Linux_ToggleVerticalSync(GetWindowByName(WindowName));
+#endif
+		}
+	}
+
+	static void ToggleVerticalSync(GLuint WindowIndex, GLint SyncSetting)
+	{
+		if(WindowExists(WindowIndex))
+		{
+			GetWindowByIndex(WindowIndex)->CurrentSyncSetting = SyncSetting;
+#if defined(CURRENT_OS_WINDOWS)
+			Windows_ToggleVerticalSync(GetWindowByIndex(WindowIndex));
+#endif
+
+#if defined(CURRENT_OS_LINUX)
+			Linux_ToggleVerticalSync(GetWindowByIndex(WindowIndex));
+#endif
+		}
+	}
 	private:
 
 	struct TWindow
@@ -1032,7 +1112,7 @@ public:
 			//The current state of the window. these states include Normal, Minimized, Maximized and Full screen
 			GLuint CurrentState;
 			//The current swap interval of the window(V-Sync). a value of -1 enables adaptive V-Sync on supported systems
-			GLuint CurrentSwapInterval;
+			GLuint CurrentSyncSetting;
 
 			//this is the callback to be used when a key has been pressed
 			OnKeyEvent KeyEvent;
@@ -1055,6 +1135,10 @@ public:
 			//this is a callback to be used when the mouse has been moved
 			OnMouseMoveEvent MouseMoveEvent;
 
+			GLboolean EXTSwapControlSupported;
+			GLboolean SGISwapControlSupported;
+			GLboolean MESASwapControlSupported;
+
 #if defined(CURRENT_OS_WINDOWS)
 			
 			HDC DeviceContextHandle;
@@ -1064,7 +1148,10 @@ public:
 
 			WNDCLASS WindowClass;
 			HWND WindowHandle;
-			HINSTANCE InstanceHandle;
+			HINSTANCE InstanceHandle;	
+			
+			PFNWGLSWAPINTERVALEXTPROC SwapIntervalEXT;
+
 #endif
 
 #if defined(CURRENT_OS_LINUX)
@@ -1074,6 +1161,10 @@ public:
 			GLint* Attributes;
 
 			XSetWindowAttributes SetAttributes;
+	
+			PFNGLXSWAPINTERVALMESAPROC SwapIntervalMESA;
+			PFNGLXSWAPINTERVALEXTPROC SwapIntervalEXT;
+			PFNGLXSWAPINTERVALSGIPROC SwapIntervalSGI;
 
 			//these atomics are needed to change window states via the extended window manager
 			Atom AtomState; //_NET_WM_STATE
@@ -1227,6 +1318,17 @@ public:
 #endif
 	}
 
+	static void InitializeGLExtensions(TWindow* SelectedWindow)
+	{
+#if defined(CURRENT_OS_WINDOWS)
+		Windows_InitGLExtensions(SelectedWindow);
+#endif
+
+#if defined(CURRENT_OS_LINUX)
+		Linux_InitGLExtensions(SelectedWindow);
+#endif
+	}
+
 	static void ShutdownWindow(TWindow* SelectedWindow)
 	{
 #if defined(CURRENT_OS_WINDOWS)
@@ -1237,6 +1339,7 @@ public:
 		Linux_ShutdownWindow(SelectedWindow);
 #endif
 	}
+
 
 	static TWindow* GetWindowByName(const char* WindowName)
 	{
@@ -1269,7 +1372,7 @@ public:
 
 	GLuint ScreenResolution[2];
 	GLuint ScreenMousePosition[2];
-
+	
 #if defined(CURRENT_OS_WINDOWS)
 	LRESULT CALLBACK WindowProcedure(HWND WindowHandle, GLuint Message, WPARAM WordParam, LPARAM LongParam)
 	{
@@ -1765,6 +1868,23 @@ public:
 		InitializePixelFormat(SelectedWindow);
 		SelectedWindow->GLRenderingContextHandle = wglCreateContext(SelectedWindow->DeviceContextHandle);
 		wglMakeCurrent(SelectedWindow->DeviceContextHandle, SelectedWindow->GLRenderingContextHandle);
+
+		InitializeGLExtensions();
+	}
+
+	static void Windows_InitializeGLExtensions(TWindow* SelectedWindow)
+	{
+		SelectedWindow->SwapIntervalEXT = nullptr;
+		SelectedWindow->EXTSwapControlSupported = GL_FALSE;
+
+		SelectedWindow->SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)
+			wglGetProcAddress("wglSwapIntervalEXT");
+
+		if(SelectedWindow->SwapIntervalEXT)
+		{
+			SelectedWindow->EXTSwapControlSupported = GL_TRUE;
+		}
+
 	}
 
 	static void Windows_ShutdownWindow(TWindow* SelectedWindow)
@@ -2158,16 +2278,14 @@ public:
 			return WordParam;
 		}
 		}
-
 	}
 
 	MSG m_Message;
 	HDC m_DeviceContextHandle;
+
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-	Display* CurrentDisplay;
-	XEvent Event;
 	
 	static TWindow* GetWindowByHandle(Window WindowHandle)
 	{
@@ -2372,7 +2490,57 @@ public:
 		SelectedWindow->Position[1] = l_Attributes.y;
 	}
 
+	static void Linux_InitGLExtensions(TWindow* SelectedWindow)
+	{
+		SelectedWindow->SwapIntervalEXT = nullptr;
+		SelectedWindow->SwapIntervalSGI = nullptr;
+		SelectedWindow->SwapIntervalMESA = nullptr;
+		SelectedWindow->EXTSwapControlSupported = GL_FALSE;
+		SelectedWindow->SGISwapControlSupported = GL_FALSE;
+		SelectedWindow->MESASwapControlSupported = GL_FALSE;
 
+		SelectedWindow->SwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC)glXGetProcAddress((const GLubyte*)"glXSwapIntervalEXT");
+		SelectedWindow->SwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)glXGetProcAddress((const GLubyte*)"glXSwapIntervalSGI");
+		SelectedWindow->SwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC)glXGetProcAddress((const GLubyte*)"glXSwapIntervalMESA");
+
+		if(SelectedWindow->SwapIntervalEXT)
+		{
+			SelectedWindow->EXTSwapControlSupported = GL_TRUE;
+		}
+
+		if(SelectedWindow->SwapIntervalSGI)
+		{
+			SelectedWindow->SGISwapControlSupported = GL_TRUE;
+		}
+
+		if(SelectedWindow->SwapIntervalMESA)
+		{
+			SelectedWindow->MESASwapControlSupported = GL_TRUE;
+		}
+	}
+
+	static void Linux_ToggleVerticalSync(TWindow* SelectedWindow)
+	{
+		if(SelectedWindow->EXTSwapControlSupported)
+		{
+			SelectedWindow->SwapIntervalEXT(GetDisplay(), 
+					SelectedWindow->WindowHandle, SelectedWindow->CurrentSyncSetting);
+		}
+
+		if(SelectedWindow->SGISwapControlSupported)
+		{
+			//SGI does not support adaptive V-sync
+			if(SelectedWindow->CurrentSyncSetting > 0)
+			{
+				SelectedWindow->SwapIntervalSGI(SelectedWindow->CurrentSyncSetting);
+			}
+		}
+
+		if(SelectedWindow->MESASwapControlSupported)
+		{
+			SelectedWindow->SwapIntervalMESA(SelectedWindow->CurrentSyncSetting);
+		}
+	}
 
 	static void Linux_ShutdownWindow(TWindow* SelectedWindow)
 	{
@@ -2651,7 +2819,7 @@ public:
 
 				if(IsValid(l_Window->MouseWheelEvent))
 				{
-					l_Window->MouseWheelEvent(MOUSE_SCROLL_UP);
+					l_Window->MouseWheelEvent(MOUSE_SCROLL_DOWN);
 				}
 				break;
 			}
@@ -2669,6 +2837,7 @@ public:
 
 			default:
 			{
+				//need to add more mmouse buttons 
 				break;
 			}
 			}
@@ -2682,6 +2851,7 @@ public:
 			{
 			case 1:
 			{
+				//the left mouse button was released
 				l_Window->MouseButton[MOUSE_LEFTBUTTON] = MOUSE_BUTTONUP;
 
 				if(IsValid(l_Window->MouseButtonEvent))
@@ -2693,6 +2863,7 @@ public:
 
 			case 2:
 			{
+				//the middle mouse button was released
 				l_Window->MouseButton[MOUSE_MIDDLEBUTTON] = MOUSE_BUTTONUP;
 
 				if(IsValid(l_Window->MouseButtonEvent))
@@ -2704,6 +2875,7 @@ public:
 
 			case 3:
 			{
+				//the right mouse button was released
 				l_Window->MouseButton[MOUSE_RIGHTBUTTON] = MOUSE_BUTTONUP;
 
 				if(IsValid(l_Window->MouseButtonEvent))
@@ -2715,18 +2887,21 @@ public:
 
 			case 4:
 			{
+				//the mouse wheel was scrolled up
 				l_Window->MouseButton[MOUSE_SCROLL_UP] = MOUSE_BUTTONDOWN;
 				break;
 			}
 
 			case 5:
 			{
+				//the mouse wheel wasscrolled down
 				l_Window->MouseButton[MOUSE_SCROLL_DOWN] = MOUSE_BUTTONDOWN;
 				break;
 			}
 
 			default:
 			{
+				//need to add more mouse buttons
 				break;
 			}
 			}
@@ -2743,7 +2918,7 @@ public:
 			l_Window->MousePosition[1] = 
 				l_Event.xmotion.y;
 
-			///set the manager screen  ouse position to match the event
+			///set the screen mouse position to match the event
 			GetInstance()->ScreenMousePosition[0] = l_Event.xmotion.x_root;
 			GetInstance()->ScreenMousePosition[1] = l_Event.xmotion.y_root;
 
@@ -2768,7 +2943,7 @@ public:
 			break;
 		}
 
-		//when the window is back in focus (use to restore?)
+		//when the window is back in focus (use to call restore callback?)
 		case FocusIn:
 		{
 			l_Window->InFocus = GL_TRUE;
@@ -2784,12 +2959,18 @@ public:
 		//dragging out the window or programmatically
 		case ResizeRequest:
 		{			
+			l_Window->Resolution[0] = l_Event.xresizerequest.width;
+			l_Window->Resolution[1] = l_Event.xresizerequest.height;
+
 			glViewport(0, 0,
 				l_Window->Resolution[0],
 				l_Window->Resolution[1]);
 
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
+			if(IsValid(l_Window->ResizeEvent))
+			{
+				l_Window->ResizeEvent(l_Event.xresizerequest.width, 
+						l_Event.xresizerequest.height);
+			}
 
 			break;
 		}
@@ -2832,7 +3013,9 @@ public:
 		{
 			//this is needed in order to read from the windows WM_STATE Atomic
 			//to determine if the property notify event was caused by a client
-			//iconify event(minimizing the window) or a maximise event
+			//iconify event(minimizing the window), a maximise event, a focus 
+			//event and an attention demand event. NOTE these should only be 
+			//for eventts that are not triggered programatically 
 
 			Atom l_Type;
 			GLint l_Format;
@@ -2847,15 +3030,17 @@ public:
 
 			if(l_Properties && (l_Format == 32))
 			{
+				//go through each property and match it to an existing Atomic state
 				for(GLuint l_CurrentItem = 0; l_CurrentItem < l_NumItems; l_CurrentItem++)
 				{
 					long l_Property = ((long*)(l_Properties))[l_CurrentItem];	
 
 					if(l_Property == l_Window->AtomHidden)
 					{
-						printf("window hidden \n");
+						//window was minimized
 						if(IsValid(l_Window->MinimizedEvent))
-						{								
+						{
+							//if the minimized callback for the window was set							
 							l_Window->MinimizedEvent();
 						}
 					}
@@ -2863,21 +3048,22 @@ public:
 					if(l_Property == l_Window->AtomMaxVert ||
 						l_Property == l_Window->AtomMaxVert)
 					{
-						printf("window maximized \n");
+						//window was maximized
 						if(IsValid(l_Window->MaximizedEvent))
 						{
-
+							//if the maximized callback for the window was set
 							l_Window->MaximizedEvent();
 						}
 					}
 
 					if(l_Property == l_Window->AtomFocused)
 					{
-						printf("window focused \n");
+						//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
 					}
 
 					if(l_Property == l_Window->AtomDemandsAttention)
 					{
+						//the window demands attention like a celebrity
 						printf("window demands attention \n");
 					}
 				}
@@ -2893,6 +3079,7 @@ public:
 			break;
 		}
 
+		//check for events that were created by the TinyWindow manager
 		case ClientMessage:
 		{
 			const char* l_AtomName = XGetAtomName(WindowManager::GetDisplay(), l_Event.xclient.message_type);
@@ -2908,32 +3095,15 @@ public:
 				l_Window->DestroyedEvent();
 				ShutdownWindow(l_Window);
 				
-				//XDestroyWindow(GetInstance()->CurrentDisplay, l_Event.xclient.window);
 				break;
 			}
 
 			if ((Atom)l_Event.xclient.data.l[1] == l_Window->AtomFullScreen)
 			{
-				printf("resized window \n");
 				break;
 			}
 			break;
 		}
-
-		/*case VisibilityNotify:
-		{
-		if(l_Event.xvisibility.state == VisibilityUnobscured)
-		{
-		//printf("window not obscured \n");
-		l_Window->m_IsObscured = GL_FALSE;
-		}
-
-		else
-		{
-		//printf("window obscured\n");
-		l_Window->m_IsObscured = GL_TRUE;
-		}
-		}*/
 
 		default:
 		{
@@ -2941,6 +3111,7 @@ public:
 		}
 	}
 	}
+	//the linux methos of setting the mouse position on the screen
 	static void Linux_SetMousePositionInScreen(GLuint X, GLuint Y)
 	{
 		XWarpPointer(GetInstance()->CurrentDisplay, None,
@@ -2949,13 +3120,13 @@ public:
 			GetScreenResolution()[1], 
 			X, Y);
 	}
+
+	//get pointer to X11 display
 	static Display* GetDisplay()
 	{
 		return GetInstance()->CurrentDisplay;
 	}
-
-
-
+	//debugging. used to determine what type of event was generated
 	static const char* Linux_GetEventType(XEvent Event)
 	{
 		switch (Event.type)
@@ -3117,6 +3288,7 @@ public:
 		}
 	}
 
+	//translate keys from X keys to TinyWindow Keys
 	static GLuint Linux_TranslateKey(GLuint KeySym)
 	{
 		switch (KeySym)
@@ -3358,6 +3530,8 @@ public:
 		}
 	}
 
+	Display* CurrentDisplay;
+	XEvent Event;
 #endif
 };
 
