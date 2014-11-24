@@ -1869,10 +1869,10 @@ public:
 		SelectedWindow->GLRenderingContextHandle = wglCreateContext(SelectedWindow->DeviceContextHandle);
 		wglMakeCurrent(SelectedWindow->DeviceContextHandle, SelectedWindow->GLRenderingContextHandle);
 
-		InitializeGLExtensions();
+		InitializeGLExtensions(SelectedWindow);
 	}
 
-	static void Windows_InitializeGLExtensions(TWindow* SelectedWindow)
+	static void Windows_InitGLExtensions(TWindow* SelectedWindow)
 	{
 		SelectedWindow->SwapIntervalEXT = nullptr;
 		SelectedWindow->EXTSwapControlSupported = GL_FALSE;
@@ -1885,6 +1885,14 @@ public:
 			SelectedWindow->EXTSwapControlSupported = GL_TRUE;
 		}
 
+	}
+
+	static void Windows_ToggleVerticalSync(TWindow* SelectedWindow)
+	{
+		if (SelectedWindow->EXTSwapControlSupported)
+		{
+			SelectedWindow->SwapIntervalEXT(SelectedWindow->CurrentSyncSetting);
+		}
 	}
 
 	static void Windows_ShutdownWindow(TWindow* SelectedWindow)
