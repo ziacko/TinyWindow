@@ -4,16 +4,15 @@ void blarg(GLuint Key, GLboolean KeyState)
 {
 	if (Key == ' ' && KeyState == KEYSTATE_DOWN)
 	{
-		printf("Penish\n");
+		WindowManager::ToggleVerticalSync("Example", 0);
 	}
 }
-
 
 int main()
 {
 	WindowManager::Initialize();
 
-	WindowManager::AddWindow("Example")->AddWindow("Example2");
+	WindowManager::AddWindow("Example");
 
 	WindowManager::SetWindowOnKeyEvent("Example", blarg);
 
