@@ -4,7 +4,7 @@ void blarg(GLuint Key, GLboolean KeyState)
 {
 	if (Key == ' ' && KeyState == KEYSTATE_DOWN)
 	{
-		WindowManager::ToggleVerticalSync("Example", 0);
+		//WindowManager::ToggleVerticalSync("Example", 0);
 	}
 }
 
