@@ -989,7 +989,6 @@ public:
 #endif
 
 #if defined(CURRENT_OS_LINUX)
-				printf("%i\n", GetWindowByName(WindowName)->WindowHandle);
 				glXSwapBuffers(GetDisplay(), GetWindowByName(WindowName)->WindowHandle);
 #endif
 				return FOUNDATION_OKAY;
