@@ -1,8 +1,7 @@
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
 
-#if defined(_MSC_VER) || defined(_WIN32) || defined(_WIN64)
-#define CURRENT_OS_WINDOWS
+#if defined(_WIN32) || defined(_WIN64)
 #include <Windows.h>
 #include <gl/GL.h>
 #include <io.h>
@@ -15,8 +14,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
-#if defined(__linux__) || defined(__GNUG__) || defined(__GNUC__) || defined(__clang__)
-#define CURRENT_OS_LINUX
+#if defined(__linux__)
 #include <GL/glx.h>
 #include <X11/X.h>
 #include <X11/keysym.h>
@@ -30,11 +28,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #include <string.h>
 
 #define KEYSTATE_DOWN 1 /**< the key is currently up */
-#define KEYSTATE_UP 0   /**< the key is currently down */
+#define KEYSTATE_UP 0  /**< the key is currently down */
 
 #define KEY_ERROR -1	/**< the key pressed is considered invalid */
 
-#define KEY_FIRST 256 + 1   /**< the fist key that is not a char */
+#define KEY_FIRST 256 + 1  /**< the fist key that is not a char */
 #define KEY_F1 KEY_FIRST	/**< the F1 key */
 #define KEY_F2 KEY_FIRST + 1	/**< the F2 key */
 #define KEY_F3 KEY_FIRST + 2	/**< the F3 key */
@@ -44,36 +42,36 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #define KEY_F7 KEY_FIRST + 6	/**< the F7 key */
 #define KEY_F8 KEY_FIRST + 7	/**< the F8 key */
 #define KEY_F9 KEY_FIRST + 8	/**< the F9 key */
-#define KEY_F10 KEY_FIRST + 9   /**< the F10 key */
-#define KEY_F11 KEY_FIRST + 10  /**< the F11 key */
-#define KEY_F12 KEY_FIRST + 11  /**< the F12 key */
+#define KEY_F10 KEY_FIRST + 9  /**< the F10 key */
+#define KEY_F11 KEY_FIRST + 10 /**< the F11 key */
+#define KEY_F12 KEY_FIRST + 11 /**< the F12 key */
 #define KEY_CAPSLOCK KEY_FIRST + 12 /**< the CapsLock key */
 #define KEY_LEFTSHIFT KEY_FIRST + 13	/**< the left Shift key */
-#define KEY_RIGHTSHIFT KEY_FIRST + 14   /**< the right Shift key */
-#define KEY_LEFTCONTROL KEY_FIRST + 15  /**< the left Control key */
+#define KEY_RIGHTSHIFT KEY_FIRST + 14  /**< the right Shift key */
+#define KEY_LEFTCONTROL KEY_FIRST + 15 /**< the left Control key */
 #define KEY_RIGHTCONTROL KEY_FIRST + 16 /**< the right Control key */
-#define KEY_LEFTWINDOW KEY_FIRST + 17   /**< the left Window key */
-#define KEY_RIGHTWINDOW KEY_FIRST + 18  /**< the right Window key */
-#define KEY_LEFTALT KEY_FIRST + 19  /**< the left Alternate key */
+#define KEY_LEFTWINDOW KEY_FIRST + 17  /**< the left Window key */
+#define KEY_RIGHTWINDOW KEY_FIRST + 18 /**< the right Window key */
+#define KEY_LEFTALT KEY_FIRST + 19 /**< the left Alternate key */
 #define KEY_RIGHTALT KEY_FIRST + 20 /**< the right Alternate key*/
 #define KEY_ENTER KEY_FIRST + 21	/**< the Enter/Return key */
-#define KEY_PRINTSCREEN KEY_FIRST + 22  /**< the PrintScreen key */
-#define KEY_SCROLLLOCK KEY_FIRST + 23   /**< the ScrollLock key */
-#define KEY_NUMLOCK KEY_FIRST + 24  /**< the NumLock key */
+#define KEY_PRINTSCREEN KEY_FIRST + 22 /**< the PrintScreen key */
+#define KEY_SCROLLLOCK KEY_FIRST + 23  /**< the ScrollLock key */
+#define KEY_NUMLOCK KEY_FIRST + 24 /**< the NumLock key */
 #define KEY_PAUSE KEY_FIRST + 25	/**< the pause/break key */
-#define KEY_INSERT KEY_FIRST + 26   /**< the insert key */
+#define KEY_INSERT KEY_FIRST + 26  /**< the insert key */
 #define KEY_HOME KEY_FIRST + 27 /**< the Home key */
-#define KEY_END KEY_FIRST + 28  /**< the End key */
-#define KEY_PAGEUP KEY_FIRST + 28   /**< the PageUp key */
+#define KEY_END KEY_FIRST + 28 /**< the End key */
+#define KEY_PAGEUP KEY_FIRST + 28  /**< the PageUp key */
 #define KEY_PAGEDOWN KEY_FIRST + 30 /**< the PageDown key */
-#define KEY_ARROW_DOWN KEY_FIRST + 31   /**< the ArrowDown key */
+#define KEY_ARROW_DOWN KEY_FIRST + 31  /**< the ArrowDown key */
 #define KEY_ARROW_UP KEY_FIRST + 32 /**< the ArrowUp key */
-#define KEY_ARROW_LEFT KEY_FIRST + 33   /**< the ArrowLeft key */
-#define KEY_ARROW_RIGHT KEY_FIRST + 34  /**< the ArrowRight key */
+#define KEY_ARROW_LEFT KEY_FIRST + 33  /**< the ArrowLeft key */
+#define KEY_ARROW_RIGHT KEY_FIRST + 34 /**< the ArrowRight key */
 #define KEY_KEYPAD_DIVIDE KEY_FIRST + 35	/**< the KeyPad Divide key */
-#define KEY_KEYPAD_MULTIPLY KEY_FIRST + 36  /**< the Keypad Multiply key */
-#define KEY_KEYPAD_SUBTRACT KEY_FIRST + 37  /**< the Keypad Subtract key */
-#define KEY_KEYPAD_ADD KEY_FIRST + 38   /**< the Keypad  Add key*/
+#define KEY_KEYPAD_MULTIPLY KEY_FIRST + 36 /**< the Keypad Multiply key */
+#define KEY_KEYPAD_SUBTRACT KEY_FIRST + 37 /**< the Keypad Subtract key */
+#define KEY_KEYPAD_ADD KEY_FIRST + 38  /**< the Keypad Add key*/
 #define KEY_KEYPAD_ENTER KEY_FIRST + 39 /**< the Keypad Enter key */
 #define KEY_KEYPAD_PERIOD KEY_FIRST + 40	/**< the Keypad Period/Decimal key */
 #define KEY_KEYPAD_0 KEY_FIRST + 41 /**< the Keypad 0 key */
@@ -87,24 +85,24 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #define KEY_KEYPAD_8 KEY_FIRST + 49 /**< the keypad 8 key */
 #define KEY_KEYPAD_9 KEY_FIRST + 50 /**< the Keypad 9 key */
 #define KEY_BACKSPACE KEY_FIRST + 51	/**< the Backspace key */
-#define KEY_TAB KEY_FIRST + 52  /**< the Tab key */
-#define KEY_DELETE KEY_FIRST + 53   /**< the Delete key */
-#define KEY_ESCAPE KEY_FIRST + 54   /**< the Escape key */
-#define KEY_LAST KEY_ESCAPE   /**< the last key to be supported */
+#define KEY_TAB KEY_FIRST + 52 /**< the Tab key */
+#define KEY_DELETE KEY_FIRST + 53  /**< the Delete key */
+#define KEY_ESCAPE KEY_FIRST + 54  /**< the Escape key */
+#define KEY_LAST KEY_ESCAPE  /**< the last key to be supported */
 
 #define MOUSE_BUTTONUP 0	/**< the mouse button is currently up */
-#define MOUSE_BUTTONDOWN 1  /**< the mouse button is currently down */
+#define MOUSE_BUTTONDOWN 1 /**< the mouse button is currently down */
 
-#define MOUSE_LEFTBUTTON 0  /**<  the left mouse button*/
+#define MOUSE_LEFTBUTTON 0 /**< the left mouse button*/
 #define MOUSE_RIGHTBUTTON 1 /**< the right mouse button */
 #define MOUSE_MIDDLEBUTTON 2	/**< the middle mouse button / ScrollWheel */
-#define MOUSE_LAST MOUSE_MIDDLEBUTTON + 1   /**< the last mouse button to be supported */
+#define MOUSE_LAST MOUSE_MIDDLEBUTTON + 1  /**< the last mouse button to be supported */
 
 #define MOUSE_SCROLL_DOWN 0 /**< the mouse wheel up */
-#define MOUSE_SCROLL_UP 1   /**< the mouse wheel down */
+#define MOUSE_SCROLL_UP 1  /**< the mouse wheel down */
 
-#define WINDOWSTYLE_BARE 1  /**< the window has no decorators but the window border and title bar*/
-#define WINDOWSTYLE_DEFAULT 2   /**< the default window style for the respective platform */
+#define WINDOWSTYLE_BARE 1 /**< the window has no decorators but the window border and title bar*/
+#define WINDOWSTYLE_DEFAULT 2  /**< the default window style for the respective platform */
 #define WINDOWSTYLE_POPUP 3 /**< the window has no decorators*/
 
 #define WINDOWSTATE_NORMAL 0	/**< the window is in its default state */
@@ -112,13 +110,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #define WINDOWSTATE_MINIMIZED 2 /**< the window is currently minimized */
 #define WINDOWSTATE_FULLSCREEN 3	/**< the window is currently full screen */
 
-#define DECORATOR_TITLEBAR 0x01 /**< The titlebar decoration of the window */
+#define DECORATOR_TITLEBAR 0x01 /**< The title bar decoration of the window */
 #define DECORATOR_ICON 0x02 /**< the icon decoration of the window*/
 #define DECORATOR_BORDER 0x04 /**< the border decoration of the window*/
 #define DECORATOR_MINIMIZEBUTTON 0x08 /**<the minimize button decoration of the window */
 #define DECORATOR_MAXIMIZEBUTTON 0x010 /**< the maximize button decoration pf the window */
 #define DECORATOR_CLOSEBUTTON 0x20 /**< the close button decoration of the window*/
-#define DECORATOR_SIZEABLEBORDER 0x40 /**< the sizeable border decoration of the window*/
+#define DECORATOR_SIZEABLEBORDER 0x40 /**< the sizable border decoration of the window*/
 
 #define LINUX_DECORATOR_BORDER 1L << 1
 #define LINUX_DECORATOR_MOVE 1L << 2
@@ -160,18 +158,18 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 typedef void(*OnKeyEvent)(GLuint Key, GLboolean KeyState);	/**<To be called when a key event has occurred*/
 typedef void(*OnMouseButtonEvent)(GLuint Button, GLboolean ButtonState);	/**<To be called when a Mouse button event has occurred*/
-typedef void(*OnMouseWheelEvent)(GLuint WheelDirection);  /**<To be called when a mouse wheel event has occurred.*/
+typedef void(*OnMouseWheelEvent)(GLuint WheelDirection); /**<To be called when a mouse wheel event has occurred.*/
 typedef void(*OnDestroyedEvent)(); /**<To be called when the window is being destroyed*/
 typedef void(*OnMaximizedEvent)(); /**<To be called when the window has been maximized*/
 typedef void(*OnMinimizedEvent)(); /**<To be called when the window has been minimized*/
 //typedef void (*OnRestoredEvent)(); //only really works on windows, Linux doesn't even have an atomic for it. might need to remove
 typedef void(*OnFocusEvent)(GLboolean InFocus);	/**<To be called when the window has gained event focus*/
-typedef void(*OnMovedEvent)(GLuint X, GLuint Y);   /**<To be called when the window has been moved*/
+typedef void(*OnMovedEvent)(GLuint X, GLuint Y);  /**<To be called when the window has been moved*/
 typedef void(*OnResizeEvent)(GLuint Width, GLuint Height); /**<To be called when the window has been resized*/
-typedef void(*OnMouseMoveEvent)(GLuint WindowX, GLuint WindowY, GLuint ScreenX, GLuint ScreenY);   /**<To be called when the mouse has been moved within the window*/
+typedef void(*OnMouseMoveEvent)(GLuint WindowX, GLuint WindowY, GLuint ScreenX, GLuint ScreenY);  /**<To be called when the mouse has been moved within the window*/
 
 //print the warning message associated with the given warning number
-static  void PrintWarningMessage(GLuint WarningNumber)
+static void PrintWarningMessage(GLuint WarningNumber)
 {
 	switch (WarningNumber)
 	{
@@ -347,9 +345,9 @@ public:
 	{
 		if (!GetInstance()->Windows.empty())
 		{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_MSC_VER)
 			for each(auto CurrentWindow in GetInstance()->Windows)
-#elif defined(CURRENT_OS_LINUX)
+#elif else
 			for (auto CurrentWindow : GetInstance()->Windows)
 #endif
 			{
@@ -362,9 +360,9 @@ public:
 	/**
 	 * use this to shutdown the window manager when your program is finished
 	*/
-	 static  void ShutDown()
+	 static void ShutDown()
 	{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_MSC_VER)
 		for each (auto CurrentWindow in GetInstance()->Windows)
 		{
 			delete CurrentWindow;
@@ -387,7 +385,7 @@ public:
 	/**
 	 *use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	static WindowManager* AddWindow(const char*  WindowName, GLuint Width = 1280, GLuint Height = 720, GLuint ColourBits = 8,
+	static WindowManager* AddWindow(const char* WindowName, GLuint Width = 1280, GLuint Height = 720, GLuint ColourBits = 8,
 		GLuint DepthBits = 8, GLuint StencilBits = 8)
 	{
 		if (GetInstance()->IsInitialized())
@@ -433,7 +431,7 @@ public:
 	/**
 	 * return the mouse position in screen co-ordinates
 	 */
-	static  GLboolean GetMousePositionInScreen(GLuint& X, GLuint& Y)
+	static GLboolean GetMousePositionInScreen(GLuint& X, GLuint& Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -461,18 +459,16 @@ public:
 	/**
 	 * set the position of the mouse cursor relative to screen co-ordinates
 	 */
-	static  GLboolean SetMousePositionInScreen(GLuint X, GLuint Y)
+	static GLboolean SetMousePositionInScreen(GLuint X, GLuint Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			GetInstance()->ScreenMousePosition[0] = X;
 			GetInstance()->ScreenMousePosition[1] = Y;
 
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 			Windows_SetMousePositionInScreen();
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 			Linux_SetMousePositionInScreen(X, Y);
 #endif
 			return FOUNDATION_OKAY;
@@ -488,7 +484,7 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 			RECT l_Screen;
 			HWND m_Desktop = GetDesktopWindow();
 			GetWindowRect(m_Desktop, &l_Screen);
@@ -497,9 +493,7 @@ public:
 			GetInstance()->ScreenResolution[1] = l_Screen.bottom;
 			return GetInstance()->ScreenResolution;
 
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 			GetInstance()->ScreenResolution[0] = WidthOfScreen(XDefaultScreenOfDisplay(GetInstance()->CurrentDisplay));
 			GetInstance()->ScreenResolution[1] = HeightOfScreen(XDefaultScreenOfDisplay(GetInstance()->CurrentDisplay));
 
@@ -513,19 +507,17 @@ public:
 	/**
 	 * return the Resolution of the current screen
 	 */
-	static  GLboolean GetScreenResolution(GLuint& Width, GLuint& Height)
+	static GLboolean GetScreenResolution(GLuint& Width, GLuint& Height)
 	{
 		if (GetInstance()->IsInitialized())
 		{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 			RECT l_Screen;
 			HWND m_Desktop = GetDesktopWindow();
 			GetWindowRect(m_Desktop, &l_Screen);
 			Width = l_Screen.right;
 			Height = l_Screen.bottom;
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 			Width = WidthOfScreen(XDefaultScreenOfDisplay(GetInstance()->CurrentDisplay));
 			Height = HeightOfScreen(XDefaultScreenOfDisplay(GetInstance()->CurrentDisplay));
 
@@ -542,7 +534,7 @@ public:
 	/**
 	 * return the Resolution of the given window by setting width and height
 	 */
-	static  GLboolean GetWindowResolution(const char* WindowName, GLuint& Width, GLuint& Height)
+	static GLboolean GetWindowResolution(const char* WindowName, GLuint& Width, GLuint& Height)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -560,7 +552,7 @@ public:
 	/**
 	 * return the Resolution of the given window by setting width and height
 	 */
-	static  GLboolean GetWindowResolution(GLuint WindowIndex, GLuint& Width, GLuint& Height)
+	static GLboolean GetWindowResolution(GLuint WindowIndex, GLuint& Width, GLuint& Height)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -614,7 +606,7 @@ public:
 	/**
 	 * set the Size/Resolution of the given window
 	 */
-	static  GLboolean SetWindowResolution(const char* WindowName, GLuint Width, GLuint Height)
+	static GLboolean SetWindowResolution(const char* WindowName, GLuint Width, GLuint Height)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -622,11 +614,9 @@ public:
 			{
 				GetWindowByName(WindowName)->Resolution[0] = Width;
 				GetWindowByName(WindowName)->Resolution[1] = Height;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowResolution(GetWindowByName(WindowName));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowResolution(GetWindowByName(WindowName));
 #endif
 				return FOUNDATION_OKAY;
@@ -640,7 +630,7 @@ public:
 	/**
 	 * set the Size/Resolution of the given window
 	 */
-	static  GLboolean SetWindowResolution(GLuint WindowIndex, GLuint Width, GLuint Height)
+	static GLboolean SetWindowResolution(GLuint WindowIndex, GLuint Width, GLuint Height)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -649,10 +639,9 @@ public:
 				GetWindowByIndex(WindowIndex)->Resolution[0] = Width;
 				GetWindowByIndex(WindowIndex)->Resolution[1] = Height;
 
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowResolution(GetWindowByIndex(WindowIndex));
-#endif
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowResolution(GetWindowByIndex(WindowIndex));
 #endif
 				return FOUNDATION_OKAY;
@@ -666,7 +655,7 @@ public:
 	/**
 	 * return the Position of the given window relative to screen co-ordinates by setting X and Y
 	 */ 
-	static  GLboolean GetWindowPosition(const char* WindowName, GLuint& X, GLuint& Y)
+	static GLboolean GetWindowPosition(const char* WindowName, GLuint& X, GLuint& Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -685,7 +674,7 @@ public:
 	/**
 	 * return the Position of the given window relative to screen co-ordinates by setting X and Y
 	 */
-	static  GLboolean GetWindowPosition(GLuint WindowIndex, GLuint& X, GLuint& Y)
+	static GLboolean GetWindowPosition(GLuint WindowIndex, GLuint& X, GLuint& Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -737,7 +726,7 @@ public:
 	/**
 	 * set the Position of the given window relative to screen co-ordinates
 	 */
-	static  GLboolean SetWindowPosition(const char* WindowName, GLuint X, GLuint Y)
+	static GLboolean SetWindowPosition(const char* WindowName, GLuint X, GLuint Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -745,11 +734,9 @@ public:
 			{
 				GetWindowByName(WindowName)->Position[0] = X;
 				GetWindowByName(WindowName)->Position[1] = Y;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowPosition(GetWindowByName(WindowName));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowPosition(GetWindowByName(WindowName));
 #endif
 				return FOUNDATION_OKAY;
@@ -763,7 +750,7 @@ public:
 	/**
 	 * set the position of the given window relative to screen co-ordinates
 	 */
-	static  GLboolean SetWindowPosition(GLuint WindowIndex, GLuint X, GLuint Y)
+	static GLboolean SetWindowPosition(GLuint WindowIndex, GLuint X, GLuint Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -771,11 +758,9 @@ public:
 			{
 				GetWindowByIndex(WindowIndex)->Position[0] = X;
 				GetWindowByIndex(WindowIndex)->Position[1] = Y;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowPosition(GetWindowByIndex(WindowIndex));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowPosition(GetWindowByIndex(WindowIndex));
 #endif
 				return FOUNDATION_OKAY;
@@ -789,7 +774,7 @@ public:
 	/**
 	 * return the mouse Position relative to the given window's co-ordinates by setting X and Y
 	 */
-	static  GLboolean GetMousePositionInWindow(const char* WindowName, GLuint& X, GLuint& Y)
+	static GLboolean GetMousePositionInWindow(const char* WindowName, GLuint& X, GLuint& Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -807,7 +792,7 @@ public:
 	/**
 	 * return the mouse position relative to the given window's co-ordinates by setting X and Y
 	 */
-	static  GLboolean GetMousePositionInWindow(GLuint WindowIndex, GLuint& X, GLuint& Y)
+	static GLboolean GetMousePositionInWindow(GLuint WindowIndex, GLuint& X, GLuint& Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -857,7 +842,7 @@ public:
 	/**
 	 * set the mouse Position of the given window's co-ordinates
 	 */
-	static  GLboolean SetMousePositionInWindow(const char* WindowName, GLuint X, GLuint Y)
+	static GLboolean SetMousePositionInWindow(const char* WindowName, GLuint X, GLuint Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -865,11 +850,9 @@ public:
 			{
 				GetWindowByName(WindowName)->MousePosition[0] = X;
 				GetWindowByName(WindowName)->MousePosition[1] = Y;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetMousePosition(GetWindowByName(WindowName));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetMousePosition(GetWindowByName(WindowName));
 #endif
 				return FOUNDATION_OKAY;
@@ -883,7 +866,7 @@ public:
 	/**
 	 * set the mouse Position of the given window's co-ordinates
 	 */
-	static  GLboolean SetMousePositionInWindow(GLuint WindowIndex, GLuint X, GLuint Y)
+	static GLboolean SetMousePositionInWindow(GLuint WindowIndex, GLuint X, GLuint Y)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -891,11 +874,9 @@ public:
 			{
 				GetWindowByIndex(WindowIndex)->MousePosition[0] = X;
 				GetWindowByIndex(WindowIndex)->MousePosition[1] = Y;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetMousePosition(GetWindowByIndex(WindowIndex));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetMousePosition(GetWindowByIndex(WindowIndex));
 #endif
 				return FOUNDATION_OKAY;
@@ -978,17 +959,15 @@ public:
 	/**
 	 * swap the draw buffers of the given window
 	 */
-	static  GLboolean WindowSwapBuffers(const char* WindowName)
+	static GLboolean WindowSwapBuffers(const char* WindowName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				SwapBuffers(GetWindowByName(WindowName)->DeviceContextHandle);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				printf("%i\n", GetWindowByName(WindowName)->WindowHandle);
 				glXSwapBuffers(GetDisplay(), GetWindowByName(WindowName)->WindowHandle);
 #endif
@@ -1004,17 +983,15 @@ public:
 	/**
 	 * swap the draw buffers of the given window
 	 */
-	static  GLboolean WindowSwapBuffers(GLuint WindowIndex)
+	static GLboolean WindowSwapBuffers(GLuint WindowIndex)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				SwapBuffers(GetWindowByIndex(WindowIndex)->DeviceContextHandle);
-#endif 
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				glXSwapBuffers(GetDisplay(), GetWindowByIndex(WindowIndex)->WindowHandle);
 #endif
 				return FOUNDATION_OKAY;
@@ -1028,19 +1005,17 @@ public:
 	/**
 	 * make the given window be the current OpenGL Context to be drawn to
 	 */
-	static  GLboolean MakeWindowCurrentContext(const char* WindowName)
+	static GLboolean MakeWindowCurrentContext(const char* WindowName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
 
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				wglMakeCurrent(GetWindowByName(WindowName)->DeviceContextHandle,
 					GetWindowByName(WindowName)->GLRenderingContextHandle);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				glXMakeCurrent(WindowManager::GetDisplay(), GetWindowByName(WindowName)->WindowHandle,
 					GetWindowByName(WindowName)->Context);
 #endif
@@ -1055,18 +1030,16 @@ public:
 	/**
 	 * make the given window be the current OpenGL Context to be drawn to
 	 */
-	static  GLboolean MakeWindowCurrentContext(GLuint WindowIndex)
+	static GLboolean MakeWindowCurrentContext(GLuint WindowIndex)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				wglMakeCurrent(GetWindowByIndex(WindowIndex)->DeviceContextHandle,
 					GetWindowByIndex(WindowIndex)->GLRenderingContextHandle);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				glXMakeCurrent(GetDisplay(), GetWindowByIndex(WindowIndex)->WindowHandle,
 					GetWindowByIndex(WindowIndex)->Context);
 #endif
@@ -1119,7 +1092,7 @@ public:
 	/**
 	 * toggle the given window's full screen mode
 	 */
-	static  GLboolean SetFullScreen(const char* WindowName, GLboolean NewState)
+	static GLboolean SetFullScreen(const char* WindowName, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1128,11 +1101,9 @@ public:
 				if (NewState)
 				{
 					GetWindowByName(WindowName)->CurrentState = WINDOWSTATE_FULLSCREEN;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_FullScreen(GetWindowByName(WindowName));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Fullscreen(GetWindowByName(WindowName));
 #endif
 
@@ -1142,11 +1113,9 @@ public:
 				else
 				{
 					GetWindowByName(WindowName)->CurrentState = WINDOWSTATE_NORMAL;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_FullScreen(GetWindowByName(WindowName));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Fullscreen(GetWindowByName(WindowName));
 #endif
 					return FOUNDATION_OKAY;
@@ -1161,7 +1130,7 @@ public:
 	/*
 	 * toggle the given window's full screen mode
 	 */
-	static  GLboolean SetFullScreen(GLuint WindowIndex, GLboolean NewState)
+	static GLboolean SetFullScreen(GLuint WindowIndex, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1170,10 +1139,9 @@ public:
 				if (NewState)
 				{
 					GetWindowByIndex(WindowIndex)->CurrentState = WINDOWSTATE_FULLSCREEN;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_FullScreen(GetWindowByIndex(WindowIndex));
-#endif
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Fullscreen(GetWindowByIndex(WindowIndex));
 #endif
 					return FOUNDATION_OKAY;
@@ -1182,10 +1150,9 @@ public:
 				else
 				{
 					GetWindowByIndex(WindowIndex)->CurrentState = WINDOWSTATE_NORMAL;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_FullScreen(GetWindowByIndex(WindowIndex));
-#endif
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Fullscreen(GetWindowByIndex(WindowIndex));
 #endif
 					return FOUNDATION_OKAY;
@@ -1234,7 +1201,7 @@ public:
 	/**
 	 * toggle the minimization state of the given window
 	 */
-	static  GLboolean MinimizeWindow(const char* WindowName, GLboolean NewState)
+	static GLboolean MinimizeWindow(const char* WindowName, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1244,11 +1211,9 @@ public:
 				{
 					GetWindowByName(WindowName)->CurrentState = WINDOWSTATE_MINIMIZED;
 
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_Minimize(GetWindowByName(WindowName), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Minimize(GetWindowByName(WindowName));
 #endif
 					return FOUNDATION_OKAY;
@@ -1257,11 +1222,9 @@ public:
 				else
 				{
 					GetWindowByName(WindowName)->CurrentState = WINDOWSTATE_NORMAL;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_Minimize(GetWindowByName(WindowName), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Minimize(GetWindowByName(WindowName));
 #endif
 					return FOUNDATION_OKAY;
@@ -1276,7 +1239,7 @@ public:
 	/**
 	 * toggle the minimization state of the window
 	 */
-	static  GLboolean MinimizeWindow(GLuint WindowIndex, GLboolean NewState)
+	static GLboolean MinimizeWindow(GLuint WindowIndex, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1285,11 +1248,9 @@ public:
 				if (NewState)
 				{
 					GetWindowByIndex(WindowIndex)->CurrentState = WINDOWSTATE_MINIMIZED;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_Minimize(GetWindowByIndex(WindowIndex), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Minimize(GetWindowByIndex(WindowIndex));
 #endif
 					return FOUNDATION_OKAY;
@@ -1298,11 +1259,9 @@ public:
 				else
 				{
 					GetWindowByIndex(WindowIndex)->CurrentState = WINDOWSTATE_NORMAL;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_Minimize(GetWindowByIndex(WindowIndex), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Minimize(GetWindowByIndex(WindowIndex));
 #endif
 					return FOUNDATION_OKAY;
@@ -1350,7 +1309,7 @@ public:
 	/**
 	 * toggle the maximization state of the current window
 	 */
-	static  GLboolean MaximizeWindow(const char* WindowName, GLboolean NewState)
+	static GLboolean MaximizeWindow(const char* WindowName, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1359,11 +1318,9 @@ public:
 				if (NewState)
 				{
 					GetWindowByName(WindowName)->CurrentState = WINDOWSTATE_MAXIMIZED;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_Maximize(GetWindowByName(WindowName), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Maximize(GetWindowByName(WindowName));
 #endif
 					return FOUNDATION_OKAY;
@@ -1372,11 +1329,9 @@ public:
 				else
 				{
 					GetWindowByName(WindowName)->CurrentState = WINDOWSTATE_NORMAL;
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 					Windows_Maximize(GetWindowByName(WindowName), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 					Linux_Maximize(GetWindowByName(WindowName));
 #endif
 					return FOUNDATION_OKAY;
@@ -1390,17 +1345,15 @@ public:
 	/**
 	 * toggle the maximization state of the current window
 	 */
-	static  GLboolean MaximizeWindow(GLuint WindowIndex, GLboolean NewState)
+	static GLboolean MaximizeWindow(GLuint WindowIndex, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_Maximize(GetWindowByIndex(WindowIndex), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_Maximize(GetWindowByIndex(WindowIndex));
 #endif
 				return FOUNDATION_OKAY;
@@ -1411,7 +1364,9 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	//gets and sets for window name and index
+	/**
+	* gets and sets for window name and index
+	*/
 	static const char* GetWindowName(GLuint WindowIndex)
 	{
 		if (GetInstance()->IsInitialized())
@@ -1425,7 +1380,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static GLuint GetWindowIndex(const char*  WindowName)
+	static GLuint GetWindowIndex(const char* WindowName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1440,17 +1395,15 @@ public:
 	}
 
 	//set the window title bar
-	static  GLboolean SetWindowTitleBar(const char* WindowName, const char* NewTitle)
+	static GLboolean SetWindowTitleBar(const char* WindowName, const char* NewTitle)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName) && IsValid(NewTitle))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				SetWindowText(GetWindowByName(WindowName)->WindowHandle, NewTitle);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				XStoreName(GetDisplay(), GetWindowByName(WindowName)->WindowHandle, NewTitle);
 #endif
 				return FOUNDATION_OKAY;
@@ -1461,17 +1414,15 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowTitleBar(GLuint WindowIndex, const char* NewName)
+	static GLboolean SetWindowTitleBar(GLuint WindowIndex, const char* NewName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex) && IsValid(NewName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				SetWindowText(GetWindowByIndex(WindowIndex)->WindowHandle, NewName);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				XStoreName(GetDisplay(), GetWindowByIndex(WindowIndex)->WindowHandle, NewName);
 #endif
 				return FOUNDATION_OKAY;
@@ -1489,11 +1440,9 @@ public:
 		{
 			if (DoesExist(WindowName) && IsValid(Icon))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowIcon(GetWindowByName(WindowName), Icon, Width, Height);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowIcon(GetWindowByName(WindowName), Icon, Width, Height);
 #endif
 				return FOUNDATION_OKAY;
@@ -1510,11 +1459,9 @@ public:
 		{
 			if (DoesExist(WindowIndex) && IsValid(Icon))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowIcon(GetWindowByIndex(WindowIndex), Icon, Width, Height);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#elif
 				Linux_SetWindowIcon(GetWindowByIndex(WindowIndex), Icon, Width, Height);
 #endif
 				return FOUNDATION_OKAY;
@@ -1554,17 +1501,15 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean FocusWindow(const char* WindowName, GLboolean NewState)
+	static GLboolean FocusWindow(const char* WindowName, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_Focus(GetWindowByName(WindowName), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#elif
 				Linux_Focus(GetWindowByName(WindowName), NewState);
 #endif
 				return FOUNDATION_OKAY;
@@ -1574,17 +1519,15 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean FocusWindow(GLuint WindowIndex, GLboolean NewState)
+	static GLboolean FocusWindow(GLuint WindowIndex, GLboolean NewState)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_Focus(GetWindowByIndex(WindowIndex), NewState);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#elif
 				Linux_Focus(GetWindowByIndex(WindowIndex), NewState);
 #endif
 				return FOUNDATION_OKAY;
@@ -1596,17 +1539,15 @@ public:
 	}
 
 	//gets and sets for restoring the window
-	static  GLboolean RestoreWindow(const char* WindowName)
+	static GLboolean RestoreWindow(const char* WindowName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_Restore(GetWindowByName(WindowName));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_Restore(GetWindowByName(WindowName));
 #endif
 				return FOUNDATION_OKAY;
@@ -1616,17 +1557,15 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean RestoreWindow(GLuint WindowIndex)
+	static GLboolean RestoreWindow(GLuint WindowIndex)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (WindowExists(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_Restore(GetWindowByIndex(WindowIndex));
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_Restore(GetWindowByIndex(WindowIndex));
 #endif
 				return FOUNDATION_OKAY;
@@ -1638,43 +1577,58 @@ public:
 	}
 
 	//initialize the window manager
-	static  GLboolean Initialize()
+	static GLboolean Initialize()
 	{
 		GetInstance()->Initialized = GL_FALSE;
-#if defined(CURRENT_OS_LINUX)
-		return Linux_Initialize();
-#endif	
-
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 		return Windows_Initialize();
+#else
+		return Linux_Initialize();
 #endif
 	}
 
-	static   GLboolean IsInitialized()
+	static GLboolean IsInitialized()
 	{
 		return GetInstance()->Initialized;
 	}
 
 	//ask the window to poll for window events
-	static  GLboolean PollForEvents()
+	static GLvoid PollForEvents()
 	{
 		if (GetInstance()->IsInitialized())
 		{
-#if defined(CURRENT_OS_WINDOWS)
-			return GetInstance()->Windows_PollForEvents();
-#endif
-
-#if defined (CURRENT_OS_LINUX)
-			return GetInstance()->Linux_PollForEvents();
+#if defined(_WIN32) || defined(_WIN64)
+			GetInstance()->Windows_PollForEvents();
+#else
+			GetInstance()->Linux_PollForEvents();
 #endif
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
-		return FOUNDATION_ERROR;
+		else
+		{ 
+			PrintErrorMessage(ERROR_NOTINITIALIZED);
+		}		
+	}
+
+	static GLvoid WaitForEvents()
+	{
+		if (GetInstance()->IsInitialized())
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			GetInstance()->Windows_WaitForEvents();
+#else
+			GetInstance()->Linux_WaitForEvents();
+#endif
+		}
+
+		else
+		{
+			PrintErrorMessage(ERROR_NOTINITIALIZED);
+		}
 	}
 
 	//remove a window from the manager
-	static  GLboolean RemoveWindow(const char* WindowName)
+	static GLboolean RemoveWindow(const char* WindowName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1689,7 +1643,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean RemoveWindow(GLuint WindowIndex)
+	static GLboolean RemoveWindow(GLuint WindowIndex)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1704,17 +1658,15 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowStyle(const char* WindowName, GLuint WindowStyle)
+	static GLboolean SetWindowStyle(const char* WindowName, GLuint WindowStyle)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowStyle(GetWindowByName(WindowName), WindowStyle);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowStyle(GetWindowByName(WindowName), WindowStyle);
 #endif
 				return FOUNDATION_OKAY;
@@ -1725,17 +1677,15 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowStyle(GLuint WindowIndex, GLuint WindowStyle)
+	static GLboolean SetWindowStyle(GLuint WindowIndex, GLuint WindowStyle)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowStyle(GetWindowByIndex(WindowIndex), WindowStyle);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_SetWindowStyle(GetWindowByIndex(WindowIndex), WindowStyle);
 #endif
 				return FOUNDATION_OKAY;
@@ -1746,17 +1696,15 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean EnableWindowDecorators(const char* WindowName, GLbitfield Decorators)
+	static GLboolean EnableWindowDecorators(const char* WindowName, GLbitfield Decorators)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_EnableDecorators(GetWindowByName(WindowName), Decorators);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_EnableDecorators(GetWindowByName(WindowName), Decorators);
 #endif
 				return FOUNDATION_OKAY;
@@ -1767,17 +1715,15 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean EnableWindowDecorators(GLuint WindowIndex, GLbitfield Decorators)
+	static GLboolean EnableWindowDecorators(GLuint WindowIndex, GLbitfield Decorators)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_EnableDecorators(GetWindowByIndex(WindowIndex), Decorators);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_EnableDecorators(GetWindowByIndex(WindowIndex), Decorators);
 #endif
 				return FOUNDATION_OKAY;
@@ -1788,17 +1734,15 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean DisableWindowDecorator(const char* WindowName, GLbitfield Decorators)
+	static GLboolean DisableWindowDecorator(const char* WindowName, GLbitfield Decorators)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_DisableDecorators(GetWindowByName(WindowName), Decorators);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_DisableDecorators(GetWindowByName(WindowName), Decorators);
 #endif
 				return FOUNDATION_OKAY;
@@ -1808,17 +1752,15 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean DisableWindowDecorator(GLuint WindowIndex, GLbitfield Decorators)
+	static GLboolean DisableWindowDecorator(GLuint WindowIndex, GLbitfield Decorators)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (DoesExist(WindowIndex))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 				Windows_DisableDecorators(GetWindowByIndex(WindowIndex), Decorators);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				Linux_DisableDecorators(GetWindowByIndex(WindowIndex), Decorators);
 #endif
 				return FOUNDATION_OKAY;
@@ -1830,7 +1772,7 @@ public:
 	}
 
 	//set callbacks for the selected window
-	static  GLboolean SetWindowOnKeyEvent(const char* WindowName, OnKeyEvent OnKey)
+	static GLboolean SetWindowOnKeyEvent(const char* WindowName, OnKeyEvent OnKey)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1845,7 +1787,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnKeyEvent(GLuint WindowIndex, OnKeyEvent OnKey)
+	static GLboolean SetWindowOnKeyEvent(GLuint WindowIndex, OnKeyEvent OnKey)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1860,7 +1802,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnMouseButtonEvent(const char* WindowName, OnMouseButtonEvent OnMouseButton)
+	static GLboolean SetWindowOnMouseButtonEvent(const char* WindowName, OnMouseButtonEvent OnMouseButton)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1874,7 +1816,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnMouseButtonEvent(GLuint WindowIndex, OnMouseButtonEvent OnMouseButton)
+	static GLboolean SetWindowOnMouseButtonEvent(GLuint WindowIndex, OnMouseButtonEvent OnMouseButton)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1889,7 +1831,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnMouseWheelEvent(const char* WindowName, OnMouseWheelEvent OnMouseWheel)
+	static GLboolean SetWindowOnMouseWheelEvent(const char* WindowName, OnMouseWheelEvent OnMouseWheel)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1903,7 +1845,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnMouseWheelEvent(GLuint WindowIndex, OnMouseWheelEvent OnMouseWheel)
+	static GLboolean SetWindowOnMouseWheelEvent(GLuint WindowIndex, OnMouseWheelEvent OnMouseWheel)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1918,7 +1860,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnDestroyed(const char* WindowName, OnDestroyedEvent OnDestroyed)
+	static GLboolean SetWindowOnDestroyed(const char* WindowName, OnDestroyedEvent OnDestroyed)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1932,7 +1874,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnDestroyed(GLuint WindowIndex, OnDestroyedEvent OnDestroyed)
+	static GLboolean SetWindowOnDestroyed(GLuint WindowIndex, OnDestroyedEvent OnDestroyed)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1947,7 +1889,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnMaximized(const char* WindowName, OnMaximizedEvent OnMaximized)
+	static GLboolean SetWindowOnMaximized(const char* WindowName, OnMaximizedEvent OnMaximized)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1961,7 +1903,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnMaximized(GLuint WindowIndex, OnMaximizedEvent OnMaximized)
+	static GLboolean SetWindowOnMaximized(GLuint WindowIndex, OnMaximizedEvent OnMaximized)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1976,7 +1918,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnMinimized(const char* WindowName, OnMinimizedEvent OnMiniimzed)
+	static GLboolean SetWindowOnMinimized(const char* WindowName, OnMinimizedEvent OnMiniimzed)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1990,7 +1932,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnMinimized(GLuint WindowIndex, OnMinimizedEvent OnMiniimzed)
+	static GLboolean SetWindowOnMinimized(GLuint WindowIndex, OnMinimizedEvent OnMiniimzed)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2005,7 +1947,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnFocus(const char* WindowName, OnFocusEvent OnFocus)
+	static GLboolean SetWindowOnFocus(const char* WindowName, OnFocusEvent OnFocus)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2019,7 +1961,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnFocus(GLuint WindowIndex, OnFocusEvent OnFocus)
+	static GLboolean SetWindowOnFocus(GLuint WindowIndex, OnFocusEvent OnFocus)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2034,7 +1976,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnMoved(const char* WindowName, OnMovedEvent OnMoved)
+	static GLboolean SetWindowOnMoved(const char* WindowName, OnMovedEvent OnMoved)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2048,7 +1990,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnMoved(GLuint WindowIndex, OnMovedEvent OnMoved)
+	static GLboolean SetWindowOnMoved(GLuint WindowIndex, OnMovedEvent OnMoved)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2063,7 +2005,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnResize(const char* WindowName, OnResizeEvent OnResize)
+	static GLboolean SetWindowOnResize(const char* WindowName, OnResizeEvent OnResize)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2077,7 +2019,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnResize(GLuint WindowIndex, OnResizeEvent OnResize)
+	static GLboolean SetWindowOnResize(GLuint WindowIndex, OnResizeEvent OnResize)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2092,7 +2034,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  GLboolean SetWindowOnMouseMove(const char* WindowName, OnMouseMoveEvent OnMouseMove)
+	static GLboolean SetWindowOnMouseMove(const char* WindowName, OnMouseMoveEvent OnMouseMove)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2106,7 +2048,7 @@ public:
 		PrintErrorMessage(ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
-	static  GLboolean SetWindowOnMouseMove(GLuint WindowIndex, OnMouseMoveEvent OnMouseMove)
+	static GLboolean SetWindowOnMouseMove(GLuint WindowIndex, OnMouseMoveEvent OnMouseMove)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2158,7 +2100,7 @@ public:
 
 			}
 			//Name of the window
-			const char*  Name;
+			const char* Name;
 			//ID of the Window. (where it belongs in the window manager)
 			GLuint ID;
 			//color format of the window. (defaults to 32 bit color)
@@ -2200,7 +2142,7 @@ public:
 			OnResizeEvent ResizeEvent; /**< this is a callback to be used when the window has been resized in a non-programmatic fashion*/
 			OnMouseMoveEvent MouseMoveEvent; /**< this is a callback to be used when the mouse has been moved*/
 
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 			
 			HDC DeviceContextHandle;
 			HGLRC GLRenderingContextHandle;
@@ -2211,9 +2153,7 @@ public:
 			HWND WindowHandle;
 			HINSTANCE InstanceHandle;	
 
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 			Window WindowHandle; /**< the X11 handle to the window. I wish they didn't name the type 'Window' */
 			GLXContext Context; /**< the handle to the GLX rendering context */
 			XVisualInfo* VisualInfo; /**< the handle to the Visual Information. similar purpose to PixelformatDesriptor*/
@@ -2224,13 +2164,13 @@ public:
 			/*these atomics are needed to change window states via the extended window manager
 			I might move them to window manager considering these are essentially constants
 			*/
-			Atom AtomState;  /**< atom for the state of the window */	//_NET_WM_STATE
+			Atom AtomState; /**< atom for the state of the window */	//_NET_WM_STATE
 			Atom AtomHidden; /**< atom for the current hidden state of the window */	// _NET_WM_STATE_HIDDEN
 			Atom AtomFullScreen; /**< atom for the fullscreen state of the window*/ //NET_WM_STATE_FULLSCREEN
 			Atom AtomMaxHorz; /**< atom for the maximized horizontally state of the window*/ // _NET_WM_STATE_MAXIMIZED_HORZ
 			Atom AtomMaxVert; /**< atom for the maximized vertically state of the window*/ // _NET_WM_STATE_MAXIMIZED_VERT
-			Atom AtomClose;  /**< atom for closing the window */	// _NET_WM_CLOSE_WINDOW
-			Atom AtomActive;  /**<atom for the active window */	//_NET_ACTIVE_WINDOW
+			Atom AtomClose; /**< atom for closing the window */	// _NET_WM_CLOSE_WINDOW
+			Atom AtomActive; /**<atom for the active window */	//_NET_ACTIVE_WINDOW
 			Atom AtomDemandsAttention; /**<atom for when the window demands attention*/	//_NET_WM_STATE_DEMANDS_ATTENTION
 			Atom AtomFocused; /**<atom for the focused state of the window */ //_NET_WM_STATE_FOCUSED
 			Atom AtomCardinal; /**< atom for cardinal coordinates */ //_NET_WM_CARDINAL
@@ -2259,7 +2199,7 @@ public:
 	{
 		if (IsValid(WindowName))
 		{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_MSC_VER)
 			for each (auto iter in GetInstance()->Windows)
 			{
 				if (iter->Name == WindowName)
@@ -2267,9 +2207,7 @@ public:
 					return iter;
 				}
 			}
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 			for(auto iter : GetInstance()->Windows)
 			{
 				if(iter->Name == WindowName)
@@ -2289,7 +2227,7 @@ public:
 	{
 		if (WindowExists(WindowIndex))
 		{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_MSC_VER)
 			for each (auto iter in GetInstance()->Windows)
 			{
 				if (iter->ID == WindowIndex)
@@ -2297,9 +2235,7 @@ public:
 					return iter;
 				}
 			}
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 			for (auto iter : GetInstance()->Windows)
 			{
 				if (iter->ID == WindowIndex)
@@ -2307,9 +2243,9 @@ public:
 					return iter;
 				}
 			}
+#endif
 
 			return nullptr;
-#endif
 		}
 
 		return nullptr;
@@ -2373,44 +2309,38 @@ public:
 
 	static void InitializeWindow(TWindow* SelectedWindow)
 	{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 		Windows_InitializeWindow(SelectedWindow);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 		Linux_InitializeWindow(SelectedWindow);
 #endif
 	}
 
 	static void InitializeGL(TWindow* SelectedWindow)
 	{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 		Windows_InitializeGL(SelectedWindow);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 		Linux_InitializeGL(SelectedWindow);
 #endif
 	}
 
 	static void ShutdownWindow(TWindow* SelectedWindow)
 	{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
 		Windows_ShutdownWindow(SelectedWindow);
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 		Linux_ShutdownWindow(SelectedWindow);
 #endif
 	}
 
-	static  GLboolean DoesExist(const char* WindowName)
+	static GLboolean DoesExist(const char* WindowName)
 	{
 		if (GetInstance()->IsInitialized())
 		{
 			if (IsValid(WindowName))
 			{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_MSC_VER)
 				for each(auto Iter in GetInstance()->Windows)
 				{
 					if (Iter->Name == WindowName)
@@ -2418,9 +2348,7 @@ public:
 						return GL_TRUE;
 					}
 				}
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 				for (auto iter : GetInstance()->Windows)
 				{
 					if(iter->Name == WindowName)
@@ -2437,7 +2365,7 @@ public:
 		return GL_FALSE;
 	}
 
-	static  GLboolean DoesExist(GLuint WindowIndex)
+	static GLboolean DoesExist(GLuint WindowIndex)
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -2455,9 +2383,9 @@ public:
 
 	static TWindow* GetWindowByName(const char* WindowName)
 	{
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_MSC_VER)
 			for each(auto CurrentWindow in GetInstance()->Windows)
-#elif defined(CURRENT_OS_LINUX)
+#else
 			for(auto CurrentWindow : GetInstance()->Windows)
 #endif
 			{
@@ -2470,6 +2398,7 @@ public:
 			return nullptr;
 	}
 
+	//return a static pointer to a window that corresponds to the given window index
 	static TWindow* GetWindowByIndex(GLuint WindowIndex)
 	{
 		if (WindowIndex <= GetInstance()->Windows.size() - 1)
@@ -2488,7 +2417,8 @@ public:
 
 	GLboolean Initialized;
 	
-#if defined(CURRENT_OS_WINDOWS)
+#if defined(_WIN32) || defined(_WIN64)
+	//the windwow procedure for all windows. This is used mainly to handle window events
 	LRESULT CALLBACK WindowProcedure(HWND WindowHandle, GLuint Message, WPARAM WordParam, LPARAM LongParam)
 	{
 		TWindow* LocalWindow = GetWindowByHandle(WindowHandle);
@@ -2875,11 +2805,13 @@ public:
 
 	}
 
+	//this returns a static reference to the win32 window procedure. Oddly a Win32 procedure cannot be a member variable
 	static LRESULT CALLBACK StaticWindowProcedure(HWND WindowHandle, UINT Message, WPARAM WordParam, LPARAM LongParam)
 	{
 		return WindowManager::GetInstance()->WindowProcedure(WindowHandle, Message, WordParam, LongParam);
 	}
 
+	//get the window that is associated with this Win32 window handle
 	static TWindow* GetWindowByHandle(HWND WindowHandle)
 	{
 		for (GLuint l_Iter = 0; l_Iter < GetInstance()->Windows.size(); l_Iter++)
@@ -2893,6 +2825,7 @@ public:
 		return nullptr;
 	}
 
+	//set the window resolution of the given window using Win32
 	static void Windows_SetWindowResolution(TWindow* SelectedWindow)
 	{
 		SetWindowPos(SelectedWindow->WindowHandle, HWND_TOP,
@@ -2901,6 +2834,7 @@ public:
 			SWP_SHOWWINDOW | SWP_NOMOVE);
 	}
 
+	//set the position of the current window relative to screen co-ordinates using Win32
 	static void Windows_SetWindowPosition(TWindow* SelectedWindow)
 	{
 		SetWindowPos(SelectedWindow->WindowHandle, HWND_TOP,
@@ -2909,6 +2843,7 @@ public:
 			SWP_SHOWWINDOW | SWP_NOSIZE);
 	}
 
+	//initialize the given window using Win32
 	static void Windows_InitializeWindow(TWindow* SelectedWindow,
 		UINT a_Style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int a_ClearScreenExtra = 0,
@@ -2941,28 +2876,29 @@ public:
 		UpdateWindow(SelectedWindow->WindowHandle);
 	}
 
-	static  void InitializePixelFormat(TWindow* SelectedWindow)
+	//initalize the pixel format for the selected window
+	static void InitializePixelFormat(TWindow* SelectedWindow)
 	{
 		SelectedWindow->PixelFormatDescriptor = {
-			sizeof(PIXELFORMATDESCRIPTOR),  /* size */
-			1,                              /* version */
+			sizeof(PIXELFORMATDESCRIPTOR), /* size */
+			1,               /* version */
 			PFD_SUPPORT_OPENGL |
 			PFD_DRAW_TO_WINDOW |
-			PFD_DOUBLEBUFFER,               /* support double-buffering */
-			PFD_TYPE_RGBA,                  /* color type */
-			SelectedWindow->ColourBits, 0,                             /* prefered color depth */
+			PFD_DOUBLEBUFFER,        /* support double-buffering */
+			PFD_TYPE_RGBA,         /* color type */
+			SelectedWindow->ColourBits, 0,               /* prefered color depth */
 			0, 0,
 			0, 0,
 			0, 0,
-			0,                /* color bits (ignored) */                              /* no alpha buffer */                              /* alpha bits (ignored) */
-			0,                              /* no accumulation buffer */
-			0, 0, 0, 0,                     /* accum bits (ignored) */
-			SelectedWindow->DepthBits,                    /* depth buffer */
-			SelectedWindow->StencilBits,                  /* no stencil buffer */
-			0,                              /* no auxiliary buffers */
-			PFD_MAIN_PLANE,                 /* main layer */
-			0,                              /* reserved */
-			0, 0, 0,                        /* no layer, visible, damage masks */
+			0,        /* color bits (ignored) */               /* no alpha buffer */               /* alpha bits (ignored) */
+			0,               /* no accumulation buffer */
+			0, 0, 0, 0,           /* accum bits (ignored) */
+			SelectedWindow->DepthBits,          /* depth buffer */
+			SelectedWindow->StencilBits,         /* no stencil buffer */
+			0,               /* no auxiliary buffers */
+			PFD_MAIN_PLANE,         /* main layer */
+			0,               /* reserved */
+			0, 0, 0,            /* no layer, visible, damage masks */
 		};
 
 		int LocalPixelFormat = ChoosePixelFormat(SelectedWindow->DeviceContextHandle,
@@ -2977,7 +2913,7 @@ public:
 		return;
 	}
 
-	static  GLboolean Windows_InitializeGL(TWindow* SelectedWindow)
+	static GLboolean Windows_InitializeGL(TWindow* SelectedWindow)
 	{
 		SelectedWindow->DeviceContextHandle = GetDC(SelectedWindow->WindowHandle);
 		InitializePixelFormat(SelectedWindow);
@@ -2995,7 +2931,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static  void Windows_ShutdownWindow(TWindow* SelectedWindow)
+	static void Windows_ShutdownWindow(TWindow* SelectedWindow)
 	{
 		if (SelectedWindow->GLRenderingContextHandle)
 		{
@@ -3017,7 +2953,7 @@ public:
 		SelectedWindow->GLRenderingContextHandle = nullptr;
 	}
 
-	static  void Windows_FullScreen(TWindow* SelectedWindow)
+	static void Windows_FullScreen(TWindow* SelectedWindow)
 	{
 		SetWindowLongPtr(SelectedWindow->WindowHandle, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
@@ -3026,7 +2962,7 @@ public:
 			WindowManager::GetScreenResolution()[1], GL_TRUE);
 	}
 
-	static  void Windows_Minimize(TWindow* SelectedWindow, GLboolean NewState)
+	static void Windows_Minimize(TWindow* SelectedWindow, GLboolean NewState)
 	{
 		if (NewState)
 		{
@@ -3039,7 +2975,7 @@ public:
 		}
 	}
 
-	static  void Windows_Maximize(TWindow* SelectedWindow, GLboolean NewState)
+	static void Windows_Maximize(TWindow* SelectedWindow, GLboolean NewState)
 	{
 		if (NewState)
 		{
@@ -3052,12 +2988,12 @@ public:
 		}
 	}
 
-	static  void Windows_Restore(TWindow* SelectedWindow)
+	static void Windows_Restore(TWindow* SelectedWindow)
 	{
 		ShowWindow(SelectedWindow->WindowHandle, SW_RESTORE);
 	}
-
-	static  void Windows_Focus(TWindow* SelectedWindow, GLboolean NewState)
+	
+	static void Windows_Focus(TWindow* SelectedWindow, GLboolean NewState)
 	{
 		SelectedWindow->InFocus = NewState;
 
@@ -3072,7 +3008,7 @@ public:
 		}
 	}
 
-	static  void Windows_SetMousePosition(TWindow* SelectedWindow)
+	static void Windows_SetMousePosition(TWindow* SelectedWindow)
 	{
 		POINT l_MousePoint;
 		l_MousePoint.x = SelectedWindow->MousePosition[0];
@@ -3081,7 +3017,7 @@ public:
 		SetCursorPos(l_MousePoint.x, l_MousePoint.y);
 	}
 
-	static  void Windows_SetPosition(TWindow* SelectedWindow)
+	static void Windows_SetPosition(TWindow* SelectedWindow)
 	{
 		SetWindowPos(SelectedWindow->WindowHandle, HWND_TOP,
 			SelectedWindow->Position[0], SelectedWindow->Position[1],
@@ -3089,7 +3025,7 @@ public:
 			SWP_SHOWWINDOW | SWP_NOSIZE);
 	}
 
-	static  void Windows_SetResolution(TWindow* SelectedWindow)
+	static void Windows_SetResolution(TWindow* SelectedWindow)
 	{
 		SetWindowPos(SelectedWindow->WindowHandle, HWND_TOP, 
 			SelectedWindow->Position[0], SelectedWindow->Position[1],
@@ -3097,25 +3033,24 @@ public:
 			SWP_SHOWWINDOW | SWP_NOMOVE);
 	}
 
-	static  GLboolean Windows_PollForEvents()
+	static GLvoid Windows_PollForEvents()
 	{
-		if (GetInstance()->IsInitialized())
+		//only process events if there are any to process
+		if (PeekMessage(&GetInstance()->m_Message, 0, 0, 0, PM_REMOVE))
 		{
-			if (PeekMessage(&GetInstance()->m_Message, 0, 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&GetInstance()->m_Message);
-				DispatchMessage(&GetInstance()->m_Message);
-
-				return FOUNDATION_OKAY;
-			}
-			return FOUNDATION_OKAY;
+			TranslateMessage(&GetInstance()->m_Message);
+			DispatchMessage(&GetInstance()->m_Message);
 		}
-
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
-		return FOUNDATION_ERROR;
+	}
+	static GLvoid Windows_WaitForEvents()
+	{
+		//process even if there aren't any to process
+		GetMessage(&GetInstance()->m_Message, 0, 0, 0);
+		TranslateMessage(&GetInstance()->m_Message);
+		DispatchMessage(&GetInstance()->m_Message);
 	}
 
-	static  GLboolean Windows_Initialize()
+	static GLboolean Windows_Initialize()
 	{
 		CreateTerminal();
 		RECT l_Desktop;
@@ -3136,7 +3071,7 @@ public:
 		PrintErrorMessage(ERROR_WINDOWS_CANNOTINITIALIZE);
 		return FOUNDATION_ERROR;
 	}
-	static  void Windows_Shutown()
+	static void Windows_Shutown()
 	{
 
 	}
@@ -3536,9 +3471,7 @@ public:
 	MSG m_Message;
 	HDC m_DeviceContextHandle;
 
-#endif
-
-#if defined(CURRENT_OS_LINUX)
+#else
 	
 	static TWindow* GetWindowByHandle(Window WindowHandle)
 	{
@@ -3701,7 +3634,7 @@ public:
 			GLX_RGBA,
 			GLX_DOUBLEBUFFER, 
 			GLX_DEPTH_SIZE, 
-			SelectedWindow->DepthBits,  
+			SelectedWindow->DepthBits, 
 			None};
 
 		SelectedWindow->Decorators = 1;
@@ -3766,7 +3699,7 @@ public:
 					WindowManager::GetDisplay(),
 				SelectedWindow->VisualInfo, 
 				0,
-			   	GL_TRUE);
+			  	GL_TRUE);
 
 			if(SelectedWindow->Context)
 			{
@@ -3816,19 +3749,19 @@ public:
 
 	static void Linux_Fullscreen(TWindow* SelectedWindow)
 	{
-		XEvent l_Event;
-		memset(&l_Event, 0, sizeof(l_Event));
+		XEvent CurrentEvent;
+		memset(&CurrentEvent, 0, sizeof(CurrentEvent));
 
-		l_Event.xany.type = ClientMessage;
-		l_Event.xclient.message_type = SelectedWindow->AtomState;
-		l_Event.xclient.format = 32;
-		l_Event.xclient.window = SelectedWindow->WindowHandle;
-		l_Event.xclient.data.l[0] = SelectedWindow->CurrentState == WINDOWSTATE_FULLSCREEN;
-		l_Event.xclient.data.l[1] = SelectedWindow->AtomFullScreen;
+		CurrentEvent.xany.type = ClientMessage;
+		CurrentEvent.xclient.message_type = SelectedWindow->AtomState;
+		CurrentEvent.xclient.format = 32;
+		CurrentEvent.xclient.window = SelectedWindow->WindowHandle;
+		CurrentEvent.xclient.data.l[0] = SelectedWindow->CurrentState == WINDOWSTATE_FULLSCREEN;
+		CurrentEvent.xclient.data.l[1] = SelectedWindow->AtomFullScreen;
 
 		XSendEvent(WindowManager::GetDisplay(),
 			XDefaultRootWindow(WindowManager::GetDisplay()),
-			0, SubstructureNotifyMask, &l_Event);
+			0, SubstructureNotifyMask, &CurrentEvent);
 	}
 
 	static void Linux_Minimize(TWindow* SelectedWindow)
@@ -3847,20 +3780,20 @@ public:
 
 	static void Linux_Maximize(TWindow* SelectedWindow)
 	{
-		XEvent l_Event;
-		memset(&l_Event, 0, sizeof(l_Event));
+		XEvent CurrentEvent;
+		memset(&CurrentEvent, 0, sizeof(CurrentEvent));
 
-		l_Event.xany.type = ClientMessage;
-		l_Event.xclient.message_type = SelectedWindow->AtomState;
-		l_Event.xclient.format = 32;
-		l_Event.xclient.window = SelectedWindow->WindowHandle;
-		l_Event.xclient.data.l[0] = (SelectedWindow->CurrentState == WINDOWSTATE_MAXIMIZED);
-		l_Event.xclient.data.l[1] = SelectedWindow->AtomMaxVert;
-		l_Event.xclient.data.l[2] = SelectedWindow->AtomMaxHorz;
+		CurrentEvent.xany.type = ClientMessage;
+		CurrentEvent.xclient.message_type = SelectedWindow->AtomState;
+		CurrentEvent.xclient.format = 32;
+		CurrentEvent.xclient.window = SelectedWindow->WindowHandle;
+		CurrentEvent.xclient.data.l[0] = (SelectedWindow->CurrentState == WINDOWSTATE_MAXIMIZED);
+		CurrentEvent.xclient.data.l[1] = SelectedWindow->AtomMaxVert;
+		CurrentEvent.xclient.data.l[2] = SelectedWindow->AtomMaxHorz;
 
 		XSendEvent(WindowManager::GetDisplay(),
 			XDefaultRootWindow(WindowManager::GetDisplay()),
-			0, SubstructureNotifyMask, &l_Event);
+			0, SubstructureNotifyMask, &CurrentEvent);
 	}
 
 	static void Linux_Restore(TWindow* SelectedWindow)
@@ -3909,16 +3842,11 @@ public:
 			Selected->WindowHandle, Selected->Resolution[0], Selected->Resolution[1]);	
 	}
 
-	static GLboolean Linux_PollForEvents()
+	static GLvoid Linux_ProcessEvents(XEvent CurrentEvent)
 	{
-		if(XEventsQueued(GetInstance()->GetDisplay(), QueuedAfterReading))
-		{
-		XNextEvent(GetInstance()->CurrentDisplay, &GetInstance()->Event);
+		TWindow* l_Window = GetWindowByEvent(CurrentEvent);
 
-		XEvent l_Event = GetInstance()->Event;
-		TWindow* l_Window = GetWindowByEvent(l_Event);
-
-		switch (l_Event.type)
+		switch (CurrentEvent.type)
 		{
 		case Expose:
 		{
@@ -3927,21 +3855,21 @@ public:
 
 		case DestroyNotify:
 		{
-		//	printf("blarg");
+			//	printf("blarg");
 
-			if(IsValid(l_Window->DestroyedEvent))
+			if (IsValid(l_Window->DestroyedEvent))
 			{
 				l_Window->DestroyedEvent();
 			}
 
-			printf("Window was destroyed\n");		
+			printf("Window was destroyed\n");
 			ShutdownWindow(l_Window);
 
 			break;
 		}
 
 		/*case CreateNotify:
-		{	
+		{
 		printf("Window was created\n");
 		l_Window->InitializeGL();
 
@@ -3954,14 +3882,14 @@ public:
 		}*/
 
 		case KeyPress:
-		{			
+		{
 			GLuint l_FunctionKeysym = XKeycodeToKeysym(
-				GetInstance()->CurrentDisplay, l_Event.xkey.keycode, 1);
+				GetInstance()->CurrentDisplay, CurrentEvent.xkey.keycode, 1);
 
-			if(l_FunctionKeysym <= 255)
+			if (l_FunctionKeysym <= 255)
 			{
-				l_Window->Keys[l_FunctionKeysym] = KEYSTATE_DOWN;	
-				if(IsValid(l_Window->KeyEvent))
+				l_Window->Keys[l_FunctionKeysym] = KEYSTATE_DOWN;
+				if (IsValid(l_Window->KeyEvent))
 				{
 					l_Window->KeyEvent(l_FunctionKeysym, KEYSTATE_DOWN);
 				}
@@ -3971,9 +3899,9 @@ public:
 			{
 				l_Window->Keys[Linux_TranslateKey(l_FunctionKeysym)] = KEYSTATE_DOWN;
 
-				if(IsValid(l_Window->KeyEvent))
+				if (IsValid(l_Window->KeyEvent))
 				{
-					l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym),  KEYSTATE_DOWN);
+					l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_DOWN);
 				}
 			}
 
@@ -3983,30 +3911,30 @@ public:
 		case KeyRelease:
 		{
 			GLboolean l_IsRetriggered = GL_FALSE;
-			if(XEventsQueued(GetInstance()->CurrentDisplay, QueuedAfterReading))
+			if (XEventsQueued(GetInstance()->CurrentDisplay, QueuedAfterReading))
 			{
 				XEvent l_NextEvent;
 				XPeekEvent(GetInstance()->CurrentDisplay, &l_NextEvent);
 
-				if(l_NextEvent.type == KeyPress && 
-					l_NextEvent.xkey.time == l_Event.xkey.time && 
-					l_NextEvent.xkey.keycode == l_Event.xkey.keycode)
+				if (l_NextEvent.type == KeyPress &&
+					l_NextEvent.xkey.time == CurrentEvent.xkey.time &&
+					l_NextEvent.xkey.keycode == CurrentEvent.xkey.keycode)
 				{
-					XNextEvent(GetInstance()->CurrentDisplay, &l_Event);
+					XNextEvent(GetInstance()->CurrentDisplay, &CurrentEvent);
 					l_IsRetriggered = GL_TRUE;
 				}
 			}
 
-			if(!l_IsRetriggered)
+			if (!l_IsRetriggered)
 			{
 				GLuint l_FunctionKeysym = XKeycodeToKeysym(GetInstance()->CurrentDisplay,
-					l_Event.xkey.keycode, 1);
+					CurrentEvent.xkey.keycode, 1);
 
-				if(l_FunctionKeysym <= 255)
+				if (l_FunctionKeysym <= 255)
 				{
 					l_Window->Keys[l_FunctionKeysym] = KEYSTATE_UP;
 
-					if(IsValid(l_Window->KeyEvent))
+					if (IsValid(l_Window->KeyEvent))
 					{
 						l_Window->KeyEvent(l_FunctionKeysym, KEYSTATE_UP);
 					}
@@ -4016,30 +3944,30 @@ public:
 				{
 					l_Window->Keys[Linux_TranslateKey(l_FunctionKeysym)] = KEYSTATE_UP;
 
-					if(IsValid(l_Window->KeyEvent))
+					if (IsValid(l_Window->KeyEvent))
 					{
 						l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_UP);
 					}
 				}
 
-				if(IsValid(l_Window->KeyEvent))
+				if (IsValid(l_Window->KeyEvent))
 				{
 					l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_UP);
 				}
 			}
 
-			break;	
+			break;
 		}
 
 		case ButtonPress:
-		{			
-			switch(l_Event.xbutton.button)
+		{
+			switch (CurrentEvent.xbutton.button)
 			{
 			case 1:
 			{
-				l_Window->MouseButton[MOUSE_LEFTBUTTON] = MOUSE_BUTTONDOWN;	
+				l_Window->MouseButton[MOUSE_LEFTBUTTON] = MOUSE_BUTTONDOWN;
 
-				if(IsValid(l_Window->MouseButtonEvent))
+				if (IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_LEFTBUTTON, MOUSE_BUTTONDOWN);
 				}
@@ -4050,7 +3978,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_MIDDLEBUTTON] = MOUSE_BUTTONDOWN;
 
-				if(IsValid(l_Window->MouseButtonEvent))
+				if (IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_MIDDLEBUTTON, MOUSE_BUTTONDOWN);
 				}
@@ -4061,7 +3989,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_RIGHTBUTTON] = MOUSE_BUTTONDOWN;
 
-				if(IsValid(l_Window->MouseButtonEvent))
+				if (IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_RIGHTBUTTON, MOUSE_BUTTONDOWN);
 				}
@@ -4072,7 +4000,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_SCROLL_UP] = MOUSE_BUTTONDOWN;
 
-				if(IsValid(l_Window->MouseWheelEvent))
+				if (IsValid(l_Window->MouseWheelEvent))
 				{
 					l_Window->MouseWheelEvent(MOUSE_SCROLL_DOWN);
 				}
@@ -4083,7 +4011,7 @@ public:
 			{
 				l_Window->MouseButton[MOUSE_SCROLL_DOWN] = MOUSE_BUTTONDOWN;
 
-				if(IsValid(l_Window->MouseWheelEvent))
+				if (IsValid(l_Window->MouseWheelEvent))
 				{
 					l_Window->MouseWheelEvent(MOUSE_SCROLL_DOWN);
 				}
@@ -4102,14 +4030,14 @@ public:
 
 		case ButtonRelease:
 		{
-			switch(l_Event.xbutton.button)
+			switch (CurrentEvent.xbutton.button)
 			{
 			case 1:
 			{
 				//the left mouse button was released
 				l_Window->MouseButton[MOUSE_LEFTBUTTON] = MOUSE_BUTTONUP;
 
-				if(IsValid(l_Window->MouseButtonEvent))
+				if (IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_LEFTBUTTON, MOUSE_BUTTONUP);
 				}
@@ -4121,7 +4049,7 @@ public:
 				//the middle mouse button was released
 				l_Window->MouseButton[MOUSE_MIDDLEBUTTON] = MOUSE_BUTTONUP;
 
-				if(IsValid(l_Window->MouseButtonEvent))
+				if (IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_MIDDLEBUTTON, MOUSE_BUTTONUP);
 				}
@@ -4133,7 +4061,7 @@ public:
 				//the right mouse button was released
 				l_Window->MouseButton[MOUSE_RIGHTBUTTON] = MOUSE_BUTTONUP;
 
-				if(IsValid(l_Window->MouseButtonEvent))
+				if (IsValid(l_Window->MouseButtonEvent))
 				{
 					l_Window->MouseButtonEvent(MOUSE_RIGHTBUTTON, MOUSE_BUTTONUP);
 				}
@@ -4165,24 +4093,24 @@ public:
 
 		//when the mouse/pointer device is moved
 		case MotionNotify:
-		{ 
+		{
 			//set the windows mouse position to match the event
-			l_Window->MousePosition[0] = 
-				l_Event.xmotion.x;
+			l_Window->MousePosition[0] =
+				CurrentEvent.xmotion.x;
 
-			l_Window->MousePosition[1] = 
-				l_Event.xmotion.y;
+			l_Window->MousePosition[1] =
+				CurrentEvent.xmotion.y;
 
 			///set the screen mouse position to match the event
-			GetInstance()->ScreenMousePosition[0] = l_Event.xmotion.x_root;
-			GetInstance()->ScreenMousePosition[1] = l_Event.xmotion.y_root;
+			GetInstance()->ScreenMousePosition[0] = CurrentEvent.xmotion.x_root;
+			GetInstance()->ScreenMousePosition[1] = CurrentEvent.xmotion.y_root;
 
-			if(IsValid(l_Window->MouseMoveEvent))
+			if (IsValid(l_Window->MouseMoveEvent))
 			{
-				l_Window->MouseMoveEvent(l_Event.xmotion.x, 
-					l_Event.xmotion.y, l_Event.xmotion.x_root, 
-					l_Event.xmotion.y_root);
-			}	
+				l_Window->MouseMoveEvent(CurrentEvent.xmotion.x,
+					CurrentEvent.xmotion.y, CurrentEvent.xmotion.x_root,
+					CurrentEvent.xmotion.y_root);
+			}
 			break;
 		}
 
@@ -4190,7 +4118,7 @@ public:
 		case FocusOut:
 		{
 			l_Window->InFocus = GL_FALSE;
-			if(IsValid(l_Window->FocusEvent))
+			if (IsValid(l_Window->FocusEvent))
 			{
 				l_Window->FocusEvent(
 					l_Window->InFocus);
@@ -4203,7 +4131,7 @@ public:
 		{
 			l_Window->InFocus = GL_TRUE;
 
-			if(IsValid(l_Window->FocusEvent))
+			if (IsValid(l_Window->FocusEvent))
 			{
 				l_Window->FocusEvent(l_Window->InFocus);
 			}
@@ -4213,18 +4141,18 @@ public:
 		//when a request to resize the window is made either by 
 		//dragging out the window or programmatically
 		case ResizeRequest:
-		{			
-			l_Window->Resolution[0] = l_Event.xresizerequest.width;
-			l_Window->Resolution[1] = l_Event.xresizerequest.height;
+		{
+			l_Window->Resolution[0] = CurrentEvent.xresizerequest.width;
+			l_Window->Resolution[1] = CurrentEvent.xresizerequest.height;
 
 			glViewport(0, 0,
 				l_Window->Resolution[0],
 				l_Window->Resolution[1]);
 
-			if(IsValid(l_Window->ResizeEvent))
+			if (IsValid(l_Window->ResizeEvent))
 			{
-				l_Window->ResizeEvent(l_Event.xresizerequest.width, 
-						l_Event.xresizerequest.height);
+				l_Window->ResizeEvent(CurrentEvent.xresizerequest.width,
+					CurrentEvent.xresizerequest.height);
 			}
 
 			break;
@@ -4233,33 +4161,33 @@ public:
 		//when a request to configure the window is made
 		case ConfigureNotify:
 		{
-			glViewport(0, 0, l_Event.xconfigure.width,
-				l_Event.xconfigure.height);
+			glViewport(0, 0, CurrentEvent.xconfigure.width,
+				CurrentEvent.xconfigure.height);
 
 			//check if window was resized
-			if((GLuint)l_Event.xconfigure.width != l_Window->Resolution[0] 
-				|| (GLuint)l_Event.xconfigure.height != l_Window->Resolution[1])
+			if ((GLuint)CurrentEvent.xconfigure.width != l_Window->Resolution[0]
+				|| (GLuint)CurrentEvent.xconfigure.height != l_Window->Resolution[1])
 			{
-				if(IsValid(l_Window->ResizeEvent))
+				if (IsValid(l_Window->ResizeEvent))
 				{
-					l_Window->ResizeEvent(l_Event.xconfigure.width, l_Event.xconfigure.height);
+					l_Window->ResizeEvent(CurrentEvent.xconfigure.width, CurrentEvent.xconfigure.height);
 				}
 
-				l_Window->Resolution[0] = l_Event.xconfigure.width;
-				l_Window->Resolution[1] = l_Event.xconfigure.height;
+				l_Window->Resolution[0] = CurrentEvent.xconfigure.width;
+				l_Window->Resolution[1] = CurrentEvent.xconfigure.height;
 			}
 
 			//check if window was moved
-			if((GLuint)l_Event.xconfigure.x != l_Window->Position[0]
-				|| (GLuint)l_Event.xconfigure.y != l_Window->Position[1])
+			if ((GLuint)CurrentEvent.xconfigure.x != l_Window->Position[0]
+				|| (GLuint)CurrentEvent.xconfigure.y != l_Window->Position[1])
 			{
-				if(IsValid(l_Window->MovedEvent))
+				if (IsValid(l_Window->MovedEvent))
 				{
-					l_Window->MovedEvent(l_Event.xconfigure.x, l_Event.xconfigure.y);
+					l_Window->MovedEvent(CurrentEvent.xconfigure.x, CurrentEvent.xconfigure.y);
 				}
 
-				l_Window->Position[0] = l_Event.xconfigure.x;
-				l_Window->Position[1] = l_Event.xconfigure.y;
+				l_Window->Position[0] = CurrentEvent.xconfigure.x;
+				l_Window->Position[1] = CurrentEvent.xconfigure.y;
 			}
 			break;
 		}
@@ -4277,46 +4205,46 @@ public:
 			ulong l_NumItems, l_BytesAfter;
 			unsigned char* l_Properties = nullptr;
 
-			XGetWindowProperty(WindowManager::GetDisplay(), l_Event.xproperty.window, 
-				l_Window->AtomState, 
-				0, LONG_MAX, GL_FALSE, AnyPropertyType, 
-				&l_Type, &l_Format, &l_NumItems, &l_BytesAfter, 
+			XGetWindowProperty(WindowManager::GetDisplay(), CurrentEvent.xproperty.window,
+				l_Window->AtomState,
+				0, LONG_MAX, GL_FALSE, AnyPropertyType,
+				&l_Type, &l_Format, &l_NumItems, &l_BytesAfter,
 				&l_Properties);
 
-			if(l_Properties && (l_Format == 32))
+			if (l_Properties && (l_Format == 32))
 			{
 				//go through each property and match it to an existing Atomic state
-				for(GLuint l_CurrentItem = 0; l_CurrentItem < l_NumItems; l_CurrentItem++)
+				for (GLuint l_CurrentItem = 0; l_CurrentItem < l_NumItems; l_CurrentItem++)
 				{
-					long l_Property = ((long*)(l_Properties))[l_CurrentItem];	
+					long l_Property = ((long*)(l_Properties))[l_CurrentItem];
 
-					if(l_Property == l_Window->AtomHidden)
+					if (l_Property == l_Window->AtomHidden)
 					{
 						//window was minimized
-						if(IsValid(l_Window->MinimizedEvent))
+						if (IsValid(l_Window->MinimizedEvent))
 						{
 							//if the minimized callback for the window was set							
 							l_Window->MinimizedEvent();
 						}
 					}
 
-					if(l_Property == l_Window->AtomMaxVert ||
+					if (l_Property == l_Window->AtomMaxVert ||
 						l_Property == l_Window->AtomMaxVert)
 					{
 						//window was maximized
-						if(IsValid(l_Window->MaximizedEvent))
+						if (IsValid(l_Window->MaximizedEvent))
 						{
 							//if the maximized callback for the window was set
 							l_Window->MaximizedEvent();
 						}
 					}
 
-					if(l_Property == l_Window->AtomFocused)
+					if (l_Property == l_Window->AtomFocused)
 					{
 						//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
 					}
 
-					if(l_Property == l_Window->AtomDemandsAttention)
+					if (l_Property == l_Window->AtomDemandsAttention)
 					{
 						//the window demands attention like a celebrity
 						printf("window demands attention \n");
@@ -4337,23 +4265,24 @@ public:
 		//check for events that were created by the TinyWindow manager
 		case ClientMessage:
 		{
-			const char* l_AtomName = XGetAtomName(WindowManager::GetDisplay(), l_Event.xclient.message_type);
-			if(IsValid(l_AtomName))
+			const char* l_AtomName = XGetAtomName(WindowManager::GetDisplay(), CurrentEvent.xclient.message_type);
+			if (IsValid(l_AtomName))
 			{
 				printf("%s\n", l_AtomName);
 			}
 
-			if ((Atom)l_Event.xclient.data.l[0] == l_Window->AtomClose)
+			if ((Atom)CurrentEvent.xclient.data.l[0] == l_Window->AtomClose)
 			{
 				printf("window closed\n");
 				l_Window->ShouldClose = GL_TRUE;
 				l_Window->DestroyedEvent();
 				ShutdownWindow(l_Window);
-				
+
 				break;
 			}
 
-			if ((Atom)l_Event.xclient.data.l[1] == l_Window->AtomFullScreen)
+			//check if fullscreen
+			if ((Atom)CurrentEvent.xclient.data.l[1] == l_Window->AtomFullScreen)
 			{
 				break;
 			}
@@ -4362,12 +4291,30 @@ public:
 
 		default:
 		{
-			return FOUNDATION_OKAY;;
+			return;
 		}
-		return FOUNDATION_OKAY;
+		}
 	}
-		return FOUNDATION_OKAY;
+	static GLvoid Linux_PollForEvents()
+	{
+		//if there are any events to process
+		if(XEventsQueued(GetInstance()->GetDisplay(), QueuedAfterReading))
+		{
+		XNextEvent(GetInstance()->CurrentDisplay, &GetInstance()->Event);
+
+		XEvent CurrentEvent = GetInstance()->Event;
+
+		Linux_ProcessEvents(CurrentEvent);
 		}
+	}
+	static GLvoid Linux_WaitForEvents()
+	{
+		//even if there aren't any events to process
+		XNextEvent(GetInstance()->CurrentDisplay, &GetInstance()->Event);
+
+		XEvent CurrentEvent = GetInstance()->Event;
+
+		Linux_ProcessEvents(CurrentEvent);
 	}
 	//the linux methos of setting the mouse position on the screen
 	static void Linux_SetMousePositionInScreen(GLuint X, GLuint Y)
@@ -4788,7 +4735,7 @@ public:
 		}
 	}
 
-	static  void Linux_EnableDecorators(TWindow* GivenWindow, GLbitfield Decorators)
+	static void Linux_EnableDecorators(TWindow* GivenWindow, GLbitfield Decorators)
 	{
 		if (Decorators & DECORATOR_CLOSEBUTTON)
 		{
@@ -4837,7 +4784,7 @@ public:
 		XMapWindow(GetDisplay(), GivenWindow->WindowHandle);
 	}
 
-	static  void Linux_DisableDecorators(TWindow* GivenWindow, GLbitfield Decorators)
+	static void Linux_DisableDecorators(TWindow* GivenWindow, GLbitfield Decorators)
 	{
 		if (Decorators & DECORATOR_CLOSEBUTTON)
 		{
@@ -4923,7 +4870,7 @@ public:
 		XMapWindow(GetDisplay(), GivenWindow->WindowHandle);
 	}
 
-	static  void Linux_SetWindowStyle(TWindow* GivenWindow, GLuint WindowStyle)
+	static void Linux_SetWindowStyle(TWindow* GivenWindow, GLuint WindowStyle)
 	{
 		switch (WindowStyle)
 		{
@@ -4975,13 +4922,13 @@ public:
 		}
 	}
 
-	static  void Linux_SetWindowIcon(TWindow* GivenWindow, const char* Icon, GLuint Width, GLuint Height)
+	static void Linux_SetWindowIcon(TWindow* GivenWindow, const char* Icon, GLuint Width, GLuint Height)
 	{
 		//sorry :(
 		PrintErrorMessage(ERROR_LINUX_FUNCTIONNOTIMPLEMENTED);
 	}
 
-	static  GLXFBConfig GetBestFrameBufferConfig(TWindow* GivenWindow)
+	static GLXFBConfig GetBestFrameBufferConfig(TWindow* GivenWindow)
 	{
 		const GLint VisualAttributes[] =
 		{
