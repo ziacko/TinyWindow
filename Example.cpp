@@ -18,11 +18,11 @@ int main()
 	printf("Blarg\n");
 	while (!WindowManager::GetWindowShouldClose("Example"))
 	{	
-			glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-			WindowManager::PollForEvents();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			WindowManager::MakeWindowCurrentContext("Example");
-			WindowManager::WindowSwapBuffers("Example");
+		WindowManager::WaitForEvents();
+		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		WindowManager::MakeWindowCurrentContext("Example");
+		WindowManager::WindowSwapBuffers("Example");
 	}
 
 	WindowManager::ShutDown();
