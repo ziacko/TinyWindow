@@ -7,3 +7,9 @@ TinyWindow/TinyWindow/TinyWindow/Release/TinyWindow.tlog/cl.write.1.tlog
 TinyWindow/TinyWindow/TinyWindow/Release/TinyWindow.tlog/link.command.1.tlog
 TinyWindow/TinyWindow/TinyWindow/Release/TinyWindow.tlog/link.read.1.tlog
 TinyWindow/TinyWindow/TinyWindow/Release/TinyWindow.tlog/link.write.1.tlog
+*.tlog
+TinyWindow.sdf
+TinyWindow.sln
+TinyWindow/Debug/vc120.idb
+TinyWindow/TinyWindow.vcxproj
+TinyWindow/TinyWindow.vcxproj.filters
