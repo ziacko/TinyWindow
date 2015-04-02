@@ -15,10 +15,9 @@ int main()
 
 	WindowManager::SetWindowOnKeyEvent("Example", blarg);
 
-	printf("Blarg\n");
 	while (!WindowManager::GetWindowShouldClose("Example"))
 	{	
-		WindowManager::WaitForEvents();
+		WindowManager::PollForEvents();// or WaitForEvents
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		WindowManager::MakeWindowCurrentContext("Example");
