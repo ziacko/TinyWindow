@@ -347,7 +347,7 @@ public:
 		{
 #if defined(_MSC_VER)
 			for each(auto CurrentWindow in GetInstance()->Windows)
-#elif else
+#else
 			for (auto CurrentWindow : GetInstance()->Windows)
 #endif
 			{
@@ -968,7 +968,6 @@ public:
 #if defined(_WIN32) || defined(_WIN64)
 				SwapBuffers(GetWindowByName(WindowName)->DeviceContextHandle);
 #else
-				printf("%i\n", GetWindowByName(WindowName)->WindowHandle);
 				glXSwapBuffers(GetDisplay(), GetWindowByName(WindowName)->WindowHandle);
 #endif
 				return FOUNDATION_OKAY;
@@ -1461,7 +1460,7 @@ public:
 			{
 #if defined(_WIN32) || defined(_WIN64)
 				Windows_SetWindowIcon(GetWindowByIndex(WindowIndex), Icon, Width, Height);
-#elif
+#else
 				Linux_SetWindowIcon(GetWindowByIndex(WindowIndex), Icon, Width, Height);
 #endif
 				return FOUNDATION_OKAY;
@@ -1509,7 +1508,7 @@ public:
 			{
 #if defined(_WIN32) || defined(_WIN64)
 				Windows_Focus(GetWindowByName(WindowName), NewState);
-#elif
+#else
 				Linux_Focus(GetWindowByName(WindowName), NewState);
 #endif
 				return FOUNDATION_OKAY;
@@ -1527,7 +1526,7 @@ public:
 			{
 #if defined(_WIN32) || defined(_WIN64)
 				Windows_Focus(GetWindowByIndex(WindowIndex), NewState);
-#elif
+#else
 				Linux_Focus(GetWindowByIndex(WindowIndex), NewState);
 #endif
 				return FOUNDATION_OKAY;
@@ -1594,6 +1593,7 @@ public:
 
 	//ask the window to poll for window events
 	static GLvoid PollForEvents()
+
 	{
 		if (GetInstance()->IsInitialized())
 		{
@@ -1602,6 +1602,7 @@ public:
 #else
 			GetInstance()->Linux_PollForEvents();
 #endif
+
 		}
 
 		else
@@ -3843,10 +3844,13 @@ public:
 	}
 
 	static GLvoid Linux_ProcessEvents(XEvent CurrentEvent)
+
 	{
 		TWindow* l_Window = GetWindowByEvent(CurrentEvent);
 
 		switch (CurrentEvent.type)
+
+	
 		{
 		case Expose:
 		{
@@ -3860,12 +3864,14 @@ public:
 			if (IsValid(l_Window->DestroyedEvent))
 			{
 				l_Window->DestroyedEvent();
+
 			}
 
 			printf("Window was destroyed\n");
 			ShutdownWindow(l_Window);
 
 			break;
+
 		}
 
 		/*case CreateNotify:
@@ -4268,17 +4274,21 @@ public:
 			const char* l_AtomName = XGetAtomName(WindowManager::GetDisplay(), CurrentEvent.xclient.message_type);
 			if (IsValid(l_AtomName))
 			{
-				printf("%s\n", l_AtomName);
+				//printf("%s\n", l_AtomName);
 			}
 
 			if ((Atom)CurrentEvent.xclient.data.l[0] == l_Window->AtomClose)
 			{
 				printf("window closed\n");
 				l_Window->ShouldClose = GL_TRUE;
-				l_Window->DestroyedEvent();
+				if(IsValid(l_Window->DestroyedEvent))
+				{
+					l_Window->DestroyedEvent();
+				}
 				ShutdownWindow(l_Window);
 
 				break;
+	
 			}
 
 			//check if fullscreen
@@ -4287,6 +4297,7 @@ public:
 				break;
 			}
 			break;
+	
 		}
 
 		default:
@@ -4315,6 +4326,7 @@ public:
 		XEvent CurrentEvent = GetInstance()->Event;
 
 		Linux_ProcessEvents(CurrentEvent);
+
 	}
 	//the linux methos of setting the mouse position on the screen
 	static void Linux_SetMousePositionInScreen(GLuint X, GLuint Y)
