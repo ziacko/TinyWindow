@@ -2,9 +2,7 @@
 
 void blarg(GLuint Key, GLboolean KeyState)
 {
-	{
-		//WindowManager::ToggleVerticalSync("Example", 0);
-	}
+	//do something here
 }
 
 int main()
