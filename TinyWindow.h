@@ -3848,9 +3848,7 @@ public:
 	{
 		TWindow* l_Window = GetWindowByEvent(CurrentEvent);
 
-		switch (CurrentEvent.type)
-
-	
+		switch (CurrentEvent.type)	
 		{
 		case Expose:
 		{
@@ -3926,7 +3924,11 @@ public:
 					l_NextEvent.xkey.time == CurrentEvent.xkey.time &&
 					l_NextEvent.xkey.keycode == CurrentEvent.xkey.keycode)
 				{
+					GLuint l_FunctionKeysym = XKeycodeToKeysym(GetInstance()->CurrentDisplay,
+					l_NextEvent.xkey.keycode, 1);
+
 					XNextEvent(GetInstance()->CurrentDisplay, &CurrentEvent);
+					l_Window->KeyEvent(Linux_TranslateKey(l_FunctionKeysym), KEYSTATE_DOWN);
 					l_IsRetriggered = GL_TRUE;
 				}
 			}
