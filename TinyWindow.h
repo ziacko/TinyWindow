@@ -2887,15 +2887,15 @@ public:
 			PFD_DRAW_TO_WINDOW |
 			PFD_DOUBLEBUFFER,        /* support double-buffering */
 			PFD_TYPE_RGBA,         /* color type */
-			SelectedWindow->ColourBits, 0,               /* prefered color depth */
+			static_cast<BYTE>(SelectedWindow->ColourBits), 0,               /* prefered color depth */
 			0, 0,
 			0, 0,
 			0, 0,
 			0,        /* color bits (ignored) */               /* no alpha buffer */               /* alpha bits (ignored) */
 			0,               /* no accumulation buffer */
 			0, 0, 0, 0,           /* accum bits (ignored) */
-			SelectedWindow->DepthBits,          /* depth buffer */
-			SelectedWindow->StencilBits,         /* no stencil buffer */
+			static_cast<BYTE>(SelectedWindow->DepthBits),          /* depth buffer */
+			static_cast<BYTE>(SelectedWindow->StencilBits),         /* no stencil buffer */
 			0,               /* no auxiliary buffers */
 			PFD_MAIN_PLANE,         /* main layer */
 			0,               /* reserved */
