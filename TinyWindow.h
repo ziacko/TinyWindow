@@ -1,3 +1,5 @@
+//created my Ziyad Barakat 2014 - 2015
+
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
 
@@ -127,31 +129,31 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #define FOUNDATION_ERROR 0
 #define FOUNDATION_OKAY 1
 
-#define ERROR_NOCONTEXT 0 /**< if a window tries to use a graphical function without a context */
-#define ERROR_INVALIDWINDOWNAME 1 /**< if an invalid window name was given*/
-#define ERROR_INVALIDWINDOWINDEX 2 /**< if an invalid window index was given*/
-#define ERROR_INVALIDWINDOWSTATE 3 /**< if an invalid window state was given*/
-#define ERROR_INVALIDRESOLUTION 4 /**< if an invalid window resolution was given */
-#define ERROR_INVALIDCONTEXT 5 /**< if the OpenGL context for the window is invalid*/
-#define ERROR_EXISTINGCONTEXT 6 /**< if the window already has an OpenGL context*/
-#define ERROR_NOTINITIALIZED 7 /**< if the window is being used without being initialized*/
-#define ERROR_ALREADYINITIALIZED 8 /**< if the window was already initialized*/
-#define ERROR_INVALIDTITLEBAR 9 /**< if the Title-bar text given was invalid*/
-#define ERROR_INVALIDEVENT 10 /**< if the given event callback was invalid*/
-#define ERROR_WINDOWNOTFOUND 11 /**< if the window was not found in the window manager*/
-#define ERROR_INVALIDWINDOWSTYLE 12 /**< if the window style gives is invalid*/
-#define ERROR_INVALIDWINDOW 13 
-#define ERROR_FUNCTIONNOTIMPLEMENTED 14 /**< if the function has not yet been implemented in the current version of the API*/
-#define ERROR_LINUX_CANNOTCONNECTXSERVER 15 /**< Linux: if cannot connect to X11 server*/
-#define ERROR_LINUX_INVALIDVISUALINFO 16 /**< Linux: if visual information given was invalid*/
-#define ERROR_LINUX_CANNOTCREATEWINDOW 17 /**< Linux: when X11 fails to create a new window*/
-#define ERROR_LINUX_FUNCTIONNOTIMPLEMENTED 18 /**< Linux: when the function has not yet been implemented on the Linux in the current version of the API*/
-#define ERROR_WINDOWS_CANNOTCREATEWINDOW 19 /**< Windows: when Win32 cannot create a window*/
-#define ERROR_WINDOWS_CANNOTINITIALIZE 20 /**< Windows: when Win32 cannot initialize */
-#define ERROR_WINDOWS_FUNCTIONNOTIMPLEMENTED 21 /**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
+#define TINYWINDOW_ERROR_NOCONTEXT 0 /**< if a window tries to use a graphical function without a context */
+#define TINYWINDOW_ERROR_INVALIDWINDOWNAME 1 /**< if an invalid window name was given*/
+#define TINYWINDOW_ERROR_INVALIDWINDOWINDEX 2 /**< if an invalid window index was given*/
+#define TINYWINDOW_ERROR_INVALIDWINDOWSTATE 3 /**< if an invalid window state was given*/
+#define TINYWINDOW_ERROR_INVALIDRESOLUTION 4 /**< if an invalid window resolution was given */
+#define TINYWINDOW_ERROR_INVALIDCONTEXT 5 /**< if the OpenGL context for the window is invalid*/
+#define TINYWINDOW_ERROR_EXISTINGCONTEXT 6 /**< if the window already has an OpenGL context*/
+#define TINYWINDOW_ERROR_NOTINITIALIZED 7 /**< if the window is being used without being initialized*/
+#define TINYWINDOW_ERROR_ALREADYINITIALIZED 8 /**< if the window was already initialized*/
+#define TINYWINDOW_ERROR_INVALIDTITLEBAR 9 /**< if the Title-bar text given was invalid*/
+#define TINYWINDOW_ERROR_INVALIDEVENT 10 /**< if the given event callback was invalid*/
+#define TINYWIDNOW_ERROR_WINDOWNOTFOUND 11 /**< if the window was not found in the window manager*/
+#define TINYWINDOW_ERROR_INVALIDWINDOWSTYLE 12 /**< if the window style gives is invalid*/
+#define TINYWINDOW_ERROR_INVALIDWINDOW 13 
+#define TINYWINDOW_ERROR_FUNCTIONNOTIMPLEMENTED 14 /**< if the function has not yet been implemented in the current version of the API*/
+#define TINYWINDOW_ERROR_LINUX_CANNOTCONNECTXSERVER 15 /**< Linux: if cannot connect to X11 server*/
+#define TINYWINDOW_ERROR_LINUX_INVALIDVISUALINFO 16 /**< Linux: if visual information given was invalid*/
+#define TINYWINDOW_ERROR_LINUX_CANNOTCREATEWINDOW 17 /**< Linux: when X11 fails to create a new window*/
+#define TINYWINDOW_ERROR_LINUX_FUNCTIONNOTIMPLEMENTED 18 /**< Linux: when the function has not yet been implemented on the Linux in the current version of the API*/
+#define TINYWINDOW_ERROR_WINDOWS_CANNOTCREATEWINDOW 19 /**< Windows: when Win32 cannot create a window*/
+#define TINYWINDOW_ERROR_WINDOWS_CANNOTINITIALIZE 20 /**< Windows: when Win32 cannot initialize */
+#define TINYWINDOWS_ERROR_WINDOWS_FUNCTIONNOTIMPLEMENTED 21 /**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 
-#define WARNING_NOTCURRENTCONTEXT 0 /**< if using calling member functions of a window that is not the current window being drawn to*/
-#define WARNING_NOGLEXTENSIONS 1 /**< if your computer does not support any OpenGL extensions*/
+#define TINYWINDOW_WARNING_NOTCURRENTCONTEXT 0 /**< if using calling member functions of a window that is not the current window being drawn to*/
+#define TINYWINDOW_WARNING_NOGLEXTENSIONS 1 /**< if your computer does not support any OpenGL extensions*/
 
 #define LINUX_FUNCTION 1
 #define LINUX_DECORATOR 2
@@ -173,13 +175,13 @@ static void PrintWarningMessage(GLuint WarningNumber)
 {
 	switch (WarningNumber)
 	{
-	case WARNING_NOGLEXTENSIONS:
+	case TINYWINDOW_WARNING_NOGLEXTENSIONS:
 	{
 		printf("Warning: no OpenGL extensions available \n");
 		break;
 	}
 
-	case WARNING_NOTCURRENTCONTEXT:
+	case TINYWINDOW_WARNING_NOTCURRENTCONTEXT:
 	{
 		printf("Warning: window not the current OpenGL context being rendered to \n");
 		break;
@@ -198,127 +200,127 @@ static void PrintErrorMessage(GLuint ErrorNumber)
 {
 	switch (ErrorNumber)
 	{
-	case ERROR_NOCONTEXT:
+	case TINYWINDOW_ERROR_NOCONTEXT:
 	{
 		printf("Error: An OpenGL context must first be created(initialize the window) \n");
 		break;
 	}
 
-	case ERROR_INVALIDWINDOWNAME:
+	case TINYWINDOW_ERROR_INVALIDWINDOWNAME:
 	{
 		printf("Error: invald window name \n");
 		break;
 	}
 
-	case ERROR_INVALIDWINDOWINDEX:
+	case TINYWINDOW_ERROR_INVALIDWINDOWINDEX:
 	{
 		printf("Error: invalid window index \n");
 		break;
 	}
 
-	case ERROR_INVALIDWINDOWSTATE:
+	case TINYWINDOW_ERROR_INVALIDWINDOWSTATE:
 	{
 		printf("Error: invalid window state \n");
 		break;
 	}
 
-	case ERROR_INVALIDRESOLUTION:
+	case TINYWINDOW_ERROR_INVALIDRESOLUTION:
 	{
 		printf("Error: invalid resolution \n");
 		break;
 	}
 
-	case ERROR_INVALIDCONTEXT:
+	case TINYWINDOW_ERROR_INVALIDCONTEXT:
 	{
 		printf("Error: Failed to create OpenGL context \n");
 		break;
 	}
 
-	case ERROR_EXISTINGCONTEXT:
+	case TINYWINDOW_ERROR_EXISTINGCONTEXT:
 	{
 		printf("Error: context already created \n");
 		break;
 	}
 
-	case ERROR_NOTINITIALIZED:
+	case TINYWINDOW_ERROR_NOTINITIALIZED:
 	{
 		printf("Error: Window manager not initialized \n");
 		break;
 	}
 
-	case ERROR_ALREADYINITIALIZED:
+	case TINYWINDOW_ERROR_ALREADYINITIALIZED:
 	{
 		printf("Error: window has already been initialized \n");
 		break;
 	}
 
-	case ERROR_INVALIDTITLEBAR:
+	case TINYWINDOW_ERROR_INVALIDTITLEBAR:
 	{
 		printf("Error: invalid title bar name (cannot be null or nullptr) \n");
 		break;
 	}
 
-	case ERROR_INVALIDEVENT:
+	case TINYWINDOW_ERROR_INVALIDEVENT:
 	{
 		printf("Error: invalid event callback given \n");
 		break;
 	}
 
-	case ERROR_WINDOWNOTFOUND:
+	case TINYWIDNOW_ERROR_WINDOWNOTFOUND:
 	{
 		printf("Error: window was not found \n");
 		break;
 	}
 
-	case ERROR_INVALIDWINDOWSTYLE:
+	case TINYWINDOW_ERROR_INVALIDWINDOWSTYLE:
 	{
 		printf("Error: invalid window style given \n");
 		break;
 	}
 
-	case ERROR_INVALIDWINDOW:
+	case TINYWINDOW_ERROR_INVALIDWINDOW:
 	{
 		printf("Error: invalid window given \n");
 		break;
 	}
 
-	case ERROR_FUNCTIONNOTIMPLEMENTED:
+	case TINYWINDOW_ERROR_FUNCTIONNOTIMPLEMENTED:
 	{
 		printf("Error: I'm sorry but this function has not been implemented yet :( \n");
 		break;
 	}
 
-	case ERROR_LINUX_CANNOTCONNECTXSERVER:
+	case TINYWINDOW_ERROR_LINUX_CANNOTCONNECTXSERVER:
 	{
 		printf("Error: cannot connect to X server \n");
 		break;
 	}
 
-	case ERROR_LINUX_INVALIDVISUALINFO:
+	case TINYWINDOW_ERROR_LINUX_INVALIDVISUALINFO:
 	{
 		printf("Error: Invalid visual information given \n");
 		break;
 	}
 
-	case ERROR_LINUX_CANNOTCREATEWINDOW:
+	case TINYWINDOW_ERROR_LINUX_CANNOTCREATEWINDOW:
 	{
 		printf("Error: failed to create window \n");
 		break;
 	}
 
-	case ERROR_LINUX_FUNCTIONNOTIMPLEMENTED:
+	case TINYWINDOW_ERROR_LINUX_FUNCTIONNOTIMPLEMENTED:
 	{
 		printf("Error: function not implemented on linux platform yet. sorry :( \n");
 		break;
 	}
 
-	case ERROR_WINDOWS_CANNOTCREATEWINDOW:
+	case TINYWINDOW_ERROR_WINDOWS_CANNOTCREATEWINDOW:
 	{
 		printf("Error: failed to create window \n");
 		break;
 	}
 
-	case ERROR_WINDOWS_FUNCTIONNOTIMPLEMENTED:
+	case TINYWINDOWS_ERROR_WINDOWS_FUNCTIONNOTIMPLEMENTED:
 	{
 		printf("Error: function not implemented on Windows platform yet. sorry ;( \n");
 		break;
@@ -410,7 +412,7 @@ public:
 			return nullptr;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 
@@ -424,7 +426,7 @@ public:
 			return GetInstance()->Windows.size();
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -440,7 +442,7 @@ public:
 			return FOUNDATION_OKAY;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -453,7 +455,7 @@ public:
 			return GetInstance()->ScreenMousePosition;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -473,7 +475,7 @@ public:
 #endif
 			return FOUNDATION_OKAY;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -501,7 +503,7 @@ public:
 #endif
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -527,7 +529,7 @@ public:
 			return FOUNDATION_OKAY;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -546,7 +548,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -566,11 +568,11 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
-	 * return the Resolution of the given Window as an array of unsigned ints
+	 * return the Resolution of the given Window as an array of doubles
 	 */
 	static GLuint* GetWindowResolution(const char* WindowName)
 	{
@@ -583,11 +585,11 @@ public:
 			return nullptr;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
-	 * return the Resolution of the Given Window as an array of unsigned ints
+	 * return the Resolution of the Given Window as an array of doubles
 	 */
 	static GLuint* GetWindowResolution(GLuint WindowIndex)
 	{
@@ -600,7 +602,7 @@ public:
 			return nullptr;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -624,7 +626,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_INVALIDCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_INVALIDCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -648,7 +650,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -668,7 +670,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -686,7 +688,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -704,7 +706,7 @@ public:
 			return nullptr;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -720,7 +722,7 @@ public:
 			}
 			return nullptr;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -744,7 +746,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 		
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -767,7 +769,7 @@ public:
 			}
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -786,7 +788,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -804,7 +806,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -820,7 +822,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -836,7 +838,7 @@ public:
 			}
 			return nullptr;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return nullptr;
 	}
 	/**
@@ -860,7 +862,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -883,7 +885,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -901,7 +903,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -917,7 +919,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -935,7 +937,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -952,7 +954,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -975,7 +977,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -997,7 +999,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1022,7 +1024,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1048,7 +1050,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1066,7 +1068,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1084,7 +1086,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOCONTEXT);
 		return FOUNDATION_ERROR;
 	}	
 
@@ -1122,7 +1124,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1159,7 +1161,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1176,7 +1178,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1193,7 +1195,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1231,7 +1233,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1268,7 +1270,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1286,7 +1288,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -1302,7 +1304,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -1338,7 +1340,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	/**
@@ -1359,7 +1361,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1376,7 +1378,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLuint GetWindowIndex(const char* WindowName)
@@ -1389,7 +1391,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1409,7 +1411,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}			
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1429,7 +1431,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1449,7 +1451,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowIcon(GLuint WindowIndex, const char* Icon, GLuint Width, GLuint Height)
@@ -1468,7 +1470,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1483,7 +1485,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean GetWindowIsInFocus(GLuint WindowIndex)
@@ -1497,7 +1499,7 @@ public:
 			return FOUNDATION_ERROR;
 		}
 
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean FocusWindow(const char* WindowName, GLboolean NewState)
@@ -1515,7 +1517,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean FocusWindow(GLuint WindowIndex, GLboolean NewState)
@@ -1533,7 +1535,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1553,7 +1555,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean RestoreWindow(GLuint WindowIndex)
@@ -1571,7 +1573,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1607,7 +1609,7 @@ public:
 
 		else
 		{ 
-			PrintErrorMessage(ERROR_NOTINITIALIZED);
+			PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		}		
 	}
 
@@ -1624,7 +1626,7 @@ public:
 
 		else
 		{
-			PrintErrorMessage(ERROR_NOTINITIALIZED);
+			PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		}
 	}
 
@@ -1640,7 +1642,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1655,7 +1657,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1674,7 +1676,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1693,7 +1695,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1712,7 +1714,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1731,7 +1733,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1750,7 +1752,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean DisableWindowDecorator(GLuint WindowIndex, GLbitfield Decorators)
@@ -1768,7 +1770,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1785,7 +1787,7 @@ public:
 
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnKeyEvent(GLuint WindowIndex, OnKeyEvent OnKey)
@@ -1799,7 +1801,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1814,7 +1816,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnMouseButtonEvent(GLuint WindowIndex, OnMouseButtonEvent OnMouseButton)
@@ -1828,7 +1830,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1843,7 +1845,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnMouseWheelEvent(GLuint WindowIndex, OnMouseWheelEvent OnMouseWheel)
@@ -1857,7 +1859,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1872,7 +1874,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnDestroyed(GLuint WindowIndex, OnDestroyedEvent OnDestroyed)
@@ -1886,7 +1888,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1901,7 +1903,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnMaximized(GLuint WindowIndex, OnMaximizedEvent OnMaximized)
@@ -1915,7 +1917,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1930,7 +1932,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnMinimized(GLuint WindowIndex, OnMinimizedEvent OnMiniimzed)
@@ -1944,7 +1946,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1959,7 +1961,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnFocus(GLuint WindowIndex, OnFocusEvent OnFocus)
@@ -1973,7 +1975,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -1988,7 +1990,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnMoved(GLuint WindowIndex, OnMovedEvent OnMoved)
@@ -2002,7 +2004,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -2017,7 +2019,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnResize(GLuint WindowIndex, OnResizeEvent OnResize)
@@ -2031,7 +2033,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -2046,7 +2048,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 	static GLboolean SetWindowOnMouseMove(GLuint WindowIndex, OnMouseMoveEvent OnMouseMove)
@@ -2060,7 +2062,7 @@ public:
 			}
 			return FOUNDATION_ERROR;
 		}
-		PrintErrorMessage(ERROR_NOTINITIALIZED);
+		PrintErrorMessage(TINYWINDOW_ERROR_NOTINITIALIZED);
 		return FOUNDATION_ERROR;
 	}
 
@@ -2202,14 +2204,9 @@ public:
 		{
 #if defined(_MSC_VER)
 			for each (auto iter in GetInstance()->Windows)
-			{
-				if (iter->Name == WindowName)
-				{
-					return iter;
-				}
-			}
 #else
 			for(auto iter : GetInstance()->Windows)
+#endif
 			{
 				if(iter->Name == WindowName)
 				{
@@ -2218,7 +2215,6 @@ public:
 			}
 
 			return nullptr;
-#endif
 		}
 
 		return nullptr;
@@ -2343,23 +2339,17 @@ public:
 			{
 #if defined(_MSC_VER)
 				for each(auto Iter in GetInstance()->Windows)
-				{
-					if (Iter->Name == WindowName)
-					{
-						return GL_TRUE;
-					}
-				}
 #else
-				for (auto iter : GetInstance()->Windows)
+				for (auto Iter : GetInstance()->Windows)
+#endif
 				{
-					if(iter->Name == WindowName)
+					if(!strcmp(Iter->Name, WindowName))
 					{
 						return GL_TRUE;
 					}
 				}
-#endif
 			}
-			PrintErrorMessage(ERROR_INVALIDWINDOWNAME);
+			PrintErrorMessage(TINYWINDOW_ERROR_INVALIDWINDOWNAME);
 			return GL_FALSE;
 		}
 
@@ -2375,7 +2365,7 @@ public:
 				return FOUNDATION_OKAY;
 			}
 
-			PrintErrorMessage(ERROR_INVALIDWINDOWINDEX);
+			PrintErrorMessage(TINYWINDOW_ERROR_INVALIDWINDOWINDEX);
 			return FOUNDATION_ERROR;
 		}
 
@@ -2390,7 +2380,7 @@ public:
 			for(auto CurrentWindow : GetInstance()->Windows)
 #endif
 			{
-				if (CurrentWindow->Name == WindowName)
+				if (!strcmp(CurrentWindow->Name, WindowName))
 				{
 					return CurrentWindow;
 				}
@@ -2887,15 +2877,15 @@ public:
 			PFD_DRAW_TO_WINDOW |
 			PFD_DOUBLEBUFFER,        /* support double-buffering */
 			PFD_TYPE_RGBA,         /* color type */
-			static_cast<BYTE>(SelectedWindow->ColourBits), 0,               /* prefered color depth */
+			(BYTE)SelectedWindow->ColourBits, 0,               /* prefered color depth */
 			0, 0,
 			0, 0,
 			0, 0,
 			0,        /* color bits (ignored) */               /* no alpha buffer */               /* alpha bits (ignored) */
 			0,               /* no accumulation buffer */
 			0, 0, 0, 0,           /* accum bits (ignored) */
-			static_cast<BYTE>(SelectedWindow->DepthBits),          /* depth buffer */
-			static_cast<BYTE>(SelectedWindow->StencilBits),         /* no stencil buffer */
+			(BYTE)SelectedWindow->DepthBits,          /* depth buffer */
+			(BYTE)SelectedWindow->StencilBits,         /* no stencil buffer */
 			0,               /* no auxiliary buffers */
 			PFD_MAIN_PLANE,         /* main layer */
 			0,               /* reserved */
@@ -2928,7 +2918,7 @@ public:
 			return FOUNDATION_OKAY;
 		}
 
-		PrintErrorMessage(ERROR_INVALIDCONTEXT);
+		PrintErrorMessage(TINYWINDOW_ERROR_INVALIDCONTEXT);
 		return FOUNDATION_ERROR;
 	}
 
@@ -3069,7 +3059,7 @@ public:
 			return FOUNDATION_OKAY;
 		}
 
-		PrintErrorMessage(ERROR_WINDOWS_CANNOTINITIALIZE);
+		PrintErrorMessage(TINYWINDOW_ERROR_WINDOWS_CANNOTINITIALIZE);
 		return FOUNDATION_ERROR;
 	}
 	static void Windows_Shutown()
@@ -3379,7 +3369,7 @@ public:
 
 		default:
 		{
-			PrintErrorMessage(ERROR_INVALIDWINDOWSTYLE);
+			PrintErrorMessage(TINYWINDOW_ERROR_INVALIDWINDOWSTYLE);
 			break;
 		}
 		}
@@ -3584,7 +3574,7 @@ public:
 
 		if(!GetInstance()->CurrentDisplay)
 		{
-			PrintErrorMessage(ERROR_LINUX_CANNOTCONNECTXSERVER);
+			PrintErrorMessage(TINYWINDOW_ERROR_LINUX_CANNOTCONNECTXSERVER);
 			return FOUNDATION_ERROR;
 		}
 
@@ -3643,7 +3633,7 @@ public:
 
 		if (!WindowManager::GetDisplay())
 		{
-			PrintErrorMessage(ERROR_LINUX_CANNOTCONNECTXSERVER);
+			PrintErrorMessage(TINYWINDOW_ERROR_LINUX_CANNOTCONNECTXSERVER);
 			exit(0);
 		}
 
@@ -3653,7 +3643,7 @@ public:
 
 		if (!SelectedWindow->VisualInfo)
 		{
-			PrintErrorMessage(ERROR_LINUX_INVALIDVISUALINFO);
+			PrintErrorMessage(TINYWINDOW_ERROR_LINUX_INVALIDVISUALINFO);
 			exit(0);
 		}
 
@@ -3676,7 +3666,7 @@ public:
 
 		if(!SelectedWindow->WindowHandle)
 		{
-			PrintErrorMessage(ERROR_LINUX_CANNOTCREATEWINDOW);
+			PrintErrorMessage(TINYWINDOW_ERROR_LINUX_CANNOTCREATEWINDOW);
 			exit(0);
 		}
 
@@ -3722,7 +3712,7 @@ public:
 
 		else
 		{
-			PrintErrorMessage(ERROR_EXISTINGCONTEXT);
+			PrintErrorMessage(TINYWINDOW_ERROR_EXISTINGCONTEXT);
 			return FOUNDATION_ERROR;	
 		}
 
@@ -4930,7 +4920,7 @@ public:
 
 		default:
 		{
-			PrintErrorMessage(ERROR_INVALIDWINDOWSTYLE);
+			PrintErrorMessage(TINYWINDOW_ERROR_INVALIDWINDOWSTYLE);
 			break;
 		}
 		}
@@ -4939,7 +4929,7 @@ public:
 	static void Linux_SetWindowIcon(TWindow* GivenWindow, const char* Icon, GLuint Width, GLuint Height)
 	{
 		//sorry :(
-		PrintErrorMessage(ERROR_LINUX_FUNCTIONNOTIMPLEMENTED);
+		PrintErrorMessage(TINYWINDOW_ERROR_LINUX_FUNCTIONNOTIMPLEMENTED);
 	}
 
 	static GLXFBConfig GetBestFrameBufferConfig(TWindow* GivenWindow)
