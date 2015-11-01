@@ -7,21 +7,22 @@ void blarg(GLuint Key, GLboolean KeyState)
 
 int main()
 {
-	WindowManager::Initialize();
+	windowManager::Initialize();
 
-	WindowManager::AddWindow("Example");
+	windowManager::AddWindow("Example");
 
-	WindowManager::SetWindowOnKeyEvent("Example", blarg);
+	windowManager::SetWindowOnKeyEventByIndex(0, blarg);
 
-	while (!WindowManager::GetWindowShouldClose("Example"))
+	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+	while (!windowManager::GetWindowShouldCloseByIndex(0))
 	{	
-		WindowManager::PollForEvents();// or WaitForEvents
-		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+		windowManager::PollForEvents();// or WaitForEvents
+		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		WindowManager::MakeWindowCurrentContext("Example");
-		WindowManager::WindowSwapBuffers("Example");
+		windowManager::MakeWindowCurrentContextByIndex(0);
+		windowManager::WindowSwapBuffersByIndex(0);
 	}
 
-	WindowManager::ShutDown();
+	windowManager::ShutDown();
 	return 0;
 }
