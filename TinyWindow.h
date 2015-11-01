@@ -161,7 +161,7 @@ LRESULT CALLBACK WindowProc( HWND windowHandle, UINT message, WPARAM wordParam, 
 #define LINUX_FUNCTION 1
 #define LINUX_DECORATOR 2
 
-typedef void( *onKeyEvent_t )( GLuint key, GLboolean keyState );											/**< To be called when a key event has occurred */
+typedef void( *onKeyEvent_t )( GLuint key, GLboolean keyState );										/**< To be called when a key event has occurred */
 typedef void( *onMouseButtonEvent_t )( GLuint button, GLboolean buttonState );							/**< To be called when a Mouse button event has occurred */
 typedef void( *onMouseWheelEvent_t )( GLuint wheelDirection );											/**< To be called when a mouse wheel event has occurred. */
 typedef void( *onDestroyedEvent_t )( void );															/**< To be called when the window is being destroyed */
@@ -170,9 +170,9 @@ typedef void( *onMinimizedEvent_t )( void );															/**< To be called whe
 
 //typedef ( *OnRestoredEvent )(); //only really works on windows, Linux doesn't even have an atomic for it. might need to remove
 
-typedef void( *onFocusEvent_t )( GLboolean inFocus );														/**< To be called when the window has gained event focus */
+typedef void( *onFocusEvent_t )( GLboolean inFocus );													/**< To be called when the window has gained event focus */
 typedef void( *onMovedEvent_t )( GLuint x, GLuint y );													/**< To be called when the window has been moved */
-typedef void( *onResizeEvent_t )( GLuint width, GLuint height );											/**< To be called when the window has been resized */
+typedef void( *onResizeEvent_t )( GLuint width, GLuint height );										/**< To be called when the window has been resized */
 typedef void( *onMouseMoveEvent_t )( GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY );	/**< To be called when the mouse has been moved within the window */
 
 //print the warning message associated with the given warning number
