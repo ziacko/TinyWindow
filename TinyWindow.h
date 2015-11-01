@@ -4,10 +4,10 @@
 #define TINYWINDOW_H
 
 #if defined( _WIN32 ) || defined( _WIN64 )
-#include < Windows.h >
-#include < gl/GL.h >
-#include < io.h >
-#include < fcntl.h >
+#include <Windows.h>
+#include <gl/GL.h>
+#include <io.h>
+#include <fcntl.h>
 
 LRESULT CALLBACK WindowProc( HWND windowHandle, UINT message, WPARAM wordParam, LPARAM longParam );
 //this automatically loads the OpenGL library if you are using Visual studio 
@@ -17,17 +17,17 @@ LRESULT CALLBACK WindowProc( HWND windowHandle, UINT message, WPARAM wordParam, 
 #endif
 
 #if defined( __linux__ )
-#include < GL/glx.h >
-#include < X11/X.h >
-#include < X11/keysym.h >
-#include < X11/Xatom.h >
+#include <GL/glx.h>
+#include <X11/X.h>
+#include <X11/keysym.h>
+#include <X11/Xatom.h>
 #endif
 
-#include < stdio.h >
-#include < stdlib.h >
-#include < list >
-#include < limits.h >
-#include < string.h >
+#include <stdio.h>
+#include <stdlib.h>
+#include <list>
+#include <limits.h>
+#include <string.h>
 
 #define DEFAULT_WINDOW_WIDTH 1280
 #define DEFAULT_WINDOW_HEIGHT 720
@@ -123,11 +123,11 @@ LRESULT CALLBACK WindowProc( HWND windowHandle, UINT message, WPARAM wordParam, 
 #define DECORATOR_CLOSEBUTTON 0x20								/**< the close button decoration of the window */
 #define DECORATOR_SIZEABLEBORDER 0x40							/**< the sizable border decoration of the window */
 
-#define LINUX_DECORATOR_BORDER 1L < < 1
-#define LINUX_DECORATOR_MOVE 1L < < 2
-#define LINUX_DECORATOR_MINIMIZE 1L < < 3
-#define LINUX_DECORATOR_MAXIMIZE 1L < < 4
-#define LINUX_DECORATOR_CLOSE 1L < < 5
+#define LINUX_DECORATOR_BORDER 1L << 1
+#define LINUX_DECORATOR_MOVE 1L << 2
+#define LINUX_DECORATOR_MINIMIZE 1L << 3
+#define LINUX_DECORATOR_MAXIMIZE 1L << 4
+#define LINUX_DECORATOR_CLOSE 1L << 5
 
 #define FOUNDATION_ERROR 0
 #define FOUNDATION_OK 1
@@ -161,22 +161,22 @@ LRESULT CALLBACK WindowProc( HWND windowHandle, UINT message, WPARAM wordParam, 
 #define LINUX_FUNCTION 1
 #define LINUX_DECORATOR 2
 
-typedef GLvoid( *onKeyEvent_t )( GLuint key, GLboolean keyState );											/**< To be called when a key event has occurred */
-typedef GLvoid( *onMouseButtonEvent_t )( GLuint button, GLboolean buttonState );							/**< To be called when a Mouse button event has occurred */
-typedef GLvoid( *onMouseWheelEvent_t )( GLuint wheelDirection );											/**< To be called when a mouse wheel event has occurred. */
-typedef GLvoid( *onDestroyedEvent_t )( GLvoid );															/**< To be called when the window is being destroyed */
-typedef GLvoid( *onMaximizedEvent_t )( GLvoid );															/**< To be called when the window has been maximized */
-typedef GLvoid( *onMinimizedEvent_t )( GLvoid );															/**< To be called when the window has been minimized */
+typedef void( *onKeyEvent_t )( GLuint key, GLboolean keyState );											/**< To be called when a key event has occurred */
+typedef void( *onMouseButtonEvent_t )( GLuint button, GLboolean buttonState );							/**< To be called when a Mouse button event has occurred */
+typedef void( *onMouseWheelEvent_t )( GLuint wheelDirection );											/**< To be called when a mouse wheel event has occurred. */
+typedef void( *onDestroyedEvent_t )( void );															/**< To be called when the window is being destroyed */
+typedef void( *onMaximizedEvent_t )( void );															/**< To be called when the window has been maximized */
+typedef void( *onMinimizedEvent_t )( void );															/**< To be called when the window has been minimized */
 
 //typedef ( *OnRestoredEvent )(); //only really works on windows, Linux doesn't even have an atomic for it. might need to remove
 
-typedef GLvoid( *onFocusEvent_t )( GLboolean inFocus );														/**< To be called when the window has gained event focus */
-typedef GLvoid( *onMovedEvent_t )( GLuint x, GLuint y );													/**< To be called when the window has been moved */
-typedef GLvoid( *onResizeEvent_t )( GLuint width, GLuint height );											/**< To be called when the window has been resized */
-typedef GLvoid( *onMouseMoveEvent_t )( GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY );	/**< To be called when the mouse has been moved within the window */
+typedef void( *onFocusEvent_t )( GLboolean inFocus );														/**< To be called when the window has gained event focus */
+typedef void( *onMovedEvent_t )( GLuint x, GLuint y );													/**< To be called when the window has been moved */
+typedef void( *onResizeEvent_t )( GLuint width, GLuint height );											/**< To be called when the window has been resized */
+typedef void( *onMouseMoveEvent_t )( GLuint windowX, GLuint windowY, GLuint screenX, GLuint screenY );	/**< To be called when the mouse has been moved within the window */
 
 //print the warning message associated with the given warning number
-static GLvoid PrintWarningMessage( GLuint warningNumber )
+static void PrintWarningMessage( GLuint warningNumber )
 {
 	switch ( warningNumber )
 	{
@@ -201,7 +201,7 @@ static GLvoid PrintWarningMessage( GLuint warningNumber )
 }
 
 //print out the error associated with the given error number
-static GLvoid PrintErrorMessage( GLuint errorNumber )
+static void PrintErrorMessage( GLuint errorNumber )
 {
 	switch ( errorNumber )
 	{
@@ -348,7 +348,7 @@ public:
 	/**
 	 * shutdown and delete all windows in the manager
 	 */
-	~windowManager( GLvoid )
+	~windowManager( void )
 	{
 		if ( !GetInstance()->windowList.empty() )
 		{
@@ -367,7 +367,7 @@ public:
 	/**
 	 * use this to shutdown the window manager when your program is finished
 	 */
-	 static inline GLvoid ShutDown( GLvoid ) 
+	 static inline void ShutDown( void ) 
 	{
 #if defined( _MSC_VER )
 		for each ( auto CurrentWindow in GetInstance()->windowList )
@@ -424,7 +424,7 @@ public:
 	/**
 	 * return the total amount of windows the manager has
 	 */
-	static inline GLuint GetNumWindows( GLvoid )
+	static inline GLuint GetNumWindows( void )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -453,7 +453,7 @@ public:
 	/**
 	 * return the mouse position in screen co-ordinates
 	 */
-	static inline GLuint* GetMousePositionInScreen( GLvoid )
+	static inline GLuint* GetMousePositionInScreen( void )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -488,7 +488,7 @@ public:
 	/**
 	 * return the Resolution of the current screen
 	 */
-	static inline GLuint* GetScreenResolution( GLvoid )
+	static inline GLuint* GetScreenResolution( void )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1584,7 +1584,7 @@ public:
 	}
 
 	//initialize the window manager
-	static inline GLboolean Initialize( GLvoid )
+	static inline GLboolean Initialize( void )
 	{
 		GetInstance()->isInitialized = GL_FALSE;
 #if defined( _WIN32 ) || defined( _WIN64 )
@@ -1594,13 +1594,13 @@ public:
 #endif
 	}
 
-	static inline GLboolean IsInitialized( GLvoid )
+	static inline GLboolean IsInitialized( void )
 	{
 		return GetInstance()->isInitialized;
 	}
 
 	//ask the window to poll for window events
-	static inline GLvoid PollForEvents( GLvoid )
+	static inline void PollForEvents( void )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1616,7 +1616,7 @@ public:
 			PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
 		}		
 	}
-	static inline GLvoid WaitForEvents( GLvoid )
+	static inline void WaitForEvents( void )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2282,7 +2282,7 @@ public:
 	}
 
 	//get a static reference to the window manager
-	static inline windowManager* GetInstance( GLvoid )
+	static inline windowManager* GetInstance( void )
 	{
 		if ( windowManager::instance == nullptr )
 		{
@@ -2296,7 +2296,7 @@ public:
 		}
 	}
 
-	static inline GLvoid InitializeWindow( tWindow* window )
+	static inline void InitializeWindow( tWindow* window )
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		Windows_InitializeWindow( window );
@@ -2305,7 +2305,7 @@ public:
 #endif
 	}
 
-	static inline GLvoid InitializeGL( tWindow* window )
+	static inline void InitializeGL( tWindow* window )
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		Windows_InitializeGL( window );
@@ -2314,7 +2314,7 @@ public:
 #endif
 	}
 
-	static inline GLvoid ShutdownWindow( tWindow* window )
+	static inline void ShutdownWindow( tWindow* window )
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		Windows_ShutdownWindow( window );
@@ -2802,7 +2802,7 @@ public:
 	}
 
 	//set the window resolution of the given window using Win32
-	static inline GLvoid Windows_SetWindowResolution( tWindow* window )
+	static inline void Windows_SetWindowResolution( tWindow* window )
 	{
 		SetWindowPos( window->windowHandle, HWND_TOP,
 			window->position[0], window->position[1],
@@ -2811,7 +2811,7 @@ public:
 	}
 
 	//set the position of the current window relative to screen co-ordinates using Win32
-	static inline GLvoid Windows_SetWindowPosition( tWindow* window )
+	static inline void Windows_SetWindowPosition( tWindow* window )
 	{
 		SetWindowPos( window->windowHandle, HWND_TOP,
 			window->position[0], window->position[1],
@@ -2820,7 +2820,7 @@ public:
 	}
 
 	//initialize the given window using Win32
-	static inline GLvoid Windows_InitializeWindow( tWindow* window,
+	static inline void Windows_InitializeWindow( tWindow* window,
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		GLint clearScreenExtra = 0,
 		GLint windowExtra = 0,
@@ -2853,7 +2853,7 @@ public:
 	}
 
 	//initalize the pixel format for the selected window
-	static inline GLvoid InitializePixelFormat( tWindow* window )
+	static inline void InitializePixelFormat( tWindow* window )
 	{
 		window->pixelFormatDescriptor = {
 			sizeof( PIXELFORMATDESCRIPTOR ), /* size */
@@ -2907,7 +2907,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static inline GLvoid Windows_ShutdownWindow( tWindow* window )
+	static inline void Windows_ShutdownWindow( tWindow* window )
 	{
 		if ( window->glRenderingContextHandle )
 		{
@@ -2929,7 +2929,7 @@ public:
 		window->glRenderingContextHandle = nullptr;
 	}
 
-	static inline GLvoid Windows_FullScreen( tWindow* window )
+	static inline void Windows_FullScreen( tWindow* window )
 	{
 		SetWindowLongPtr( window->windowHandle, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE );
@@ -2938,7 +2938,7 @@ public:
 			windowManager::GetScreenResolution()[1], GL_TRUE );
 	}
 
-	static inline GLvoid Windows_Minimize( tWindow* window, GLboolean newState )
+	static inline void Windows_Minimize( tWindow* window, GLboolean newState )
 	{
 		if ( newState )
 		{
@@ -2951,7 +2951,7 @@ public:
 		}
 	}
 
-	static inline GLvoid Windows_Maximize( tWindow* window, GLboolean newState )
+	static inline void Windows_Maximize( tWindow* window, GLboolean newState )
 	{
 		if ( newState )
 		{
@@ -2964,12 +2964,12 @@ public:
 		}
 	}
 
-	static inline GLvoid Windows_Restore( tWindow* window )
+	static inline void Windows_Restore( tWindow* window )
 	{
 		ShowWindow( window->windowHandle, SW_RESTORE );
 	}
 	
-	static inline GLvoid Windows_Focus( tWindow* window, GLboolean newState )
+	static inline void Windows_Focus( tWindow* window, GLboolean newState )
 	{
 		window->inFocus = newState;
 
@@ -2984,7 +2984,7 @@ public:
 		}
 	}
 
-	static inline GLvoid Windows_SetMousePosition( tWindow* window )
+	static inline void Windows_SetMousePosition( tWindow* window )
 	{
 		POINT mousePoint;
 		mousePoint.x = window->mousePosition[0];
@@ -2993,7 +2993,7 @@ public:
 		SetCursorPos( mousePoint.x, mousePoint.y );
 	}
 
-	static inline GLvoid Windows_SetPosition( tWindow* window )
+	static inline void Windows_SetPosition( tWindow* window )
 	{
 		SetWindowPos( window->windowHandle, HWND_TOP,
 			window->position[0], window->position[1],
@@ -3001,7 +3001,7 @@ public:
 			SWP_SHOWWINDOW | SWP_NOSIZE );
 	}
 
-	static inline GLvoid Windows_SetResolution( tWindow* window )
+	static inline void Windows_SetResolution( tWindow* window )
 	{
 		SetWindowPos( window->windowHandle, HWND_TOP, 
 			window->position[0], window->position[1],
@@ -3009,7 +3009,7 @@ public:
 			SWP_SHOWWINDOW | SWP_NOMOVE );
 	}
 
-	static inline GLvoid Windows_PollForEvents( GLvoid )
+	static inline void Windows_PollForEvents( void )
 	{
 		//only process events if there are any to process
 		if ( PeekMessage( &GetInstance()->message, 0, 0, 0, PM_REMOVE ) )
@@ -3018,7 +3018,7 @@ public:
 			DispatchMessage( &GetInstance()->message );
 		}
 	}
-	static inline GLvoid Windows_WaitForEvents( GLvoid )
+	static inline void Windows_WaitForEvents( void )
 	{
 		//process even if there aren't any to process
 		GetMessage( &GetInstance()->message, 0, 0, 0 );
@@ -3026,7 +3026,7 @@ public:
 		DispatchMessage( &GetInstance()->message );
 	}
 
-	static inline GLboolean Windows_Initialize( GLvoid )
+	static inline GLboolean Windows_Initialize( void )
 	{
 		CreateTerminal();
 		RECT desktop;
@@ -3048,18 +3048,18 @@ public:
 		return FOUNDATION_ERROR;
 	}
 	
-	static inline GLvoid Windows_Shutown( GLvoid )
+	static inline void Windows_Shutown( void )
 	{
 
 	}
 
-	static inline GLvoid Windows_SetMousePositionInScreen( GLvoid )
+	static inline void Windows_SetMousePositionInScreen( void )
 	{
 		SetCursorPos( GetInstance()->screenMousePosition[0],
 			GetInstance()->screenMousePosition[1] );
 	}
 
-	static inline GLvoid CreateTerminal( GLvoid )
+	static inline void CreateTerminal( void )
 	{
 		int conHandle;
 		long stdHandle;
@@ -3323,13 +3323,13 @@ public:
 		}
 	}
 
-	static inline GLvoid Windows_SetWindowIcon( tWindow* window, const char* icon, GLuint width, GLuint height )
+	static inline void Windows_SetWindowIcon( tWindow* window, const char* icon, GLuint width, GLuint height )
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, width, height, LR_LOADFROMFILE));
 	}
 
-	static inline GLvoid Windows_SetWindowStyle( tWindow* window, GLuint windowType )
+	static inline void Windows_SetWindowStyle( tWindow* window, GLuint windowType )
 	{
 		switch ( windowType )
 		{
@@ -3360,7 +3360,7 @@ public:
 		}
 	}
 
-	static inline GLvoid Windows_EnableDecorators( tWindow* window, GLbitfield decorators )
+	static inline void Windows_EnableDecorators( tWindow* window, GLbitfield decorators )
 	{
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
 
@@ -3402,7 +3402,7 @@ public:
 		SetWindowLongPtr( window->windowHandle, GWL_STYLE,
 			window->currentWindowStyle );
 	}
-	static inline GLvoid Windows_DisableDecorators( tWindow* window, GLbitfield decorators )
+	static inline void Windows_DisableDecorators( tWindow* window, GLbitfield decorators )
 	{
 		if ( decorators & DECORATOR_BORDER )
 		{
@@ -3551,7 +3551,7 @@ public:
 		}
 	}
 
-	static GLboolean Linux_Initialize( GLvoid )
+	static GLboolean Linux_Initialize( void )
 	{
 		GetInstance()->currentDisplay = XOpenDisplay( 0 );
 
@@ -3570,9 +3570,9 @@ public:
 		return FOUNDATION_OK;
 	}
 
-	static GLvoid InitializeAtomics( tWindow* window )
+	static void InitializeAtomics( tWindow* window )
 	{
-		GLuint display = windowManager::Getdisplay();
+		GLuint display = windowManager::GetDisplay();
 		window->AtomState = XInternAtom( display, "_NET_WM_STATE", GL_FALSE );
 		window->AtomFullScreen = XInternAtom( display, "_NET_WM_STATE_FULLSCREEN", GL_FALSE );
 		window->AtomMaxHorz = XInternAtom( display, "_NET_WM_STATE_MAXIMIZED_HORZ", GL_FALSE );
@@ -3602,7 +3602,7 @@ public:
 		window->AtomDesktopGeometry = XInternAtom( display, "_NET_DESKTOP_GEOMETRY", GL_FALSE );
 	}
 
-	static GLvoid Linux_InitializeWindow( tWindow* window )
+	static void Linux_InitializeWindow( tWindow* window )
 	{
 		window->attributes = new GLint[5]{
 			GLX_RGBA,
@@ -3702,7 +3702,7 @@ public:
 		return FOUNDATION_ERROR;
 	}
 
-	static GLvoid Linux_ShutdownWindow( tWindow* window )
+	static void Linux_ShutdownWindow( tWindow* window )
 	{
 		if( window->currentState == WINDOWSTATE_FULLSCREEN )
 		{
@@ -3716,12 +3716,12 @@ public:
 		window->context = 0;
 	}
 
-	static GLvoid Linux_Shutdown( GLvoid )
+	static void Linux_Shutdown( void )
 	{
 		XCloseDisplay( GetInstance()->currentDisplay );
 	}
 
-	static GLvoid Linux_Fullscreen( tWindow* window )
+	static void Linux_Fullscreen( tWindow* window )
 	{
 		XEvent currentEvent;
 		memset( &currentEvent, 0, sizeof( currentEvent ) );
@@ -3738,7 +3738,7 @@ public:
 			0, SubstructureNotifyMask, &currentEvent );
 	}
 
-	static GLvoid Linux_Minimize( tWindow* window )
+	static void Linux_Minimize( tWindow* window )
 	{
 		if( window->currentState == WINDOWSTATE_MINIMIZED )
 		{
@@ -3752,7 +3752,7 @@ public:
 		}
 	}
 
-	static GLvoid Linux_Maximize( tWindow* window )
+	static void Linux_Maximize( tWindow* window )
 	{
 		XEvent currentEvent;
 		memset( &currentEvent, 0, sizeof( currentEvent ) );
@@ -3770,12 +3770,12 @@ public:
 			0, SubstructureNotifyMask, &currentEvent );
 	}
 
-	static GLvoid Linux_Restore( tWindow* window )
+	static void Linux_Restore( tWindow* window )
 	{
 		XMapWindow( windowManager::GetDisplay(), window->windowHandle );
 	}
 
-	static GLvoid Linux_Focus( tWindow* window, GLboolean newFocusState )
+	static void Linux_Focus( tWindow* window, GLboolean newFocusState )
 	{
 		if( newFocusState )
 		{
@@ -3788,7 +3788,7 @@ public:
 		}
 	}
 
-	static GLvoid Linux_SetMousePosition( tWindow* window )
+	static void Linux_SetMousePosition( tWindow* window )
 	{
 		XWarpPointer( 
 			windowManager::GetInstance()->currentDisplay,
@@ -3798,7 +3798,7 @@ public:
 			window->mousePosition[0], window->mousePosition[1] );
 	}
 
-	static GLvoid Linux_SetWindowPosition( tWindow* window )
+	static void Linux_SetWindowPosition( tWindow* window )
 	{
 		XWindowChanges windowChanges;
 
@@ -3810,13 +3810,13 @@ public:
 			window->windowHandle, CWX | CWY, &windowChanges );
 	}
 
-	static GLvoid Linux_SetWindowResolution( tWindow* window )
+	static void Linux_SetWindowResolution( tWindow* window )
 	{
 		XResizeWindow( windowManager::GetDisplay(),
 			window->windowHandle, window->resolution[0], window->resolution[1] );	
 	}
 
-	static GLvoid Linux_ProcessEvents( XEvent currentEvent )
+	static void Linux_ProcessEvents( XEvent currentEvent )
 	{
 		tWindow* window = GetWindowByEvent( currentEvent );
 
@@ -3862,7 +3862,7 @@ public:
 				GLuint functionKeysym = XKeycodeToKeysym( 
 					GetInstance()->currentDisplay, currentEvent.xkey.keycode, 1 );
 
-				if ( functionKeysym < = 255 )
+				if ( functionKeysym <= 255 )
 				{
 					window->keys[functionKeysym] = KEYSTATE_DOWN;
 					if ( IsValid( window->keyEvent ) )
@@ -3910,7 +3910,7 @@ public:
 					GLuint functionKeysym = XKeycodeToKeysym( GetInstance()->currentDisplay,
 						currentEvent.xkey.keycode, 1 );
 
-					if ( functionKeysym < = 255 )
+					if ( functionKeysym <= 255 )
 					{
 						window->keys[functionKeysym] = KEYSTATE_UP;
 
@@ -4281,7 +4281,7 @@ public:
 		}
 	}
 
-	static GLvoid Linux_PollForEvents( GLvoid )
+	static void Linux_PollForEvents( void )
 	{
 		//if there are any events to process
 		if( XEventsQueued( GetInstance()->GetDisplay(), QueuedAfterReading ) )
@@ -4293,7 +4293,7 @@ public:
 			Linux_ProcessEvents( currentEvent );
 		}
 	}
-	static GLvoid Linux_WaitForEvents( GLvoid )
+	static void Linux_WaitForEvents( void )
 	{
 		//even if there aren't any events to process
 		XNextEvent( GetInstance()->currentDisplay, &GetInstance()->currentEvent );
@@ -4304,7 +4304,7 @@ public:
 	}
 
 	//the linux methos of setting the mouse position on the screen
-	static GLvoid Linux_SetMousePositionInScreen( GLuint x, GLuint y )
+	static void Linux_SetMousePositionInScreen( GLuint x, GLuint y )
 	{
 		XWarpPointer( GetInstance()->currentDisplay, None,
 			XDefaultRootWindow( GetInstance()->currentDisplay ), 0, 0, 
@@ -4314,7 +4314,7 @@ public:
 	}
 
 	//get pointer to X11 display
-	static Display* GetDisplay( GLvoid )
+	static Display* GetDisplay( void )
 	{
 		return GetInstance()->currentDisplay;
 	}
@@ -4722,7 +4722,7 @@ public:
 		}
 	}
 
-	static GLvoid Linux_EnableDecorators( tWindow* window, GLbitfield decorators )
+	static void Linux_EnableDecorators( tWindow* window, GLbitfield decorators )
 	{
 		if ( decorators & DECORATOR_CLOSEBUTTON )
 		{
@@ -4771,7 +4771,7 @@ public:
 		XMapWindow( GetDisplay(), window->windowHandle );
 	}
 
-	static GLvoid Linux_DisableDecorators( tWindow* window, GLbitfield decorators )
+	static void Linux_DisableDecorators( tWindow* window, GLbitfield decorators )
 	{
 		if ( decorators & DECORATOR_CLOSEBUTTON )
 		{
@@ -4857,13 +4857,13 @@ public:
 		XMapWindow( GetDisplay(), window->windowHandle );
 	}
 
-	static GLvoid Linux_SetWindowStyle( tWindow* window, GLuint windowStyle )
+	static void Linux_SetWindowStyle( tWindow* window, GLuint windowStyle )
 	{
 		switch ( windowStyle )
 		{
 		case WINDOWSTYLE_DEFAULT:
 		{
-			window->decorators = ( 1L < < 2 );
+			window->decorators = ( 1L << 2 );
 			window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
 				LINUX_DECORATOR_MAXIMIZE | LINUX_DECORATOR_MINIMIZE;
 			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
@@ -4877,8 +4877,8 @@ public:
 
 		case WINDOWSTYLE_BARE:
 		{
-			window->decorators = ( 1L < < 2 );
-			window->currentWindowStyle = ( 1L < < 2 );
+			window->decorators = ( 1L << 2 );
+			window->currentWindowStyle = ( 1L << 2 );
 			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty( GetDisplay(), window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
@@ -4891,7 +4891,7 @@ public:
 		case WINDOWSTYLE_POPUP:
 		{
 			window->decorators = 0;
-			window->currentWindowStyle = ( 1L < < 2 );
+			window->currentWindowStyle = ( 1L << 2 );
 			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty( GetDisplay(), window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
@@ -4909,7 +4909,7 @@ public:
 		}
 	}
 
-	static GLvoid Linux_SetWindowIcon( tWindow* window, const char* icon, GLuint width, GLuint height )
+	static void Linux_SetWindowIcon( tWindow* window, const char* icon, GLuint width, GLuint height )
 	{
 		//sorry :( 
 		PrintErrorMessage( TINYWINDOW_ERROR_LINUX_FUNCTION_NOT_IMPLEMENTED );
