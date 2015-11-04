@@ -13,3 +13,6 @@ TinyWindow.sln
 TinyWindow/Debug/vc120.idb
 TinyWindow/TinyWindow.vcxproj
 TinyWindow/TinyWindow.vcxproj.filters
+*.idb
+*.vcxproj
+*.filters
