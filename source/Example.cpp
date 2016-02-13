@@ -1,4 +1,5 @@
 #include "TinyWindow.h"
+//#include "TutorialConfig.h"
 
 void blarg(GLuint Key, GLboolean KeyState)
 {
