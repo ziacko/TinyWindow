@@ -16,7 +16,7 @@ int main()
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!windowManager::GetWindowShouldCloseByIndex(0))
-	{	
+	{
 		windowManager::PollForEvents();// or WaitForEvents
 		
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
