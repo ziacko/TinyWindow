@@ -12,7 +12,6 @@ set(PROJECT_LABEL "Example")
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
-
 find_package(OpenGL)
 
 if(UNIX)
@@ -20,6 +19,15 @@ set (LINK_DIRECTORY "/usr/lib/")
 set (LIBS "-lX11 ${OPENGL_LIBRARIES}")
 set (RELEASE_FLAGS "-std=c++11 -DSO -w -fpermissive")
 set (DEBUG_FLAGS "-std=c++11 -DSO -w -g -fpermissive -DDEBUG")
+
+if (CMAKE_BUILD_TYPE MATCHES Release)
+	add_definitions(${RELEASE_FLAGS})
+elseif (CMAKE_BUILD_TYPE MATCHES Debug)
+	add_definitions(${DEBUG_FLAGS})
+elseif (CMAKE_BUILD_TYPE MATCHES "")
+	add_definitions(${DEBUG_FLAGS})
+endif()
+
 endif(UNIX)
 
 if (WIN32)
@@ -29,7 +37,8 @@ endif(WIN32)
 set (VERSION_MAJOR 0)
 set (VERSION_MINOR 3)
 
-set (INCLUDE_DIR "../include")
+set (TINYWINDOW_INCLUDE_DIR "../Include")
+set (EXAMPLE_INCLUDE_DIR "./Include")
 set (DEBUG_OUTPUT_DIR "./bin/Debug/")
 set (RELEASE_OUTPUT_DIR "./bin/Release/")
 set (OUTPUT_DIR "./bin")
@@ -43,12 +52,13 @@ endif( MSVC )
 set (CMAKE_CXX_FLAGS_DEBUG "${DEBUG_FLAGS}")
 set (CMAKE_CXX_FLAGS_RELEASE "${RELEASE_FLAGS}")
 
-include_directories ("${INCLUDE_DIR}")
+include_directories ("${TINYWINDOW_INCLUDE_DIR}")
+include_directories ("${EXAMPLE_INCLUDE_DIR}")
 include_directories ("${PROJECT_BINARY_DIR}")
 link_directories (${LINK_DIRECTORY})
 link_libraries (${LIBS})
 SET ( SOURCE Example.cpp)
-SET ( HEADER_FILES ${INCLUDE_DIR}/TinyWindow.h)
+SET ( HEADER_FILES ${TINYWINDOW_INCLUDE_DIR}/TinyWindow.h)
 
 add_executable(Example ${SOURCE} ${HEADER_FILES})
 set_property(TARGET Example PROPERTY OUTPUT_NAME "Example")
