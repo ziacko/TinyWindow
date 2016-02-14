@@ -1,14 +1,17 @@
 cmake_minimum_required (VERSION 2.6)
-project (TinyWindow CXX)
+project (TinyWindow_Example CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
  
 include (GNUInstallDirs)
 include (CMakePackageConfigHelpers)
 
+set(PROJECT_LABEL "Example")
+
 #enable_testing()
 
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+
 
 find_package(OpenGL)
 
@@ -47,4 +50,5 @@ link_libraries (${LIBS})
 SET ( SOURCE Example.cpp)
 SET ( HEADER_FILES ${INCLUDE_DIR}/TinyWindow.h)
 
-add_executable(TinyWindow ${SOURCE} ${HEADER_FILES})
+add_executable(Example ${SOURCE} ${HEADER_FILES})
+set_property(TARGET Example PROPERTY OUTPUT_NAME "Example")
