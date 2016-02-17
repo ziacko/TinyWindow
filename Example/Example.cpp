@@ -1,18 +1,11 @@
 #include "TinyWindow.h"
 //#include "TutorialConfig.h"
 
-void blarg(GLuint Key, GLboolean KeyState)
-{
-	//do something here
-}
-
 int main()
 {
 	windowManager::Initialize();
 
 	windowManager::AddWindow("Example");
-
-	windowManager::SetWindowOnKeyEventByIndex(0, blarg);
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!windowManager::GetWindowShouldCloseByIndex(0))
