@@ -634,15 +634,8 @@ public:
 				GetWindowByName( windowName )->resolution[ 0 ] = width;
 				GetWindowByName( windowName )->resolution[ 1 ] = height;
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				SetWindowPos(window->windowHandle, HWND_TOP,
-					window->position[0], window->position[1],
-					window->resolution[0], window->resolution[1],
-					SWP_SHOWWINDOW | SWP_NOMOVE);
-#elif defined(__linux__)
-				XResizeWindow(instance->currentDisplay,
-					window->windowHandle, window->resolution[0], window->resolution[1]);
-#endif
+
+				Platform_SetWindowResolution(window);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -665,16 +658,7 @@ public:
 				GetWindowByIndex( windowIndex )->resolution[ 1 ] = height;
 				window_t* window = GetWindowByIndex(windowIndex);
 
-#if defined( _WIN32 ) || defined( _WIN64 )
-				
-				SetWindowPos(window->windowHandle, HWND_TOP,
-					window->position[0], window->position[1],
-					window->resolution[0], window->resolution[1],
-					SWP_SHOWWINDOW | SWP_NOMOVE);
-#elif defined(__linux__)
-				XResizeWindow(instance->currentDisplay,
-					window->windowHandle, window->resolution[0], window->resolution[1]);
-#endif
+				Platform_SetWindowResolution(window);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -771,20 +755,8 @@ public:
 				GetWindowByName( windowName )->position[ 0 ] = x;
 				GetWindowByName( windowName )->position[ 1 ] = y;
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				SetWindowPos(window->windowHandle, HWND_TOP, x, y,
-					window->resolution[0], window->resolution[1],
-					SWP_SHOWWINDOW | SWP_NOSIZE);
-#elif defined(__linux__)
-				XWindowChanges windowChanges;
 
-				windowChanges.x = x;
-				windowChanges.y = y;
-
-				XConfigureWindow(
-					instance->currentDisplay,
-					window->windowHandle, CWX | CWY, &windowChanges);
-#endif
+				Platform_SetWindowPosition(window, x, y);
 				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 				return true;
 			}
@@ -807,20 +779,7 @@ public:
 				GetWindowByIndex( windowIndex )->position[ 0 ] = x;
 				GetWindowByIndex( windowIndex )->position[ 1 ] = y;
 				window_t* window = GetWindowByIndex(windowIndex);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				SetWindowPos(window->windowHandle, HWND_TOP, x, y,
-					window->resolution[0], window->resolution[1],
-					SWP_SHOWWINDOW | SWP_NOSIZE);
-#elif defined(__linux__)
-				XWindowChanges windowChanges;
-
-				windowChanges.x = x;
-				windowChanges.y = y;
-
-				XConfigureWindow(
-					instance->currentDisplay,
-					window->windowHandle, CWX | CWY, &windowChanges);
-#endif
+				Platform_SetWindowPosition(window, x, y);
 				return true;
 			}
 
@@ -917,20 +876,7 @@ public:
 				GetWindowByName( windowName )->mousePosition[ 0 ] = x;
 				GetWindowByName( windowName )->mousePosition[ 1 ] = y;
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				POINT mousePoint;
-				mousePoint.x = x;
-				mousePoint.y = y;
-				ScreenToClient(window->windowHandle, &mousePoint);
-				SetCursorPos(mousePoint.x, mousePoint.y);
-#elif defined(__linux__)
-				XWarpPointer(
-					windowManager::GetDisplay(),
-					window->windowHandle, window->windowHandle,
-					window->position[0], window->position[1],
-					window->resolution[0], window->resolution[1],
-					window->mousePosition[0], window->mousePosition[1]);
-#endif
+				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -952,20 +898,8 @@ public:
 				GetWindowByIndex( windowIndex )->mousePosition[ 0 ] = x;
 				GetWindowByIndex( windowIndex )->mousePosition[ 1 ] = y;
 				window_t* window = GetWindowByIndex(windowIndex);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				POINT mousePoint;
-				mousePoint.x = x;
-				mousePoint.y = y;
-				ScreenToClient(window->windowHandle, &mousePoint);
-				SetCursorPos(mousePoint.x, mousePoint.y);
-#else
-				XWarpPointer(
-					instance->currentDisplay,
-					window->windowHandle, window->windowHandle,
-					window->position[0], window->position[1],
-					window->resolution[0], window->resolution[1],
-					window->mousePosition[0], window->mousePosition[1]);
-#endif
+
+				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -1057,11 +991,9 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-#if defined( _WIN32 ) || defined( _WIN64 )
-				SwapBuffers( GetWindowByName( windowName )->deviceContextHandle );
-#elif defined(__linux__)
-				glXSwapBuffers( instance->currentDisplay, GetWindowByName( windowName )->windowHandle );
-#endif
+				window_t* window = GetWindowByName(windowName);
+				Platform_SwapBuffers(window);
+
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
@@ -1080,11 +1012,8 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-#if defined( _WIN32 ) || defined( _WIN64 )
-				SwapBuffers( GetWindowByIndex( windowIndex )->deviceContextHandle );
-#elif defined(__linux__)
-				glXSwapBuffers(instance->currentDisplay, GetWindowByIndex( windowIndex )->windowHandle );
-#endif
+				window_t* window = GetWindowByIndex(windowIndex);
+				Platform_SwapBuffers(window);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -1103,14 +1032,9 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
+				window_t* window = GetWindowByName(windowName);
+				Platform_MakeCurrentContext(window);
 
-#if defined( _WIN32 ) || defined( _WIN64 )
-				wglMakeCurrent( GetWindowByName( windowName )->deviceContextHandle,
-					GetWindowByName( windowName )->glRenderingContextHandle );
-#elif defined(__linux__)
-				glXMakeCurrent( instance->currentDisplay, GetWindowByName( windowName )->windowHandle,
-					GetWindowByName( windowName )->context );
-#endif
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -1124,24 +1048,18 @@ public:
 	 */
 	static inline bool MakeWindowCurrentContextByIndex( unsigned int windowIndex )
 	{
-		if ( GetInstance()->IsInitialized() )
+		if (GetInstance()->IsInitialized())
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			if (DoesExistByIndex(windowIndex))
 			{
-#if defined( _WIN32 ) || defined( _WIN64 )
-				wglMakeCurrent( GetWindowByIndex( windowIndex )->deviceContextHandle,
-					GetWindowByIndex( windowIndex )->glRenderingContextHandle );
-#elif defined(__linux__)
-				glXMakeCurrent( instance->currentDisplay, GetWindowByIndex( windowIndex )->windowHandle,
-					GetWindowByIndex( windowIndex )->context );
-#endif
+				window_t* window = GetWindowByIndex(windowIndex);
+				Platform_MakeCurrentContext(window);
+
 				return true;
 			}
-
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
 		}
-
 		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NO_CONTEXT );
 		return false;
 	}
@@ -1191,59 +1109,11 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-				if ( newState )
-				{					
-					window->currentState = WINDOWSTATE_FULLSCREEN;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-						WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
-					MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
-						windowManager::GetScreenResolution()[1], true);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
+				window->currentState = (newState == true) ? WINDOWSTATE_FULLSCREEN : WINDOWSTATE_NORMAL;
 
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = window->currentState == WINDOWSTATE_FULLSCREEN;
-					currentEvent.xclient.data.l[1] = window->AtomFullScreen;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
-
-				else
-				{
-					GetWindowByName( windowName )->currentState = WINDOWSTATE_NORMAL;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-						WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
-
-					MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
-						windowManager::GetScreenResolution()[1], true);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = window->currentState == WINDOWSTATE_FULLSCREEN;
-					currentEvent.xclient.data.l[1] = window->AtomFullScreen;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
+				Platform_SetFullScreen(window);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1261,59 +1131,10 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-				if ( newState )
-				{
-					GetWindowByIndex( windowIndex )->currentState = WINDOWSTATE_FULLSCREEN;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-						WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+				window->currentState = (newState == true) ? WINDOWSTATE_FULLSCREEN : WINDOWSTATE_NORMAL;
 
-					MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
-						windowManager::GetScreenResolution()[1], true);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = window->currentState == WINDOWSTATE_FULLSCREEN;
-					currentEvent.xclient.data.l[1] = window->AtomFullScreen;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
-
-				else
-				{
-					GetWindowByIndex( windowIndex )->currentState = WINDOWSTATE_NORMAL;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-						WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
-
-					MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
-						windowManager::GetScreenResolution()[1], true);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = window->currentState == WINDOWSTATE_FULLSCREEN;
-					currentEvent.xclient.data.l[1] = window->AtomFullScreen;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
+				Platform_SetFullScreen(window);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1365,29 +1186,8 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-				if ( newState )
-				{
-					window->currentState = WINDOWSTATE_MINIMIZED;
-
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_MINIMIZE);
-#elif defined(__linux__)
-					XIconifyWindow(instance->currentDisplay,
-						window->windowHandle, 0);
-#endif
-					return true;
-				}
-
-				else
-				{
-					GetWindowByName( windowName )->currentState = WINDOWSTATE_NORMAL;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
-					XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
-					return true;
-				}
+				Platform_MinimizeWindow(window, newState);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1405,29 +1205,8 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-				if (newState)
-				{
-					window->currentState = WINDOWSTATE_MINIMIZED;
-
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_MINIMIZE);
-#elif defined(__linux__)
-					XIconifyWindow(instance->currentDisplay,
-						window->windowHandle, 0);
-#endif
-					return true;
-				}
-
-				else
-				{
-					GetWindowByIndex(windowIndex)->currentState = WINDOWSTATE_NORMAL;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
-					XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
-					return true;
-				}
+				Platform_MinimizeWindow(window, newState);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1482,53 +1261,8 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-				if ( newState )
-				{
-					GetWindowByName( windowName )->currentState = WINDOWSTATE_MAXIMIZED;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_MAXIMIZE);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
-					currentEvent.xclient.data.l[1] = window->AtomMaxVert;
-					currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
-
-				else
-				{
-					GetWindowByName( windowName )->currentState = WINDOWSTATE_NORMAL;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
-					currentEvent.xclient.data.l[1] = window->AtomMaxVert;
-					currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
+				Platform_MaximizeWindow(window, newState);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1546,53 +1280,8 @@ public:
 			if (DoesExistByIndex(windowIndex))
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-				if (newState)
-				{
-					window->currentState = WINDOWSTATE_MAXIMIZED;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_MAXIMIZE);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
-					currentEvent.xclient.data.l[1] = window->AtomMaxVert;
-					currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
-
-				else
-				{
-					window->currentState = WINDOWSTATE_NORMAL;
-#if defined( _WIN32 ) || defined( _WIN64 )
-					ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
-					XEvent currentEvent;
-					memset(&currentEvent, 0, sizeof(currentEvent));
-
-					currentEvent.xany.type = ClientMessage;
-					currentEvent.xclient.message_type = window->AtomState;
-					currentEvent.xclient.format = 32;
-					currentEvent.xclient.window = window->windowHandle;
-					currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
-					currentEvent.xclient.data.l[1] = window->AtomMaxVert;
-					currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
-
-					XSendEvent(instance->currentDisplay,
-						XDefaultRootWindow(instance->currentDisplay),
-						0, SubstructureNotifyMask, &currentEvent);
-#endif
-					return true;
-				}
+				Platform_MaximizeWindow(window, newState);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1645,13 +1334,10 @@ public:
 		{
 			if (IsValid(newTitle))
 			{
-				if (DoesExistByName(windowName) && IsValid(newTitle))
+				if (DoesExistByName(windowName))
 				{
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetWindowText(GetWindowByName(windowName)->windowHandle, newTitle);
-#elif defined(__linux__)
-					XStoreName(instance->currentDisplay, GetWindowByName(windowName)->windowHandle, newTitle);
-#endif
+					window_t* window = GetWindowByName(windowName);
+					Platform_SetWindowTitleBar(window, newTitle);
 					return true;
 				}
 				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -1674,11 +1360,8 @@ public:
 			{
 				if (DoesExistByIndex(windowIndex))
 				{
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetWindowText(GetWindowByIndex(windowIndex)->windowHandle, newName);
-#elif defined(__linux__)
-					XStoreName(instance->currentDisplay, GetWindowByIndex(windowIndex)->windowHandle, newName);
-#endif
+					window_t* window = GetWindowByIndex(windowIndex);
+					Platform_SetWindowTitleBar(window, newName);
 					return true;
 				}
 				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -1799,25 +1482,8 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-				if (newState)
-				{
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetFocus(window->windowHandle);
-#elif defined(__linux__)
-					XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
-					return true;
-				}
-
-				else
-				{
-#if defined(_WIN32) || defined(_WIN64)
-					SetFocus(nullptr);
-#elif defined(__linux__)
-					XUnmapWindow(instance->currentDisplay, window->windowHandle);
-#endif
-					return true;
-				}
+				Platform_FocusWindow(window, newState);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1835,25 +1501,8 @@ public:
 			if (DoesExistByIndex(windowIndex))
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-				if (newState)
-				{
-#if defined( _WIN32 ) || defined( _WIN64 )
-					SetFocus(window->windowHandle);
-#elif defined(__linux__)
-					XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
-					return true;
-				}
-
-				else
-				{
-#if defined(_WIN32) || defined(_WIN64)
-					SetFocus(nullptr);
-#elif defined(__linux__)
-					XUnmapWindow(instance->currentDisplay, window->windowHandle);
-#endif
-					return true;
-				}
+				Platform_FocusWindow(window, newState);
+				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 			return false;
@@ -1872,11 +1521,7 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
-				XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
+				Platform_RestoreWindow(window);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -1895,11 +1540,7 @@ public:
 			if (DoesExistByIndex(windowIndex))
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
-				XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
+				Platform_RestoreWindow(window);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -2071,85 +1712,7 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				switch (windowStyle)
-				{
-					case WINDOWSTYLE_DEFAULT:
-					{
-						EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER |
-							DECORATOR_CLOSEBUTTON | DECORATOR_MINIMIZEBUTTON | DECORATOR_MAXIMIZEBUTTON);
-						break;
-					}
-
-					case WINDOWSTYLE_POPUP:
-					{
-						EnableWindowDecoratorsByName(window->name, 0);
-						break;
-					}
-
-					case WINDOWSTYLE_BARE:
-					{
-						EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER);
-						break;
-					}
-
-					default:
-					{
-						TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
-						break;
-					}
-				}
-
-#elif defined(__linux__)
-				switch (windowStyle)
-				{
-					case WINDOWSTYLE_DEFAULT:
-					{
-						window->decorators = (1L << 2);
-						window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
-							LINUX_DECORATOR_MAXIMIZE | LINUX_DECORATOR_MINIMIZE;
-						long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-						XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
-							(unsigned char*)Hints, 5);
-
-						XMapWindow(instance->currentDisplay, window->windowHandle);
-						break;
-					}
-
-					case WINDOWSTYLE_BARE:
-					{
-						window->decorators = (1L << 2);
-						window->currentWindowStyle = (1L << 2);
-						long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-						XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
-							(unsigned char*)Hints, 5);
-
-						XMapWindow(instance->currentDisplay, window->windowHandle);
-						break;
-					}
-
-					case WINDOWSTYLE_POPUP:
-					{
-						window->decorators = 0;
-						window->currentWindowStyle = (1L << 2);
-						long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-						XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
-							(unsigned char*)Hints, 5);
-
-						XMapWindow(instance->currentDisplay, window->windowHandle);
-						break;
-					}
-
-					default:
-					{
-						TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
-						break;
-					}
-				}
-#endif
+				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -2168,84 +1731,7 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				switch (windowStyle)
-				{
-					case WINDOWSTYLE_DEFAULT:
-					{
-						EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER |
-							DECORATOR_CLOSEBUTTON | DECORATOR_MINIMIZEBUTTON | DECORATOR_MAXIMIZEBUTTON);
-						break;
-					}
-
-					case WINDOWSTYLE_POPUP:
-					{
-						EnableWindowDecoratorsByName(window->name, 0);
-						break;
-					}
-
-					case WINDOWSTYLE_BARE:
-					{
-						EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER);
-						break;
-					}
-
-					default:
-					{
-						TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
-						break;
-					}
-				}
-#elif defined(__linux__)
-				switch (windowStyle)
-				{
-					case WINDOWSTYLE_DEFAULT:
-					{
-						window->decorators = (1L << 2);
-						window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
-							LINUX_DECORATOR_MAXIMIZE | LINUX_DECORATOR_MINIMIZE;
-						long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-						XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
-							(unsigned char*)Hints, 5);
-
-						XMapWindow(instance->currentDisplay, window->windowHandle);
-						break;
-					}
-
-					case WINDOWSTYLE_BARE:
-					{
-						window->decorators = (1L << 2);
-						window->currentWindowStyle = (1L << 2);
-						long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-						XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
-							(unsigned char*)Hints, 5);
-
-						XMapWindow(instance->currentDisplay, window->windowHandle);
-						break;
-					}
-
-					case WINDOWSTYLE_POPUP:
-					{
-						window->decorators = 0;
-						window->currentWindowStyle = (1L << 2);
-						long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-						XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
-							(unsigned char*)Hints, 5);
-
-						XMapWindow(instance->currentDisplay, window->windowHandle);
-						break;
-					}
-
-					default:
-					{
-						TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
-						break;
-					}
-				}
-#endif
+				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -2265,93 +1751,7 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
-
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->currentWindowStyle |= WS_BORDER;
-				}
-
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->currentWindowStyle |= WS_CAPTION;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					window->currentWindowStyle |= WS_ICONIC;
-				}
-
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					window->currentWindowStyle |= WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->currentWindowStyle |= WS_SIZEBOX;
-				}
-
-				SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-					window->currentWindowStyle);
-#elif defined(__linux__)
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					window->currentWindowStyle |= LINUX_DECORATOR_CLOSE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					//Linux ( at least cinnamon ) does not have icons in the window. only in the task bar icon
-				}
-
-				//just need to set it to 1 to enable all decorators that include title bar 
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->decorators = 1;
-				}
-
-				long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-				XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
-					PropModeReplace, (unsigned char*)hints, 5);
-
-				XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
+				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -2370,93 +1770,7 @@ public:
 			if (DoesExistByIndex(windowIndex))
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
-
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->currentWindowStyle |= WS_BORDER;
-				}
-
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->currentWindowStyle |= WS_CAPTION;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					window->currentWindowStyle |= WS_ICONIC;
-				}
-
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					window->currentWindowStyle |= WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->currentWindowStyle |= WS_SIZEBOX;
-				}
-
-				SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-					window->currentWindowStyle);
-#elif defined(__linux__)
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					window->currentWindowStyle |= LINUX_DECORATOR_CLOSE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					//Linux ( at least cinnamon ) does not have icons in the window. only in the task bar icon
-				}
-
-				//just need to set it to 1 to enable all decorators that include title bar 
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->decorators = 1;
-				}
-
-				long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-				XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
-					PropModeReplace, (unsigned char*)hints, 5);
-
-				XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
+				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -2476,129 +1790,7 @@ public:
 			if ( DoesExistByName( windowName ) )
 			{
 				window_t* window = GetWindowByName(windowName);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->currentWindowStyle &= ~WS_BORDER;
-				}
-
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					window->currentWindowStyle &= ~WS_ICONIC;
-				}
-
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					window->currentWindowStyle &= ~WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle &= ~WS_MINIMIZEBOX;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->currentWindowStyle &= ~WS_SIZEBOX;
-				}
-
-				SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-					window->currentWindowStyle | WS_VISIBLE);
-#elif defined(__linux__)
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					//I hate doing this but it is necessary to keep functionality going.
-					bool minimizeEnabled = false;
-				    bool maximizeEnabled = false;
-
-					if (decorators & DECORATOR_MAXIMIZEBUTTON)
-					{
-						maximizeEnabled = true;
-					}
-
-					if (decorators & DECORATOR_MINIMIZEBUTTON)
-					{
-						minimizeEnabled = true;
-					}
-
-					window->currentWindowStyle &= ~LINUX_DECORATOR_CLOSE;
-
-					if (maximizeEnabled)
-					{
-						window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
-					}
-
-					if (minimizeEnabled)
-					{
-						window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
-					}
-
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle &= ~LINUX_DECORATOR_MINIMIZE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					bool minimizeEnabled = false;
-
-					if (decorators & DECORATOR_MINIMIZEBUTTON)
-					{
-						minimizeEnabled = true;
-					}
-
-					window->currentWindowStyle &= ~LINUX_DECORATOR_MAXIMIZE;
-
-					if (minimizeEnabled)
-					{
-						window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
-					}
-
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					//Linux ( at least cinnamon ) does not have icons in the window. only in the taskb ar icon
-				}
-
-				//just need to set it to 1 to enable all decorators that include title bar 
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->decorators = LINUX_DECORATOR_BORDER;
-				}
-
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->decorators = 0;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->decorators = 0;
-				}
-
-				long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-				XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
-					PropModeReplace, (unsigned char*)hints, 5);
-
-				XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
+				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -2617,129 +1809,7 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-#if defined( _WIN32 ) || defined( _WIN64 )
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->currentWindowStyle &= ~WS_BORDER;
-				}
-
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					window->currentWindowStyle &= ~WS_ICONIC;
-				}
-
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					window->currentWindowStyle &= ~WS_SYSMENU;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle &= ~WS_MINIMIZEBOX;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->currentWindowStyle &= ~WS_SIZEBOX;
-				}
-
-				SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-					window->currentWindowStyle | WS_VISIBLE);
-#elif defined(__linux__)
-				if (decorators & DECORATOR_CLOSEBUTTON)
-				{
-					//I hate doing this but it is neccessary to keep functionality going.
-					bool minimizeEnabled = 0;
-				    bool maximizeEnabled = 0;
-
-					if (decorators & DECORATOR_MAXIMIZEBUTTON)
-					{
-						maximizeEnabled = true;
-					}
-
-					if (decorators & DECORATOR_MINIMIZEBUTTON)
-					{
-						minimizeEnabled = true;
-					}
-
-					window->currentWindowStyle &= ~LINUX_DECORATOR_CLOSE;
-
-					if (maximizeEnabled)
-					{
-						window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
-					}
-
-					if (minimizeEnabled)
-					{
-						window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
-					}
-
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MINIMIZEBUTTON)
-				{
-					window->currentWindowStyle &= ~LINUX_DECORATOR_MINIMIZE;
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_MAXIMIZEBUTTON)
-				{
-					bool minimizeEnabled = false;
-
-					if (decorators & DECORATOR_MINIMIZEBUTTON)
-					{
-						minimizeEnabled = true;
-					}
-
-					window->currentWindowStyle &= ~LINUX_DECORATOR_MAXIMIZE;
-
-					if (minimizeEnabled)
-					{
-						window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
-					}
-
-					window->decorators = 1;
-				}
-
-				if (decorators & DECORATOR_ICON)
-				{
-					//Linux ( at least cinnamon ) does not have icons in the window. only in the taskb ar icon
-				}
-
-				//just need to set it to 1 to enable all decorators that include title bar 
-				if (decorators & DECORATOR_TITLEBAR)
-				{
-					window->decorators = LINUX_DECORATOR_BORDER;
-				}
-
-				if (decorators & DECORATOR_BORDER)
-				{
-					window->decorators = 0;
-				}
-
-				if (decorators & DECORATOR_SIZEABLEBORDER)
-				{
-					window->decorators = 0;
-				}
-
-				long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
-
-				XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
-					PropModeReplace, (unsigned char*)hints, 5);
-
-				XMapWindow(instance->currentDisplay, window->windowHandle);
-#endif
+				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
@@ -3437,6 +2507,514 @@ private:
 			return false;
 		}
 		return false;
+#endif
+	}
+
+	static inline void Platform_SetWindowResolution(window_t* window)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		SetWindowPos(window->windowHandle, HWND_TOP,
+			window->position[0], window->position[1],
+			window->resolution[0], window->resolution[1],
+			SWP_SHOWWINDOW | SWP_NOMOVE);
+#elif defined(__linux__)
+		XResizeWindow(instance->currentDisplay,
+			window->windowHandle, window->resolution[0], window->resolution[1]);
+#endif
+	}
+
+	static inline void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
+			window->resolution[0], window->resolution[1],
+			SWP_SHOWWINDOW | SWP_NOSIZE);
+#elif defined(__linux__)
+		XWindowChanges windowChanges;
+
+		windowChanges.x = x;
+		windowChanges.y = y;
+
+		XConfigureWindow(
+			instance->currentDisplay,
+			window->windowHandle, CWX | CWY, &windowChanges);
+#endif
+	}
+
+	static inline void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		POINT mousePoint;
+		mousePoint.x = x;
+		mousePoint.y = y;
+		ScreenToClient(window->windowHandle, &mousePoint);
+		SetCursorPos(mousePoint.x, mousePoint.y);
+#elif defined(__linux__)
+		XWarpPointer(
+			windowManager::GetDisplay(),
+			window->windowHandle, window->windowHandle,
+			window->position[0], window->position[1],
+			window->resolution[0], window->resolution[1],
+			window->mousePosition[0], window->mousePosition[1]);
+#endif
+	}
+
+	static inline void Platform_SwapBuffers(window_t* window)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		SwapBuffers(window->deviceContextHandle);
+#elif defined(__linux__)
+		glXSwapBuffers(instance->currentDisplay, window->windowHandle);
+#endif
+	}
+
+	static inline void Platform_MakeCurrentContext(window_t* window)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		wglMakeCurrent(window->deviceContextHandle,
+			window->glRenderingContextHandle);
+#elif defined(__linux__)
+		glXMakeCurrent(instance->currentDisplay, window->windowHandle,
+			window->context);
+#endif
+	}
+
+	static inline void Platform_SetFullScreen(window_t* window)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+		MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
+			windowManager::GetScreenResolution()[1], true);
+#elif defined(__linux__)
+		XEvent currentEvent;
+		memset(&currentEvent, 0, sizeof(currentEvent));
+
+		currentEvent.xany.type = ClientMessage;
+		currentEvent.xclient.message_type = window->AtomState;
+		currentEvent.xclient.format = 32;
+		currentEvent.xclient.window = window->windowHandle;
+		currentEvent.xclient.data.l[0] = window->currentState == WINDOWSTATE_FULLSCREEN;
+		currentEvent.xclient.data.l[1] = window->AtomFullScreen;
+
+		XSendEvent(instance->currentDisplay,
+			XDefaultRootWindow(instance->currentDisplay),
+			0, SubstructureNotifyMask, &currentEvent);
+#endif
+	}
+
+	static inline void Platform_MinimizeWindow(window_t* window, bool newState)
+	{
+		if (newState)
+		{
+			window->currentState = WINDOWSTATE_MINIMIZED;
+
+#if defined( _WIN32 ) || defined( _WIN64 )
+			ShowWindow(window->windowHandle, SW_MINIMIZE);
+#elif defined(__linux__)
+			XIconifyWindow(instance->currentDisplay,
+				window->windowHandle, 0);
+#endif
+		}
+
+		else
+		{
+			window->currentState = WINDOWSTATE_NORMAL;
+#if defined( _WIN32 ) || defined( _WIN64 )
+			ShowWindow(window->windowHandle, SW_RESTORE);
+#elif defined(__linux__)
+			XMapWindow(instance->currentDisplay, window->windowHandle);
+#endif
+		}
+	}
+
+	static inline void Platform_MaximizeWindow(window_t* window, bool newState)
+	{
+		if (newState)
+		{
+			window->currentState = WINDOWSTATE_MAXIMIZED;
+#if defined( _WIN32 ) || defined( _WIN64 )
+			ShowWindow(window->windowHandle, SW_MAXIMIZE);
+#elif defined(__linux__)
+			XEvent currentEvent;
+			memset(&currentEvent, 0, sizeof(currentEvent));
+
+			currentEvent.xany.type = ClientMessage;
+			currentEvent.xclient.message_type = window->AtomState;
+			currentEvent.xclient.format = 32;
+			currentEvent.xclient.window = window->windowHandle;
+			currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
+			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
+			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
+
+			XSendEvent(instance->currentDisplay,
+				XDefaultRootWindow(instance->currentDisplay),
+				0, SubstructureNotifyMask, &currentEvent);
+#endif
+		}
+
+		else
+		{
+			window->currentState = WINDOWSTATE_NORMAL;
+#if defined( _WIN32 ) || defined( _WIN64 )
+			ShowWindow(window->windowHandle, SW_RESTORE);
+#elif defined(__linux__)
+			XEvent currentEvent;
+			memset(&currentEvent, 0, sizeof(currentEvent));
+
+			currentEvent.xany.type = ClientMessage;
+			currentEvent.xclient.message_type = window->AtomState;
+			currentEvent.xclient.format = 32;
+			currentEvent.xclient.window = window->windowHandle;
+			currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
+			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
+			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
+
+			XSendEvent(instance->currentDisplay,
+				XDefaultRootWindow(instance->currentDisplay),
+				0, SubstructureNotifyMask, &currentEvent);
+#endif
+		}
+	}
+
+	static inline void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		SetWindowText(window->windowHandle, newTitle);
+#elif defined(__linux__)
+		XStoreName(instance->currentDisplay, window->windowHandle, newTitle);
+#endif
+	}
+
+	static inline void Platform_FocusWindow(window_t* window, bool newState)
+	{
+		if (newState)
+		{
+#if defined( _WIN32 ) || defined( _WIN64 )
+			SetFocus(window->windowHandle);
+#elif defined(__linux__)
+			XMapWindow(instance->currentDisplay, window->windowHandle);
+#endif
+		}
+
+		else
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			SetFocus(nullptr);
+#elif defined(__linux__)
+			XUnmapWindow(instance->currentDisplay, window->windowHandle);
+#endif
+		}
+	}
+
+	static inline void Platform_RestoreWindow(window_t* window)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		ShowWindow(window->windowHandle, SW_RESTORE);
+#elif defined(__linux__)
+		XMapWindow(instance->currentDisplay, window->windowHandle);
+#endif
+	}
+
+	static inline void Platform_SetWindowStyle(window_t* window, unsigned int windowStyle)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		switch (windowStyle)
+		{
+		case WINDOWSTYLE_DEFAULT:
+		{
+			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER |
+				DECORATOR_CLOSEBUTTON | DECORATOR_MINIMIZEBUTTON | DECORATOR_MAXIMIZEBUTTON);
+			break;
+		}
+
+		case WINDOWSTYLE_POPUP:
+		{
+			EnableWindowDecoratorsByName(window->name, 0);
+			break;
+		}
+
+		case WINDOWSTYLE_BARE:
+		{
+			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER);
+			break;
+		}
+
+		default:
+		{
+			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
+			break;
+		}
+		}
+
+#elif defined(__linux__)
+		switch (windowStyle)
+		{
+		case WINDOWSTYLE_DEFAULT:
+		{
+			window->decorators = (1L << 2);
+			window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
+				LINUX_DECORATOR_MAXIMIZE | LINUX_DECORATOR_MINIMIZE;
+			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+
+			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
+				(unsigned char*)Hints, 5);
+
+			XMapWindow(instance->currentDisplay, window->windowHandle);
+			break;
+		}
+
+		case WINDOWSTYLE_BARE:
+		{
+			window->decorators = (1L << 2);
+			window->currentWindowStyle = (1L << 2);
+			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+
+			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
+				(unsigned char*)Hints, 5);
+
+			XMapWindow(instance->currentDisplay, window->windowHandle);
+			break;
+		}
+
+		case WINDOWSTYLE_POPUP:
+		{
+			window->decorators = 0;
+			window->currentWindowStyle = (1L << 2);
+			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+
+			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
+				(unsigned char*)Hints, 5);
+
+			XMapWindow(instance->currentDisplay, window->windowHandle);
+			break;
+		}
+
+		default:
+		{
+			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
+			break;
+		}
+		}
+#endif
+	}
+
+	static inline void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
+
+		if (decorators & DECORATOR_BORDER)
+		{
+			window->currentWindowStyle |= WS_BORDER;
+		}
+
+		if (decorators & DECORATOR_TITLEBAR)
+		{
+			window->currentWindowStyle |= WS_CAPTION;
+		}
+
+		if (decorators & DECORATOR_ICON)
+		{
+			window->currentWindowStyle |= WS_ICONIC;
+		}
+
+		if (decorators & DECORATOR_CLOSEBUTTON)
+		{
+			window->currentWindowStyle |= WS_SYSMENU;
+		}
+
+		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		{
+			window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
+		}
+
+		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		{
+			window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
+		}
+
+		if (decorators & DECORATOR_SIZEABLEBORDER)
+		{
+			window->currentWindowStyle |= WS_SIZEBOX;
+		}
+
+		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+			window->currentWindowStyle);
+#elif defined(__linux__)
+		if (decorators & DECORATOR_CLOSEBUTTON)
+		{
+			window->currentWindowStyle |= LINUX_DECORATOR_CLOSE;
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		{
+			window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		{
+			window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_ICON)
+		{
+			//Linux ( at least cinnamon ) does not have icons in the window. only in the task bar icon
+		}
+
+		//just need to set it to 1 to enable all decorators that include title bar 
+		if (decorators & DECORATOR_TITLEBAR)
+		{
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_BORDER)
+		{
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_SIZEABLEBORDER)
+		{
+			window->decorators = 1;
+		}
+
+		long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+
+		XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
+			PropModeReplace, (unsigned char*)hints, 5);
+
+		XMapWindow(instance->currentDisplay, window->windowHandle);
+#endif
+	}
+
+	static inline void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
+	{
+#if defined( _WIN32 ) || defined( _WIN64 )
+		if (decorators & DECORATOR_BORDER)
+		{
+			window->currentWindowStyle &= ~WS_BORDER;
+		}
+
+		if (decorators & DECORATOR_TITLEBAR)
+		{
+			window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
+		}
+
+		if (decorators & DECORATOR_ICON)
+		{
+			window->currentWindowStyle &= ~WS_ICONIC;
+		}
+
+		if (decorators & DECORATOR_CLOSEBUTTON)
+		{
+			window->currentWindowStyle &= ~WS_SYSMENU;
+		}
+
+		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		{
+			window->currentWindowStyle &= ~WS_MINIMIZEBOX;
+		}
+
+		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		{
+			window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
+		}
+
+		if (decorators & DECORATOR_SIZEABLEBORDER)
+		{
+			window->currentWindowStyle &= ~WS_SIZEBOX;
+		}
+
+		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+			window->currentWindowStyle | WS_VISIBLE);
+#elif defined(__linux__)
+		if (decorators & DECORATOR_CLOSEBUTTON)
+		{
+			//I hate doing this but it is necessary to keep functionality going.
+			bool minimizeEnabled = false;
+			bool maximizeEnabled = false;
+
+			if (decorators & DECORATOR_MAXIMIZEBUTTON)
+			{
+				maximizeEnabled = true;
+			}
+
+			if (decorators & DECORATOR_MINIMIZEBUTTON)
+			{
+				minimizeEnabled = true;
+			}
+
+			window->currentWindowStyle &= ~LINUX_DECORATOR_CLOSE;
+
+			if (maximizeEnabled)
+			{
+				window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
+			}
+
+			if (minimizeEnabled)
+			{
+				window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
+			}
+
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		{
+			window->currentWindowStyle &= ~LINUX_DECORATOR_MINIMIZE;
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		{
+			bool minimizeEnabled = false;
+
+			if (decorators & DECORATOR_MINIMIZEBUTTON)
+			{
+				minimizeEnabled = true;
+			}
+
+			window->currentWindowStyle &= ~LINUX_DECORATOR_MAXIMIZE;
+
+			if (minimizeEnabled)
+			{
+				window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
+			}
+
+			window->decorators = 1;
+		}
+
+		if (decorators & DECORATOR_ICON)
+		{
+			//Linux ( at least cinnamon ) does not have icons in the window. only in the taskb ar icon
+		}
+
+		//just need to set it to 1 to enable all decorators that include title bar 
+		if (decorators & DECORATOR_TITLEBAR)
+		{
+			window->decorators = LINUX_DECORATOR_BORDER;
+		}
+
+		if (decorators & DECORATOR_BORDER)
+		{
+			window->decorators = 0;
+		}
+
+		if (decorators & DECORATOR_SIZEABLEBORDER)
+		{
+			window->decorators = 0;
+		}
+
+		long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+
+		XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
+			PropModeReplace, (unsigned char*)hints, 5);
+
+		XMapWindow(instance->currentDisplay, window->windowHandle);
 #endif
 	}
 
