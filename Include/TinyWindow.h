@@ -27,6 +27,7 @@
 #include <vector>
 #include <limits.h>
 #include <string.h>
+#include <functional>
 
 const int DEFAULT_WINDOW_WIDTH = 1280;
 const int DEFAULT_WINDOW_HEIGHT = 720;
@@ -174,20 +175,6 @@ enum tinyWindowError_t
 
 const int LINUX_FUNCTION = 1;
 const int LINUX_DECORATOR = 2;
-
-typedef void( *onKeyEvent_t )( unsigned int key, bool keyState );																	/**< To be called when a key event has occurred */
-typedef void( *onMouseButtonEvent_t )( unsigned int button, bool buttonState );														/**< To be called when a Mouse button event has occurred */
-typedef void( *onMouseWheelEvent_t )( unsigned int wheelDirection );																/**< To be called when a mouse wheel event has occurred. */
-typedef void( *onDestroyedEvent_t )( void );																						/**< To be called when the window is being destroyed */
-typedef void( *onMaximizedEvent_t )( void );																						/**< To be called when the window has been maximized */
-typedef void( *onMinimizedEvent_t )( void );																						/**< To be called when the window has been minimized */
-
-//typedef ( *OnRestoredEvent )(); //only really works on windows, Linux doesn't even have an atom for it. might need to remove
-
-typedef void( *onFocusEvent_t )( bool inFocus );																					/**< To be called when the window has gained event focus */
-typedef void( *onMovedEvent_t )( unsigned int x, unsigned int y );																	/**< To be called when the window has been moved */
-typedef void( *onResizeEvent_t )( unsigned int width, unsigned int height );														/**< To be called when the window has been resized */
-typedef void( *onMouseMoveEvent_t )( unsigned int windowX, unsigned int windowY, unsigned int screenX, unsigned int screenY );		/**< To be called when the mouse has been moved within the window */
 
 //print the warning message associated with the given warning number
 /*
@@ -2765,7 +2752,7 @@ public:
 	/**
 	* set the window on key event callback by name
 	*/
-	static inline bool SetWindowOnKeyEventByName( const char* windowName, onKeyEvent_t onKey )
+	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, bool)> onKey)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2789,7 +2776,7 @@ public:
 	/**
 	* set the window on key event callback by index
 	*/
-	static inline bool SetWindowOnKeyEventByIndex( unsigned int windowIndex, onKeyEvent_t onKey )
+	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, bool)> onKey)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2813,7 +2800,7 @@ public:
 	/**
 	* set the window on mouse button event callback by name
 	*/
-	static inline bool SetWindowOnMouseButtonEventByName( const char* windowName, onMouseButtonEvent_t onMouseButton )
+	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(unsigned int, bool)> onMouseButton)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2836,7 +2823,7 @@ public:
 	/**
 	* set the window on mouse button event callback by index
 	*/
-	static inline bool SetWindowOnMouseButtonEventByIndex( unsigned int windowIndex, onMouseButtonEvent_t onMouseButton )
+	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, bool)> onMouseButton)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2860,7 +2847,7 @@ public:
 	/**
 	* set the window on mouse wheel event callback by name
 	*/
-	static inline bool SetWindowOnMouseWheelEventByName( const char* windowName, onMouseWheelEvent_t onMouseWheel )
+	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(unsigned int)> onMouseWheel)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2883,7 +2870,7 @@ public:
 	/**
 	* set the window on mouse wheel event callback by index
 	*/
-	static inline bool SetWindowOnMouseWheelEventByIndex( unsigned int windowIndex, onMouseWheelEvent_t onMouseWheel )
+	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(unsigned int)> onMouseWheel)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2907,7 +2894,7 @@ public:
 	/**
 	* set the window on destroyed event callback by name
 	*/
-	static inline bool SetWindowOnDestroyedByName( const char* windowName, onDestroyedEvent_t onDestroyed )
+	static inline bool SetWindowOnDestroyedByName(const char* windowName, std::function<void(void)> onDestroyed)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2930,7 +2917,7 @@ public:
 	/**
 	* set the window on destroyed event callback by index
 	*/
-	static inline bool SetWindowOnDestroyedByIndex( unsigned int windowIndex, onDestroyedEvent_t onDestroyed )
+	static inline bool SetWindowOnDestroyedByIndex(unsigned int windowIndex, std::function<void(void)> onDestroyed)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2954,7 +2941,7 @@ public:
 	/**
 	* set the window on maximized event callback by name
 	*/
-	static inline bool SetWindowOnMaximizedByName( const char* windowName, onMaximizedEvent_t onMaximized )
+	static inline bool SetWindowOnMaximizedByName(const char* windowName, std::function<void(void)> onMaximized)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2977,7 +2964,7 @@ public:
 	/**
 	* set the window on maximized event callback by index
 	*/
-	static inline bool SetWindowOnMaximizedByIndex( unsigned int windowIndex, onMaximizedEvent_t onMaximized )
+	static inline bool SetWindowOnMaximizedByIndex(unsigned int windowIndex, std::function<void(void)> onMaximized)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3001,7 +2988,7 @@ public:
 	/**
 	* set the window on minimized event callback by name
 	*/
-	static inline bool SetWindowOnMinimizedByName( const char* windowName, onMinimizedEvent_t onMinimized )
+	static inline bool SetWindowOnMinimizedByName(const char* windowName, std::function<void(void)> onMinimized)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3024,7 +3011,7 @@ public:
 	/**
 	* set the window on minimized event callback by index
 	*/
-	static inline bool SetWindowOnMinimizedByIndex( unsigned int windowIndex, onMinimizedEvent_t onMinimized )
+	static inline bool SetWindowOnMinimizedByIndex(unsigned int windowIndex, std::function<void(void)> onMinimized)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3048,7 +3035,7 @@ public:
 	/**
 	* set the window on focus event callback by name
 	*/
-	static inline bool SetWindowOnFocusByName( const char* windowName, onFocusEvent_t onFocus )
+	static inline bool SetWindowOnFocusByName(const char* windowName, std::function<void(bool)> onFocus)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3071,7 +3058,7 @@ public:
 	/**
 	* set the window on focus event callback by index
 	*/
-	static inline bool SetWindowOnFocusByIndex( unsigned int windowIndex, onFocusEvent_t onFocus )
+	static inline bool SetWindowOnFocusByIndex(unsigned int windowIndex, std::function<void(bool)> onFocus)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3095,7 +3082,7 @@ public:
 	/**
 	* set the window on moved event callback by name
 	*/
-	static inline bool SetWindowOnMovedByName( const char* windowName, onMovedEvent_t onMoved )
+	static inline bool SetWindowOnMovedByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onMoved)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3119,7 +3106,7 @@ public:
 	/**
 	* set the window on moved event callback by index
 	*/
-	static inline bool SetWindowOnMovedByIndex( unsigned int windowIndex, onMovedEvent_t onMoved )
+	static inline bool SetWindowOnMovedByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onMoved)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3143,7 +3130,7 @@ public:
 	/**
 	* set the window on resized event callback by name
 	*/
-	static inline bool SetWindowOnResizeByName( const char* windowName, onResizeEvent_t onResize )
+	static inline bool SetWindowOnResizeByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onResize)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3166,7 +3153,7 @@ public:
 	/**
 	* set the window on resized event callback by index
 	*/
-	static inline bool SetWindowOnResizeByIndex( unsigned int windowIndex, onResizeEvent_t onResize )
+	static inline bool SetWindowOnResizeByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onResize)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3190,7 +3177,7 @@ public:
 	/**
 	* set the window on mouse move event callback by name
 	*/
-	static inline bool SetWindowOnMouseMoveByName( const char* windowName, onMouseMoveEvent_t onMouseMove )
+	static inline bool SetWindowOnMouseMoveByName(const char* windowName, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3213,7 +3200,7 @@ public:
 	/**
 	* set the window on mouse move event callback by index
 	*/
-	static inline bool SetWindowOnMouseMoveByIndex( unsigned int windowIndex, onMouseMoveEvent_t onMouseMove )
+	static inline bool SetWindowOnMouseMoveByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3238,9 +3225,7 @@ private:
 
 	struct window_t
 	{
-		
-
-		const char*					name;							/**< Name of the window */
+		const char*																			name;							/**< Name of the window */
 		unsigned int				iD;								/**< ID of the Window. ( where it belongs in the window manager ) */
 		int							colorBits;						/**< color format of the window. ( defaults to 32 bit color ) */
 		int							depthBits;						/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
@@ -3260,16 +3245,16 @@ private:
 		unsigned int				currentState;					/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
 		unsigned int				currentWindowStyle;				/**< the current style of the window */
 
-		onKeyEvent_t				keyEvent;						/**< this is the callback to be used when a key has been pressed */
-		onMouseButtonEvent_t		mouseButtonEvent;				/**< this is the callback to be used when a mouse button has been pressed */
-		onMouseWheelEvent_t			mouseWheelEvent;				/**< this is the callback to be used when the mouse wheel has been scrolled. */
-		onDestroyedEvent_t			destroyedEvent;					/**< this is the callback to be used when the window has been closed in a non-programmatic fashion */
-		onMaximizedEvent_t			maximizedEvent;					/**< this is the callback to be used when the window has been maximized in a non-programmatic fashion */
-		onMinimizedEvent_t			minimizedEvent;					/**< this is the callback to be used when the window has been minimized in a non-programmatic fashion */
-		onFocusEvent_t				focusEvent;						/**< this is the callback to be used when the window has been given focus in a non-programmatic fashion */
-		onMovedEvent_t				movedEvent;						/**< this is the callback to be used the window has been moved in a non-programmatic fashion */
-		onResizeEvent_t				resizeEvent;					/**< this is a callback to be used when the window has been resized in a non-programmatic fashion */
-		onMouseMoveEvent_t			mouseMoveEvent;					/**< this is a callback to be used when the mouse has been moved */
+		std::function<void(unsigned int, bool)>												keyEvent;					/**< this is the callback to be used when a key has been pressed */
+		std::function<void(unsigned int, bool)>												mouseButtonEvent;			/**< this is the callback to be used when a mouse button has been pressed */
+		std::function<void(unsigned int)>													mouseWheelEvent;			/**< this is the callback to be used when the mouse wheel has been scrolled. */
+		std::function<void(void)>															destroyedEvent;				/**< this is the callback to be used when the window has been closed in a non-programmatic fashion */
+		std::function<void(void)>															maximizedEvent;				/**< this is the callback to be used when the window has been maximized in a non-programmatic fashion */
+		std::function<void(void)>															minimizedEvent;				/**< this is the callback to be used when the window has been minimized in a non-programmatic fashion */
+		std::function<void(bool)>															focusEvent;					/**< this is the callback to be used when the window has been given focus in a non-programmatic fashion */
+		std::function<void(unsigned int, unsigned int)>										movedEvent;					/**< this is the callback to be used the window has been moved in a non-programmatic fashion */
+		std::function<void(unsigned int, unsigned int)>										resizeEvent;				/**< this is a callback to be used when the window has been resized in a non-programmatic fashion */
+		std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent;				/**< this is a callback to be used when the mouse has been moved */
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 			
@@ -3323,14 +3308,12 @@ private:
 		window_t(const char* name = nullptr, unsigned int iD = 0,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			bool shouldClose = false, unsigned int currentState = WINDOWSTATE_NORMAL,
-			onKeyEvent_t keyEvent = nullptr,
-			onMouseButtonEvent_t mouseButtonEvent = nullptr, onMouseWheelEvent_t mouseWheelEvent = nullptr,
-			onDestroyedEvent_t destroyedEvent = nullptr,
-			onMaximizedEvent_t maximizedEvent = nullptr, onMinimizedEvent_t minimizedEvent = nullptr,
-			onFocusEvent_t focusEvent = nullptr,
-			onMovedEvent_t movedEvent = nullptr,
-			onResizeEvent_t resizeEvent = nullptr,
-			onMouseMoveEvent_t mouseMoveEvent = nullptr)
+			std::function<void(unsigned int, bool)> keyEvent = nullptr,
+			std::function<void(unsigned int, bool)> mouseButtonEvent = nullptr, std::function<void(unsigned int)> mouseWheelEvent = nullptr,
+			std::function<void(void)> destroyedEvent = nullptr, std::function<void(void)> maximizedEvent = nullptr, std::function<void(void)> minimizedEvent = nullptr,
+			std::function<void(bool)> focusEvent = nullptr,
+			std::function<void(unsigned int, unsigned int)> movedEvent = nullptr, std::function<void(unsigned int, unsigned int)> resizeEvent = nullptr,
+			std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> mouseMoveEvent = nullptr)
 		{
 			this->name = name;
 			this->iD = iD;
@@ -3373,36 +3356,6 @@ private:
 	{
 		return ( stringParameter != nullptr );
 	}
-
-	static inline bool IsValid( onKeyEvent_t onKeyPressed )
-	{
-		return ( onKeyPressed != nullptr );
-	}
-
-	static inline bool IsValid( onMouseWheelEvent_t onMouseWheelEvent )
-	{
-		return ( onMouseWheelEvent != nullptr );
-	}
-
-	static inline bool IsValid( onMaximizedEvent_t onMaximized )
-	{
-		return ( onMaximized != nullptr );
-	}
-
-	static inline bool IsValid( onFocusEvent_t onFocus )
-	{
-		return ( onFocus != nullptr );
-	}
-
-	static inline bool IsValid( onMovedEvent_t onMoved )
-	{
-		return ( onMoved != nullptr );
-	}
-
-	static inline bool IsValid( onMouseMoveEvent_t onMouseMove )
-	{
-		return ( onMouseMove != nullptr );
-	}	
 
 	static inline bool WindowExists( unsigned int windowIndex )
 	{
@@ -3624,7 +3577,7 @@ private:
 		{
 			window->shouldClose = true;
 
-			if ( IsValid( window->destroyedEvent ) )
+			if (window->destroyedEvent != nullptr )
 			{
 				window->destroyedEvent();
 			}
@@ -3637,7 +3590,7 @@ private:
 			window->position[ 0 ] = LOWORD( longParam );
 			window->position[ 1 ] = HIWORD( longParam );
 
-			if ( IsValid( window->movedEvent ) )
+			if ( window->movedEvent != nullptr )
 			{
 				window->movedEvent( window->position[ 0 ], window->position[ 1 ] );
 			}
@@ -3650,7 +3603,7 @@ private:
 			window->position[ 0 ] = LOWORD( longParam );
 			window->position[ 1 ] = HIWORD( longParam );
 
-			if ( IsValid( window->movedEvent ) )
+			if ( window->movedEvent != nullptr )
 			{
 				window->movedEvent( window->position[ 0 ], window->position[ 1 ] );
 			}
@@ -3666,7 +3619,7 @@ private:
 			{
 				case SIZE_MAXIMIZED:
 				{
-					if ( IsValid( window->maximizedEvent ) )
+					if ( window->maximizedEvent != nullptr )
 					{
 						window->maximizedEvent();
 					}
@@ -3676,7 +3629,7 @@ private:
 
 				case SIZE_MINIMIZED:
 				{
-					if ( IsValid( window->minimizedEvent ) )
+					if ( window->minimizedEvent != nullptr )
 					{
 						window->minimizedEvent();
 					}
@@ -3685,7 +3638,7 @@ private:
 
 				default:
 				{
-					if ( IsValid( window->resizeEvent ) )
+					if ( window->resizeEvent != nullptr )
 					{
 						window->resizeEvent( window->resolution[ 0 ],
 							window->resolution[ 1 ] );
@@ -3702,7 +3655,7 @@ private:
 			window->resolution[ 0 ] = ( unsigned int )LOWORD( longParam );
 			window->resolution[ 1 ] = ( unsigned int )HIWORD( longParam );
 
-			if ( IsValid( window->resizeEvent ) )
+			if ( window->resizeEvent != nullptr )
 			{
 				window->resizeEvent( window->resolution[ 0 ],
 					window->resolution[ 1 ] );
@@ -3753,7 +3706,7 @@ private:
 			}
 			}
 
-			if ( IsValid( window->keyEvent ) )
+			if ( window->keyEvent != nullptr )
 			{
 				window->keyEvent( translatedKey, KEYSTATE_DOWN );
 			}
@@ -3802,7 +3755,7 @@ private:
 			}
 			}
 
-			if ( IsValid( window->keyEvent ) )
+			if (window->keyEvent != nullptr )
 			{
 				window->keyEvent( translatedKey, KEYSTATE_UP );
 			}
@@ -3834,7 +3787,7 @@ private:
 			}
 			}
 
-			if ( IsValid( window->keyEvent ) )
+			if ( window->keyEvent != nullptr )
 			{
 				window->keyEvent( translatedKey, KEYSTATE_DOWN );
 			}
@@ -3868,7 +3821,7 @@ private:
 			}
 			}
 
-			if ( IsValid( window->keyEvent ) )
+			if ( window->keyEvent != nullptr )
 			{
 				window->keyEvent( translatedKey, KEYSTATE_UP );
 			}
@@ -3886,7 +3839,7 @@ private:
 
 			ClientToScreen( windowHandle, &point );
 
-			if ( IsValid( window->mouseMoveEvent ) )
+			if ( window->mouseMoveEvent != nullptr )
 			{
 				window->mouseMoveEvent( window->mousePosition[ 0 ],
 					window->mousePosition[ 1 ], point.x, point.y );
@@ -3898,7 +3851,7 @@ private:
 		{
 			window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONDOWN;
 
-			if ( IsValid( window->mouseButtonEvent ) )
+			if ( window->mouseButtonEvent != nullptr )
 			{
 				window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONDOWN );
 			}
@@ -3909,7 +3862,7 @@ private:
 		{
 			window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONUP;
 
-			if ( IsValid( window->mouseButtonEvent ) )
+			if ( window->mouseButtonEvent != nullptr )
 			{
 				window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONUP );
 			}
@@ -3920,7 +3873,7 @@ private:
 		{
 			window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONDOWN;
 
-			if ( IsValid( window->mouseButtonEvent ) )
+			if ( window->mouseButtonEvent != nullptr )
 			{
 				window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONDOWN );
 			}
@@ -3931,7 +3884,7 @@ private:
 		{
 			window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONUP;
 
-			if ( IsValid( window->mouseButtonEvent ) )
+			if ( window->mouseButtonEvent != nullptr )
 			{
 				window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONUP );
 			}
@@ -3942,7 +3895,7 @@ private:
 		{
 			window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONDOWN;
 
-			if ( IsValid( window->mouseButtonEvent ) )
+			if ( window->mouseButtonEvent != nullptr )
 			{
 				window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONDOWN );
 			}
@@ -3953,7 +3906,7 @@ private:
 		{
 			window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONUP;
 
-			if ( IsValid( window->mouseButtonEvent ) )
+			if ( window->mouseButtonEvent != nullptr )
 			{
 				window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONUP );
 			}
@@ -3964,7 +3917,7 @@ private:
 		{
 			if ( ( wordParam % WHEEL_DELTA ) > 0 )
 			{
-				if ( IsValid( window->mouseWheelEvent ) )
+				if ( window->mouseWheelEvent != nullptr )
 				{
 					window->mouseWheelEvent( MOUSE_SCROLL_DOWN );
 				}
@@ -3972,7 +3925,7 @@ private:
 
 			else
 			{
-				if ( IsValid( window->mouseWheelEvent ) )
+				if ( window->mouseWheelEvent != nullptr )
 				{
 					window->mouseWheelEvent( MOUSE_SCROLL_UP );
 				}
@@ -4590,7 +4543,7 @@ private:
 			{
 				//	printf( "blarg" );
 
-				if ( IsValid( window->destroyedEvent ) )
+				if ( window->destroyedEvent != nullptr )
 				{
 					window->destroyedEvent();
 
@@ -4625,7 +4578,7 @@ private:
 				if ( functionKeysym <= 255 )
 				{
 					window->keys[ functionKeysym ] = KEYSTATE_DOWN;
-					if ( IsValid( window->keyEvent ) )
+					if ( window->keyEvent != nullptr )
 					{
 						window->keyEvent( functionKeysym, KEYSTATE_DOWN );
 					}
@@ -4635,7 +4588,7 @@ private:
 				{
 					window->keys[ Linux_TranslateKey( functionKeysym ) ] = KEYSTATE_DOWN;
 
-					if ( IsValid( window->keyEvent ) )
+					if ( window->keyEvent != nullptr )
 					{
 						window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_DOWN );
 					}
@@ -4675,7 +4628,7 @@ private:
 					{
 						window->keys[ functionKeysym ] = KEYSTATE_UP;
 
-						if ( IsValid( window->keyEvent ) )
+						if ( window->keyEvent != nullptr )
 						{
 							window->keyEvent( functionKeysym, KEYSTATE_UP );
 						}
@@ -4685,13 +4638,13 @@ private:
 					{
 						window->keys[ Linux_TranslateKey( functionKeysym ) ] = KEYSTATE_UP;
 
-						if ( IsValid( window->keyEvent ) )
+						if ( window->keyEvent != nullptr )
 						{
 							window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_UP );
 						}
 					}
 
-					if ( IsValid( window->keyEvent ) )
+					if ( window->keyEvent != nullptr )
 					{
 						window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_UP );
 					}
@@ -4708,7 +4661,7 @@ private:
 				{
 					window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONDOWN;
 
-					if ( IsValid( window->mouseButtonEvent ) )
+					if ( window->mouseButtonEvent != nullptr )
 					{
 						window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONDOWN );
 					}
@@ -4719,7 +4672,7 @@ private:
 				{
 					window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONDOWN;
 
-					if ( IsValid( window->mouseButtonEvent ) )
+					if ( window->mouseButtonEvent != nullptr )
 					{
 						window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONDOWN );
 					}
@@ -4730,7 +4683,7 @@ private:
 				{
 					window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONDOWN;
 
-					if ( IsValid( window->mouseButtonEvent ) )
+					if ( window->mouseButtonEvent != nullptr )
 					{
 						window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONDOWN );
 					}
@@ -4741,7 +4694,7 @@ private:
 				{
 					window->mouseButton[ MOUSE_SCROLL_UP ] = MOUSE_BUTTONDOWN;
 
-					if ( IsValid( window->mouseWheelEvent ) )
+					if ( window->mouseWheelEvent != nullptr )
 					{
 						window->mouseWheelEvent( MOUSE_SCROLL_DOWN );
 					}
@@ -4752,7 +4705,7 @@ private:
 				{
 					window->mouseButton[ MOUSE_SCROLL_DOWN ] = MOUSE_BUTTONDOWN;
 
-					if ( IsValid( window->mouseWheelEvent ) )
+					if ( window->mouseWheelEvent != nullptr )
 					{
 						window->mouseWheelEvent( MOUSE_SCROLL_DOWN );
 					}
@@ -4761,7 +4714,7 @@ private:
 
 				default:
 				{
-					//need to add more mmouse buttons 
+					//need to add more mouse buttons 
 					break;
 				}
 				}
@@ -4778,7 +4731,7 @@ private:
 					//the left mouse button was released
 					window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONUP;
 
-					if ( IsValid( window->mouseButtonEvent ) )
+					if ( window->mouseButtonEvent != nullptr )
 					{
 						window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONUP );
 					}
@@ -4790,7 +4743,7 @@ private:
 					//the middle mouse button was released
 					window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONUP;
 
-					if ( IsValid( window->mouseButtonEvent ) )
+					if ( window->mouseButtonEvent != nullptr )
 					{
 						window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONUP );
 					}
@@ -4802,7 +4755,7 @@ private:
 					//the right mouse button was released
 					window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONUP;
 
-					if ( IsValid( window->mouseButtonEvent ) )
+					if ( window->mouseButtonEvent != nullptr )
 					{
 						window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONUP );
 					}
@@ -4818,7 +4771,7 @@ private:
 
 				case 5:
 				{
-					//the mouse wheel wasscrolled down
+					//the mouse wheel was scrolled down
 					window->mouseButton[ MOUSE_SCROLL_DOWN ] = MOUSE_BUTTONDOWN;
 					break;
 				}
@@ -4846,7 +4799,7 @@ private:
 				instance->screenMousePosition[ 0 ] = currentEvent.xmotion.x_root;
 				instance->screenMousePosition[ 1 ] = currentEvent.xmotion.y_root;
 
-				if ( IsValid( window->mouseMoveEvent ) )
+				if ( window->mouseMoveEvent != nullptr )
 				{
 					window->mouseMoveEvent( currentEvent.xmotion.x,
 						currentEvent.xmotion.y, currentEvent.xmotion.x_root,
@@ -4859,7 +4812,7 @@ private:
 			case FocusOut:
 			{
 				window->inFocus = false;
-				if ( IsValid( window->focusEvent ) )
+				if ( window->focusEvent != nullptr )
 				{
 					window->focusEvent( 
 						window->inFocus );
@@ -4872,7 +4825,7 @@ private:
 			{
 				window->inFocus = true;
 
-				if ( IsValid( window->focusEvent ) )
+				if ( window->focusEvent != nullptr )
 				{
 					window->focusEvent( window->inFocus );
 				}
@@ -4890,7 +4843,7 @@ private:
 					window->resolution[ 0 ],
 					window->resolution[ 1 ] );
 
-				if ( IsValid( window->resizeEvent ) )
+				if ( window->resizeEvent != nullptr )
 				{
 					window->resizeEvent( currentEvent.xresizerequest.width,
 						currentEvent.xresizerequest.height );
@@ -4909,7 +4862,7 @@ private:
 				if ( ( unsigned int )currentEvent.xconfigure.width != window->resolution[ 0 ]
 					|| ( unsigned int )currentEvent.xconfigure.height != window->resolution[ 1 ] )
 				{
-					if ( IsValid( window->resizeEvent ) )
+					if ( window->resizeEvent != nullptr )
 					{
 						window->resizeEvent( currentEvent.xconfigure.width, currentEvent.xconfigure.height );
 					}
@@ -4922,7 +4875,7 @@ private:
 				if ( ( unsigned int )currentEvent.xconfigure.x != window->position[ 0 ]
 					|| ( unsigned int )currentEvent.xconfigure.y != window->position[ 1 ] )
 				{
-					if ( IsValid( window->movedEvent ) )
+					if ( window->movedEvent != nullptr )
 					{
 						window->movedEvent( currentEvent.xconfigure.x, currentEvent.xconfigure.y );
 					}
@@ -4946,7 +4899,7 @@ private:
 				ulong numItems, bytesAfter;
 				unsigned char*  properties = nullptr;
 
-				XGetWindowProperty( windowManager::GetDisplay(), currentEvent.xproperty.window,
+				XGetWindowProperty( instance->currentDisplay, currentEvent.xproperty.window,
 					window->AtomState,
 					0, LONG_MAX, false, AnyPropertyType,
 					&type, &format, &numItems, &bytesAfter,
@@ -4962,7 +4915,7 @@ private:
 						if ( currentProperty == window->AtomHidden )
 						{
 							//window was minimized
-							if ( IsValid( window->minimizedEvent ) )
+							if ( window->minimizedEvent != nullptr )
 							{
 								//if the minimized callback for the window was set							
 								window->minimizedEvent();
@@ -4973,7 +4926,7 @@ private:
 							currentProperty == window->AtomMaxVert )
 						{
 							//window was maximized
-							if ( IsValid( window->maximizedEvent ) )
+							if ( window->maximizedEvent != nullptr )
 							{
 								//if the maximized callback for the window was set
 								window->maximizedEvent();
@@ -5006,7 +4959,7 @@ private:
 			//check for events that were created by the TinyWindow manager
 			case ClientMessage:
 			{
-				const char* atomName = XGetAtomName( windowManager::GetDisplay(), currentEvent.xclient.message_type );
+				const char* atomName = XGetAtomName( instance->currentDisplay, currentEvent.xclient.message_type );
 				if ( IsValid( atomName ) )
 				{
 					//printf( "%s\n", l_AtomName );
@@ -5014,9 +4967,8 @@ private:
 
 				if ( ( Atom )currentEvent.xclient.data.l[ 0 ] == window->AtomClose )
 				{
-					printf( "window closed\n" );
 					window->shouldClose = true;
-					if( IsValid( window->destroyedEvent ) )
+					if( window->destroyedEvent != nullptr )
 					{
 						window->destroyedEvent();
 					}
@@ -5026,7 +4978,7 @@ private:
 	
 				}
 
-				//check if fullscreen
+				//check if full screen
 				if ( ( Atom )currentEvent.xclient.data.l[ 1 ] == window->AtomFullScreen )
 				{
 					break;
