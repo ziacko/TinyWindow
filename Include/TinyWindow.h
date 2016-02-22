@@ -19,6 +19,7 @@
 #include <X11/X.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
+#include <X11/XKBlib.h>
 #endif
 
 #include <stdio.h>
@@ -1144,7 +1145,7 @@ public:
 				wglMakeCurrent( GetWindowByIndex( windowIndex )->deviceContextHandle,
 					GetWindowByIndex( windowIndex )->glRenderingContextHandle );
 #elif defined(__linux__)
-				glXMakeCurrent( instance=>currentDisplay, GetWindowByIndex( windowIndex )->windowHandle,
+				glXMakeCurrent( instance->currentDisplay, GetWindowByIndex( windowIndex )->windowHandle,
 					GetWindowByIndex( windowIndex )->context );
 #endif
 				return true;
@@ -1625,10 +1626,10 @@ public:
 				return GetWindowByIndex( windowIndex )->name;
 			}
 			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
-			return false;
+			return nullptr;
 		}
 		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return false;
+		return nullptr;
 	}	
 	/**
 	* get window index by name
@@ -1707,19 +1708,20 @@ public:
 	/**
 	* set the window icon by name (currently not functional)
 	*/
-	static inline bool SetWindowIconByName( const char* windowName, const char* icon, unsigned int width, unsigned int height )
+	static inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
 		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_FUNCTION_NOT_IMPLEMENTED);
-		if ( GetInstance()->IsInitialized() )
+		return false;
+	/*	if ( GetInstance()->IsInitialized() )
 		{
 			if (IsValid(icon))
 			{
 				if (DoesExistByName(windowName))
 				{
 #if defined( _WIN32 ) || defined( _WIN64 )
-					Windows_SetWindowIcon(GetWindowByName(windowName), icon, width, height);
+					//Windows_SetWindowIcon(GetWindowByName(windowName), icon, width, height);
 #elif defined(__linux__)
-					Linux_SetWindowIcon(GetWindowByName(windowName), icon, width, height);
+					//Linux_SetWindowIcon();//GetWindowByName(windowName), icon, width, height);
 #endif
 					return true;
 				}
@@ -1732,15 +1734,16 @@ public:
 		}
 
 		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return false;
+		return false;*/
 	}
 	/**
 	* set the window icon by index (currently not functional)
 	*/
-	static inline bool SetWindowIconByIndex( unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
+	static inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
 	{
 		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_FUNCTION_NOT_IMPLEMENTED);
-		if ( GetInstance()->IsInitialized() )
+		return false;
+		/*if ( GetInstance()->IsInitialized() )
 		{
 			if (IsValid(icon))
 			{
@@ -1760,7 +1763,7 @@ public:
 			return false;
 		}
 		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return false;
+		return false;*/
 	}
 
 	/**
@@ -2528,7 +2531,8 @@ public:
 				if (decorators & DECORATOR_CLOSEBUTTON)
 				{
 					//I hate doing this but it is necessary to keep functionality going.
-					bool minimizeEnabled, maximizeEnabled;
+					bool minimizeEnabled = false;
+				    bool maximizeEnabled = false;
 
 					if (decorators & DECORATOR_MAXIMIZEBUTTON)
 					{
@@ -2563,7 +2567,7 @@ public:
 
 				if (decorators & DECORATOR_MAXIMIZEBUTTON)
 				{
-					bool minimizeEnabled;
+					bool minimizeEnabled = false;
 
 					if (decorators & DECORATOR_MINIMIZEBUTTON)
 					{
@@ -2668,7 +2672,8 @@ public:
 				if (decorators & DECORATOR_CLOSEBUTTON)
 				{
 					//I hate doing this but it is neccessary to keep functionality going.
-					bool minimizeEnabled, maximizeEnabled;
+					bool minimizeEnabled = 0;
+				    bool maximizeEnabled = 0;
 
 					if (decorators & DECORATOR_MAXIMIZEBUTTON)
 					{
@@ -2703,7 +2708,7 @@ public:
 
 				if (decorators & DECORATOR_MAXIMIZEBUTTON)
 				{
-					bool minimizeEnabled;
+					bool minimizeEnabled = false;
 
 					if (decorators & DECORATOR_MINIMIZEBUTTON)
 					{
@@ -3237,9 +3242,9 @@ private:
 
 		const char*					name;							/**< Name of the window */
 		unsigned int				iD;								/**< ID of the Window. ( where it belongs in the window manager ) */
-		unsigned int				colorBits;						/**< color format of the window. ( defaults to 32 bit color ) */
-		unsigned int				depthBits;						/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
-		unsigned int				stencilBits;					/**< Size of the stencil buffer, ( defaults to 8 bit ) */
+		int							colorBits;						/**< color format of the window. ( defaults to 32 bit color ) */
+		int							depthBits;						/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
+		int							stencilBits;					/**< Size of the stencil buffer, ( defaults to 8 bit ) */
 		bool						keys[ KEY_LAST ];				/**< Record of keys that are either pressed or released in the respective window */
 		bool						mouseButton[ MOUSE_LAST ];		/**< Record of mouse buttons that are either presses or released */
 		unsigned int				resolution[ 2 ];				/**< Resolution/Size of the window stored in an array */
@@ -3315,13 +3320,13 @@ private:
 		Atom						AtomDesktopGeometry;			/**< atom for Desktop Geometry */
 #endif
 
-		window_t(const char* name = nullptr, unsigned int iD = NULL,
-			unsigned int colorBits = NULL, unsigned int depthBits = NULL, unsigned int stencilBits = NULL,
+		window_t(const char* name = nullptr, unsigned int iD = 0,
+			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			bool shouldClose = false, unsigned int currentState = WINDOWSTATE_NORMAL,
 			onKeyEvent_t keyEvent = nullptr,
 			onMouseButtonEvent_t mouseButtonEvent = nullptr, onMouseWheelEvent_t mouseWheelEvent = nullptr,
 			onDestroyedEvent_t destroyedEvent = nullptr,
-			onMaximizedEvent_t maximizedEvent = nullptr, onMinimizedEvent_t = nullptr,
+			onMaximizedEvent_t maximizedEvent = nullptr, onMinimizedEvent_t minimizedEvent = nullptr,
 			onFocusEvent_t focusEvent = nullptr,
 			onMovedEvent_t movedEvent = nullptr,
 			onResizeEvent_t resizeEvent = nullptr,
@@ -4361,7 +4366,7 @@ private:
 		LINUX_DECORATOR_CLOSE = 1L << 5,
 	};
 
-	const Display*		currentDisplay;
+	Display*			currentDisplay;
 	XEvent				currentEvent;
 	
 	static window_t* GetWindowByHandle( Window windowHandle )
@@ -4557,13 +4562,12 @@ private:
 
 		XSetWMProtocols( instance->currentDisplay, window->windowHandle, &window->AtomClose, true );	
 
-		Linux_InitializeGL( window );
-		return true;
+		Platform_InitializeGL( window );
 	}
 
 	static void Linux_ShutdownWindow( window_t* window )
 	{
-
+		XDestroyWindow(instance->currentDisplay, window->windowHandle);	
 	}
 
 	static void Linux_Shutdown( void )
@@ -4615,8 +4619,8 @@ private:
 
 			case KeyPress:
 			{
-				unsigned int functionKeysym = XKeycodeToKeysym( 
-					instance->currentDisplay, currentEvent.xkey.keycode, 1 );
+				unsigned int functionKeysym = XkbKeycodeToKeysym( 
+					instance->currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 				if ( functionKeysym <= 255 )
 				{
@@ -4652,10 +4656,11 @@ private:
 						nextEvent.xkey.time == currentEvent.xkey.time &&
 						nextEvent.xkey.keycode == currentEvent.xkey.keycode )
 					{
-						unsigned int functionKeysym = XKeycodeToKeysym( instance->currentDisplay,
-						nextEvent.xkey.keycode, 1 );
+						unsigned int functionKeysym = XkbKeycodeToKeysym( 
+							instance->currentDisplay, currentEvent.xkey.keycode, 0, 
+							currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
-						XNextEvent( instance()->currentDisplay, &currentEvent );
+						XNextEvent( instance->currentDisplay, &currentEvent );
 						window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_DOWN );
 						isRetriggered = true;
 					}
@@ -4663,8 +4668,8 @@ private:
 
 				if ( !isRetriggered )
 				{
-					unsigned int functionKeysym = XKeycodeToKeysym( instance()->currentDisplay,
-						currentEvent.xkey.keycode, 1 );
+					unsigned int functionKeysym = XkbKeycodeToKeysym( 
+					instance->currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 					if ( functionKeysym <= 255 )
 					{
@@ -4952,7 +4957,7 @@ private:
 					//go through each property and match it to an existing Atomic state
 					for ( unsigned int currentItem = 0; currentItem < numItems; currentItem++ )
 					{
-						long currentProperty = ( ( long* )(  properties ) )[ currentItem ];
+						Atom currentProperty = ( ( long* )(  properties ) )[ currentItem ];
 
 						if ( currentProperty == window->AtomHidden )
 						{
@@ -5447,7 +5452,7 @@ private:
 		}
 	}
 
-	static void Linux_SetWindowIcon( window_t* window, const char* icon, unsigned int width, unsigned int height )
+	static void Linux_SetWindowIcon( void ) /*window_t* window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
 		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_LINUX_FUNCTION_NOT_IMPLEMENTED );
@@ -5471,10 +5476,10 @@ private:
 		};
 
 		int frameBufferCount;
-		unsigned int bestBufferConfig, bestNumSamples = 0;
+		unsigned int bestBufferConfig;//, bestNumSamples = 0;
 		GLXFBConfig* configs = glXChooseFBConfig(instance->currentDisplay, 0, visualAttributes, &frameBufferCount);
 
-		for ( unsigned int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++ )
+		for ( int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++ )
 		{
 			XVisualInfo* visualInfo = glXGetVisualFromFBConfig(instance->currentDisplay, configs[currentConfig]);
 
@@ -5488,7 +5493,7 @@ private:
 				if ( sampleBuffer && samples > -1 )
 				{
 					bestBufferConfig = currentConfig;
-					bestNumSamples = samples;
+					//bestNumSamples = samples;
 				}
 			}
 

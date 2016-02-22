@@ -1,11 +1,19 @@
 #include "TinyWindow.h"
 //#include "TutorialConfig.h"
+void handleKeyPresses(unsigned int key, bool keyState)
+{
+	if(keyState == KEYSTATE_DOWN)
+	{
+		printf("%c \t", key);
+	}
+}
 
 int main()
 {
 	windowManager::Initialize();
 
 	windowManager::AddWindow("Example");
+	windowManager::SetWindowOnKeyEventByName("Example", handleKeyPresses);
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!windowManager::GetWindowShouldCloseByIndex(0))
