@@ -1706,7 +1706,7 @@ public:
 	/**
 	* set the window style preset by name
 	*/
-	static inline bool SetWindowStyleByName( const char* windowName, unsigned int windowStyle )
+	static inline bool SetWindowStyleByName( const char* windowName, tinyWindowStyle_t windowStyle )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1725,7 +1725,7 @@ public:
 	/**
 	* set the window style preset by index
 	*/
-	static inline bool SetWindowStyleByIndex( unsigned int windowIndex, unsigned int windowStyle )
+	static inline bool SetWindowStyleByIndex( unsigned int windowIndex, tinyWindowStyle_t windowStyle )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2302,7 +2302,7 @@ private:
 		int							depthBits;												/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
 		int							stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
 		tinyWindowKeyState_t		keys[KEY_LAST];											/**< Record of keys that are either pressed or released in the respective window */
-		tinyWindowButtonState_t		mouseButton[tinyWindowMouseButton_t::LAST];				/**< Record of mouse buttons that are either presses or released */
+		tinyWindowButtonState_t		mouseButton[(unsigned int)tinyWindowMouseButton_t::LAST];				/**< Record of mouse buttons that are either presses or released */
 		unsigned int				resolution[ 2 ];										/**< Resolution/Size of the window stored in an array */
 		unsigned int				position[ 2 ];											/**< Position of the Window relative to the screen co-ordinates */
 		unsigned int				mousePosition[ 2 ];										/**< Position of the Mouse cursor relative to the window co-ordinates */
@@ -2556,7 +2556,7 @@ private:
 			window->windowHandle, window->windowHandle,
 			window->position[0], window->position[1],
 			window->resolution[0], window->resolution[1],
-			window->mousePosition[0], window->mousePosition[1]);
+			x, y);
 #endif
 	}
 
@@ -2596,7 +2596,7 @@ private:
 		currentEvent.xclient.message_type = window->AtomState;
 		currentEvent.xclient.format = 32;
 		currentEvent.xclient.window = window->windowHandle;
-		currentEvent.xclient.data.l[0] = window->currentState == WINDOWSTATE_FULLSCREEN;
+		currentEvent.xclient.data.l[0] = window->currentState == tinyWindowState_t::FULLSCREEN;
 		currentEvent.xclient.data.l[1] = window->AtomFullScreen;
 
 		XSendEvent(instance->currentDisplay,
@@ -2645,7 +2645,7 @@ private:
 			currentEvent.xclient.message_type = window->AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
+			currentEvent.xclient.data.l[0] = (window->currentState == tinyWindowState_t::MAXIMIZED);
 			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
 			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
 
@@ -2668,7 +2668,7 @@ private:
 			currentEvent.xclient.message_type = window->AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == WINDOWSTATE_MAXIMIZED);
+			currentEvent.xclient.data.l[0] = (window->currentState == tinyWindowState_t::MAXIMIZED);
 			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
 			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
 
@@ -2718,7 +2718,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowStyle(window_t* window, unsigned int windowStyle)
+	static inline void Platform_SetWindowStyle(window_t* window, tinyWindowStyle_t windowStyle)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		switch (windowStyle)
@@ -2752,7 +2752,7 @@ private:
 #elif defined(__linux__)
 		switch (windowStyle)
 		{
-		case WINDOWSTYLE_DEFAULT:
+			case tinyWindowStyle_t::DEFAULT:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
@@ -2766,7 +2766,7 @@ private:
 			break;
 		}
 
-		case WINDOWSTYLE_BARE:
+			case tinyWindowStyle_t::BARE:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = (1L << 2);
@@ -2779,7 +2779,7 @@ private:
 			break;
 		}
 
-		case WINDOWSTYLE_POPUP:
+			case tinyWindowStyle_t::POPUP:
 		{
 			window->decorators = 0;
 			window->currentWindowStyle = (1L << 2);
@@ -3041,7 +3041,7 @@ private:
 		window->windowHandle = nullptr;
 		window->glRenderingContextHandle = nullptr;
 #elif defined(__linux__)
-		if (window->currentState == WINDOWSTATE_FULLSCREEN)
+		if (window->currentState == tinyWindowState_t::FULLSCREEN)
 		{
 			RestoreWindowByName(window->name);
 		}
@@ -4238,7 +4238,7 @@ private:
 				{
 				case 1:
 				{
-					window->mouseButton[ tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
@@ -4249,7 +4249,7 @@ private:
 
 				case 2:
 				{
-					window->mouseButton[ tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
@@ -4260,7 +4260,7 @@ private:
 
 				case 3:
 				{
-					window->mouseButton[ tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
@@ -4271,22 +4271,22 @@ private:
 
 				case 4:
 				{
-					window->mouseButton[ MOUSE_SCROLL_UP ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::UP ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
-						window->mouseWheelEvent( MOUSE_SCROLL_DOWN );
+						window->mouseWheelEvent( tinyWindowMouseScroll_t::DOWN );
 					}
 					break;
 				}
 
 				case 5:
 				{
-					window->mouseButton[ MOUSE_SCROLL_DOWN ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::DOWN ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
-						window->mouseWheelEvent( MOUSE_SCROLL_DOWN );
+						window->mouseWheelEvent( tinyWindowMouseScroll_t::DOWN );
 					}
 					break;
 				}
@@ -4308,7 +4308,7 @@ private:
 				case 1:
 				{
 					//the left mouse button was released
-					window->mouseButton[ tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::UP;
+					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
@@ -4320,7 +4320,7 @@ private:
 				case 2:
 				{
 					//the middle mouse button was released
-					window->mouseButton[ tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::UP;
+					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
@@ -4332,7 +4332,7 @@ private:
 				case 3:
 				{
 					//the right mouse button was released
-					window->mouseButton[ tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::UP;
+					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
@@ -4344,14 +4344,14 @@ private:
 				case 4:
 				{
 					//the mouse wheel was scrolled up
-					window->mouseButton[ MOUSE_SCROLL_UP ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::UP ] = tinyWindowButtonState_t::DOWN;
 					break;
 				}
 
 				case 5:
 				{
 					//the mouse wheel was scrolled down
-					window->mouseButton[ MOUSE_SCROLL_DOWN ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::DOWN ] = tinyWindowButtonState_t::DOWN;
 					break;
 				}
 
