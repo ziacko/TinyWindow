@@ -32,10 +32,11 @@
 const int DEFAULT_WINDOW_WIDTH = 1280;
 const int DEFAULT_WINDOW_HEIGHT = 720;
 
-enum tinyWindowKeyState_t
+enum class tinyWindowKeyState_t
 {
-	KEYSTATE_UP = 0,				/**< the key is currently up */
-	KEYSTATE_DOWN,					/**< the key is currently down */
+	UP = 0,				/**< the key is currently up */
+	DOWN,				/**< the key is currently down */
+	BAD = -1,			/**< if get key state fails (could not name it ERROR) */
 };
 
 enum tinyWindowKey_t
@@ -100,39 +101,39 @@ enum tinyWindowKey_t
 	KEY_LAST = KEY_ESCAPE,			/**< the last key to be supported */
 };
 
-enum tinyWindowButtonState_t
+enum class tinyWindowButtonState_t
 {
-	MOUSE_BUTTONUP = 0,				/**< the mouse button is currently up */
-	MOUSE_BUTTONDOWN				/**< the mouse button is currently down */
+	UP = 0,				/**< the mouse button is currently up */
+	DOWN				/**< the mouse button is currently down */
 };
 
-enum tinyWindowMouseButton_t
+enum class tinyWindowMouseButton_t
 {
-	MOUSE_LEFTBUTTON = 0,			/**< the left mouse button */
-	MOUSE_RIGHTBUTTON,				/**< the right mouse button */
-	MOUSE_MIDDLEBUTTON,				/**< the middle mouse button / ScrollWheel */
-	MOUSE_LAST,						/**< the last mouse button to be supported */
+	LEFT = 0,			/**< the left mouse button */
+	RIGHT,				/**< the right mouse button */
+	MIDDLE,				/**< the middle mouse button / ScrollWheel */
+	LAST,				/**< the last mouse button to be supported */
 };
 
-enum tinyWindowMouseScroll_t
+enum class tinyWindowMouseScroll_t
 {
-	MOUSE_SCROLL_DOWN = 0,			/**< the mouse wheel up */
-	MOUSE_SCROLL_UP					/**< the mouse wheel down */
+	DOWN = 0,			/**< the mouse wheel up */
+	UP					/**< the mouse wheel down */
 };
 
-enum tinyWindowStyle_t
+enum class tinyWindowStyle_t
 {
-	WINDOWSTYLE_BARE = 1,			/**< the window has no decorators but the window border and title bar */
-	WINDOWSTYLE_DEFAULT,			/**< the default window style for the respective platform */
-	WINDOWSTYLE_POPUP,				/**< the window has no decorators */
+	BARE = 1,			/**< the window has no decorators but the window border and title bar */
+	DEFAULT,			/**< the default window style for the respective platform */
+	POPUP,				/**< the window has no decorators */
 };
 
-enum tinyWindowState_t
+enum class tinyWindowState_t
 {
-	WINDOWSTATE_NORMAL = 0,			/**< the window is in its default state */
-	WINDOWSTATE_MAXIMIZED,			/**< the window is currently maximized */
-	WINDOWSTATE_MINIMIZED,			/**< the window is currently minimized */
-	WINDOWSTATE_FULLSCREEN,			/**< the window is currently full screen */
+	NORMAL = 0,			/**< the window is in its default state */
+	MAXIMIZED,			/**< the window is currently maximized */
+	MINIMIZED,			/**< the window is currently minimized */
+	FULLSCREEN,			/**< the window is currently full screen */
 };
 
 enum tinyWindowDecorator_t
@@ -146,31 +147,31 @@ enum tinyWindowDecorator_t
 	DECORATOR_SIZEABLEBORDER = 0x40,		/**< the sizable border decoration of the window */
 };
 
-enum tinyWindowError_t
+enum class tinyWindowError_t
 {
 	TINYWINDOW_ERROR = -1,
-	TINYWINDOW_ERROR_NO_CONTEXT = 0,							/**< if a window tries to use a graphical function without a context */
-	TINYWINDOW_ERROR_INVALID_WINDOW_NAME,						/**< if an invalid window name was given */
-	TINYWINDOW_ERROR_INVALID_ICON_PATH,							/**< if an invalid icon path was given */
-	TINYWINDOW_ERROR_INVALID_WINDOW_INDEX,						/**< if an invalid window index was given */
-	TINYWINDOW_ERROR_INVALID_WINDOW_STATE,						/**< if an invalid window state was given */
-	TINYWINDOW_ERROR_INVALID_RESOLUTION,						/**< if an invalid window resolution was given */
-	TINYWINDOW_ERROR_INVALID_CONTEXT,							/**< if the OpenGL context for the window is invalid */
-	TINYWINDOW_ERROR_EXISTING_CONTEXT,							/**< if the window already has an OpenGL context */
-	TINYWINDOW_ERROR_NOT_INITIALIZED,							/**< if the window is being used without being initialized */
-	TINYWINDOW_ERROR_ALREADY_INITIALIZED,						/**< if the window was already initialized */
-	TINYWINDOW_ERROR_INVALID_TITLEBAR,							/**< if the Title-bar text given was invalid */
-	TINYWINDOW_ERROR_INVALID_CALLBACK,							/**< if the given event callback was invalid */
-	TINYWINDOW_ERROR_WINDOW_NOT_FOUND,							/**< if the window was not found in the window manager */
-	TINYWINDOW_ERROR_INVALID_WINDOWSTYLE,						/**< if the window style gives is invalid */
-	TINYWINDOW_ERROR_FUNCTION_NOT_IMPLEMENTED,					/**< if the function has not yet been implemented in the current version of the API */
-	TINYWINDOW_ERROR_LINUX_CANNOT_CONNECT_X_SERVER,				/**< Linux: if cannot connect to an X11 server */
-	TINYWINDOW_ERROR_LINUX_INVALID_VISUALINFO,					/**< Linux: if visual information given was invalid */
-	TINYWINDOW_ERROR_LINUX_CANNOT_CREATE_WINDOW,				/**< Linux: when X11 fails to create a new window */
-	TINYWINDOW_ERROR_LINUX_FUNCTION_NOT_IMPLEMENTED,			/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
-	TINYWINDOW_ERROR_WINDOWS_CANNOT_CREATE_WINDOW,				/**< Windows: when Win32 cannot create a window */
-	TINYWINDOW_ERROR_WINDOWS_CANNOT_INITIALIZE,					/**< Windows: when Win32 cannot initialize */
-	TINYWINDOW_ERROR_WINDOWS_FUNCTION_NOT_IMPLEMENTED,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
+	NO_CONTEXT = 0,							/**< if a window tries to use a graphical function without a context */
+	INVALID_WINDOW_NAME,					/**< if an invalid window name was given */
+	INVALID_ICON_PATH,						/**< if an invalid icon path was given */
+	INVALID_WINDOW_INDEX,					/**< if an invalid window index was given */
+	INVALID_WINDOW_STATE,					/**< if an invalid window state was given */
+	INVALID_RESOLUTION,						/**< if an invalid window resolution was given */
+	INVALID_CONTEXT,						/**< if the OpenGL context for the window is invalid */
+	EXISTING_CONTEXT,						/**< if the window already has an OpenGL context */
+	NOT_INITIALIZED,						/**< if the window is being used without being initialized */
+	ALREADY_INITIALIZED,					/**< if the window was already initialized */
+	INVALID_TITLEBAR,						/**< if the Title-bar text given was invalid */
+	INVALID_CALLBACK,						/**< if the given event callback was invalid */
+	WINDOW_NOT_FOUND,						/**< if the window was not found in the window manager */
+	INVALID_WINDOWSTYLE,					/**< if the window style gives is invalid */
+	FUNCTION_NOT_IMPLEMENTED,				/**< if the function has not yet been implemented in the current version of the API */
+	LINUX_CANNOT_CONNECT_X_SERVER,			/**< Linux: if cannot connect to an X11 server */
+	LINUX_INVALID_VISUALINFO,				/**< Linux: if visual information given was invalid */
+	LINUX_CANNOT_CREATE_WINDOW,				/**< Linux: when X11 fails to create a new window */
+	LINUX_FUNCTION_NOT_IMPLEMENTED,			/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
+	WINDOWS_CANNOT_CREATE_WINDOW,			/**< Windows: when Win32 cannot create a window */
+	WINDOWS_CANNOT_INITIALIZE,				/**< Windows: when Win32 cannot initialize */
+	WINDOWS_FUNCTION_NOT_IMPLEMENTED,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 };
 
 const int LINUX_FUNCTION = 1;
@@ -205,131 +206,131 @@ static void TinyWindow_PrintWarningMessage( GLuint warningNumber )
 /**
 * print out the error associated with the given error number	
 */
-static void TinyWindow_PrintErrorMessage( const unsigned int errorNumber )
+static void TinyWindow_PrintErrorMessage(const tinyWindowError_t errorNumber)
 {
 	switch ( errorNumber )
 	{
-		case TINYWINDOW_ERROR_NO_CONTEXT:
+		case tinyWindowError_t::NO_CONTEXT:
 		{
 			printf( "Error: An OpenGL context must first be created( initialize the window ) \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_WINDOW_NAME:
+		case tinyWindowError_t::INVALID_WINDOW_NAME:
 		{
 			printf( "Error: invalid window name \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_ICON_PATH:
+		case tinyWindowError_t::INVALID_ICON_PATH:
 		{
 			printf( "Error: invalid icon path \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_WINDOW_INDEX:
+		case tinyWindowError_t::INVALID_WINDOW_INDEX:
 		{
 			printf( "Error: invalid window index \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_WINDOW_STATE:
+		case tinyWindowError_t::INVALID_WINDOW_STATE:
 		{
 			printf( "Error: invalid window state \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_RESOLUTION:
+		case tinyWindowError_t::INVALID_RESOLUTION:
 		{
 			printf( "Error: invalid resolution \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_CONTEXT:
+		case tinyWindowError_t::INVALID_CONTEXT:
 		{
 			printf( "Error: Failed to create OpenGL context \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_EXISTING_CONTEXT:
+		case tinyWindowError_t::EXISTING_CONTEXT:
 		{
 			printf( "Error: context already created \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_NOT_INITIALIZED:
+		case tinyWindowError_t::NOT_INITIALIZED:
 		{
 			printf( "Error: Window manager not initialized \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_ALREADY_INITIALIZED:
+		case tinyWindowError_t::ALREADY_INITIALIZED:
 		{
 			printf( "Error: window has already been initialized \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_TITLEBAR:
+		case tinyWindowError_t::INVALID_TITLEBAR:
 		{
 			printf( "Error: invalid title bar name ( cannot be null or nullptr ) \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_CALLBACK:
+		case tinyWindowError_t::INVALID_CALLBACK:
 		{
 			printf( "Error: invalid event callback given \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_WINDOW_NOT_FOUND:
+		case tinyWindowError_t::WINDOW_NOT_FOUND:
 		{
 			printf( "Error: window was not found \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_INVALID_WINDOWSTYLE:
+		case tinyWindowError_t::INVALID_WINDOWSTYLE:
 		{
 			printf( "Error: invalid window style given \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_FUNCTION_NOT_IMPLEMENTED:
+		case tinyWindowError_t::FUNCTION_NOT_IMPLEMENTED:
 		{
 			printf( "Error: I'm sorry but this function has not been implemented yet :( \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_LINUX_CANNOT_CONNECT_X_SERVER:
+		case tinyWindowError_t::LINUX_CANNOT_CONNECT_X_SERVER:
 		{
 			printf( "Error: cannot connect to X server \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_LINUX_INVALID_VISUALINFO:
+		case tinyWindowError_t::LINUX_INVALID_VISUALINFO:
 		{
 			printf( "Error: Invalid visual information given \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_LINUX_CANNOT_CREATE_WINDOW:
+		case tinyWindowError_t::LINUX_CANNOT_CREATE_WINDOW:
 		{
 			printf( "Error: failed to create window \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_LINUX_FUNCTION_NOT_IMPLEMENTED:
+		case tinyWindowError_t::LINUX_FUNCTION_NOT_IMPLEMENTED:
 		{
 			printf( "Error: function not implemented on linux platform yet. sorry :( \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_WINDOWS_CANNOT_CREATE_WINDOW:
+		case tinyWindowError_t::WINDOWS_CANNOT_CREATE_WINDOW:
 		{
 			printf( "Error: failed to create window \n" );
 			break;
 		}
 
-		case TINYWINDOW_ERROR_WINDOWS_FUNCTION_NOT_IMPLEMENTED:
+		case tinyWindowError_t::WINDOWS_FUNCTION_NOT_IMPLEMENTED:
 		{
 			printf( "Error: function not implemented on Windows platform yet. sorry ;( \n" );
 			break;
@@ -387,7 +388,7 @@ public:
 			delete instance;
 
 		}
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 	}
 
 	/**
@@ -414,11 +415,11 @@ public:
 
 				return instance;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOW_NAME);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_WINDOW_NAME);
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 
@@ -432,8 +433,8 @@ public:
 			return instance->windowList.size();
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return TINYWINDOW_ERROR;
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return (int)tinyWindowError_t::TINYWINDOW_ERROR;
 	}
 
 	/**
@@ -448,7 +449,7 @@ public:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -461,7 +462,7 @@ public:
 			return instance->screenMousePosition;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 
@@ -486,7 +487,7 @@ public:
 #endif
 			return true;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -514,7 +515,7 @@ public:
 #endif
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 	/**
@@ -540,7 +541,7 @@ public:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -557,10 +558,10 @@ public:
 				height = GetWindowByName( windowName )->resolution[ 1 ];
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -577,11 +578,11 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -596,11 +597,11 @@ public:
 			{
 				return GetWindowByName( windowName )->resolution;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 	/**
@@ -614,11 +615,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->resolution;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 
@@ -638,11 +639,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_INVALID_CONTEXT );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::INVALID_CONTEXT );
 		return false;
 	}
 	/**
@@ -661,10 +662,10 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -681,10 +682,10 @@ public:
 				y = GetWindowByName( windowName )->position[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -700,10 +701,10 @@ public:
 				y = GetWindowByIndex( windowIndex )->position[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -718,11 +719,11 @@ public:
 			{
 				return GetWindowByName( windowName )->position;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 	/**
@@ -736,10 +737,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->position;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 
@@ -757,14 +758,14 @@ public:
 				window_t* window = GetWindowByName(windowName);
 
 				Platform_SetWindowPosition(window, x, y);
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_WINDOW_NOT_FOUND );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::WINDOW_NOT_FOUND );
 			return false;
 		}
 		
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -783,11 +784,11 @@ public:
 				return true;
 			}
 
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -804,10 +805,10 @@ public:
 				y = GetWindowByName( windowName )->mousePosition[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -823,11 +824,11 @@ public:
 				y = GetWindowByIndex( windowIndex )->mousePosition[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return (bool)TINYWINDOW_ERROR;
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return (bool)tinyWindowError_t::TINYWINDOW_ERROR;
 	}
 
 	/**
@@ -841,10 +842,10 @@ public:
 			{
 				return GetWindowByName( windowName )->mousePosition;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 	/**
@@ -860,7 +861,7 @@ public:
 			}
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}
 
@@ -879,11 +880,11 @@ public:
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -902,17 +903,17 @@ public:
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
 	/**
 	 * returns the current state of the given key relative to the given window
 	 */
-	static inline bool WindowGetKeyByName( const char* windowName, unsigned int key )
+	static inline tinyWindowKeyState_t WindowGetKeyByName( const char* windowName, unsigned int key )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -921,16 +922,16 @@ public:
 				return GetWindowByName( windowName )->keys[ key ];
 			}
 
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
-			return false;
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return tinyWindowKeyState_t::BAD;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return false;
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return tinyWindowKeyState_t::BAD;
 	}
 	/**
 	 * returns the current state of the given key relative to the given window
 	 */
-	static inline bool WindowGetKeyByIndex( unsigned int windowIndex, unsigned int key )
+	static inline tinyWindowKeyState_t WindowGetKeyByIndex(unsigned int windowIndex, unsigned int key)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -938,11 +939,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->keys[ key ];
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
-			return false;
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return tinyWindowKeyState_t::BAD;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return false;
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return tinyWindowKeyState_t::BAD;
 	}
 
 	/**
@@ -956,11 +957,11 @@ public:
 			{
 				return GetWindowByName( windowName )->shouldClose;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -974,11 +975,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->shouldClose;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -996,11 +997,11 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1016,10 +1017,10 @@ public:
 				Platform_SwapBuffers(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1037,10 +1038,10 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1057,10 +1058,10 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NO_CONTEXT );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
 		return false;
 	}
 
@@ -1073,12 +1074,12 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return ( GetWindowByName( windowName )->currentState == WINDOWSTATE_FULLSCREEN );
+				return ( GetWindowByName( windowName )->currentState == tinyWindowState_t::FULLSCREEN );
 			}
 
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NO_CONTEXT );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
 		return false;
 	}
 	/**
@@ -1090,12 +1091,12 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return ( GetWindowByIndex( windowIndex )->currentState == WINDOWSTATE_FULLSCREEN );
+				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::FULLSCREEN);
 			}
 
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NO_CONTEXT );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
 		return false;
 	}	
 
@@ -1110,15 +1111,15 @@ public:
 			{
 				window_t* window = GetWindowByName(windowName);
 
-				window->currentState = (newState == true) ? WINDOWSTATE_FULLSCREEN : WINDOWSTATE_NORMAL;
+				window->currentState = (newState == true) ? tinyWindowState_t::FULLSCREEN : tinyWindowState_t::NORMAL;
 
 				Platform_SetFullScreen(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/*
@@ -1131,15 +1132,15 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				window_t* window = GetWindowByIndex(windowIndex);
-				window->currentState = (newState == true) ? WINDOWSTATE_FULLSCREEN : WINDOWSTATE_NORMAL;
+				window->currentState = (newState == true) ? tinyWindowState_t::FULLSCREEN : tinyWindowState_t::NORMAL;
 
 				Platform_SetFullScreen(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1152,12 +1153,12 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return ( GetWindowByName( windowName )->currentState == WINDOWSTATE_MINIMIZED );
+				return (GetWindowByName(windowName)->currentState == tinyWindowState_t::MINIMIZED);
 			}
-			return (bool)TINYWINDOW_ERROR;
+			return (bool)tinyWindowError_t::TINYWINDOW_ERROR;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return (bool)TINYWINDOW_ERROR;
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return (bool)tinyWindowError_t::TINYWINDOW_ERROR;
 	}
 	/**
 	 * returns whether the given window is minimized
@@ -1168,12 +1169,12 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return ( GetWindowByIndex( windowIndex )->currentState == WINDOWSTATE_MINIMIZED );
+				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::MINIMIZED);
 			}
-			return (bool)TINYWINDOW_ERROR;
+			return (bool)tinyWindowError_t::TINYWINDOW_ERROR;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
-		return (bool)TINYWINDOW_ERROR;
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return (bool)tinyWindowError_t::TINYWINDOW_ERROR;
 	}
 
 	/**
@@ -1189,10 +1190,10 @@ public:
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NO_CONTEXT );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
 		return false;
 	}
 	/**
@@ -1208,10 +1209,10 @@ public:
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1224,13 +1225,13 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return ( GetWindowByName( windowName )->currentState == WINDOWSTATE_MAXIMIZED );
+				return (GetWindowByName(windowName)->currentState == tinyWindowState_t::MAXIMIZED);
 			}
 
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1242,12 +1243,12 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return ( GetWindowByIndex( windowIndex )->currentState == WINDOWSTATE_MAXIMIZED );
+				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::MAXIMIZED);
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	
@@ -1264,10 +1265,10 @@ public:
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1283,10 +1284,10 @@ public:
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -1301,10 +1302,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->name;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return nullptr;
 	}	
 	/**
@@ -1318,10 +1319,10 @@ public:
 			{
 				return GetWindowByName( windowName )->iD;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1340,13 +1341,13 @@ public:
 					Platform_SetWindowTitleBar(window, newTitle);
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOW_NAME);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_WINDOW_NAME);
 			return false;
 		}			
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1364,14 +1365,14 @@ public:
 					Platform_SetWindowTitleBar(window, newName);
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOW_NAME);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_WINDOW_NAME);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1380,7 +1381,7 @@ public:
 	*/
 	static inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_FUNCTION_NOT_IMPLEMENTED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::FUNCTION_NOT_IMPLEMENTED);
 		return false;
 	/*	if ( GetInstance()->IsInitialized() )
 		{
@@ -1395,15 +1396,15 @@ public:
 #endif
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 				return false;
 			}
 
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_ICON_PATH);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::TINYWINDOW_ERROR_INVALID_ICON_PATH);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::TINYWINDOW_ERROR_NOT_INITIALIZED );
 		return false;*/
 	}
 	/**
@@ -1411,7 +1412,7 @@ public:
 	*/
 	static inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
 	{
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_FUNCTION_NOT_IMPLEMENTED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::FUNCTION_NOT_IMPLEMENTED);
 		return false;
 		/*if ( GetInstance()->IsInitialized() )
 		{
@@ -1426,13 +1427,13 @@ public:
 #endif
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_ICON_PATH);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::TINYWINDOW_ERROR_INVALID_ICON_PATH);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::TINYWINDOW_ERROR_NOT_INITIALIZED );
 		return false;*/
 	}
 
@@ -1447,10 +1448,10 @@ public:
 			{
 				return GetWindowByName( windowName )->inFocus;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1464,11 +1465,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->inFocus;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1485,10 +1486,10 @@ public:
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1504,10 +1505,10 @@ public:
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -1524,10 +1525,10 @@ public:
 				Platform_RestoreWindow(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1543,10 +1544,10 @@ public:
 				Platform_RestoreWindow(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -1572,14 +1573,14 @@ public:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOWS_CANNOT_INITIALIZE);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOWS_CANNOT_INITIALIZE);
 		return false;
 #elif defined(__linux__)
 		instance->currentDisplay = XOpenDisplay(0);
 
 		if (!instance->currentDisplay)
 		{
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_LINUX_CANNOT_CONNECT_X_SERVER);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::LINUX_CANNOT_CONNECT_X_SERVER);
 			return false;
 		}
 
@@ -1633,7 +1634,7 @@ public:
 
 		else
 		{
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		}
 	}
 
@@ -1661,7 +1662,7 @@ public:
 
 		else
 		{
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		}
 	}
 
@@ -1677,10 +1678,10 @@ public:
 				ShutdownWindow( GetWindowByName( windowName ) );
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1695,10 +1696,10 @@ public:
 				ShutdownWindow( GetWindowByIndex( windowIndex ) );
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1715,10 +1716,10 @@ public:
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1734,10 +1735,10 @@ public:
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1754,10 +1755,10 @@ public:
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1773,10 +1774,10 @@ public:
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -1793,10 +1794,10 @@ public:
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1812,17 +1813,17 @@ public:
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
 	/**
 	* set the window on key event callback by name
 	*/
-	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, bool)> onKey)
+	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, tinyWindowKeyState_t)> onKey)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1833,20 +1834,20 @@ public:
 					GetWindowByName(windowName)->keyEvent = onKey;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
 
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
 	* set the window on key event callback by index
 	*/
-	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, bool)> onKey)
+	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, tinyWindowKeyState_t)> onKey)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1857,20 +1858,20 @@ public:
 					GetWindowByIndex(windowIndex)->keyEvent = onKey;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
 	/**
 	* set the window on mouse button event callback by name
 	*/
-	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(unsigned int, bool)> onMouseButton)
+	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> onMouseButton)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1881,19 +1882,19 @@ public:
 					GetWindowByName(windowName)->mouseButtonEvent = onMouseButton;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
 	* set the window on mouse button event callback by index
 	*/
-	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, bool)> onMouseButton)
+	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> onMouseButton)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1904,20 +1905,20 @@ public:
 					GetWindowByIndex(windowIndex)->mouseButtonEvent = onMouseButton;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
 	/**
 	* set the window on mouse wheel event callback by name
 	*/
-	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(unsigned int)> onMouseWheel)
+	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(tinyWindowMouseScroll_t)> onMouseWheel)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1928,19 +1929,19 @@ public:
 					GetWindowByName(windowName)->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
 	* set the window on mouse wheel event callback by index
 	*/
-	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(unsigned int)> onMouseWheel)
+	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(tinyWindowMouseScroll_t)> onMouseWheel)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1951,13 +1952,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -1975,13 +1976,13 @@ public:
 					GetWindowByName(windowName)->destroyedEvent = onDestroyed;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -1998,13 +1999,13 @@ public:
 					GetWindowByIndex(windowIndex)->destroyedEvent = onDestroyed;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2022,13 +2023,13 @@ public:
 					GetWindowByName(windowName)->maximizedEvent = onMaximized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -2045,13 +2046,13 @@ public:
 					GetWindowByIndex(windowIndex)->maximizedEvent = onMaximized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2069,13 +2070,13 @@ public:
 					GetWindowByName(windowName)->minimizedEvent = onMinimized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -2092,13 +2093,13 @@ public:
 					GetWindowByIndex(windowIndex)->minimizedEvent = onMinimized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2116,13 +2117,13 @@ public:
 					GetWindowByName(windowName)->focusEvent = onFocus;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -2139,13 +2140,13 @@ public:
 					GetWindowByIndex(windowIndex)->focusEvent = onFocus;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2163,14 +2164,14 @@ public:
 					GetWindowByName(windowName)->movedEvent = onMoved;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
 
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -2187,13 +2188,13 @@ public:
 					GetWindowByIndex(windowIndex)->movedEvent = onMoved;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2211,13 +2212,13 @@ public:
 					GetWindowByName(windowName)->resizeEvent = onResize;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -2234,13 +2235,13 @@ public:
 					GetWindowByIndex(windowIndex)->resizeEvent = onResize;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2258,13 +2259,13 @@ public:
 					GetWindowByName(windowName)->mouseMoveEvent = onMouseMove;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 	/**
@@ -2281,13 +2282,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseMoveEvent = onMouseMove;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CALLBACK);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CALLBACK);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
@@ -2295,29 +2296,29 @@ private:
 
 	struct window_t
 	{
-		const char*																			name;							/**< Name of the window */
-		unsigned int				iD;								/**< ID of the Window. ( where it belongs in the window manager ) */
-		int							colorBits;						/**< color format of the window. ( defaults to 32 bit color ) */
-		int							depthBits;						/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
-		int							stencilBits;					/**< Size of the stencil buffer, ( defaults to 8 bit ) */
-		bool						keys[ KEY_LAST ];				/**< Record of keys that are either pressed or released in the respective window */
-		bool						mouseButton[ MOUSE_LAST ];		/**< Record of mouse buttons that are either presses or released */
-		unsigned int				resolution[ 2 ];				/**< Resolution/Size of the window stored in an array */
-		unsigned int				position[ 2 ];					/**< Position of the Window relative to the screen co-ordinates */
-		unsigned int				mousePosition[ 2 ];				/**< Position of the Mouse cursor relative to the window co-ordinates */
-		bool						shouldClose;					/**< Whether the Window should be closing */
-		bool						inFocus;						/**< Whether the Window is currently in focus( if it is the current window be used ) */
+		const char*					name;													/**< Name of the window */
+		unsigned int				iD;														/**< ID of the Window. ( where it belongs in the window manager ) */
+		int							colorBits;												/**< color format of the window. ( defaults to 32 bit color ) */
+		int							depthBits;												/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
+		int							stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
+		tinyWindowKeyState_t		keys[KEY_LAST];											/**< Record of keys that are either pressed or released in the respective window */
+		tinyWindowButtonState_t		mouseButton[tinyWindowMouseButton_t::LAST];				/**< Record of mouse buttons that are either presses or released */
+		unsigned int				resolution[ 2 ];										/**< Resolution/Size of the window stored in an array */
+		unsigned int				position[ 2 ];											/**< Position of the Window relative to the screen co-ordinates */
+		unsigned int				mousePosition[ 2 ];										/**< Position of the Mouse cursor relative to the window co-ordinates */
+		bool						shouldClose;											/**< Whether the Window should be closing */
+		bool						inFocus;												/**< Whether the Window is currently in focus( if it is the current window be used ) */
 
-		bool						initialized;					/**< whether the window has been successfully initialized */
-		bool						contextCreated;					/**< whether the OpenGL context has been successfully created */
-		bool						isCurrentContext;				/**< whether the window is the current window being drawn to */
+		bool						initialized;											/**< whether the window has been successfully initialized */
+		bool						contextCreated;											/**< whether the OpenGL context has been successfully created */
+		bool						isCurrentContext;										/**< whether the window is the current window being drawn to */
 
-		unsigned int				currentState;					/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-		unsigned int				currentWindowStyle;				/**< the current style of the window */
+		tinyWindowState_t			currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
+		unsigned int				currentWindowStyle;										/**< the current style of the window */
 
-		std::function<void(unsigned int, bool)>												keyEvent;					/**< this is the callback to be used when a key has been pressed */
-		std::function<void(unsigned int, bool)>												mouseButtonEvent;			/**< this is the callback to be used when a mouse button has been pressed */
-		std::function<void(unsigned int)>													mouseWheelEvent;			/**< this is the callback to be used when the mouse wheel has been scrolled. */
+		std::function<void(unsigned int, tinyWindowKeyState_t)>								keyEvent;					/**< this is the callback to be used when a key has been pressed */
+		std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)>				mouseButtonEvent;			/**< this is the callback to be used when a mouse button has been pressed */
+		std::function<void(tinyWindowMouseScroll_t)>										mouseWheelEvent;			/**< this is the callback to be used when the mouse wheel has been scrolled. */
 		std::function<void(void)>															destroyedEvent;				/**< this is the callback to be used when the window has been closed in a non-programmatic fashion */
 		std::function<void(void)>															maximizedEvent;				/**< this is the callback to be used when the window has been maximized in a non-programmatic fashion */
 		std::function<void(void)>															minimizedEvent;				/**< this is the callback to be used when the window has been minimized in a non-programmatic fashion */
@@ -2377,9 +2378,9 @@ private:
 
 		window_t(const char* name = nullptr, unsigned int iD = 0,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-			bool shouldClose = false, unsigned int currentState = WINDOWSTATE_NORMAL,
-			std::function<void(unsigned int, bool)> keyEvent = nullptr,
-			std::function<void(unsigned int, bool)> mouseButtonEvent = nullptr, std::function<void(unsigned int)> mouseWheelEvent = nullptr,
+			bool shouldClose = false, tinyWindowState_t currentState = tinyWindowState_t::NORMAL,
+			std::function<void(unsigned int, tinyWindowKeyState_t)> keyEvent = nullptr,
+			std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> mouseButtonEvent = nullptr, std::function<void(tinyWindowMouseScroll_t)> mouseWheelEvent = nullptr,
 			std::function<void(void)> destroyedEvent = nullptr, std::function<void(void)> maximizedEvent = nullptr, std::function<void(void)> minimizedEvent = nullptr,
 			std::function<void(bool)> focusEvent = nullptr,
 			std::function<void(unsigned int, unsigned int)> movedEvent = nullptr, std::function<void(unsigned int, unsigned int)> resizeEvent = nullptr,
@@ -2406,7 +2407,7 @@ private:
 
 			initialized = false;
 			contextCreated = false;
-			currentWindowStyle = WINDOWSTYLE_DEFAULT;
+			currentWindowStyle = (unsigned int)tinyWindowStyle_t::DEFAULT;
 
 #if defined( __linux )
 			context = 0;
@@ -2471,7 +2472,7 @@ private:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_CONTEXT);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CONTEXT);
 		return false;
 #elif defined(__linux__)
 		if (!window->context)
@@ -2503,7 +2504,7 @@ private:
 
 		else
 		{
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_EXISTING_CONTEXT);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::EXISTING_CONTEXT);
 			return false;
 		}
 		return false;
@@ -2608,7 +2609,7 @@ private:
 	{
 		if (newState)
 		{
-			window->currentState = WINDOWSTATE_MINIMIZED;
+			window->currentState = tinyWindowState_t::MINIMIZED;
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_MINIMIZE);
@@ -2620,7 +2621,7 @@ private:
 
 		else
 		{
-			window->currentState = WINDOWSTATE_NORMAL;
+			window->currentState = tinyWindowState_t::NORMAL;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(__linux__)
@@ -2633,7 +2634,7 @@ private:
 	{
 		if (newState)
 		{
-			window->currentState = WINDOWSTATE_MAXIMIZED;
+			window->currentState = tinyWindowState_t::MAXIMIZED;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_MAXIMIZE);
 #elif defined(__linux__)
@@ -2656,7 +2657,7 @@ private:
 
 		else
 		{
-			window->currentState = WINDOWSTATE_NORMAL;
+			window->currentState = tinyWindowState_t::NORMAL;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(__linux__)
@@ -2722,20 +2723,20 @@ private:
 #if defined( _WIN32 ) || defined( _WIN64 )
 		switch (windowStyle)
 		{
-		case WINDOWSTYLE_DEFAULT:
+		case tinyWindowStyle_t::DEFAULT:
 		{
 			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER |
 				DECORATOR_CLOSEBUTTON | DECORATOR_MINIMIZEBUTTON | DECORATOR_MAXIMIZEBUTTON);
 			break;
 		}
 
-		case WINDOWSTYLE_POPUP:
+		case tinyWindowStyle_t::POPUP:
 		{
 			EnableWindowDecoratorsByName(window->name, 0);
 			break;
 		}
 
-		case WINDOWSTYLE_BARE:
+		case tinyWindowStyle_t::BARE:
 		{
 			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER);
 			break;
@@ -2743,7 +2744,7 @@ private:
 
 		default:
 		{
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_WINDOWSTYLE);
 			break;
 		}
 		}
@@ -2793,7 +2794,7 @@ private:
 
 		default:
 		{
-			TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_INVALID_WINDOWSTYLE);
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_WINDOWSTYLE);
 			break;
 		}
 		}
@@ -3067,10 +3068,10 @@ private:
 					}
 				}
 			}
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_INVALID_WINDOW_NAME );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::INVALID_WINDOW_NAME );
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -3083,11 +3084,11 @@ private:
 				return true;
 			}
 
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_INVALID_WINDOW_INDEX );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::INVALID_WINDOW_INDEX );
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(TINYWINDOW_ERROR_NOT_INITIALIZED);
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -3250,28 +3251,28 @@ private:
 			{
 			case LEFT_CONTROL_DOWN_LONG:
 			{
-				window->keys[ KEY_LEFTCONTROL ] = KEYSTATE_DOWN;
+				window->keys[ KEY_LEFTCONTROL ] = tinyWindowKeyState_t::DOWN;
 				translatedKey = KEY_LEFTCONTROL;
 				break;
 			}
 
 			case RIGHT_CONTROL_DOWN_LONG:
 			{
-				window->keys[ KEY_RIGHTCONTROL ] = KEYSTATE_DOWN;
+				window->keys[ KEY_RIGHTCONTROL ] = tinyWindowKeyState_t::DOWN;
 				translatedKey = KEY_RIGHTCONTROL;
 				break;
 			}
 
 			case LEFT_SHIFT_DOWN_LONG:
 			{
-				window->keys[ KEY_LEFTSHIFT ] = KEYSTATE_DOWN;
+				window->keys[ KEY_LEFTSHIFT ] = tinyWindowKeyState_t::DOWN;
 				translatedKey = KEY_LEFTSHIFT;
 				break;
 			}
 
 			case RIGHT_SHIFT_DOWN_LONG:
 			{
-				window->keys[ KEY_RIGHTSHIFT ] = KEYSTATE_DOWN;
+				window->keys[ KEY_RIGHTSHIFT ] = tinyWindowKeyState_t::DOWN;
 				translatedKey = KEY_RIGHTSHIFT;
 				break;
 			}
@@ -3279,14 +3280,14 @@ private:
 			default:
 			{
 				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = KEYSTATE_DOWN;
+				window->keys[ translatedKey ] = tinyWindowKeyState_t::DOWN;
 				break;
 			}
 			}
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, KEYSTATE_DOWN );
+				window->keyEvent( translatedKey, tinyWindowKeyState_t::DOWN );
 			}
 			break;
 		}
@@ -3299,28 +3300,28 @@ private:
 			{
 			case LEFT_CONTROL_UP_LONG:
 			{
-				window->keys[ KEY_LEFTCONTROL ] = KEYSTATE_UP;
+				window->keys[ KEY_LEFTCONTROL ] = tinyWindowKeyState_t::UP;
 				translatedKey = KEY_LEFTCONTROL;
 				break;
 			}
 
 			case RIGHT_CONTROL_UP_LONG:
 			{
-				window->keys[ KEY_RIGHTCONTROL ] = KEYSTATE_UP;
+				window->keys[ KEY_RIGHTCONTROL ] = tinyWindowKeyState_t::UP;
 				translatedKey = KEY_RIGHTCONTROL;
 				break;
 			}
 
 			case LEFT_SHIFT_UP_LONG:
 			{
-				window->keys[ KEY_LEFTSHIFT ] = KEYSTATE_UP;
+				window->keys[ KEY_LEFTSHIFT ] = tinyWindowKeyState_t::UP;
 				translatedKey = KEY_LEFTSHIFT;
 				break;
 			}
 
 			case RIGHT_SHIFT_UP_LONG:
 			{
-				window->keys[ KEY_RIGHTSHIFT ] = KEYSTATE_UP;
+				window->keys[ KEY_RIGHTSHIFT ] = tinyWindowKeyState_t::UP;
 				translatedKey = KEY_RIGHTSHIFT;
 				break;
 			}
@@ -3328,14 +3329,14 @@ private:
 			default:
 			{
 				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = KEYSTATE_UP;
+				window->keys[ translatedKey ] = tinyWindowKeyState_t::UP;
 				break;
 			}
 			}
 
 			if (window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, KEYSTATE_UP );
+				window->keyEvent( translatedKey, tinyWindowKeyState_t::UP );
 			}
 			break;
 		}
@@ -3347,7 +3348,7 @@ private:
 			{
 			case LEFT_ALT_DOWN_LONG:
 			{
-				window->keys[ KEY_LEFTALT ] = KEYSTATE_DOWN;
+				window->keys[ KEY_LEFTALT ] = tinyWindowKeyState_t::DOWN;
 				translatedKey = KEY_LEFTALT;
 				break;
 			}
@@ -3355,7 +3356,7 @@ private:
 
 			case RIGHT_ALT_DOWN_LONG:
 			{
-				window->keys[ KEY_RIGHTALT ] = KEYSTATE_DOWN;
+				window->keys[ KEY_RIGHTALT ] = tinyWindowKeyState_t::DOWN;
 				translatedKey = KEY_RIGHTALT;
 			}
 
@@ -3367,7 +3368,7 @@ private:
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, KEYSTATE_DOWN );
+				window->keyEvent( translatedKey, tinyWindowKeyState_t::DOWN );
 			}
 
 			break;
@@ -3380,7 +3381,7 @@ private:
 			{
 			case LEFT_ALT_UP_LONG:
 			{
-				window->keys[ KEY_LEFTALT ] = KEYSTATE_UP;
+				window->keys[ KEY_LEFTALT ] = tinyWindowKeyState_t::UP;
 				translatedKey = KEY_LEFTALT;
 				break;
 			}
@@ -3388,7 +3389,7 @@ private:
 
 			case RIGHT_ALT_UP_LONG:
 			{
-				window->keys[ KEY_RIGHTALT ] = KEYSTATE_UP;
+				window->keys[ KEY_RIGHTALT ] = tinyWindowKeyState_t::UP;
 				translatedKey = KEY_RIGHTALT;
 				break;
 			}
@@ -3401,7 +3402,7 @@ private:
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, KEYSTATE_UP );
+				window->keyEvent( translatedKey, tinyWindowKeyState_t::UP );
 			}
 			break;
 		}
@@ -3427,66 +3428,66 @@ private:
 
 		case WM_LBUTTONDOWN:
 		{
-			window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONDOWN;
+			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::LEFT] = tinyWindowButtonState_t::DOWN;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONDOWN );
+				window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::DOWN );
 			}
 			break;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONUP;
+			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::LEFT] = tinyWindowButtonState_t::UP;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONUP );
+				window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::UP );
 			}
 			break;
 		}
 
 		case WM_RBUTTONDOWN:
 		{
-			window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONDOWN;
+			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::RIGHT] = tinyWindowButtonState_t::DOWN;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONDOWN );
+				window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::DOWN );
 			}
 			break;
 		}
 
 		case WM_RBUTTONUP:
 		{
-			window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONUP;
+			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::RIGHT] = tinyWindowButtonState_t::UP;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONUP );
+				window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::UP );
 			}
 			break;
 		}
 
 		case WM_MBUTTONDOWN:
 		{
-			window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONDOWN;
+			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::MIDDLE] = tinyWindowButtonState_t::DOWN;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONDOWN );
+				window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::DOWN );
 			}
 			break;
 		}
 
 		case WM_MBUTTONUP:
 		{
-			window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONUP;
+			window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::UP;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONUP );
+				window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::UP );
 			}
 			break;
 		}
@@ -3497,7 +3498,7 @@ private:
 			{
 				if ( window->mouseWheelEvent != nullptr )
 				{
-					window->mouseWheelEvent( MOUSE_SCROLL_DOWN );
+					window->mouseWheelEvent( tinyWindowMouseScroll_t::DOWN );
 				}
 			}
 
@@ -3505,7 +3506,7 @@ private:
 			{
 				if ( window->mouseWheelEvent != nullptr )
 				{
-					window->mouseWheelEvent( MOUSE_SCROLL_UP );
+					window->mouseWheelEvent( tinyWindowMouseScroll_t::UP );
 				}
 
 			}
@@ -4048,7 +4049,7 @@ private:
 
 		if ( !instance->currentDisplay )
 		{
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_LINUX_CANNOT_CONNECT_X_SERVER );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::LINUX_CANNOT_CONNECT_X_SERVER );
 			exit( 0 );
 		}
 
@@ -4058,7 +4059,7 @@ private:
 
 		if ( !window->visualInfo )
 		{
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_LINUX_INVALID_VISUALINFO );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::LINUX_INVALID_VISUALINFO );
 			exit( 0 );
 		}
 
@@ -4081,7 +4082,7 @@ private:
 
 		if( !window->windowHandle )
 		{
-			TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_LINUX_CANNOT_CREATE_WINDOW );
+			TinyWindow_PrintErrorMessage( tinyWindowError_t::LINUX_CANNOT_CREATE_WINDOW );
 			exit( 0 );
 		}
 
@@ -4155,20 +4156,20 @@ private:
 
 				if ( functionKeysym <= 255 )
 				{
-					window->keys[ functionKeysym ] = KEYSTATE_DOWN;
+					window->keys[ functionKeysym ] = tinyWindowKeyState_t::DOWN;
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( functionKeysym, KEYSTATE_DOWN );
+						window->keyEvent( functionKeysym, tinyWindowKeyState_t::DOWN );
 					}
 				}
 
 				else
 				{
-					window->keys[ Linux_TranslateKey( functionKeysym ) ] = KEYSTATE_DOWN;
+					window->keys[ Linux_TranslateKey( functionKeysym ) ] = tinyWindowKeyState_t::DOWN;
 
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_DOWN );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::DOWN );
 					}
 				}
 
@@ -4192,7 +4193,7 @@ private:
 							currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 						XNextEvent( instance->currentDisplay, &currentEvent );
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_DOWN );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::DOWN );
 						isRetriggered = true;
 					}
 				}
@@ -4204,27 +4205,27 @@ private:
 
 					if ( functionKeysym <= 255 )
 					{
-						window->keys[ functionKeysym ] = KEYSTATE_UP;
+						window->keys[ functionKeysym ] = tinyWindowKeyState_t::UP;
 
 						if ( window->keyEvent != nullptr )
 						{
-							window->keyEvent( functionKeysym, KEYSTATE_UP );
+							window->keyEvent( functionKeysym, tinyWindowKeyState_t::UP );
 						}
 					}
 
 					else
 					{
-						window->keys[ Linux_TranslateKey( functionKeysym ) ] = KEYSTATE_UP;
+						window->keys[ Linux_TranslateKey( functionKeysym ) ] = tinyWindowKeyState_t::UP;
 
 						if ( window->keyEvent != nullptr )
 						{
-							window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_UP );
+							window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::UP );
 						}
 					}
 
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), KEYSTATE_UP );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::UP );
 					}
 				}
 
@@ -4237,40 +4238,40 @@ private:
 				{
 				case 1:
 				{
-					window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONDOWN );
+						window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::DOWN );
 					}
 					break;
 				}
 
 				case 2:
 				{
-					window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONDOWN );
+						window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::DOWN );
 					}
 					break;
 				}
 
 				case 3:
 				{
-					window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONDOWN );
+						window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::DOWN );
 					}
 					break;
 				}
 
 				case 4:
 				{
-					window->mouseButton[ MOUSE_SCROLL_UP ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ MOUSE_SCROLL_UP ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
@@ -4281,7 +4282,7 @@ private:
 
 				case 5:
 				{
-					window->mouseButton[ MOUSE_SCROLL_DOWN ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ MOUSE_SCROLL_DOWN ] = tinyWindowButtonState_t::DOWN;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
@@ -4307,11 +4308,11 @@ private:
 				case 1:
 				{
 					//the left mouse button was released
-					window->mouseButton[ MOUSE_LEFTBUTTON ] = MOUSE_BUTTONUP;
+					window->mouseButton[ tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( MOUSE_LEFTBUTTON, MOUSE_BUTTONUP );
+						window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::UP );
 					}
 					break;
 				}
@@ -4319,11 +4320,11 @@ private:
 				case 2:
 				{
 					//the middle mouse button was released
-					window->mouseButton[ MOUSE_MIDDLEBUTTON ] = MOUSE_BUTTONUP;
+					window->mouseButton[ tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( MOUSE_MIDDLEBUTTON, MOUSE_BUTTONUP );
+						window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::UP );
 					}
 					break;
 				}
@@ -4331,11 +4332,11 @@ private:
 				case 3:
 				{
 					//the right mouse button was released
-					window->mouseButton[ MOUSE_RIGHTBUTTON ] = MOUSE_BUTTONUP;
+					window->mouseButton[ tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( MOUSE_RIGHTBUTTON, MOUSE_BUTTONUP );
+						window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::UP );
 					}
 					break;
 				}
@@ -4343,14 +4344,14 @@ private:
 				case 4:
 				{
 					//the mouse wheel was scrolled up
-					window->mouseButton[ MOUSE_SCROLL_UP ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ MOUSE_SCROLL_UP ] = tinyWindowButtonState_t::DOWN;
 					break;
 				}
 
 				case 5:
 				{
 					//the mouse wheel was scrolled down
-					window->mouseButton[ MOUSE_SCROLL_DOWN ] = MOUSE_BUTTONDOWN;
+					window->mouseButton[ MOUSE_SCROLL_DOWN ] = tinyWindowButtonState_t::DOWN;
 					break;
 				}
 
@@ -4985,7 +4986,7 @@ private:
 	static void Linux_SetWindowIcon( void ) /*window_t* window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
-		TinyWindow_PrintErrorMessage( TINYWINDOW_ERROR_LINUX_FUNCTION_NOT_IMPLEMENTED );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::LINUX_FUNCTION_NOT_IMPLEMENTED );
 	}
 
 	static GLXFBConfig GetBestFrameBufferConfig( window_t* givenWindow )

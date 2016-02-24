@@ -1,8 +1,8 @@
 #include "TinyWindow.h"
 //#include "TutorialConfig.h"
-void handleKeyPresses(unsigned int key, bool keyState)
+void handleKeyPresses(unsigned int key, tinyWindowKeyState_t keyState)
 {
-	if(keyState == KEYSTATE_DOWN)
+	if(keyState == tinyWindowKeyState_t::DOWN)
 	{
 		printf("%c \t", key);
 	}
