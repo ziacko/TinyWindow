@@ -8,11 +8,13 @@
 #include <gl/GL.h>
 #include <io.h>
 #include <fcntl.h>
+#if defined(_MSC_VER)
 //this automatically loads the OpenGL library if you are using Visual studio 
 #pragma comment ( lib, "opengl32.lib" )
 //this makes sure that the entry point of your program is main(). not Winmain()
 #pragma comment( linker, "/subsystem:windows /ENTRY:mainCRTStartup" )
-#endif
+#endif //_MSC_VER
+#endif	_WIN32 | _WIN64
 
 #if defined( __linux__ )
 #include <GL/glx.h>
@@ -20,7 +22,7 @@
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
 #include <X11/XKBlib.h>
-#endif
+#endif //__linux__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,137 +36,136 @@ const int DEFAULT_WINDOW_HEIGHT = 720;
 
 enum class tinyWindowKeyState_t
 {
-	UP = 0,				/**< the key is currently up */
-	DOWN,				/**< the key is currently down */
-	BAD = -1,			/**< if get key state fails (could not name it ERROR) */
+	UP = 0,				/**< The key is currently up */
+	DOWN,				/**< The key is currently down */
+	BAD = -1,			/**< If get key state fails (could not name it ERROR) */
 };
 
 enum tinyWindowKey_t
 {
-	KEY_ERROR = -1,					/**< the key pressed is considered invalid */
-	KEY_FIRST = 256 + 1,			/**< the fist key that is not a char */
-	KEY_F1, 						/**< the F1 key */
-	KEY_F2,							/**< the F2 key */
-	KEY_F3,							/**< the F3 key */
-	KEY_F4,							/**< the F4 key */
-	KEY_F5,							/**< the F5 key */
-	KEY_F6,							/**< the F6 key */
-	KEY_F7,							/**< the F7 key */
-	KEY_F8,							/**< the F8 key */
-	KEY_F9,							/**< the F9 key */
-	KEY_F10,						/**< the F10 key */
-	KEY_F11,						/**< the F11 key */
-	KEY_F12,						/**< the F12 key */
-	KEY_CAPSLOCK,					/**< the CapsLock key */
-	KEY_LEFTSHIFT,					/**< the left Shift key */
-	KEY_RIGHTSHIFT,					/**< the right Shift key */
-	KEY_LEFTCONTROL,				/**< the left Control key */
-	KEY_RIGHTCONTROL,				/**< the right Control key */
-	KEY_LEFTWINDOW,					/**< the left Window key */
-	KEY_RIGHTWINDOW,				/**< the right Window key */
-	KEY_LEFTALT,					/**< the left Alternate key */
-	KEY_RIGHTALT,					/**< the right Alternate key */
-	KEY_ENTER,						/**< the Enter/Return key */
-	KEY_PRINTSCREEN,				/**< the PrintScreen key */
-	KEY_SCROLLLOCK,					/**< the ScrollLock key */
-	KEY_NUMLOCK,					/**< the NumLock key */
-	KEY_PAUSE,						/**< the pause/break key */
-	KEY_INSERT,						/**< the insert key */
-	KEY_HOME,						/**< the Home key */
-	KEY_END,						/**< the End key */
-	KEY_PAGEUP,						/**< the PageUp key */
-	KEY_PAGEDOWN,					/**< the PageDown key */
-	KEY_ARROW_DOWN,					/**< the ArrowDown key */
-	KEY_ARROW_UP,					/**< the ArrowUp key */
-	KEY_ARROW_LEFT,					/**< the ArrowLeft key */
-	KEY_ARROW_RIGHT,				/**< the ArrowRight key */
-	KEY_KEYPAD_DIVIDE,				/**< the KeyPad Divide key */
-	KEY_KEYPAD_MULTIPLY,			/**< the Keypad Multiply key */
-	KEY_KEYPAD_SUBTRACT,			/**< the Keypad Subtract key */
-	KEY_KEYPAD_ADD,					/**< the Keypad Add key */
-	KEY_KEYPAD_ENTER,				/**< the Keypad Enter key */
-	KEY_KEYPAD_PERIOD,				/**< the Keypad Period/Decimal key */
-	KEY_KEYPAD_0,					/**< the Keypad 0 key */
-	KEY_KEYPAD_1,					/**< the Keypad 1 key */
-	KEY_KEYPAD_2,					/**< the Keypad 2 key */
-	KEY_KEYPAD_3,					/**< the Keypad 3 key */
-	KEY_KEYPAD_4,					/**< the Keypad 4 key */
-	KEY_KEYPAD_5,					/**< the Keypad 5 key */
-	KEY_KEYPAD_6,					/**< the Keypad 6 key */
-	KEY_KEYPAD_7,					/**< the Keypad 7 key */
-	KEY_KEYPAD_8,					/**< the keypad 8 key */
-	KEY_KEYPAD_9,					/**< the Keypad 9 key */
-	KEY_BACKSPACE,					/**< the Backspace key */
-	KEY_TAB,						/**< the Tab key */
-	KEY_DELETE,						/**< the Delete key */
-	KEY_ESCAPE,						/**< the Escape key */
-	KEY_LAST = KEY_ESCAPE,			/**< the last key to be supported */
+	KEY_ERROR = -1,					/**< The key pressed is considered invalid */
+	KEY_FIRST = 256 + 1,			/**< The fist key that is not a char */
+	KEY_F1, 						/**< The F1 key */
+	KEY_F2,							/**< The F2 key */
+	KEY_F3,							/**< The F3 key */
+	KEY_F4,							/**< The F4 key */
+	KEY_F5,							/**< The F5 key */
+	KEY_F6,							/**< The F6 key */
+	KEY_F7,							/**< The F7 key */
+	KEY_F8,							/**< The F8 key */
+	KEY_F9,							/**< The F9 key */
+	KEY_F10,						/**< The F10 key */
+	KEY_F11,						/**< The F11 key */
+	KEY_F12,						/**< The F12 key */
+	KEY_CAPSLOCK,					/**< The CapsLock key */
+	KEY_LEFTSHIFT,					/**< The left Shift key */
+	KEY_RIGHTSHIFT,					/**< The right Shift key */
+	KEY_LEFTCONTROL,				/**< The left Control key */
+	KEY_RIGHTCONTROL,				/**< The right Control key */
+	KEY_LEFTWINDOW,					/**< The left Window key */
+	KEY_RIGHTWINDOW,				/**< The right Window key */
+	KEY_LEFTALT,					/**< The left Alternate key */
+	KEY_RIGHTALT,					/**< The right Alternate key */
+	KEY_ENTER,						/**< The Enter/Return key */
+	KEY_PRINTSCREEN,				/**< The PrintScreen key */
+	KEY_SCROLLLOCK,					/**< The ScrollLock key */
+	KEY_NUMLOCK,					/**< The NumLock key */
+	KEY_PAUSE,						/**< The pause/break key */
+	KEY_INSERT,						/**< The insert key */
+	KEY_HOME,						/**< The Home key */
+	KEY_END,						/**< The End key */
+	KEY_PAGEUP,						/**< The PageUp key */
+	KEY_PAGEDOWN,					/**< The PageDown key */
+	KEY_ARROW_DOWN,					/**< The ArrowDown key */
+	KEY_ARROW_UP,					/**< The ArrowUp key */
+	KEY_ARROW_LEFT,					/**< The ArrowLeft key */
+	KEY_ARROW_RIGHT,				/**< The ArrowRight key */
+	KEY_KEYPAD_DIVIDE,				/**< The KeyPad Divide key */
+	KEY_KEYPAD_MULTIPLY,			/**< The Keypad Multiply key */
+	KEY_KEYPAD_SUBTRACT,			/**< The Keypad Subtract key */
+	KEY_KEYPAD_ADD,					/**< The Keypad Add key */
+	KEY_KEYPAD_ENTER,				/**< The Keypad Enter key */
+	KEY_KEYPAD_PERIOD,				/**< The Keypad Period/Decimal key */
+	KEY_KEYPAD_0,					/**< The Keypad 0 key */
+	KEY_KEYPAD_1,					/**< The Keypad 1 key */
+	KEY_KEYPAD_2,					/**< The Keypad 2 key */
+	KEY_KEYPAD_3,					/**< The Keypad 3 key */
+	KEY_KEYPAD_4,					/**< The Keypad 4 key */
+	KEY_KEYPAD_5,					/**< The Keypad 5 key */
+	KEY_KEYPAD_6,					/**< The Keypad 6 key */
+	KEY_KEYPAD_7,					/**< The Keypad 7 key */
+	KEY_KEYPAD_8,					/**< The keypad 8 key */
+	KEY_KEYPAD_9,					/**< The Keypad 9 key */
+	KEY_BACKSPACE,					/**< The Backspace key */
+	KEY_TAB,						/**< The Tab key */
+	KEY_DELETE,						/**< The Delete key */
+	KEY_ESCAPE,						/**< The Escape key */
+	KEY_LAST = KEY_ESCAPE,			/**< The last key to be supported */
 };
 
 enum class tinyWindowButtonState_t
 {
-	UP = 0,				/**< the mouse button is currently up */
-	DOWN				/**< the mouse button is currently down */
+	UP = 0,				/**< The mouse button is currently up */
+	DOWN				/**< The mouse button is currently down */
 };
 
 enum class tinyWindowMouseButton_t
 {
-	LEFT = 0,			/**< the left mouse button */
-	RIGHT,				/**< the right mouse button */
-	MIDDLE,				/**< the middle mouse button / ScrollWheel */
-	LAST,				/**< the last mouse button to be supported */
+	LEFT = 0,			/**< The left mouse button */
+	RIGHT,				/**< The right mouse button */
+	MIDDLE,				/**< The middle mouse button / ScrollWheel */
+	LAST,				/**< The last mouse button to be supported */
 };
 
 enum class tinyWindowMouseScroll_t
 {
-	DOWN = 0,			/**< the mouse wheel up */
-	UP					/**< the mouse wheel down */
+	DOWN = 0,			/**< The mouse wheel up */
+	UP					/**< The mouse wheel down */
 };
 
 enum class tinyWindowStyle_t
 {
-	BARE = 1,			/**< the window has no decorators but the window border and title bar */
-	DEFAULT,			/**< the default window style for the respective platform */
-	POPUP,				/**< the window has no decorators */
+	BARE = 1,			/**< The window has no decorators but the window border and title bar */
+	DEFAULT,			/**< The default window style for the respective platform */
+	POPUP,				/**< The window has no decorators */
 };
 
 enum class tinyWindowState_t
 {
-	NORMAL = 0,			/**< the window is in its default state */
-	MAXIMIZED,			/**< the window is currently maximized */
-	MINIMIZED,			/**< the window is currently minimized */
-	FULLSCREEN,			/**< the window is currently full screen */
+	NORMAL = 0,			/**< The window is in its default state */
+	MAXIMIZED,			/**< The window is currently maximized */
+	MINIMIZED,			/**< The window is currently minimized */
+	FULLSCREEN,			/**< The window is currently full screen */
 };
 
 enum tinyWindowDecorator_t
 {
 	DECORATOR_TITLEBAR = 0x01,				/**< The title bar decoration of the window */
-	DECORATOR_ICON = 0x02,					/**< the icon decoration of the window */
-	DECORATOR_BORDER = 0x04,				/**< the border decoration of the window */
-	DECORATOR_MINIMIZEBUTTON = 0x08,		/**< the minimize button decoration of the window */
-	DECORATOR_MAXIMIZEBUTTON = 0x010,		/**< the maximize button decoration pf the window */
-	DECORATOR_CLOSEBUTTON = 0x20,			/**< the close button decoration of the window */
-	DECORATOR_SIZEABLEBORDER = 0x40,		/**< the sizable border decoration of the window */
+	DECORATOR_ICON = 0x02,					/**< The icon decoration of the window */
+	DECORATOR_BORDER = 0x04,				/**< The border decoration of the window */
+	DECORATOR_MINIMIZEBUTTON = 0x08,		/**< The minimize button decoration of the window */
+	DECORATOR_MAXIMIZEBUTTON = 0x010,		/**< The maximize button decoration pf the window */
+	DECORATOR_CLOSEBUTTON = 0x20,			/**< The close button decoration of the window */
+	DECORATOR_SIZEABLEBORDER = 0x40,		/**< The sizable border decoration of the window */
 };
 
 enum class tinyWindowError_t
 {
 	TINYWINDOW_ERROR = -1,
-	NO_CONTEXT = 0,							/**< if a window tries to use a graphical function without a context */
-	INVALID_WINDOW_NAME,					/**< if an invalid window name was given */
-	INVALID_ICON_PATH,						/**< if an invalid icon path was given */
-	INVALID_WINDOW_INDEX,					/**< if an invalid window index was given */
-	INVALID_WINDOW_STATE,					/**< if an invalid window state was given */
-	INVALID_RESOLUTION,						/**< if an invalid window resolution was given */
-	INVALID_CONTEXT,						/**< if the OpenGL context for the window is invalid */
-	EXISTING_CONTEXT,						/**< if the window already has an OpenGL context */
-	NOT_INITIALIZED,						/**< if the window is being used without being initialized */
-	ALREADY_INITIALIZED,					/**< if the window was already initialized */
-	INVALID_TITLEBAR,						/**< if the Title-bar text given was invalid */
-	INVALID_CALLBACK,						/**< if the given event callback was invalid */
-	WINDOW_NOT_FOUND,						/**< if the window was not found in the window manager */
-	INVALID_WINDOWSTYLE,					/**< if the window style gives is invalid */
-	FUNCTION_NOT_IMPLEMENTED,				/**< if the function has not yet been implemented in the current version of the API */
+	INVALID_WINDOW_NAME = 0,				/**< If an invalid window name was given */
+	INVALID_ICON_PATH,						/**< If an invalid icon path was given */
+	INVALID_WINDOW_INDEX,					/**< If an invalid window index was given */
+	INVALID_WINDOW_STATE,					/**< If an invalid window state was given */
+	INVALID_RESOLUTION,						/**< If an invalid window resolution was given */
+	INVALID_CONTEXT,						/**< If the OpenGL context for the window is invalid */
+	EXISTING_CONTEXT,						/**< If the window already has an OpenGL context */
+	NOT_INITIALIZED,						/**< If the window is being used without being initialized */
+	ALREADY_INITIALIZED,					/**< If the window was already initialized */
+	INVALID_TITLEBAR,						/**< If the Title-bar text given was invalid */
+	INVALID_CALLBACK,						/**< If the given event callback was invalid */
+	WINDOW_NOT_FOUND,						/**< If the window was not found in the window manager */
+	INVALID_WINDOWSTYLE,					/**< If the window style gives is invalid */
+	FUNCTION_NOT_IMPLEMENTED,				/**< If the function has not yet been implemented in the current version of the API */
 	LINUX_CANNOT_CONNECT_X_SERVER,			/**< Linux: if cannot connect to an X11 server */
 	LINUX_INVALID_VISUALINFO,				/**< Linux: if visual information given was invalid */
 	LINUX_CANNOT_CREATE_WINDOW,				/**< Linux: when X11 fails to create a new window */
@@ -177,7 +178,7 @@ enum class tinyWindowError_t
 const int LINUX_FUNCTION = 1;
 const int LINUX_DECORATOR = 2;
 
-//print the warning message associated with the given warning number
+//Print the warning message associated with the given warning number
 /*
 static void TinyWindow_PrintWarningMessage( GLuint warningNumber )
 {
@@ -204,18 +205,12 @@ static void TinyWindow_PrintWarningMessage( GLuint warningNumber )
 }*/
 
 /**
-* print out the error associated with the given error number	
+* Print out the error associated with the given error number	
 */
 static void TinyWindow_PrintErrorMessage(const tinyWindowError_t errorNumber)
 {
 	switch ( errorNumber )
 	{
-		case tinyWindowError_t::NO_CONTEXT:
-		{
-			printf( "Error: An OpenGL context must first be created( initialize the window ) \n" );
-			break;
-		}
-
 		case tinyWindowError_t::INVALID_WINDOW_NAME:
 		{
 			printf( "Error: invalid window name \n" );
@@ -353,7 +348,7 @@ public:
 	windowManager(){}
 
 	/**
-	 * shutdown and delete all windows in the manager
+	 * Shutdown and delete all windows in the manager
 	 */
 	~windowManager( void )
 	{
@@ -368,7 +363,7 @@ public:
 	}
 
 	/**
-	 * use this to shutdown the window manager when your program is finished
+	 * Use this to shutdown the window manager when your program is finished
 	 */
 	 static inline void ShutDown( void ) 
 	{
@@ -392,7 +387,7 @@ public:
 	}
 
 	/**
-	 *use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
+	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
 	static inline windowManager* AddWindow( const char* windowName, unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT, unsigned int colourBits = 8, unsigned int depthBits = 8, unsigned int stencilBits = 8 )
 	{
@@ -424,7 +419,7 @@ public:
 	}
 
 	/**
-	 * return the total amount of windows the manager has
+	 * Return the total amount of windows the manager has
 	 */
 	static inline int GetNumWindows( void )
 	{
@@ -438,7 +433,7 @@ public:
 	}
 
 	/**
-	 * return the mouse position in screen co-ordinates
+	 * Return the mouse position in screen co-ordinates
 	 */
 	static inline bool GetMousePositionInScreen( unsigned int& x, unsigned int& y )
 	{
@@ -453,7 +448,7 @@ public:
 		return false;
 	}
 	/**
-	 * return the mouse position in screen co-ordinates
+	 * Return the mouse position in screen co-ordinates
 	 */
 	static inline unsigned int* GetMousePositionInScreen( void )
 	{
@@ -467,7 +462,7 @@ public:
 	}
 
 	/**
-	 * set the position of the mouse cursor relative to screen co-ordinates
+	 * Set the position of the mouse cursor relative to screen co-ordinates
 	 */
 	static inline bool SetMousePositionInScreen( unsigned int x, unsigned int y )
 	{
@@ -492,7 +487,7 @@ public:
 	}
 
 	/**
-	 * return the Resolution of the current screen
+	 * Return the Resolution of the current screen
 	 */
 	static inline unsigned int* GetScreenResolution( void )
 	{
@@ -519,7 +514,7 @@ public:
 		return nullptr;
 	}
 	/**
-	 * return the Resolution of the current screen
+	 * Return the Resolution of the current screen
 	 */
 	static inline bool GetScreenResolution( unsigned int& width, unsigned int& Height )
 	{
@@ -546,7 +541,7 @@ public:
 	}
 
 	/**
-	 * return the Resolution of the given window by setting width and height
+	 * Return the Resolution of the given window by setting width and height
 	 */
 	static inline bool GetWindowResolutionByName( const char* windowName, unsigned int& width, unsigned int& height )
 	{
@@ -565,7 +560,7 @@ public:
 		return false;
 	}
 	/**
-	 * return the Resolution of the given window by setting width and height
+	 * Return the Resolution of the given window by setting width and height
 	 */
 	static inline bool GetWindowResolutionByIndex( unsigned int windowIndex, unsigned int& width, unsigned int& height )
 	{
@@ -587,7 +582,7 @@ public:
 	}
 
 	/**
-	 * return the Resolution of the given Window as an array of doubles
+	 * Return the Resolution of the given Window as an array of doubles
 	 */
 	static inline unsigned int* GetWindowResolutionByName( const char* windowName )
 	{
@@ -605,7 +600,7 @@ public:
 		return nullptr;
 	}
 	/**
-	 * return the Resolution of the Given Window as an array of doubles
+	 * Return the Resolution of the Given Window as an array of doubles
 	 */
 	static inline unsigned int* GetWindowResolutionByIndex( unsigned int windowIndex )
 	{
@@ -624,7 +619,7 @@ public:
 	}
 
 	/**
-	 * set the Size/Resolution of the given window
+	 * Set the Size/Resolution of the given window
 	 */
 	static inline bool SetWindowResolutionByName( const char* windowName, unsigned int width, unsigned int height )
 	{
@@ -647,7 +642,7 @@ public:
 		return false;
 	}
 	/**
-	 * set the Size/Resolution of the given window
+	 * Set the Size/Resolution of the given window
 	 */
 	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, unsigned int width, unsigned int height )
 	{
@@ -670,7 +665,7 @@ public:
 	}
 
 	/**
-	 * return the Position of the given window relative to screen co-ordinates by setting X and Y
+	 * Return the Position of the given window relative to screen co-ordinates by setting X and Y
 	 */ 
 	static inline bool GetWindowPositionByName( const char* windowName, unsigned int& x, unsigned int& y )
 	{
@@ -689,7 +684,7 @@ public:
 		return false;
 	}
 	/**
-	 * return the Position of the given window relative to screen co-ordinates by setting X and Y
+	 * Return the Position of the given window relative to screen co-ordinates by setting X and Y
 	 */
 	static inline bool GetWindowPositionByIndex( unsigned int windowIndex, unsigned int& x, unsigned int& y )
 	{
@@ -709,7 +704,7 @@ public:
 	}
 
 	/**
-	 * return the Position of the given window relative to screen co-ordinates as an array
+	 * Return the Position of the given window relative to screen co-ordinates as an array
 	 */
 	static inline unsigned int* GetWindowPositionByName( const char* windowName )
 	{
@@ -727,7 +722,7 @@ public:
 		return nullptr;
 	}
 	/**
-	 * return the Position of the given window relative to screen co-ordinates as an array
+	 * Return the Position of the given window relative to screen co-ordinates as an array
 	 */
 	static inline unsigned int* GetWindowPositionByIndex( unsigned int windowIndex )
 	{
@@ -745,7 +740,7 @@ public:
 	}
 
 	/**
-	 * set the Position of the given window relative to screen co-ordinates
+	 * Set the Position of the given window relative to screen co-ordinates
 	 */
 	static inline bool SetWindowPositionByName( const char* windowName, unsigned int x, unsigned int y )
 	{
@@ -769,7 +764,7 @@ public:
 		return false;
 	}
 	/**
-	 * set the position of the given window relative to screen co-ordinates
+	 * Set the position of the given window relative to screen co-ordinates
 	 */
 	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, unsigned int x, unsigned int y )
 	{
@@ -793,7 +788,7 @@ public:
 	}
 
 	/**
-	 * return the mouse Position relative to the given window's co-ordinates by setting X and Y
+	 * Return the mouse Position relative to the given window's co-ordinates by setting X and Y
 	 */
 	static inline bool GetMousePositionInWindowByName( const char* windowName, unsigned int& x, unsigned int& y )
 	{
@@ -812,7 +807,7 @@ public:
 		return false;
 	}
 	/**
-	 * return the mouse position relative to the given window's co-ordinates by setting X and Y
+	 * Return the mouse position relative to the given window's co-ordinates by setting X and Y
 	 */
 	static inline bool GetMousePositionInWindowByIndex( unsigned int windowIndex, unsigned int& x, unsigned int& y )
 	{
@@ -832,7 +827,7 @@ public:
 	}
 
 	/**
-	 * return the mouse Position relative to the given window's co-ordinates as an array
+	 * Return the mouse Position relative to the given window's co-ordinates as an array
 	 */
 	static inline unsigned int* GetMousePositionInWindowByName( const char* windowName )
 	{
@@ -849,7 +844,7 @@ public:
 		return nullptr;
 	}
 	/**
-	 * return the mouse Position relative to the given window's co-ordinates as an array
+	 * Return the mouse Position relative to the given window's co-ordinates as an array
 	 */
 	static inline unsigned int* GetMousePositionInWindowByIndex( unsigned int windowIndex )
 	{
@@ -866,7 +861,7 @@ public:
 	}
 
 	/**
-	 * set the mouse Position of the given window's co-ordinates
+	 * Set the mouse Position of the given window's co-ordinates
 	 */
 	static inline bool SetMousePositionInWindowByName( const char* windowName, unsigned int x, unsigned int y )
 	{
@@ -888,7 +883,7 @@ public:
 		return false;
 	}
 	/**
-	 * set the mouse Position of the given window's co-ordinates
+	 * Set the mouse Position of the given window's co-ordinates
 	 */
 	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, unsigned int x, unsigned int y )
 	{
@@ -911,7 +906,7 @@ public:
 	}
 
 	/**
-	 * returns the current state of the given key relative to the given window
+	 * Returns the current state of the given key relative to the given window
 	 */
 	static inline tinyWindowKeyState_t WindowGetKeyByName( const char* windowName, unsigned int key )
 	{
@@ -929,7 +924,7 @@ public:
 		return tinyWindowKeyState_t::BAD;
 	}
 	/**
-	 * returns the current state of the given key relative to the given window
+	 * Returns the current state of the given key relative to the given window
 	 */
 	static inline tinyWindowKeyState_t WindowGetKeyByIndex(unsigned int windowIndex, unsigned int key)
 	{
@@ -947,7 +942,7 @@ public:
 	}
 
 	/**
-	 * return whether the given window should be closing
+	 * Return whether the given window should be closing
 	 */
 	static inline bool GetWindowShouldCloseByName( const char* windowName )
 	{
@@ -965,7 +960,7 @@ public:
 		return false;
 	}
 	/**
-	 * return whether the given window should be closing
+	 * Return whether the given window should be closing
 	 */
 	static inline bool GetWindowShouldCloseByIndex( unsigned int windowIndex )
 	{
@@ -984,7 +979,7 @@ public:
 	}
 
 	/**
-	 * swap the draw buffers of the given window
+	 * Swap the draw buffers of the given window
 	 */
 	static inline bool WindowSwapBuffersByName( const char* windowName )
 	{
@@ -1005,7 +1000,7 @@ public:
 		return false;
 	}
 	/**
-	 * swap the draw buffers of the given window
+	 * Swap the draw buffers of the given window
 	 */
 	static inline bool WindowSwapBuffersByIndex( unsigned int windowIndex )
 	{
@@ -1025,7 +1020,7 @@ public:
 	}
 
 	/**
-	 * make the given window be the current OpenGL Context to be drawn to
+	 * Make the given window be the current OpenGL Context to be drawn to
 	 */
 	static inline bool MakeWindowCurrentContextByName( const char* windowName )
 	{
@@ -1045,7 +1040,7 @@ public:
 		return false;
 	}
 	/**
-	 * make the given window be the current OpenGL Context to be drawn to
+	 * Make the given window be the current OpenGL Context to be drawn to
 	 */
 	static inline bool MakeWindowCurrentContextByIndex( unsigned int windowIndex )
 	{
@@ -1061,12 +1056,12 @@ public:
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
 		return false;
 	}
 
 	/**
-	 * return whether the given window is in fullscreen mode
+	 * Return whether the given window is in full screen mode
 	 */
 	static inline bool GetWindowIsFullScreenByName( const char* windowName )
 	{
@@ -1079,11 +1074,11 @@ public:
 
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 	/**
-	 * return whether the given window is in fullscreen mode
+	 * Return whether the given window is in full screen mode
 	 */
 	static inline bool GetWindowIsFullScreenByIndex( unsigned int windowIndex )
 	{
@@ -1096,12 +1091,12 @@ public:
 
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}	
 
 	/**
-	 * toggle the given window's full screen mode
+	 * Toggle the given window's full screen mode
 	 */
 	static inline bool SetFullScreenByName( const char* windowName, bool newState )
 	{
@@ -1123,7 +1118,7 @@ public:
 		return false;
 	}
 	/*
-	 * toggle the given window's full screen mode
+	 * Toggle the given window's full screen mode
 	 */
 	static inline bool SetFullScreenByIndex( unsigned int windowIndex, bool newState )
 	{
@@ -1145,7 +1140,7 @@ public:
 	}
 
 	/**
-	 * returns whether the given window is minimized
+	 * Returns whether the given window is minimized
 	 */
 	static inline bool GetWindowIsMinimizedByName( const char* windowName )
 	{
@@ -1161,7 +1156,7 @@ public:
 		return (bool)tinyWindowError_t::TINYWINDOW_ERROR;
 	}
 	/**
-	 * returns whether the given window is minimized
+	 * Returns whether the given window is minimized
 	 */
 	static inline bool GetWindowIsMinimizedByIndex( unsigned int windowIndex )
 	{
@@ -1178,7 +1173,7 @@ public:
 	}
 
 	/**
-	 * toggle the minimization state of the given window
+	 * Toggle the minimization state of the given window
 	 */
 	static inline bool MinimizeWindowByName( const char* windowName, bool newState )
 	{
@@ -1193,11 +1188,11 @@ public:
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NO_CONTEXT );
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 	/**
-	 * toggle the minimization state of the window
+	 * Toggle the minimization state of the window
 	 */
 	static inline bool MinimizeWindowByIndex( unsigned int windowIndex, bool newState )
 	{
@@ -1217,7 +1212,7 @@ public:
 	}
 
 	/**
-	 * return whether the current window is currently maximized
+	 * Return whether the current window is currently maximized
 	 */
 	static inline bool GetWindowIsMaximizedByName( const char* windowName )
 	{
@@ -1235,7 +1230,7 @@ public:
 		return false;
 	}
 	/**
-	 * return whether the given window is currently maximized
+	 * Return whether the given window is currently maximized
 	 */
 	static inline bool GetWindowIsMaximizedByIndex( unsigned int windowIndex )
 	{
@@ -1253,7 +1248,7 @@ public:
 	}
 	
 	/**
-	 * toggle the maximization state of the current window
+	 * Toggle the maximization state of the current window
 	 */
 	static inline bool MaximizeWindowByName( const char* windowName, bool newState )
 	{
@@ -1272,7 +1267,7 @@ public:
 		return false;
 	}
 	/**
-	 * toggle the maximization state of the current window
+	 * Toggle the maximization state of the current window
 	 */
 	static inline bool MaximizeWindowByIndex( unsigned int windowIndex, bool newState )
 	{
@@ -1292,7 +1287,7 @@ public:
 	}
 
 	/**
-	 * get window name by index
+	 * Get window name by index
 	 */
 	static inline const char* GetWindowNameByIndex( unsigned int windowIndex )
 	{
@@ -1309,7 +1304,7 @@ public:
 		return nullptr;
 	}	
 	/**
-	* get window index by name
+	* Get window index by name
 	*/
 	static inline unsigned int GetWindowIndexByName( const char* windowName )
 	{
@@ -1327,7 +1322,7 @@ public:
 	}
 
 	/**
-	 * set the window title bar	by name
+	 * Set the window title bar	by name
 	 */
 	static inline bool SetWindowTitleBarByName( const char* windowName, const char* newTitle )
 	{
@@ -1351,7 +1346,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window title bar by index
+	* Set the window title bar by index
 	*/
 	static inline bool SetWindowTitleBarByIndex( unsigned int windowIndex, const char* newName )
 	{
@@ -1377,7 +1372,7 @@ public:
 	}
 
 	/**
-	* set the window icon by name (currently not functional)
+	* Set the window icon by name (currently not functional)
 	*/
 	static inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
@@ -1408,7 +1403,7 @@ public:
 		return false;*/
 	}
 	/**
-	* set the window icon by index (currently not functional)
+	* Set the window icon by index (currently not functional)
 	*/
 	static inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
 	{
@@ -1438,7 +1433,7 @@ public:
 	}
 
 	/**
-	* get whether the window is in focus by name
+	* Get whether the window is in focus by name
 	*/
 	static inline bool GetWindowIsInFocusByName( const char* windowName )
 	{
@@ -1455,7 +1450,7 @@ public:
 		return false;
 	}
 	/**
-	* get whether the window is in focus by index
+	* Get whether the window is in focus by index
 	*/
 	static inline bool GetWindowIsInFocusByIndex( unsigned int windowIndex )
 	{
@@ -1474,7 +1469,7 @@ public:
 	}
 
 	/**
-	* set the window to be in focus by name
+	* Set the window to be in focus by name
 	*/
 	static inline bool FocusWindowByName( const char* windowName, bool newState )
 	{
@@ -1493,7 +1488,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window to be in focus by index
+	* Set the window to be in focus by index
 	*/
 	static inline bool FocusWindowByIndex( unsigned int windowIndex, bool newState )
 	{
@@ -1513,7 +1508,7 @@ public:
 	}
 
 	/**
-	 * restore the window by name
+	 * Restore the window by name
 	 */
 	static inline bool RestoreWindowByName( const char* windowName )
 	{
@@ -1532,7 +1527,7 @@ public:
 		return false;
 	}
 	/**
-	* restore the window by index
+	* Restore the window by index
 	*/
 	static inline bool RestoreWindowByIndex( unsigned int windowIndex )
 	{
@@ -1552,7 +1547,7 @@ public:
 	}
 
 	/**
-	* initialize the window manager
+	* Initialize the window manager
 	*/
 	static inline bool Initialize( void )
 	{
@@ -1598,7 +1593,7 @@ public:
 	}
 
 	/**
-	* return whether the window manager has been initialized
+	* Return whether the window manager has been initialized
 	*/
 	static inline bool IsInitialized( void )
 	{
@@ -1606,7 +1601,7 @@ public:
 	}
 
 	/**
-	* ask the window manager to poll for events
+	* Ask the window manager to poll for events
 	*/
 	static inline void PollForEvents( void )
 	{
@@ -1639,7 +1634,7 @@ public:
 	}
 
 	/**
-	* ask the window manager to wait for events
+	* Ask the window manager to wait for events
 	*/
 	static inline void WaitForEvents( void )
 	{
@@ -1667,7 +1662,7 @@ public:
 	}
 
 	/**
-	* remove window from the manager by name
+	* Remove window from the manager by name
 	*/
 	static inline bool RemoveWindowByName( const char* windowName ) 
 	{
@@ -1685,7 +1680,7 @@ public:
 		return false;
 	}
 	/**
-	* remove window from the manager by index
+	* Remove window from the manager by index
 	*/
 	static inline bool RemoveWindowByIndex( unsigned int windowIndex )
 	{
@@ -1704,7 +1699,7 @@ public:
 	}
 
 	/**
-	* set the window style preset by name
+	* Set the window style preset by name
 	*/
 	static inline bool SetWindowStyleByName( const char* windowName, tinyWindowStyle_t windowStyle )
 	{
@@ -1723,7 +1718,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window style preset by index
+	* Set the window style preset by index
 	*/
 	static inline bool SetWindowStyleByIndex( unsigned int windowIndex, tinyWindowStyle_t windowStyle )
 	{
@@ -1743,7 +1738,7 @@ public:
 	}
 
 	/**
-	* enable window decorators by name
+	* Enable window decorators by name
 	*/
 	static inline bool EnableWindowDecoratorsByName( const char* windowName, unsigned int decorators )
 	{
@@ -1762,7 +1757,7 @@ public:
 		return false;
 	}
 	/**
-	* enable windows decorators by index
+	* Enable windows decorators by index
 	*/
 	static inline bool EnableWindowDecoratorsByIndex( unsigned int windowIndex, unsigned int decorators )
 	{
@@ -1782,7 +1777,7 @@ public:
 	}
 
 	/**
-	* disable windows decorators by name
+	* Disable windows decorators by name
 	*/
 	static inline bool DisableWindowDecoratorByName( const char* windowName, unsigned int decorators )
 	{
@@ -1801,7 +1796,7 @@ public:
 		return false;
 	}
 	/**
-	* disable windows decorators by index
+	* Disable windows decorators by index
 	*/
 	static inline bool DisableWindowDecoratorByIndex( unsigned int windowIndex, unsigned int decorators )
 	{
@@ -1821,7 +1816,7 @@ public:
 	}
 
 	/**
-	* set the window on key event callback by name
+	* Set the window on key event callback by name
 	*/
 	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, tinyWindowKeyState_t)> onKey)
 	{
@@ -1845,7 +1840,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on key event callback by index
+	* Set the window on key event callback by index
 	*/
 	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, tinyWindowKeyState_t)> onKey)
 	{
@@ -1869,7 +1864,7 @@ public:
 	}
 
 	/**
-	* set the window on mouse button event callback by name
+	* Set the window on mouse button event callback by name
 	*/
 	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> onMouseButton)
 	{
@@ -1892,7 +1887,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on mouse button event callback by index
+	* Set the window on mouse button event callback by index
 	*/
 	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> onMouseButton)
 	{
@@ -1916,7 +1911,7 @@ public:
 	}
 
 	/**
-	* set the window on mouse wheel event callback by name
+	* Set the window on mouse wheel event callback by name
 	*/
 	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(tinyWindowMouseScroll_t)> onMouseWheel)
 	{
@@ -1939,7 +1934,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on mouse wheel event callback by index
+	* Set the window on mouse wheel event callback by index
 	*/
 	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(tinyWindowMouseScroll_t)> onMouseWheel)
 	{
@@ -1963,7 +1958,7 @@ public:
 	}
 
 	/**
-	* set the window on destroyed event callback by name
+	* Set the window on destroyed event callback by name
 	*/
 	static inline bool SetWindowOnDestroyedByName(const char* windowName, std::function<void(void)> onDestroyed)
 	{
@@ -1986,7 +1981,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on destroyed event callback by index
+	* Set the window on destroyed event callback by index
 	*/
 	static inline bool SetWindowOnDestroyedByIndex(unsigned int windowIndex, std::function<void(void)> onDestroyed)
 	{
@@ -2010,7 +2005,7 @@ public:
 	}
 
 	/**
-	* set the window on maximized event callback by name
+	* Set the window on maximized event callback by name
 	*/
 	static inline bool SetWindowOnMaximizedByName(const char* windowName, std::function<void(void)> onMaximized)
 	{
@@ -2033,7 +2028,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on maximized event callback by index
+	* Set the window on maximized event callback by index
 	*/
 	static inline bool SetWindowOnMaximizedByIndex(unsigned int windowIndex, std::function<void(void)> onMaximized)
 	{
@@ -2057,7 +2052,7 @@ public:
 	}
 
 	/**
-	* set the window on minimized event callback by name
+	* Set the window on minimized event callback by name
 	*/
 	static inline bool SetWindowOnMinimizedByName(const char* windowName, std::function<void(void)> onMinimized)
 	{
@@ -2080,7 +2075,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on minimized event callback by index
+	* Set the window on minimized event callback by index
 	*/
 	static inline bool SetWindowOnMinimizedByIndex(unsigned int windowIndex, std::function<void(void)> onMinimized)
 	{
@@ -2104,7 +2099,7 @@ public:
 	}
 
 	/**
-	* set the window on focus event callback by name
+	* Set the window on focus event callback by name
 	*/
 	static inline bool SetWindowOnFocusByName(const char* windowName, std::function<void(bool)> onFocus)
 	{
@@ -2127,7 +2122,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on focus event callback by index
+	* Set the window on focus event callback by index
 	*/
 	static inline bool SetWindowOnFocusByIndex(unsigned int windowIndex, std::function<void(bool)> onFocus)
 	{
@@ -2151,7 +2146,7 @@ public:
 	}
 
 	/**
-	* set the window on moved event callback by name
+	* Set the window on moved event callback by name
 	*/
 	static inline bool SetWindowOnMovedByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onMoved)
 	{
@@ -2175,7 +2170,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on moved event callback by index
+	* Set the window on moved event callback by index
 	*/
 	static inline bool SetWindowOnMovedByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onMoved)
 	{
@@ -2199,7 +2194,7 @@ public:
 	}
 
 	/**
-	* set the window on resized event callback by name
+	* Set the window on resized event callback by name
 	*/
 	static inline bool SetWindowOnResizeByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onResize)
 	{
@@ -2222,7 +2217,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on resized event callback by index
+	* Set the window on resized event callback by index
 	*/
 	static inline bool SetWindowOnResizeByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onResize)
 	{
@@ -2246,7 +2241,7 @@ public:
 	}
 
 	/**
-	* set the window on mouse move event callback by name
+	* Set the window on mouse move event callback by name
 	*/
 	static inline bool SetWindowOnMouseMoveByName(const char* windowName, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
 	{
@@ -2269,7 +2264,7 @@ public:
 		return false;
 	}
 	/**
-	* set the window on mouse move event callback by index
+	* Set the window on mouse move event callback by index
 	*/
 	static inline bool SetWindowOnMouseMoveByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
 	{
@@ -2296,84 +2291,84 @@ private:
 
 	struct window_t
 	{
-		const char*					name;													/**< Name of the window */
-		unsigned int				iD;														/**< ID of the Window. ( where it belongs in the window manager ) */
-		int							colorBits;												/**< color format of the window. ( defaults to 32 bit color ) */
-		int							depthBits;												/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
-		int							stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
-		tinyWindowKeyState_t		keys[KEY_LAST];											/**< Record of keys that are either pressed or released in the respective window */
-		tinyWindowButtonState_t		mouseButton[(unsigned int)tinyWindowMouseButton_t::LAST];				/**< Record of mouse buttons that are either presses or released */
-		unsigned int				resolution[ 2 ];										/**< Resolution/Size of the window stored in an array */
-		unsigned int				position[ 2 ];											/**< Position of the Window relative to the screen co-ordinates */
-		unsigned int				mousePosition[ 2 ];										/**< Position of the Mouse cursor relative to the window co-ordinates */
-		bool						shouldClose;											/**< Whether the Window should be closing */
-		bool						inFocus;												/**< Whether the Window is currently in focus( if it is the current window be used ) */
+		const char*					name;															/**< Name of the window */
+		unsigned int				iD;																/**< ID of the Window. ( where it belongs in the window manager ) */
+		int							colorBits;														/**< color format of the window. ( defaults to 32 bit color ) */
+		int							depthBits;														/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
+		int							stencilBits;													/**< Size of the stencil buffer, ( defaults to 8 bit ) */
+		tinyWindowKeyState_t		keys[KEY_LAST];													/**< Record of keys that are either pressed or released in the respective window */
+		tinyWindowButtonState_t		mouseButton[(unsigned int)tinyWindowMouseButton_t::LAST];		/**< Record of mouse buttons that are either presses or released */
+		unsigned int				resolution[ 2 ];												/**< Resolution/Size of the window stored in an array */
+		unsigned int				position[ 2 ];													/**< Position of the Window relative to the screen co-ordinates */
+		unsigned int				mousePosition[ 2 ];												/**< Position of the Mouse cursor relative to the window co-ordinates */
+		bool						shouldClose;													/**< Whether the Window should be closing */
+		bool						inFocus;														/**< Whether the Window is currently in focus( if it is the current window be used ) */
 
-		bool						initialized;											/**< whether the window has been successfully initialized */
-		bool						contextCreated;											/**< whether the OpenGL context has been successfully created */
-		bool						isCurrentContext;										/**< whether the window is the current window being drawn to */
+		bool						initialized;													/**< Whether the window has been successfully initialized */
+		bool						contextCreated;													/**< Whether the OpenGL context has been successfully created */
+		bool						isCurrentContext;												/**< Whether the window is the current window being drawn to */
 
-		tinyWindowState_t			currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-		unsigned int				currentWindowStyle;										/**< the current style of the window */
+		tinyWindowState_t			currentState;													/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
+		unsigned int				currentWindowStyle;												/**< The current style of the window */
 
-		std::function<void(unsigned int, tinyWindowKeyState_t)>								keyEvent;					/**< this is the callback to be used when a key has been pressed */
-		std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)>				mouseButtonEvent;			/**< this is the callback to be used when a mouse button has been pressed */
-		std::function<void(tinyWindowMouseScroll_t)>										mouseWheelEvent;			/**< this is the callback to be used when the mouse wheel has been scrolled. */
-		std::function<void(void)>															destroyedEvent;				/**< this is the callback to be used when the window has been closed in a non-programmatic fashion */
-		std::function<void(void)>															maximizedEvent;				/**< this is the callback to be used when the window has been maximized in a non-programmatic fashion */
-		std::function<void(void)>															minimizedEvent;				/**< this is the callback to be used when the window has been minimized in a non-programmatic fashion */
-		std::function<void(bool)>															focusEvent;					/**< this is the callback to be used when the window has been given focus in a non-programmatic fashion */
-		std::function<void(unsigned int, unsigned int)>										movedEvent;					/**< this is the callback to be used the window has been moved in a non-programmatic fashion */
-		std::function<void(unsigned int, unsigned int)>										resizeEvent;				/**< this is a callback to be used when the window has been resized in a non-programmatic fashion */
-		std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent;				/**< this is a callback to be used when the mouse has been moved */
+		std::function<void(unsigned int, tinyWindowKeyState_t)>								keyEvent;					/**< This is the callback to be used when a key has been pressed */
+		std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)>				mouseButtonEvent;			/**< This is the callback to be used when a mouse button has been pressed */
+		std::function<void(tinyWindowMouseScroll_t)>										mouseWheelEvent;			/**< This is the callback to be used when the mouse wheel has been scrolled. */
+		std::function<void(void)>															destroyedEvent;				/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
+		std::function<void(void)>															maximizedEvent;				/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
+		std::function<void(void)>															minimizedEvent;				/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
+		std::function<void(bool)>															focusEvent;					/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
+		std::function<void(unsigned int, unsigned int)>										movedEvent;					/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
+		std::function<void(unsigned int, unsigned int)>										resizeEvent;				/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
+		std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent;				/**< This is a callback to be used when the mouse has been moved */
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 			
-		HDC							deviceContextHandle;
-		HGLRC						glRenderingContextHandle;
-		HPALETTE					paletteHandle;
-		PIXELFORMATDESCRIPTOR		pixelFormatDescriptor;
-		WNDCLASS					windowClass;
-		HWND						windowHandle;
+		HDC							deviceContextHandle;			/**< A handle to a device context */
+		HGLRC						glRenderingContextHandle;		/**< A handle to an OpenGL rendering context*/
+		HPALETTE					paletteHandle;					/**< A handle to a Win32 palette*/
+		PIXELFORMATDESCRIPTOR		pixelFormatDescriptor;			/**< Describes the pixel format of a drawing surface*/
+		WNDCLASS					windowClass;					/**< Contains the window class attributes */
+		HWND						windowHandle;					/**< A handle to A window */
 		HINSTANCE					instanceHandle;
 
 #else
-		Window						windowHandle;					/**< the X11 handle to the window. I wish they didn't name the type 'Window' */
-		GLXContext					context;						/**< the handle to the GLX rendering context */
-		XVisualInfo*				visualInfo;						/**< the handle to the Visual Information. similar purpose to PixelformatDesriptor */
-		int*						attributes;						/**< attributes of the window. RGB, depth, stencil, etc */
-		XSetWindowAttributes		setAttributes;					/**< the attributes to be set for the window */
-		unsigned int				decorators;						/**< enabled window decorators */
+		Window						windowHandle;				/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
+		GLXContext					context;					/**< The handle to the GLX rendering context */
+		XVisualInfo*				visualInfo;					/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
+		int*						attributes;					/**< Attributes of the window. RGB, depth, stencil, etc */
+		XSetWindowAttributes		setAttributes;				/**< The attributes to be set for the window */
+		unsigned int				decorators;					/**< Enabled window decorators */
 
-		/*these atoms are needed to change window states via the extended window manager
+		/* these atoms are needed to change window states via the extended window manager
 		I might move them to window manager considering these are essentially constants	*/
-		Atom						AtomState;						/**< atom for the state of the window */							// _NET_WM_STATE
-		Atom						AtomHidden;						/**< atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
-		Atom						AtomFullScreen;					/**< atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
-		Atom						AtomMaxHorz;					/**< atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
-		Atom						AtomMaxVert;					/**< atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
-		Atom						AtomClose;						/**< atom for closing the window */									// _NET_WM_CLOSE_WINDOW
-		Atom						AtomActive;						/**< atom for the active window */									// _NET_ACTIVE_WINDOW
-		Atom						AtomDemandsAttention;			/**< atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
-		Atom						AtomFocused;					/**< atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
-		Atom						AtomCardinal;					/**< atom for cardinal coordinates */								// _NET_WM_CARDINAL
-		Atom						AtomIcon;						/**< atom for the icon of the window */								// _NET_WM_ICON
-		Atom						AtomHints;						/**< atom for the window decorations */								// _NET_WM_HINTS
+		Atom						AtomState;					/**< Atom for the state of the window */							// _NET_WM_STATE
+		Atom						AtomHidden;					/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
+		Atom						AtomFullScreen;				/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
+		Atom						AtomMaxHorz;				/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
+		Atom						AtomMaxVert;				/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
+		Atom						AtomClose;					/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
+		Atom						AtomActive;					/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
+		Atom						AtomDemandsAttention;		/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
+		Atom						AtomFocused;				/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
+		Atom						AtomCardinal;				/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
+		Atom						AtomIcon;					/**< Atom for the icon of the window */								// _NET_WM_ICON
+		Atom						AtomHints;					/**< Atom for the window decorations */								// _NET_WM_HINTS
 
-		Atom						AtomWindowType;					/**< atom for the type of window */
-		Atom						AtomWindowTypeDesktop;			/**< atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
-		Atom						AtomWindowTypeSplash;			/**< atom for the splash screen window type */
-		Atom						AtomWindowTypeNormal;			/**< atom for the normal splash screen window type */
+		Atom						AtomWindowType;				/**< Atom for the type of window */
+		Atom						AtomWindowTypeDesktop;		/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
+		Atom						AtomWindowTypeSplash;		/**< Atom for the splash screen window type */
+		Atom						AtomWindowTypeNormal;		/**< Atom for the normal splash screen window type */
 
-		Atom						AtomAllowedActions;				/**< atom for allowed window actions */
-		Atom						AtomActionResize;				/**< atom for allowing the window to be resized */
-		Atom						AtomActionMinimize;				/**< atom for allowing the window to be minimized */
-		Atom						AtomActionShade;				/**< atom for allowing the window to be shaded */
-		Atom						AtomActionMaximizeHorz;			/**< atom for allowing the window to be maximized horizontally */
-		Atom						AtomActionMaximizeVert;			/**< atom for allowing the window to be maximized vertically */
-		Atom						AtomActionClose;				/**< atom for allowing the window to be closed */
+		Atom						AtomAllowedActions;			/**< Atom for allowed window actions */
+		Atom						AtomActionResize;			/**< Atom for allowing the window to be resized */
+		Atom						AtomActionMinimize;			/**< Atom for allowing the window to be minimized */
+		Atom						AtomActionShade;			/**< Atom for allowing the window to be shaded */
+		Atom						AtomActionMaximizeHorz;		/**< Atom for allowing the window to be maximized horizontally */
+		Atom						AtomActionMaximizeVert;		/**< Atom for allowing the window to be maximized vertically */
+		Atom						AtomActionClose;			/**< Atom for allowing the window to be closed */
 
-		Atom						AtomDesktopGeometry;			/**< atom for Desktop Geometry */
+		Atom						AtomDesktopGeometry;		/**< Atom for Desktop Geometry */
 #endif
 
 		window_t(const char* name = nullptr, unsigned int iD = 0,
@@ -3137,11 +3132,11 @@ private:
 	MSG		message;
 	HDC		deviceContextHandle;
 
-	//the windwow procedure for all windows. This is used mainly to handle window events
-	LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int message, WPARAM wordParam, LPARAM longParam )
+	//the window procedure for all windows. This is used mainly to handle window events
+	LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam )
 	{
 		window_t* window = GetWindowByHandle( windowHandle );
-		switch ( message )
+		switch ( winMessage )
 		{
 		case WM_CREATE:
 		{
@@ -3407,6 +3402,26 @@ private:
 			break;
 		}
 
+		//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
+		case WM_CHAR:
+		{
+			int keyDown = longParam & 0x31;
+			if (keyDown == 1)
+			{
+				window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
+			}
+
+			else if (keyDown == 0)
+			{
+				window->keys[wordParam] = tinyWindowKeyState_t::UP;
+			}
+
+			if (window->keyEvent != nullptr)
+			{
+				window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
+			}
+		}
+
 		case WM_MOUSEMOVE:
 		{
 			window->mousePosition[ 0 ] = ( unsigned int )LOWORD( longParam );
@@ -3513,9 +3528,11 @@ private:
 			break;
 		}
 
+
+
 		default:
 		{
-			return DefWindowProc( windowHandle, message, wordParam, longParam );
+			return DefWindowProc( windowHandle, winMessage, wordParam, longParam );
 		}
 		}
 		return 0;
@@ -3547,12 +3564,12 @@ private:
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int clearScreenExtra = 0,
 		int windowExtra = 0,
-		HINSTANCE instance = GetModuleHandle( 0 ),
+		HINSTANCE winInstance = GetModuleHandle( 0 ),
 		HICON icon = LoadIcon( 0, IDI_APPLICATION ),
 		HCURSOR cursor = LoadCursor( 0, IDC_ARROW ),
 		HBRUSH brush = ( HBRUSH )BLACK_BRUSH )
 	{
-		window->instanceHandle = instance;
+		window->instanceHandle = winInstance;
 		window->windowClass.style = style;
 		window->windowClass.lpfnWndProc = windowManager::StaticWindowProcedure;
 		window->windowClass.cbClsExtra = clearScreenExtra;
