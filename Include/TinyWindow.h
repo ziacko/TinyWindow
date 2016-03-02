@@ -2571,12 +2571,13 @@ private:
 	};
 
 	std::vector< std::unique_ptr<window_t> >				windowList;
-	static windowManager*					instance;
+	static std::unique_ptr<window_t>						nullWindow;
+	static windowManager*									instance;
 
-	tinyWindowScreenResolution_t			screenResolution;
-	tinyWindowScreenMousePosition_t			screenMousePosition;
+	tinyWindowScreenResolution_t							screenResolution;
+	tinyWindowScreenMousePosition_t							screenMousePosition;
 
-	bool									isInitialized;
+	bool													isInitialized;
 
 	static inline bool IsValid( const char* stringParameter )
 	{
@@ -3257,7 +3258,7 @@ private:
 				}
 			}
 
-			return std::unique_ptr<window_t>(nullptr);
+			return nullWindow;
 	}
 
 	//return a static pointer to a window that corresponds to the given window index
@@ -3267,7 +3268,7 @@ private:
 		{
 			return instance->windowList[windowIndex];
 		}
-		return std::unique_ptr<window_t>(nullptr);
+		return nullWindow;
 	}
 	
 #if defined( _WIN32 ) || defined( _WIN64 )
@@ -3715,7 +3716,7 @@ private:
 			}
 		}
 
-		return std::unique_ptr<window_t>(nullptr);
+		return nullWindow;
 	}
 
 	//initialize the given window using Win32
@@ -5218,5 +5219,6 @@ private:
 };
 
 windowManager* windowManager::instance = nullptr;
+std::unique_ptr<windowManager::window_t> windowManager::nullWindow = nullptr;
 
 #endif
