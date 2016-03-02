@@ -14,7 +14,7 @@
 //this makes sure that the entry point of your program is main(). not Winmain()
 #pragma comment( linker, "/subsystem:windows /ENTRY:mainCRTStartup" )
 #endif //_MSC_VER
-#endif	_WIN32 | _WIN64
+#endif	//_WIN32 | _WIN64
 
 #if defined( __linux__ )
 #include <GL/glx.h>
@@ -30,6 +30,7 @@
 #include <limits.h>
 #include <string.h>
 #include <functional>
+#include <memory>
 
 const int DEFAULT_WINDOW_WIDTH = 1280;
 const int DEFAULT_WINDOW_HEIGHT = 720;
@@ -360,10 +361,6 @@ public:
 	{
 		if ( !GetInstance()->windowList.empty() )
 		{
-			for ( auto CurrentWindow : GetInstance()->windowList )
-			{
-				delete CurrentWindow;
-			}
 			GetInstance()->windowList.clear();
 		}
 	}
@@ -375,10 +372,6 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			for (auto CurrentWindow : instance->windowList)
-			{
-				delete CurrentWindow;
-			}
 
 #if defined( CURRENT_OS_LINUX )
 			XCloseDisplay(instance->currentDisplay);
@@ -401,7 +394,7 @@ public:
 		{
 			if ( IsValid( windowName ) )
 			{
-				window_t* newWindow = new window_t;
+				std::unique_ptr<window_t> newWindow(new window_t);
 				newWindow->name = windowName;
 				newWindow->resolution[ 0 ] = width;
 				newWindow->resolution[ 1 ] = height;
@@ -409,7 +402,7 @@ public:
 				newWindow->depthBits = depthBits;
 				newWindow->stencilBits = stencilBits;
 
-				instance->windowList.push_back( newWindow );
+				instance->windowList.push_back( std::move(newWindow));
 				newWindow->iD = GetNumWindows() - 1;
 
 				Platform_InitializeWindow( newWindow );
@@ -659,9 +652,9 @@ public:
 			{
 				GetWindowByName( windowName )->resolution[ 0 ] = resolution[0];
 				GetWindowByName( windowName )->resolution[ 1 ] = resolution[1];
-				window_t* window = GetWindowByName(windowName);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
 
-				Platform_SetWindowResolution(window);
+				Platform_SetWindowResolution(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -682,9 +675,9 @@ public:
 			{
 				GetWindowByIndex(windowIndex)->resolution[0] = resolution[0];
 				GetWindowByIndex( windowIndex )->resolution[ 1 ] = resolution[1];
-				window_t* window = GetWindowByIndex(windowIndex);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
 
-				Platform_SetWindowResolution(window);
+				Platform_SetWindowResolution(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -704,9 +697,9 @@ public:
 			{
 				GetWindowByName(windowName)->resolution[0] = width;
 				GetWindowByName(windowName)->resolution[1] = height;
-				window_t* window = GetWindowByName(windowName);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
 
-				Platform_SetWindowResolution(window);
+				Platform_SetWindowResolution(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -727,9 +720,9 @@ public:
 			{
 				GetWindowByIndex(windowIndex)->resolution[0] = width;
 				GetWindowByIndex(windowIndex)->resolution[1] = height;
-				window_t* window = GetWindowByIndex(windowIndex);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
 
-				Platform_SetWindowResolution(window);
+				Platform_SetWindowResolution(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -826,10 +819,9 @@ public:
 			{
 				GetWindowByName( windowName )->position[ 0 ] = windowPosition[0];
 				GetWindowByName( windowName )->position[ 1 ] = windowPosition[1];
-				window_t* window = GetWindowByName(windowName);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
 
-				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
-				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+				Platform_SetWindowPosition(std::move(window), windowPosition[0], windowPosition[1]);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage( tinyWindowError_t::WINDOW_NOT_FOUND );
@@ -850,8 +842,8 @@ public:
 			{
 				GetWindowByIndex( windowIndex )->position[ 0 ] = windowPosition[0];
 				GetWindowByIndex( windowIndex )->position[ 1 ] = windowPosition[1];
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_SetWindowPosition(std::move(window), windowPosition[0], windowPosition[1]);
 				return true;
 			}
 
@@ -873,9 +865,9 @@ public:
 			{
 				GetWindowByName(windowName)->position[0] = x;
 				GetWindowByName(windowName)->position[1] = y;
-				window_t* window = GetWindowByName(windowName);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
 
-				Platform_SetWindowPosition(window, x, y);
+				Platform_SetWindowPosition(std::move(window), x, y);
 				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 				return true;
 			}
@@ -897,8 +889,8 @@ public:
 			{
 				GetWindowByIndex(windowIndex)->position[0] = x;
 				GetWindowByIndex(windowIndex)->position[1] = y;
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_SetWindowPosition(window, x, y);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_SetWindowPosition(std::move(window), x, y);
 				return true;
 			}
 
@@ -994,8 +986,8 @@ public:
 			{
 				GetWindowByName( windowName )->mousePosition[ 0 ] = mousePosition[0];
 				GetWindowByName( windowName )->mousePosition[ 1 ] = mousePosition[1];
-				window_t* window = GetWindowByName(windowName);
-				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_SetMousePositionInWindow(std::move(window), mousePosition[0], mousePosition[1]);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1016,9 +1008,9 @@ public:
 			{
 				GetWindowByIndex( windowIndex )->mousePosition[ 0 ] = mousePosition[0];
 				GetWindowByIndex( windowIndex )->mousePosition[ 1 ] = mousePosition[1];
-				window_t* window = GetWindowByIndex(windowIndex);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
 
-				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
+				Platform_SetMousePositionInWindow(std::move(window), mousePosition[0], mousePosition[1]);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1038,9 +1030,9 @@ public:
 			{
 				GetWindowByIndex(windowIndex)->mousePosition[0] = x;
 				GetWindowByIndex(windowIndex)->mousePosition[1] = y;
-				window_t* window = GetWindowByIndex(windowIndex);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
 
-				Platform_SetMousePositionInWindow(window, x, y);
+				Platform_SetMousePositionInWindow(std::move(window), x, y);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1060,8 +1052,8 @@ public:
 			{
 				GetWindowByName(windowName)->mousePosition[0] = x;
 				GetWindowByName(windowName)->mousePosition[1] = y;
-				window_t* window = GetWindowByName(windowName);
-				Platform_SetMousePositionInWindow(window, x, y);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_SetMousePositionInWindow(std::move(window), x, y);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1154,8 +1146,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_SwapBuffers(window);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_SwapBuffers(std::move(window));
 
 				return true;
 			}
@@ -1175,8 +1167,8 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_SwapBuffers(window);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_SwapBuffers(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1195,8 +1187,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_MakeCurrentContext(window);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_MakeCurrentContext(std::move(window));
 
 				return true;
 			}
@@ -1215,8 +1207,8 @@ public:
 		{
 			if (DoesExistByIndex(windowIndex))
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_MakeCurrentContext(window);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_MakeCurrentContext(std::move(window));
 
 				return true;
 			}
@@ -1271,11 +1263,11 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
 
 				window->currentState = (newState == true) ? tinyWindowState_t::FULLSCREEN : tinyWindowState_t::NORMAL;
 
-				Platform_SetFullScreen(window);
+				Platform_SetFullScreen(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1293,10 +1285,10 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
 				window->currentState = (newState == true) ? tinyWindowState_t::FULLSCREEN : tinyWindowState_t::NORMAL;
 
-				Platform_SetFullScreen(window);
+				Platform_SetFullScreen(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1348,8 +1340,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_MinimizeWindow(window, newState);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_MinimizeWindow(std::move(window), newState);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1367,8 +1359,8 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_MinimizeWindow(window, newState);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_MinimizeWindow(std::move(window), newState);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1423,8 +1415,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_MaximizeWindow(window, newState);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_MaximizeWindow(std::move(window), newState);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1442,8 +1434,8 @@ public:
 		{
 			if (DoesExistByIndex(windowIndex))
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_MaximizeWindow(window, newState);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_MaximizeWindow(std::move(window), newState);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1499,8 +1491,8 @@ public:
 			{
 				if (DoesExistByName(windowName))
 				{
-					window_t* window = GetWindowByName(windowName);
-					Platform_SetWindowTitleBar(window, newTitle);
+					std::unique_ptr<window_t> window = GetWindowByName(windowName);
+					Platform_SetWindowTitleBar(std::move(window), newTitle);
 					return true;
 				}
 				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1523,8 +1515,8 @@ public:
 			{
 				if (DoesExistByIndex(windowIndex))
 				{
-					window_t* window = GetWindowByIndex(windowIndex);
-					Platform_SetWindowTitleBar(window, newName);
+					std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+					Platform_SetWindowTitleBar(std::move(window), newName);
 					return true;
 				}
 				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1644,8 +1636,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_FocusWindow(window, newState);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_FocusWindow(std::move(window), newState);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1663,8 +1655,8 @@ public:
 		{
 			if (DoesExistByIndex(windowIndex))
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_FocusWindow(window, newState);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_FocusWindow(std::move(window), newState);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1683,8 +1675,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_RestoreWindow(window);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_RestoreWindow(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1702,8 +1694,8 @@ public:
 		{
 			if (DoesExistByIndex(windowIndex))
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_RestoreWindow(window);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_RestoreWindow(std::move(window));
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1874,8 +1866,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_SetWindowStyle(window, windowStyle);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_SetWindowStyle(std::move(window), windowStyle);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1893,8 +1885,8 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_SetWindowStyle(window, windowStyle);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_SetWindowStyle(std::move(window), windowStyle);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1913,8 +1905,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_EnableWindowDecorators(window, decorators);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_EnableWindowDecorators(std::move(window), decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1932,8 +1924,8 @@ public:
 		{
 			if (DoesExistByIndex(windowIndex))
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_EnableWindowDecorators(window, decorators);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_EnableWindowDecorators(std::move(window), decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1952,8 +1944,8 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				window_t* window = GetWindowByName(windowName);
-				Platform_DisableWindowDecorators(window, decorators);
+				std::unique_ptr<window_t> window = GetWindowByName(windowName);
+				Platform_DisableWindowDecorators(std::move(window), decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -1971,8 +1963,8 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				Platform_DisableWindowDecorators(window, decorators);
+				std::unique_ptr<window_t> window = GetWindowByIndex(windowIndex);
+				Platform_DisableWindowDecorators(std::move(window), decorators);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -2577,7 +2569,7 @@ private:
 		}
 	};
 
-	std::vector< window_t* >				windowList;
+	std::vector< std::unique_ptr<window_t> >				windowList;
 	static windowManager*					instance;
 
 	tinyWindowScreenResolution_t			screenResolution;
@@ -2610,16 +2602,16 @@ private:
 		}
 	}
 
-	static inline void Platform_InitializeWindow( window_t* window )
+	static inline void Platform_InitializeWindow( std::unique_ptr<window_t>& window )
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		Windows_InitializeWindow( window );
 #elif defined(__linux__)
-		Linux_InitializeWindow( window );
+		Linux_InitializeWindow( std::move(window));
 #endif
 	}
 
-	static inline bool Platform_InitializeGL( window_t* window )
+	static inline bool Platform_InitializeGL( std::unique_ptr<window_t> window )
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		window->deviceContextHandle = GetDC(window->windowHandle);
@@ -2673,7 +2665,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowResolution(window_t* window)
+	static inline void Platform_SetWindowResolution(std::unique_ptr<window_t> window)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		SetWindowPos(window->windowHandle, HWND_TOP,
@@ -2686,7 +2678,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
+	static inline void Platform_SetWindowPosition(std::unique_ptr<window_t> window, unsigned int x, unsigned int y)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
@@ -2704,7 +2696,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
+	static inline void Platform_SetMousePositionInWindow(std::unique_ptr<window_t> window, unsigned int x, unsigned int y)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		POINT mousePoint;
@@ -2722,7 +2714,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SwapBuffers(window_t* window)
+	static inline void Platform_SwapBuffers(std::unique_ptr<window_t> window)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		SwapBuffers(window->deviceContextHandle);
@@ -2731,7 +2723,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_MakeCurrentContext(window_t* window)
+	static inline void Platform_MakeCurrentContext(std::unique_ptr<window_t> window)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		wglMakeCurrent(window->deviceContextHandle,
@@ -2742,7 +2734,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetFullScreen(window_t* window)
+	static inline void Platform_SetFullScreen(std::unique_ptr<window_t> window)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
@@ -2767,7 +2759,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_MinimizeWindow(window_t* window, bool newState)
+	static inline void Platform_MinimizeWindow(std::unique_ptr<window_t> window, bool newState)
 	{
 		if (newState)
 		{
@@ -2792,7 +2784,7 @@ private:
 		}
 	}
 
-	static inline void Platform_MaximizeWindow(window_t* window, bool newState)
+	static inline void Platform_MaximizeWindow(std::unique_ptr<window_t> window, bool newState)
 	{
 		if (newState)
 		{
@@ -2841,7 +2833,7 @@ private:
 		}
 	}
 
-	static inline void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
+	static inline void Platform_SetWindowTitleBar(std::unique_ptr<window_t> window, const char* newTitle)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		SetWindowText(window->windowHandle, newTitle);
@@ -2850,7 +2842,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_FocusWindow(window_t* window, bool newState)
+	static inline void Platform_FocusWindow(std::unique_ptr<window_t> window, bool newState)
 	{
 		if (newState)
 		{
@@ -2871,7 +2863,7 @@ private:
 		}
 	}
 
-	static inline void Platform_RestoreWindow(window_t* window)
+	static inline void Platform_RestoreWindow(std::unique_ptr<window_t> window)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		ShowWindow(window->windowHandle, SW_RESTORE);
@@ -2880,7 +2872,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowStyle(window_t* window, tinyWindowStyle_t windowStyle)
+	static inline void Platform_SetWindowStyle(std::unique_ptr<window_t> window, tinyWindowStyle_t windowStyle)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		switch (windowStyle)
@@ -2963,7 +2955,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
+	static inline void Platform_EnableWindowDecorators(std::unique_ptr<window_t> window, unsigned int decorators)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
@@ -3054,7 +3046,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
+	static inline void Platform_DisableWindowDecorators(std::unique_ptr<window_t> window, unsigned int decorators)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		if (decorators & DECORATOR_BORDER)
@@ -3181,7 +3173,7 @@ private:
 #endif
 	}
 
-	static inline void ShutdownWindow( window_t* window )
+	static inline void ShutdownWindow( std::unique_ptr<window_t> window )
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		if (window->glRenderingContextHandle)
@@ -3222,9 +3214,9 @@ private:
 		{
 			if ( IsValid( windowName ) )
 			{
-				for ( auto window : instance->windowList )
+				for ( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
 				{
-					if( !strcmp( window->name, windowName ) )
+					if( !strcmp( instance->windowList[iter]->name, windowName ) )
 					{
 						return true;
 					}
@@ -3254,13 +3246,13 @@ private:
 		return false;
 	}
 
-	static inline window_t* GetWindowByName( const char* windowName )
+	static inline std::unique_ptr<window_t> GetWindowByName( const char* windowName )
 	{
-			for( auto window : instance->windowList )
+			for( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
 			{
-				if ( !strcmp( window->name, windowName ) )
+				if ( !strcmp( instance->windowList[iter]->name, windowName ) )
 				{
-					return window;
+					return std::move(instance->windowList[iter]);
 				}
 			}
 
@@ -3268,11 +3260,11 @@ private:
 	}
 
 	//return a static pointer to a window that corresponds to the given window index
-	static inline window_t* GetWindowByIndex( unsigned int windowIndex )
+	static inline std::unique_ptr<window_t> GetWindowByIndex( unsigned int windowIndex )
 	{
 		if ( windowIndex <= instance->windowList.size() - 1 )
 		{
-			return instance->windowList[windowIndex];
+			return std::move(instance->windowList[windowIndex]);
 		}
 		return nullptr;
 	}
@@ -3302,7 +3294,7 @@ private:
 	//the window procedure for all windows. This is used mainly to handle window events
 	LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam )
 	{
-		window_t* window = GetWindowByHandle( windowHandle );
+		std::unique_ptr<window_t> window = GetWindowByHandle( windowHandle );
 		switch ( winMessage )
 		{
 		case WM_CREATE:
@@ -3727,7 +3719,7 @@ private:
 	}
 
 	//initialize the given window using Win32
-	static inline void Windows_InitializeWindow( window_t* window,
+	static inline void Windows_InitializeWindow( std::unique_ptr<window_t> window,
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int clearScreenExtra = 0,
 		int windowExtra = 0,
@@ -3760,7 +3752,7 @@ private:
 	}
 
 	//initialize the pixel format for the selected window
-	static inline void InitializePixelFormat( window_t* window )
+	static inline void InitializePixelFormat( std::unique_ptr<window_t> window )
 	{
 		window->pixelFormatDescriptor = {
 			sizeof( PIXELFORMATDESCRIPTOR ), /* size */
@@ -4065,7 +4057,7 @@ private:
 		}
 	}
 
-	static inline void Windows_SetWindowIcon( window_t* window, const char* icon, unsigned int width, unsigned int height )
+	static inline void Windows_SetWindowIcon( std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height )
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, width, height, LR_LOADFROMFILE));
@@ -4085,19 +4077,19 @@ private:
 	Display*			currentDisplay;
 	XEvent				currentEvent;
 	
-	static window_t* GetWindowByHandle( Window windowHandle )
+	static std::unique_ptr<window_t> GetWindowByHandle( Window windowHandle )
 	{
-		for( auto iter : GetInstance()->windowList )
+		for(unsigned int iter = 0; iter < GetInstance()->windowList.size(); iter++ )
 		{
-			if ( iter->windowHandle == windowHandle )
+			if ( instance->windowList[iter]->windowHandle == windowHandle )
 			{
-				return iter;
+				return std::move(instance->windowList[iter]);
 			}
 		}
 		return nullptr;	
 	}
 
-	static window_t* GetWindowByEvent( XEvent currentEvent )
+	static std::unique_ptr<window_t> GetWindowByEvent( XEvent currentEvent )
 	{
 		switch( currentEvent.type )
 		{
@@ -4188,7 +4180,7 @@ private:
 		}
 	}
 
-	static void InitializeAtoms( window_t* window )
+	static void InitializeAtoms( std::unique_ptr<window_t> window )
 	{
 		window->AtomState = XInternAtom(instance->currentDisplay, "_NET_WM_STATE", false);
 		window->AtomFullScreen = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
@@ -4219,7 +4211,7 @@ private:
 		window->AtomDesktopGeometry = XInternAtom(instance->currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 	}
 
-	static void Linux_InitializeWindow( window_t* window )
+	static void Linux_InitializeWindow( std::unique_ptr<window_t> window )
 	{
 		window->attributes = new int[ 5 ]{
 			GLX_RGBA,
@@ -4274,14 +4266,14 @@ private:
 		XStoreName( instance->currentDisplay, window->windowHandle,
 			window->name );
 
-		InitializeAtoms( window );
+		InitializeAtoms( std::move(window));
 
 		XSetWMProtocols( instance->currentDisplay, window->windowHandle, &window->AtomClose, true );	
 
-		Platform_InitializeGL( window );
+		Platform_InitializeGL( std::move(window));
 	}
 
-	static void Linux_ShutdownWindow( window_t* window )
+	static void Linux_ShutdownWindow( std::unique_ptr<window_t> window )
 	{
 		XDestroyWindow(instance->currentDisplay, window->windowHandle);	
 	}
@@ -4293,7 +4285,7 @@ private:
 
 	static void Linux_ProcessEvents( XEvent currentEvent )
 	{
-		window_t* window = GetWindowByEvent( currentEvent );
+		std::unique_ptr<window_t> window = GetWindowByEvent( currentEvent );
 
 		switch ( currentEvent.type )	
 		{
@@ -4314,7 +4306,7 @@ private:
 #if defined(DEBUG)
 				printf( "Window was destroyed\n" );
 #endif
-				ShutdownWindow( window );
+				ShutdownWindow( std::move(window));
 
 				break;
 
@@ -4735,7 +4727,7 @@ private:
 					{
 						window->destroyedEvent();
 					}
-					ShutdownWindow( window );
+					ShutdownWindow( std::move(window));
 
 					break;
 	
@@ -5167,7 +5159,7 @@ private:
 		}
 	}
 
-	static void Linux_SetWindowIcon( void ) /*window_t* window, const char* icon, unsigned int width, unsigned int height */
+	static void Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
 		TinyWindow_PrintErrorMessage( tinyWindowError_t::LINUX_FUNCTION_NOT_IMPLEMENTED );
