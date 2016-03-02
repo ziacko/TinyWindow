@@ -175,6 +175,12 @@ enum class tinyWindowError_t
 	WINDOWS_FUNCTION_NOT_IMPLEMENTED,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 };
 
+typedef unsigned int tinyWindowResolution_t[2];
+typedef unsigned int tinyWindowPosition_t[2];
+typedef unsigned int tinyWindowMousePosition_t[2];
+typedef unsigned int tinyWindowScreenResolution_t[2];
+typedef unsigned int tinyWindowScreenMousePosition_t[2];
+
 const int LINUX_FUNCTION = 1;
 const int LINUX_DECORATOR = 2;
 
@@ -464,9 +470,33 @@ public:
 	/**
 	 * Set the position of the mouse cursor relative to screen co-ordinates
 	 */
-	static inline bool SetMousePositionInScreen( unsigned int x, unsigned int y )
+	static inline bool SetMousePositionInScreen( tinyWindowMousePosition_t mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
+		{
+			instance->screenMousePosition[0] = mousePosition[0];
+			instance->screenMousePosition[1] = mousePosition[1];
+
+#if defined( _WIN32 ) || defined( _WIN64 )
+			SetCursorPos(mousePosition[0], mousePosition[1]);
+#elif defined(__linux__)
+			XWarpPointer(instance->currentDisplay, None,
+				XDefaultRootWindow(instance->currentDisplay), 0, 0,
+				GetScreenResolution()[0],
+				GetScreenResolution()[1],
+				mousePosition[0], mousePosition[1]);
+#endif
+			return true;
+		}
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return false;
+	}
+	/**
+	* Set the position of the mouse cursor relative to screen co-ordinates
+	*/
+	static inline bool SetMousePositionInScreen(unsigned int x, unsigned int y)
+	{
+		if (GetInstance()->IsInitialized())
 		{
 			instance->screenMousePosition[0] = x;
 			instance->screenMousePosition[1] = y;
@@ -482,7 +512,7 @@ public:
 #endif
 			return true;
 		}
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -621,14 +651,14 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	static inline bool SetWindowResolutionByName( const char* windowName, unsigned int width, unsigned int height )
+	static inline bool SetWindowResolutionByName( const char* windowName, tinyWindowResolution_t resolution )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				GetWindowByName( windowName )->resolution[ 0 ] = width;
-				GetWindowByName( windowName )->resolution[ 1 ] = height;
+				GetWindowByName( windowName )->resolution[ 0 ] = resolution[0];
+				GetWindowByName( windowName )->resolution[ 1 ] = resolution[1];
 				window_t* window = GetWindowByName(windowName);
 
 				Platform_SetWindowResolution(window);
@@ -644,14 +674,14 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, unsigned int width, unsigned int height )
+	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, tinyWindowResolution_t resolution )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			if ( WindowExists( windowIndex ) )
 			{
-				GetWindowByIndex( windowIndex )->resolution[ 0 ] = width;
-				GetWindowByIndex( windowIndex )->resolution[ 1 ] = height;
+				GetWindowByIndex(windowIndex)->resolution[0] = resolution[0];
+				GetWindowByIndex( windowIndex )->resolution[ 1 ] = resolution[1];
 				window_t* window = GetWindowByIndex(windowIndex);
 
 				Platform_SetWindowResolution(window);
@@ -661,6 +691,52 @@ public:
 			return false;
 		}
 		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return false;
+	}
+	/** 
+	 * Set the Size/Resolution of the given window
+	 */
+	static inline bool SetWindowResolutionByName(const char* windowName, unsigned int width, unsigned int height)
+	{
+		if (GetInstance()->IsInitialized())
+		{
+			if (DoesExistByName(windowName))
+			{
+				GetWindowByName(windowName)->resolution[0] = width;
+				GetWindowByName(windowName)->resolution[1] = height;
+				window_t* window = GetWindowByName(windowName);
+
+				Platform_SetWindowResolution(window);
+				return true;
+			}
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return false;
+		}
+
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CONTEXT);
+		return false;
+	}
+	/**
+	* Set the Size/Resolution of the given window
+	*/
+	static inline bool SetWindowResolutionByIndex(unsigned int windowIndex, unsigned int width, unsigned int height)
+	{
+		if (GetInstance()->IsInitialized())
+		{
+			if (DoesExistByIndex(windowIndex))
+			{
+				GetWindowByIndex(windowIndex)->resolution[0] = width;
+				GetWindowByIndex(windowIndex)->resolution[1] = height;
+				window_t* window = GetWindowByIndex(windowIndex);
+
+				Platform_SetWindowResolution(window);
+				return true;
+			}
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return false;
+		}
+
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::INVALID_CONTEXT);
 		return false;
 	}
 
@@ -742,17 +818,17 @@ public:
 	/**
 	 * Set the Position of the given window relative to screen co-ordinates
 	 */
-	static inline bool SetWindowPositionByName( const char* windowName, unsigned int x, unsigned int y )
+	static inline bool SetWindowPositionByName( const char* windowName, tinyWindowPosition_t windowPosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				GetWindowByName( windowName )->position[ 0 ] = x;
-				GetWindowByName( windowName )->position[ 1 ] = y;
+				GetWindowByName( windowName )->position[ 0 ] = windowPosition[0];
+				GetWindowByName( windowName )->position[ 1 ] = windowPosition[1];
 				window_t* window = GetWindowByName(windowName);
 
-				Platform_SetWindowPosition(window, x, y);
+				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
 				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 				return true;
 			}
@@ -766,14 +842,61 @@ public:
 	/**
 	 * Set the position of the given window relative to screen co-ordinates
 	 */
-	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, unsigned int x, unsigned int y )
+	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, tinyWindowPosition_t windowPosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				GetWindowByIndex( windowIndex )->position[ 0 ] = x;
-				GetWindowByIndex( windowIndex )->position[ 1 ] = y;
+				GetWindowByIndex( windowIndex )->position[ 0 ] = windowPosition[0];
+				GetWindowByIndex( windowIndex )->position[ 1 ] = windowPosition[1];
+				window_t* window = GetWindowByIndex(windowIndex);
+				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
+				return true;
+			}
+
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return false;
+		}
+
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return false;
+	}
+	/**
+	* Set the Position of the given window relative to screen co-ordinates
+	*/
+	static inline bool SetWindowPositionByName(const char* windowName, unsigned int x, unsigned int y)
+	{
+		if (GetInstance()->IsInitialized())
+		{
+			if (DoesExistByName(windowName))
+			{
+				GetWindowByName(windowName)->position[0] = x;
+				GetWindowByName(windowName)->position[1] = y;
+				window_t* window = GetWindowByName(windowName);
+
+				Platform_SetWindowPosition(window, x, y);
+				TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+				return true;
+			}
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return false;
+		}
+
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
+		return false;
+	}
+	/**
+	* Set the position of the given window relative to screen co-ordinates
+	*/
+	static inline bool SetWindowPositionByIndex(unsigned int windowIndex, unsigned int x, unsigned int y)
+	{
+		if (GetInstance()->IsInitialized())
+		{
+			if (DoesExistByIndex(windowIndex))
+			{
+				GetWindowByIndex(windowIndex)->position[0] = x;
+				GetWindowByIndex(windowIndex)->position[1] = y;
 				window_t* window = GetWindowByIndex(windowIndex);
 				Platform_SetWindowPosition(window, x, y);
 				return true;
@@ -783,7 +906,7 @@ public:
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -863,16 +986,16 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	static inline bool SetMousePositionInWindowByName( const char* windowName, unsigned int x, unsigned int y )
+	static inline bool SetMousePositionInWindowByName( const char* windowName, tinyWindowMousePosition_t mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				GetWindowByName( windowName )->mousePosition[ 0 ] = x;
-				GetWindowByName( windowName )->mousePosition[ 1 ] = y;
+				GetWindowByName( windowName )->mousePosition[ 0 ] = mousePosition[0];
+				GetWindowByName( windowName )->mousePosition[ 1 ] = mousePosition[1];
 				window_t* window = GetWindowByName(windowName);
-				Platform_SetMousePositionInWindow(window, x, y);
+				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
 			}
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
@@ -885,14 +1008,36 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, unsigned int x, unsigned int y )
+	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, tinyWindowMousePosition_t mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				GetWindowByIndex( windowIndex )->mousePosition[ 0 ] = x;
-				GetWindowByIndex( windowIndex )->mousePosition[ 1 ] = y;
+				GetWindowByIndex( windowIndex )->mousePosition[ 0 ] = mousePosition[0];
+				GetWindowByIndex( windowIndex )->mousePosition[ 1 ] = mousePosition[1];
+				window_t* window = GetWindowByIndex(windowIndex);
+
+				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
+				return true;
+			}
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return false;
+		}
+		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		return false;
+	}
+	/**
+	* Set the mouse Position of the given window's co-ordinates
+	*/
+	static inline bool SetMousePositionInWindowByIndex(unsigned int windowIndex, unsigned int x, unsigned int y)
+	{
+		if (GetInstance()->IsInitialized())
+		{
+			if (DoesExistByIndex(windowIndex))
+			{
+				GetWindowByIndex(windowIndex)->mousePosition[0] = x;
+				GetWindowByIndex(windowIndex)->mousePosition[1] = y;
 				window_t* window = GetWindowByIndex(windowIndex);
 
 				Platform_SetMousePositionInWindow(window, x, y);
@@ -901,7 +1046,29 @@ public:
 			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( tinyWindowError_t::NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
+		return false;
+	}
+	/**
+	* Set the mouse Position of the given window's co-ordinates
+	*/
+	static inline bool SetMousePositionInWindowByName(const char* windowName, unsigned int x, unsigned int y)
+	{
+		if (GetInstance()->IsInitialized())
+		{
+			if (DoesExistByName(windowName))
+			{
+				GetWindowByName(windowName)->mousePosition[0] = x;
+				GetWindowByName(windowName)->mousePosition[1] = y;
+				window_t* window = GetWindowByName(windowName);
+				Platform_SetMousePositionInWindow(window, x, y);
+				return true;
+			}
+			TinyWindow_PrintErrorMessage(tinyWindowError_t::WINDOW_NOT_FOUND);
+			return false;
+		}
+
+		TinyWindow_PrintErrorMessage(tinyWindowError_t::NOT_INITIALIZED);
 		return false;
 	}
 
@@ -2291,25 +2458,25 @@ private:
 
 	struct window_t
 	{
-		const char*					name;															/**< Name of the window */
-		unsigned int				iD;																/**< ID of the Window. ( where it belongs in the window manager ) */
-		int							colorBits;														/**< color format of the window. ( defaults to 32 bit color ) */
-		int							depthBits;														/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
-		int							stencilBits;													/**< Size of the stencil buffer, ( defaults to 8 bit ) */
-		tinyWindowKeyState_t		keys[KEY_LAST];													/**< Record of keys that are either pressed or released in the respective window */
-		tinyWindowButtonState_t		mouseButton[(unsigned int)tinyWindowMouseButton_t::LAST];		/**< Record of mouse buttons that are either presses or released */
-		unsigned int				resolution[ 2 ];												/**< Resolution/Size of the window stored in an array */
-		unsigned int				position[ 2 ];													/**< Position of the Window relative to the screen co-ordinates */
-		unsigned int				mousePosition[ 2 ];												/**< Position of the Mouse cursor relative to the window co-ordinates */
-		bool						shouldClose;													/**< Whether the Window should be closing */
-		bool						inFocus;														/**< Whether the Window is currently in focus( if it is the current window be used ) */
+		const char*						name;															/**< Name of the window */
+		unsigned int					iD;																/**< ID of the Window. ( where it belongs in the window manager ) */
+		int								colorBits;														/**< Color format of the window. ( defaults to 32 bit color ) */
+		int								depthBits;														/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
+		int								stencilBits;													/**< Size of the stencil buffer, ( defaults to 8 bit ) */
+		tinyWindowKeyState_t			keys[KEY_LAST];													/**< Record of keys that are either pressed or released in the respective window */
+		tinyWindowButtonState_t			mouseButton[(unsigned int)tinyWindowMouseButton_t::LAST];		/**< Record of mouse buttons that are either presses or released */
+		tinyWindowResolution_t			resolution;														/**< Resolution/Size of the window stored in an array */
+		tinyWindowPosition_t			position;														/**< Position of the Window relative to the screen co-ordinates */
+		tinyWindowMousePosition_t		mousePosition;													/**< Position of the Mouse cursor relative to the window co-ordinates */
+		bool							shouldClose;													/**< Whether the Window should be closing */
+		bool							inFocus;														/**< Whether the Window is currently in focus( if it is the current window be used ) */
 
-		bool						initialized;													/**< Whether the window has been successfully initialized */
-		bool						contextCreated;													/**< Whether the OpenGL context has been successfully created */
-		bool						isCurrentContext;												/**< Whether the window is the current window being drawn to */
+		bool							initialized;													/**< Whether the window has been successfully initialized */
+		bool							contextCreated;													/**< Whether the OpenGL context has been successfully created */
+		bool							isCurrentContext;												/**< Whether the window is the current window being drawn to */
 
-		tinyWindowState_t			currentState;													/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-		unsigned int				currentWindowStyle;												/**< The current style of the window */
+		tinyWindowState_t				currentState;													/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
+		unsigned int					currentWindowStyle;												/**< The current style of the window */
 
 		std::function<void(unsigned int, tinyWindowKeyState_t)>								keyEvent;					/**< This is the callback to be used when a key has been pressed */
 		std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)>				mouseButtonEvent;			/**< This is the callback to be used when a mouse button has been pressed */
@@ -2333,42 +2500,42 @@ private:
 		HINSTANCE					instanceHandle;
 
 #else
-		Window						windowHandle;				/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
-		GLXContext					context;					/**< The handle to the GLX rendering context */
-		XVisualInfo*				visualInfo;					/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
-		int*						attributes;					/**< Attributes of the window. RGB, depth, stencil, etc */
-		XSetWindowAttributes		setAttributes;				/**< The attributes to be set for the window */
-		unsigned int				decorators;					/**< Enabled window decorators */
+		Window						windowHandle;					/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
+		GLXContext					context;						/**< The handle to the GLX rendering context */
+		XVisualInfo*				visualInfo;						/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
+		int*						attributes;						/**< Attributes of the window. RGB, depth, stencil, etc */
+		XSetWindowAttributes		setAttributes;					/**< The attributes to be set for the window */
+		unsigned int				decorators;						/**< Enabled window decorators */
 
 		/* these atoms are needed to change window states via the extended window manager
 		I might move them to window manager considering these are essentially constants	*/
-		Atom						AtomState;					/**< Atom for the state of the window */							// _NET_WM_STATE
-		Atom						AtomHidden;					/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
-		Atom						AtomFullScreen;				/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
-		Atom						AtomMaxHorz;				/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
-		Atom						AtomMaxVert;				/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
-		Atom						AtomClose;					/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
-		Atom						AtomActive;					/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
-		Atom						AtomDemandsAttention;		/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
-		Atom						AtomFocused;				/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
-		Atom						AtomCardinal;				/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
-		Atom						AtomIcon;					/**< Atom for the icon of the window */								// _NET_WM_ICON
-		Atom						AtomHints;					/**< Atom for the window decorations */								// _NET_WM_HINTS
+		Atom						AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
+		Atom						AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
+		Atom						AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
+		Atom						AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
+		Atom						AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
+		Atom						AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
+		Atom						AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
+		Atom						AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
+		Atom						AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
+		Atom						AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
+		Atom						AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
+		Atom						AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
 
-		Atom						AtomWindowType;				/**< Atom for the type of window */
-		Atom						AtomWindowTypeDesktop;		/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
-		Atom						AtomWindowTypeSplash;		/**< Atom for the splash screen window type */
-		Atom						AtomWindowTypeNormal;		/**< Atom for the normal splash screen window type */
+		Atom						AtomWindowType;					/**< Atom for the type of window */
+		Atom						AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
+		Atom						AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
+		Atom						AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
 
-		Atom						AtomAllowedActions;			/**< Atom for allowed window actions */
-		Atom						AtomActionResize;			/**< Atom for allowing the window to be resized */
-		Atom						AtomActionMinimize;			/**< Atom for allowing the window to be minimized */
-		Atom						AtomActionShade;			/**< Atom for allowing the window to be shaded */
-		Atom						AtomActionMaximizeHorz;		/**< Atom for allowing the window to be maximized horizontally */
-		Atom						AtomActionMaximizeVert;		/**< Atom for allowing the window to be maximized vertically */
-		Atom						AtomActionClose;			/**< Atom for allowing the window to be closed */
+		Atom						AtomAllowedActions;				/**< Atom for allowed window actions */
+		Atom						AtomActionResize;				/**< Atom for allowing the window to be resized */
+		Atom						AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
+		Atom						AtomActionShade;				/**< Atom for allowing the window to be shaded */
+		Atom						AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
+		Atom						AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
+		Atom						AtomActionClose;				/**< Atom for allowing the window to be closed */
 
-		Atom						AtomDesktopGeometry;		/**< Atom for Desktop Geometry */
+		Atom						AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
 #endif
 
 		window_t(const char* name = nullptr, unsigned int iD = 0,
@@ -2410,13 +2577,13 @@ private:
 		}
 	};
 
-	std::vector< window_t* >	windowList;
-	static windowManager*		instance;
+	std::vector< window_t* >				windowList;
+	static windowManager*					instance;
 
-	unsigned int				screenResolution[ 2 ];
-	unsigned int				screenMousePosition[ 2 ];
+	tinyWindowScreenResolution_t			screenResolution;
+	tinyWindowScreenMousePosition_t			screenMousePosition;
 
-	bool						isInitialized;
+	bool									isInitialized;
 
 	static inline bool IsValid( const char* stringParameter )
 	{
