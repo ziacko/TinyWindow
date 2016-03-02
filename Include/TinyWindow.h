@@ -4087,7 +4087,7 @@ private:
 				return instance->windowList[iter];
 			}
 		}
-		return std::unique_ptr<window_t>(nullptr);
+		return nullWindow;
 	}
 
 	static std::unique_ptr<window_t>& GetWindowByEvent( XEvent currentEvent )
@@ -4176,7 +4176,7 @@ private:
 
 			default:
 			{
-				return std::unique_ptr<window_t>(nullptr);
+				return nullWindow;
 			}
 		}
 	}
