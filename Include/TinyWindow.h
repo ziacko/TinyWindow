@@ -2291,7 +2291,7 @@ public:
 
 private:
 
-	enum tinyWindowError_t
+	enum tinyWindowError_t : int
 	{
 		TINYWINDOW_ERROR = -1,
 		INVALID_WINDOW_NAME = 0,				/**< If an invalid window name was given */
@@ -2440,12 +2440,15 @@ private:
 
 	class tinyWindowErrorCategory_t : public std::error_category
 	{
-		virtual const char* name() const
+		public:
+		virtual ~tinyWindowErrorCategory_t() throw(){}
+
+		const char* name() const noexcept override
 		{
 			return "tinyWindow";
-		}
+		} 
 
-		virtual std::error_condition default_error_condition(int ev) const
+		virtual std::error_condition default_error_condition(int ev) const noexcept override
 		{
 			if (ev < 15)
 			{
@@ -2458,7 +2461,7 @@ private:
 			}
 		}
 
-		virtual bool equivalent(const std::error_code& code, int condition) const
+		virtual bool equivalent(const std::error_code& code, int condition) const noexcept override
 		{
 			return *this == code.category() &&
 				static_cast<int>(default_error_condition(code.value()).value()) == condition;
@@ -2467,7 +2470,7 @@ private:
 		/**
 		* return the error message associated with the given error number
 		*/
-		virtual std::string message(int errorValue) const
+		virtual std::string message(int errorValue) const override
 		{
 			switch (errorValue)
 			{
@@ -2577,11 +2580,14 @@ private:
 			}
 			}
 		}
+
+		tinyWindowErrorCategory_t(const tinyWindowErrorCategory_t& copy);
+		tinyWindowErrorCategory_t(){};
 	};
 
 	static void TinyWindow_PrintErrorMessage(std::error_code e)
 	{
-		printf("%s", e.message());
+		printf("%s", e.message().c_str());
 	}
 
 	std::vector< std::unique_ptr<window_t> >				windowList;
@@ -4241,7 +4247,7 @@ private:
 
 		if ( !instance->currentDisplay )
 		{
-			TinyWindow_PrintErrorMessage( std::error_code(LINUX_CANNOT_CONNECT_X_SERVER );
+			TinyWindow_PrintErrorMessage( std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory ));
 			exit( 0 );
 		}
 
@@ -4251,7 +4257,7 @@ private:
 
 		if ( !window->visualInfo )
 		{
-			TinyWindow_PrintErrorMessage( std::error_code(LINUX_INVALID_VISUALINFO );
+			TinyWindow_PrintErrorMessage( std::error_code(LINUX_INVALID_VISUALINFO, errorCategory));
 			exit( 0 );
 		}
 
@@ -4274,7 +4280,7 @@ private:
 
 		if( !window->windowHandle )
 		{
-			TinyWindow_PrintErrorMessage( std::error_code(LINUX_CANNOT_CREATE_WINDOW );
+			TinyWindow_PrintErrorMessage( std::error_code(LINUX_CANNOT_CREATE_WINDOW, errorCategory));
 			exit( 0 );
 		}
 
@@ -5178,7 +5184,7 @@ private:
 	static void Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
-		TinyWindow_PrintErrorMessage( std::error_code(LINUX_FUNCTION_NOT_IMPLEMENTED );
+		TinyWindow_PrintErrorMessage( std::error_code(LINUX_FUNCTION_NOT_IMPLEMENTED, errorCategory));
 	}
 
 	static GLXFBConfig GetBestFrameBufferConfig(std::unique_ptr<window_t>& givenWindow)
