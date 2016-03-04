@@ -215,10 +215,12 @@ public:
 		if (GetInstance()->IsInitialized())
 		{
 #if defined(__linux__)
-			XCloseDisplay(instance->currentDisplay);
+			Linux_Shutdown();
 #endif
 			instance->windowList.clear();
 			instance->isInitialized = false;
+			
+
 			delete instance;
 		}
 		else
@@ -2432,7 +2434,7 @@ private:
 			contextCreated = false;
 			currentWindowStyle = (unsigned int)tinyWindowStyle_t::DEFAULT;
 
-#if defined( __linux )
+#if defined( __linux__ )
 			context = 0;
 #endif 
 		}
@@ -4302,6 +4304,11 @@ private:
 
 	static void Linux_Shutdown( void )
 	{
+		for(unsigned int iter = 0; iter < instance->windowList.size(); iter++)
+		{
+			Linux_ShutdownWindow(instance->windowList[iter]);
+		}
+
 		XCloseDisplay( instance->currentDisplay );
 	}
 
@@ -4318,6 +4325,7 @@ private:
 
 			case DestroyNotify:
 			{
+				printf("shutting down \n");
 				if ( window->destroyedEvent != nullptr )
 				{
 					window->destroyedEvent();
@@ -4742,10 +4750,7 @@ private:
 					{
 						window->destroyedEvent();
 					}
-					ShutdownWindow(window);
-
-					break;
-	
+					break;	
 				}
 
 				//check if full screen
