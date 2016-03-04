@@ -19,10 +19,10 @@ int main()
 	{
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		windowManager::PollForEvents();// or WaitForEvents
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		windowManager::MakeWindowCurrentContextByIndex(0);
 		windowManager::WindowSwapBuffersByIndex(0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	windowManager::ShutDown();
