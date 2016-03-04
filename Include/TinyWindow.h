@@ -221,7 +221,10 @@ public:
 			instance->isInitialized = false;
 			delete instance;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		else
+		{
+			TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		}
 	}
 
 	/**
@@ -2440,12 +2443,12 @@ private:
 		public:
 		virtual ~tinyWindowErrorCategory_t() throw(){}
 
-		const char* name() const noexcept override
+		const char* name() const throw() override
 		{
 			return "tinyWindow";
 		} 
 
-		virtual std::error_condition default_error_condition(int ev) const noexcept override
+		virtual std::error_condition default_error_condition(int ev) const throw() override
 		{
 			if (ev < 15)
 			{
@@ -2458,7 +2461,7 @@ private:
 			}
 		}
 
-		virtual bool equivalent(const std::error_code& code, int condition) const noexcept override
+		virtual bool equivalent(const std::error_code& code, int condition) const throw() override
 		{
 			return *this == code.category() &&
 				static_cast<int>(default_error_condition(code.value()).value()) == condition;
@@ -4315,20 +4318,13 @@ private:
 
 			case DestroyNotify:
 			{
-				//	printf( "blarg" );
-
 				if ( window->destroyedEvent != nullptr )
 				{
 					window->destroyedEvent();
-
 				}
-#if defined(DEBUG)
-				printf( "Window was destroyed\n" );
-#endif
 				ShutdownWindow(window);
 
 				break;
-
 			}
 
 			/*case CreateNotify:
