@@ -214,15 +214,12 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-
-#if defined( CURRENT_OS_LINUX )
+#if defined(__linux__)
 			XCloseDisplay(instance->currentDisplay);
 #endif
-
 			instance->windowList.clear();
 			instance->isInitialized = false;
 			delete instance;
-
 		}
 		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 	}
@@ -230,7 +227,7 @@ public:
 	/**
 	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	static inline windowManager* AddWindow( const char* windowName, unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT, unsigned int colourBits = 8, unsigned int depthBits = 8, unsigned int stencilBits = 8 )
+	static inline windowManager* AddWindow( const char* windowName, unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -3608,8 +3605,8 @@ private:
 			window->mousePosition[ 1 ] = ( unsigned int )HIWORD( longParam );
 
 			POINT point;
-			point.x = window->mousePosition[ 0 ];
-			point.y = window->mousePosition[ 1 ];
+			point.x = (LONG)window->mousePosition[ 0 ];
+			point.y = (LONG)window->mousePosition[ 1 ];
 
 			ClientToScreen( windowHandle, &point );
 
@@ -4082,7 +4079,7 @@ private:
 	static inline void Windows_SetWindowIcon( std::unique_ptr<window_t>& window, const char* icon, unsigned int width, unsigned int height )
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
-			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, width, height, LR_LOADFROMFILE));
+			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
 	}
 
 #elif defined(__linux__)
