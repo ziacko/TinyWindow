@@ -160,33 +160,6 @@ typedef unsigned int tinyWindowScreenMousePosition_t[2];
 const int LINUX_FUNCTION = 1;
 const int LINUX_DECORATOR = 2;
 
-//Print the warning message associated with the given warning number
-/*
-static void TinyWindow_PrintWarningMessage( GLuint warningNumber )
-{
-	switch ( warningNumber )
-	{
-		case TINYWINDOW_WARNING_NO_GL_EXTENSIONS:
-		{
-			printf( "Warning: no OpenGL extensions available \n" );
-			break;
-		}
-
-		case TINYWINDOW_WARNING_NOT_CURRENT_CONTEXT:
-		{
-			printf( "Warning: window not the current OpenGL context being rendered to \n" );
-			break;
-		}
-
-		default:
-		{
-			printf( "Warning: unspecified warning \n" );
-			break;
-		}
-	}
-}*/
-
-
 class windowManager
 {
 	struct window_t;
