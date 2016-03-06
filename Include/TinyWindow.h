@@ -198,7 +198,7 @@ public:
 		}
 		else
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		}
 	}
 
@@ -227,11 +227,11 @@ public:
 
 				return instance;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
+			PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 
@@ -245,7 +245,7 @@ public:
 			return instance->windowList.size();
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return TINYWINDOW_ERROR;
 	}
 
@@ -261,7 +261,7 @@ public:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -274,7 +274,7 @@ public:
 			return instance->screenMousePosition;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 
@@ -299,7 +299,7 @@ public:
 #endif
 			return true;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -323,7 +323,7 @@ public:
 #endif
 			return true;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -351,7 +351,7 @@ public:
 #endif
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -377,7 +377,7 @@ public:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -394,10 +394,10 @@ public:
 				height = GetWindowByName( windowName )->resolution[ 1 ];
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -414,11 +414,11 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -433,11 +433,11 @@ public:
 			{
 				return GetWindowByName( windowName )->resolution;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -451,11 +451,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->resolution;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 
@@ -475,11 +475,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
 		return false;
 	}
 	/**
@@ -498,10 +498,10 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/** 
@@ -520,11 +520,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
 		return false;
 	}
 	/**
@@ -543,11 +543,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
 		return false;
 	}
 
@@ -564,10 +564,10 @@ public:
 				y = GetWindowByName( windowName )->position[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -583,10 +583,10 @@ public:
 				y = GetWindowByIndex( windowIndex )->position[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -601,11 +601,11 @@ public:
 			{
 				return GetWindowByName( windowName )->position;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return nullptr;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -619,10 +619,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->position;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 
@@ -642,11 +642,11 @@ public:
 				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 		
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -665,11 +665,11 @@ public:
 				return true;
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -686,14 +686,14 @@ public:
 				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 
 				Platform_SetWindowPosition(window, x, y);
-				TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+				PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -712,11 +712,11 @@ public:
 				return true;
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -733,10 +733,10 @@ public:
 				y = GetWindowByName( windowName )->mousePosition[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -752,10 +752,10 @@ public:
 				y = GetWindowByIndex( windowIndex )->mousePosition[ 1 ];
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return (bool)TINYWINDOW_ERROR;
 	}
 
@@ -770,10 +770,10 @@ public:
 			{
 				return GetWindowByName( windowName )->mousePosition;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -789,7 +789,7 @@ public:
 			}
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}
 
@@ -808,11 +808,11 @@ public:
 				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -831,10 +831,10 @@ public:
 				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -853,10 +853,10 @@ public:
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -874,11 +874,11 @@ public:
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -894,10 +894,10 @@ public:
 				return GetWindowByName( windowName )->keys[ key ];
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return tinyWindowKeyState_t::BAD;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return tinyWindowKeyState_t::BAD;
 	}
 	/**
@@ -911,10 +911,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->keys[ key ];
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return tinyWindowKeyState_t::BAD;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return tinyWindowKeyState_t::BAD;
 	}
 
@@ -929,11 +929,11 @@ public:
 			{
 				return GetWindowByName( windowName )->shouldClose;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -947,11 +947,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->shouldClose;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -969,11 +969,11 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -989,10 +989,10 @@ public:
 				Platform_SwapBuffers(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1010,10 +1010,10 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1030,10 +1030,10 @@ public:
 
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1051,7 +1051,7 @@ public:
 
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1068,7 +1068,7 @@ public:
 
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}	
 
@@ -1088,10 +1088,10 @@ public:
 				Platform_SetFullScreen(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/*
@@ -1109,10 +1109,10 @@ public:
 				Platform_SetFullScreen(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( std::error_code(NOT_INITIALIZED, errorCategory ));
+		PrintErrorMessage( std::error_code(NOT_INITIALIZED, errorCategory ));
 		return false;
 	}
 
@@ -1129,7 +1129,7 @@ public:
 			}
 			return (bool)TINYWINDOW_ERROR;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return (bool)TINYWINDOW_ERROR;
 	}
 	/**
@@ -1145,7 +1145,7 @@ public:
 			}
 			return (bool)TINYWINDOW_ERROR;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return (bool)TINYWINDOW_ERROR;
 	}
 
@@ -1162,10 +1162,10 @@ public:
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1181,10 +1181,10 @@ public:
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1200,10 +1200,10 @@ public:
 				return (GetWindowByName(windowName)->currentState == tinyWindowState_t::MAXIMIZED);
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1217,10 +1217,10 @@ public:
 			{
 				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::MAXIMIZED);
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	
@@ -1237,10 +1237,10 @@ public:
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1256,10 +1256,10 @@ public:
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1274,10 +1274,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->name;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return nullptr;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return nullptr;
 	}	
 	/**
@@ -1291,10 +1291,10 @@ public:
 			{
 				return GetWindowByName( windowName )->iD;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1313,13 +1313,13 @@ public:
 					Platform_SetWindowTitleBar(window, newTitle);
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+				PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
+			PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
 			return false;
 		}			
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1337,14 +1337,14 @@ public:
 					Platform_SetWindowTitleBar(window, newName);
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+				PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
+			PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1353,7 +1353,7 @@ public:
 	*/
 	static inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
-		TinyWindow_PrintErrorMessage(std::error_code(FUNCTION_NOT_IMPLEMENTED, errorCategory));
+		PrintErrorMessage(std::error_code(FUNCTION_NOT_IMPLEMENTED, errorCategory));
 		return false;
 	/*	if ( GetInstance()->IsInitialized() )
 		{
@@ -1384,7 +1384,7 @@ public:
 	*/
 	static inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
 	{
-		TinyWindow_PrintErrorMessage(std::error_code(FUNCTION_NOT_IMPLEMENTED, errorCategory));
+		PrintErrorMessage(std::error_code(FUNCTION_NOT_IMPLEMENTED, errorCategory));
 		return false;
 		/*if ( GetInstance()->IsInitialized() )
 		{
@@ -1420,10 +1420,10 @@ public:
 			{
 				return GetWindowByName( windowName )->inFocus;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1437,11 +1437,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->inFocus;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1458,10 +1458,10 @@ public:
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1477,10 +1477,10 @@ public:
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1497,10 +1497,10 @@ public:
 				Platform_RestoreWindow(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1516,10 +1516,10 @@ public:
 				Platform_RestoreWindow(window);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1545,14 +1545,14 @@ public:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(WINDOWS_CANNOT_INITIALIZE, errorCategory));
+		PrintErrorMessage(std::error_code(WINDOWS_CANNOT_INITIALIZE, errorCategory));
 		return false;
 #elif defined(__linux__)
 		instance->currentDisplay = XOpenDisplay(0);
 
 		if (!instance->currentDisplay)
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory));
+			PrintErrorMessage(std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory));
 			return false;
 		}
 
@@ -1606,7 +1606,7 @@ public:
 
 		else
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		}
 	}
 
@@ -1634,7 +1634,7 @@ public:
 
 		else
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		}
 	}
 
@@ -1650,10 +1650,10 @@ public:
 				ShutdownWindow( GetWindowByName( windowName ) );
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1668,10 +1668,10 @@ public:
 				ShutdownWindow( GetWindowByIndex( windowIndex ) );
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1688,10 +1688,10 @@ public:
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1707,10 +1707,10 @@ public:
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1727,10 +1727,10 @@ public:
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1746,10 +1746,10 @@ public:
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1766,10 +1766,10 @@ public:
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1785,10 +1785,10 @@ public:
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1806,14 +1806,14 @@ public:
 					GetWindowByName(windowName)->keyEvent = onKey;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1830,13 +1830,13 @@ public:
 					GetWindowByIndex(windowIndex)->keyEvent = onKey;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1854,13 +1854,13 @@ public:
 					GetWindowByName(windowName)->mouseButtonEvent = onMouseButton;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1877,13 +1877,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseButtonEvent = onMouseButton;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1901,13 +1901,13 @@ public:
 					GetWindowByName(windowName)->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1924,13 +1924,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1948,13 +1948,13 @@ public:
 					GetWindowByName(windowName)->destroyedEvent = onDestroyed;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -1971,13 +1971,13 @@ public:
 					GetWindowByIndex(windowIndex)->destroyedEvent = onDestroyed;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -1995,13 +1995,13 @@ public:
 					GetWindowByName(windowName)->maximizedEvent = onMaximized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -2018,13 +2018,13 @@ public:
 					GetWindowByIndex(windowIndex)->maximizedEvent = onMaximized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -2042,13 +2042,13 @@ public:
 					GetWindowByName(windowName)->minimizedEvent = onMinimized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -2065,13 +2065,13 @@ public:
 					GetWindowByIndex(windowIndex)->minimizedEvent = onMinimized;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -2089,13 +2089,13 @@ public:
 					GetWindowByName(windowName)->focusEvent = onFocus;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -2112,13 +2112,13 @@ public:
 					GetWindowByIndex(windowIndex)->focusEvent = onFocus;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -2136,14 +2136,14 @@ public:
 					GetWindowByName(windowName)->movedEvent = onMoved;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -2160,13 +2160,13 @@ public:
 					GetWindowByIndex(windowIndex)->movedEvent = onMoved;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -2184,13 +2184,13 @@ public:
 					GetWindowByName(windowName)->resizeEvent = onResize;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -2207,13 +2207,13 @@ public:
 					GetWindowByIndex(windowIndex)->resizeEvent = onResize;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -2231,13 +2231,13 @@ public:
 					GetWindowByName(windowName)->mouseMoveEvent = onMouseMove;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 	/**
@@ -2254,13 +2254,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseMoveEvent = onMouseMove;
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -2560,7 +2560,7 @@ private:
 		tinyWindowErrorCategory_t(){};
 	};
 
-	static void TinyWindow_PrintErrorMessage(std::error_code e)
+	static void PrintErrorMessage(std::error_code e)
 	{
 		printf("%s", e.message().c_str());
 	}
@@ -2624,7 +2624,7 @@ private:
 			return true;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
 		return false;
 #elif defined(__linux__)
 		if (!window->context)
@@ -2656,7 +2656,7 @@ private:
 
 		else
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(EXISTING_CONTEXT, errorCategory));
+			PrintErrorMessage(std::error_code(EXISTING_CONTEXT, errorCategory));
 			return false;
 		}
 		return false;
@@ -2896,7 +2896,7 @@ private:
 
 		default:
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(INVALID_WINDOWSTYLE, errorCategory));
+			PrintErrorMessage(std::error_code(INVALID_WINDOWSTYLE, errorCategory));
 			break;
 		}
 		}
@@ -2946,7 +2946,7 @@ private:
 
 		default:
 		{
-			TinyWindow_PrintErrorMessage(std::error_code(INVALID_WINDOWSTYLE, errorCategory));
+			PrintErrorMessage(std::error_code(INVALID_WINDOWSTYLE, errorCategory));
 			break;
 		}
 		}
@@ -3220,10 +3220,10 @@ private:
 					}
 				}
 			}
-			TinyWindow_PrintErrorMessage( std::error_code(INVALID_WINDOW_NAME, errorCategory ));
+			PrintErrorMessage( std::error_code(INVALID_WINDOW_NAME, errorCategory ));
 			return false;
 		}
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -3236,11 +3236,11 @@ private:
 				return true;
 			}
 
-			TinyWindow_PrintErrorMessage( std::error_code(INVALID_WINDOW_INDEX, errorCategory ));
+			PrintErrorMessage( std::error_code(INVALID_WINDOW_INDEX, errorCategory ));
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
 		return false;
 	}
 
@@ -4222,7 +4222,7 @@ private:
 
 		if ( !instance->currentDisplay )
 		{
-			TinyWindow_PrintErrorMessage( std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory ));
+			PrintErrorMessage( std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory ));
 			exit( 0 );
 		}
 
@@ -4232,7 +4232,7 @@ private:
 
 		if ( !window->visualInfo )
 		{
-			TinyWindow_PrintErrorMessage( std::error_code(LINUX_INVALID_VISUALINFO, errorCategory));
+			PrintErrorMessage( std::error_code(LINUX_INVALID_VISUALINFO, errorCategory));
 			exit( 0 );
 		}
 
@@ -4255,7 +4255,7 @@ private:
 
 		if( !window->windowHandle )
 		{
-			TinyWindow_PrintErrorMessage( std::error_code(LINUX_CANNOT_CREATE_WINDOW, errorCategory));
+			PrintErrorMessage( std::error_code(LINUX_CANNOT_CREATE_WINDOW, errorCategory));
 			exit( 0 );
 		}
 
@@ -5155,7 +5155,7 @@ private:
 	static void Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
-		TinyWindow_PrintErrorMessage( std::error_code(LINUX_FUNCTION_NOT_IMPLEMENTED, errorCategory));
+		PrintErrorMessage( std::error_code(LINUX_FUNCTION_NOT_IMPLEMENTED, errorCategory));
 	}
 
 	static GLXFBConfig GetBestFrameBufferConfig(std::unique_ptr<window_t>& givenWindow)
