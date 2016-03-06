@@ -163,7 +163,7 @@ const int LINUX_DECORATOR = 2;
 class windowManager
 {
 	struct window_t;
-	enum tinyWindowError_t : int;
+	enum error_t : int;
 
 public:
 
@@ -2266,7 +2266,7 @@ public:
 
 private:
 
-	enum tinyWindowError_t : int
+	enum error_t : int
 	{
 		TINYWINDOW_ERROR = -1,
 		INVALID_WINDOW_NAME = 0,				/**< If an invalid window name was given */
@@ -2413,10 +2413,10 @@ private:
 		}
 	};
 
-	class tinyWindowErrorCategory_t : public std::error_category
+	class errorCategory_t : public std::error_category
 	{
 		public:
-		virtual ~tinyWindowErrorCategory_t() throw(){}
+		virtual ~errorCategory_t() throw(){}
 
 		const char* name() const throw() override
 		{
@@ -2556,8 +2556,8 @@ private:
 			}
 		}
 
-		tinyWindowErrorCategory_t(const tinyWindowErrorCategory_t& copy);
-		tinyWindowErrorCategory_t(){};
+		errorCategory_t(const errorCategory_t& copy);
+		errorCategory_t(){};
 	};
 
 	static void PrintErrorMessage(std::error_code e)
@@ -2568,7 +2568,7 @@ private:
 	std::vector< std::unique_ptr<window_t> >				windowList;
 	static std::unique_ptr<window_t>						nullWindow;
 	static windowManager*									instance;
-	static tinyWindowErrorCategory_t						errorCategory;
+	static errorCategory_t									errorCategory;
 
 	tinyWindowScreenResolution_t							screenResolution;
 	tinyWindowScreenMousePosition_t							screenMousePosition;
@@ -3269,7 +3269,7 @@ private:
 	
 #if defined( _WIN32 ) || defined( _WIN64 )
 
-	enum tinyWindowKeyLong_t
+	enum keyLong_t
 	{
 		LEFT_CONTROL_DOWN_LONG = 29,
 		RIGHT_CONTROL_DOWN_LONG = 285,
@@ -4062,7 +4062,7 @@ private:
 
 #elif defined(__linux__)
 
-	enum tinyWindowLinuxDecorator_t
+	enum linuxDecorator_t
 	{
 		LINUX_DECORATOR_BORDER = 1L << 1,
 		LINUX_DECORATOR_MOVE = 1L << 2,
@@ -5212,6 +5212,6 @@ private:
 
 windowManager* windowManager::instance = nullptr;
 std::unique_ptr<windowManager::window_t> windowManager::nullWindow = nullptr;
-windowManager::tinyWindowErrorCategory_t windowManager::errorCategory = windowManager::tinyWindowErrorCategory_t();
+windowManager::errorCategory_t windowManager::errorCategory = windowManager::errorCategory_t();
 
 #endif
