@@ -2,7 +2,7 @@
 //#include "TutorialConfig.h"
 void handleKeyPresses(unsigned int key, TinyWindow::keyState_t keyState)
 {
-	if(keyState == TinyWindow::keyState_t::DOWN)
+	if(keyState == TinyWindow::keyState_t::down)
 	{
 		printf("%c \t", key);
 	}

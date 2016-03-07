@@ -36,122 +36,122 @@
 namespace TinyWindow
 {
 
-const int DEFAULT_WINDOW_WIDTH = 1280;
-const int DEFAULT_WINDOW_HEIGHT = 720;
+const int defaultWindowWidth = 1280;
+const int defaultWindowHeight = 720;
 
 enum class keyState_t
 {
-	BAD = -1,			/**< If get key state fails (could not name it ERROR) */
-	UP,					/**< The key is currently up */
-	DOWN,				/**< The key is currently down */
+	bad = -1,						/**< If get key state fails (could not name it ERROR) */
+	up,								/**< The key is currently up */
+	down,							/**< The key is currently down */
 };
 
 enum key_t
 {
-	KEY_ERROR = -1,					/**< The key pressed is considered invalid */
-	KEY_FIRST = 256 + 1,			/**< The first key that is not a char */
-	KEY_F1, 						/**< The F1 key */
-	KEY_F2,							/**< The F2 key */
-	KEY_F3,							/**< The F3 key */
-	KEY_F4,							/**< The F4 key */
-	KEY_F5,							/**< The F5 key */
-	KEY_F6,							/**< The F6 key */
-	KEY_F7,							/**< The F7 key */
-	KEY_F8,							/**< The F8 key */
-	KEY_F9,							/**< The F9 key */
-	KEY_F10,						/**< The F10 key */
-	KEY_F11,						/**< The F11 key */
-	KEY_F12,						/**< The F12 key */
-	KEY_CAPSLOCK,					/**< The CapsLock key */
-	KEY_LEFTSHIFT,					/**< The left Shift key */
-	KEY_RIGHTSHIFT,					/**< The right Shift key */
-	KEY_LEFTCONTROL,				/**< The left Control key */
-	KEY_RIGHTCONTROL,				/**< The right Control key */
-	KEY_LEFTWINDOW,					/**< The left Window key */
-	KEY_RIGHTWINDOW,				/**< The right Window key */
-	KEY_LEFTALT,					/**< The left Alternate key */
-	KEY_RIGHTALT,					/**< The right Alternate key */
-	KEY_ENTER,						/**< The Enter/Return key */
-	KEY_PRINTSCREEN,				/**< The PrintScreen key */
-	KEY_SCROLLLOCK,					/**< The ScrollLock key */
-	KEY_NUMLOCK,					/**< The NumLock key */
-	KEY_PAUSE,						/**< The pause/break key */
-	KEY_INSERT,						/**< The insert key */
-	KEY_HOME,						/**< The Home key */
-	KEY_END,						/**< The End key */
-	KEY_PAGEUP,						/**< The PageUp key */
-	KEY_PAGEDOWN,					/**< The PageDown key */
-	KEY_ARROW_DOWN,					/**< The ArrowDown key */
-	KEY_ARROW_UP,					/**< The ArrowUp key */
-	KEY_ARROW_LEFT,					/**< The ArrowLeft key */
-	KEY_ARROW_RIGHT,				/**< The ArrowRight key */
-	KEY_KEYPAD_DIVIDE,				/**< The KeyPad Divide key */
-	KEY_KEYPAD_MULTIPLY,			/**< The Keypad Multiply key */
-	KEY_KEYPAD_SUBTRACT,			/**< The Keypad Subtract key */
-	KEY_KEYPAD_ADD,					/**< The Keypad Add key */
-	KEY_KEYPAD_ENTER,				/**< The Keypad Enter key */
-	KEY_KEYPAD_PERIOD,				/**< The Keypad Period/Decimal key */
-	KEY_KEYPAD_0,					/**< The Keypad 0 key */
-	KEY_KEYPAD_1,					/**< The Keypad 1 key */
-	KEY_KEYPAD_2,					/**< The Keypad 2 key */
-	KEY_KEYPAD_3,					/**< The Keypad 3 key */
-	KEY_KEYPAD_4,					/**< The Keypad 4 key */
-	KEY_KEYPAD_5,					/**< The Keypad 5 key */
-	KEY_KEYPAD_6,					/**< The Keypad 6 key */
-	KEY_KEYPAD_7,					/**< The Keypad 7 key */
-	KEY_KEYPAD_8,					/**< The keypad 8 key */
-	KEY_KEYPAD_9,					/**< The Keypad 9 key */
-	KEY_BACKSPACE,					/**< The Backspace key */
-	KEY_TAB,						/**< The Tab key */
-	KEY_DELETE,						/**< The Delete key */
-	KEY_ESCAPE,						/**< The Escape key */
-	KEY_LAST = KEY_ESCAPE,			/**< The last key to be supported */
+	bad = -1,						/**< The key pressed is considered invalid */
+	first = 256 + 1,				/**< The first key that is not a char */
+	F1, 							/**< The F1 key */
+	F2,								/**< The F2 key */
+	F3,								/**< The F3 key */
+	F4,								/**< The F4 key */
+	F5,								/**< The F5 key */
+	F6,								/**< The F6 key */
+	F7,								/**< The F7 key */
+	F8,								/**< The F8 key */
+	F9,								/**< The F9 key */
+	F10,							/**< The F10 key */
+	F11,							/**< The F11 key */
+	F12,							/**< The F12 key */
+	capsLock,						/**< The CapsLock key */
+	leftShift,						/**< The left Shift key */
+	rightShift,						/**< The right Shift key */
+	leftControl,					/**< The left Control key */
+	rightControl,					/**< The right Control key */
+	leftWindow,						/**< The left Window key */
+	rightWindow,					/**< The right Window key */
+	leftAlt,						/**< The left Alternate key */
+	rightAlt,						/**< The right Alternate key */
+	enter,							/**< The Enter/Return key */
+	printScreen,					/**< The PrintScreen key */
+	scrollLock,						/**< The ScrollLock key */
+	numLock,						/**< The NumLock key */
+	pause,							/**< The pause/break key */
+	insert,							/**< The insert key */
+	home,							/**< The Home key */
+	end,							/**< The End key */
+	pageUp,							/**< The PageUp key */
+	pageDown,						/**< The PageDown key */
+	arrowDown,						/**< The ArrowDown key */
+	arrowUp,						/**< The ArrowUp key */
+	arrowLeft,						/**< The ArrowLeft key */
+	arrowRight,						/**< The ArrowRight key */
+	keypadDivide,					/**< The KeyPad Divide key */
+	keypadMultiply,					/**< The Keypad Multiply key */
+	keypadSubtract,					/**< The Keypad Subtract key */
+	keypadAdd,						/**< The Keypad Add key */
+	keypadEnter,					/**< The Keypad Enter key */
+	keypadPeriod,					/**< The Keypad Period/Decimal key */
+	keypad0,						/**< The Keypad 0 key */
+	keypad1,						/**< The Keypad 1 key */
+	keypad2,						/**< The Keypad 2 key */
+	keypad3,						/**< The Keypad 3 key */
+	keypad4,						/**< The Keypad 4 key */
+	keypad5,						/**< The Keypad 5 key */
+	keypad6,						/**< The Keypad 6 key */
+	keypad7,						/**< The Keypad 7 key */
+	keypad8,						/**< The keypad 8 key */
+	keypad9,						/**< The Keypad 9 key */
+	backspace,						/**< The Backspace key */
+	tab,							/**< The Tab key */
+	del,							/**< The Delete key */
+	escape,							/**< The Escape key */
+	last = escape,					/**< The last key to be supported */
 };
 
 enum class buttonState_t
 {
-	UP,				/**< The mouse button is currently up */
-	DOWN			/**< The mouse button is currently down */
+	up,								/**< The mouse button is currently up */
+	down							/**< The mouse button is currently down */
 };
 
 enum class mouseButton_t
 {
-	LEFT,			/**< The left mouse button */
-	RIGHT,			/**< The right mouse button */
-	MIDDLE,			/**< The middle mouse button / ScrollWheel */
-	LAST,			/**< The last mouse button to be supported */
+	left,							/**< The left mouse button */
+	right,							/**< The right mouse button */
+	middle,							/**< The middle mouse button / ScrollWheel */
+	last,							/**< The last mouse button to be supported */
 };
 
 enum class mouseScroll_t
 {
-	DOWN,			/**< The mouse wheel up */
-	UP				/**< The mouse wheel down */
+	down,							/**< The mouse wheel up */
+	up								/**< The mouse wheel down */
 };
 
 enum class style_t
 {
-	BARE,			/**< The window has no decorators but the window border and title bar */
-	DEFAULT,		/**< The default window style for the respective platform */
-	POPUP,			/**< The window has no decorators */
+	bare,							/**< The window has no decorators but the window border and title bar */
+	normal,							/**< The default window style for the respective platform */
+	popup,							/**< The window has no decorators */
 };
 
 enum class state_t
 {
-	NORMAL,			/**< The window is in its default state */
-	MAXIMIZED,		/**< The window is currently maximized */
-	MINIMIZED,		/**< The window is currently minimized */
-	FULLSCREEN,		/**< The window is currently full screen */
+	normal,							/**< The window is in its default state */
+	maximized,						/**< The window is currently maximized */
+	minimized,						/**< The window is currently minimized */
+	fullscreen,						/**< The window is currently full screen */
 };
 
 enum decorator_t
 {
-	DECORATOR_TITLEBAR = 0x01,				/**< The title bar decoration of the window */
-	DECORATOR_ICON = 0x02,					/**< The icon decoration of the window */
-	DECORATOR_BORDER = 0x04,				/**< The border decoration of the window */
-	DECORATOR_MINIMIZEBUTTON = 0x08,		/**< The minimize button decoration of the window */
-	DECORATOR_MAXIMIZEBUTTON = 0x010,		/**< The maximize button decoration pf the window */
-	DECORATOR_CLOSEBUTTON = 0x20,			/**< The close button decoration of the window */
-	DECORATOR_SIZEABLEBORDER = 0x40,		/**< The sizable border decoration of the window */
+	titleBar = 0x01,				/**< The title bar decoration of the window */
+	icon = 0x02,					/**< The icon decoration of the window */
+	border = 0x04,					/**< The border decoration of the window */
+	minimizeButton = 0x08,			/**< The minimize button decoration of the window */
+	maximizeButton = 0x010,			/**< The maximize button decoration pf the window */
+	closeButton = 0x20,				/**< The close button decoration of the window */
+	sizeableBorder = 0x40,			/**< The sizable border decoration of the window */
 };
 
 typedef unsigned int resolution_t[2];
@@ -162,6 +162,8 @@ typedef unsigned int screenMousePosition_t[2];
 
 const int LINUX_FUNCTION = 1;
 const int LINUX_DECORATOR = 2;
+
+const int TW_error = -1;
 
 class windowManager
 {
@@ -201,14 +203,14 @@ public:
 		}
 		else
 		{
-			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		}
 	}
 
 	/**
 	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	static inline windowManager* AddWindow( const char* windowName, unsigned int width = DEFAULT_WINDOW_WIDTH, unsigned int height = DEFAULT_WINDOW_HEIGHT, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
+	static inline windowManager* AddWindow( const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -230,11 +232,11 @@ public:
 
 				return instance;
 			}
-			PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
+			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
 			return nullptr;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 
@@ -248,8 +250,8 @@ public:
 			return instance->windowList.size();
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return TINYWINDOW_ERROR;
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return TW_error;
 	}
 
 	/**
@@ -264,7 +266,7 @@ public:
 			return true;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -277,7 +279,7 @@ public:
 			return instance->screenMousePosition;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 
@@ -302,7 +304,7 @@ public:
 #endif
 			return true;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -326,7 +328,7 @@ public:
 #endif
 			return true;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -354,7 +356,7 @@ public:
 #endif
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -380,7 +382,7 @@ public:
 			return true;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -397,10 +399,10 @@ public:
 				height = GetWindowByName( windowName )->resolution[ 1 ];
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -417,11 +419,11 @@ public:
 
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -436,11 +438,11 @@ public:
 			{
 				return GetWindowByName( windowName )->resolution;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -454,11 +456,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->resolution;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 
@@ -478,11 +480,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
 		return false;
 	}
 	/**
@@ -501,10 +503,10 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/** 
@@ -523,11 +525,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
 		return false;
 	}
 	/**
@@ -546,11 +548,11 @@ public:
 				Platform_SetWindowResolution(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
 		return false;
 	}
 
@@ -567,10 +569,10 @@ public:
 				y = GetWindowByName( windowName )->position[ 1 ];
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -586,10 +588,10 @@ public:
 				y = GetWindowByIndex( windowIndex )->position[ 1 ];
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -604,11 +606,11 @@ public:
 			{
 				return GetWindowByName( windowName )->position;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -622,10 +624,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->position;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 
@@ -645,11 +647,11 @@ public:
 				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 		
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -668,11 +670,11 @@ public:
 				return true;
 			}
 
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -689,14 +691,14 @@ public:
 				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 
 				Platform_SetWindowPosition(window, x, y);
-				PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -715,11 +717,11 @@ public:
 				return true;
 			}
 
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -736,10 +738,10 @@ public:
 				y = GetWindowByName( windowName )->mousePosition[ 1 ];
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -755,11 +757,11 @@ public:
 				y = GetWindowByIndex( windowIndex )->mousePosition[ 1 ];
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return (bool)TINYWINDOW_ERROR;
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return (bool)TW_error;
 	}
 
 	/**
@@ -773,10 +775,10 @@ public:
 			{
 				return GetWindowByName( windowName )->mousePosition;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 	/**
@@ -792,7 +794,7 @@ public:
 			}
 			return nullptr;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}
 
@@ -811,11 +813,11 @@ public:
 				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -834,10 +836,10 @@ public:
 				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -856,10 +858,10 @@ public:
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -877,11 +879,11 @@ public:
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -897,11 +899,11 @@ public:
 				return GetWindowByName( windowName )->keys[ key ];
 			}
 
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
-			return keyState_t::BAD;
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			return keyState_t::bad;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return keyState_t::BAD;
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return keyState_t::bad;
 	}
 	/**
 	 * Returns the current state of the given key relative to the given window
@@ -914,11 +916,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->keys[ key ];
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
-			return keyState_t::BAD;
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			return keyState_t::bad;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return keyState_t::BAD;
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return keyState_t::bad;
 	}
 
 	/**
@@ -932,11 +934,11 @@ public:
 			{
 				return GetWindowByName( windowName )->shouldClose;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -950,11 +952,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->shouldClose;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -972,11 +974,11 @@ public:
 
 				return true;
 			}
-			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -992,10 +994,10 @@ public:
 				Platform_SwapBuffers(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1013,10 +1015,10 @@ public:
 
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1033,10 +1035,10 @@ public:
 
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1049,12 +1051,12 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return (GetWindowByName(windowName)->currentState == state_t::FULLSCREEN);
+				return (GetWindowByName(windowName)->currentState == state_t::fullscreen);
 			}
 
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1066,12 +1068,12 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == state_t::FULLSCREEN);
+				return (GetWindowByIndex(windowIndex)->currentState == state_t::fullscreen);
 			}
 
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}	
 
@@ -1086,15 +1088,15 @@ public:
 			{
 				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 
-				window->currentState = (newState == true) ? state_t::FULLSCREEN : state_t::NORMAL;
+				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
 				Platform_SetFullScreen(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/*
@@ -1107,15 +1109,15 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
-				window->currentState = (newState == true) ? state_t::FULLSCREEN : state_t::NORMAL;
+				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
 				Platform_SetFullScreen(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage( std::error_code(NOT_INITIALIZED, errorCategory ));
+		PrintErrorMessage( std::error_code(notInitialized, errorCategory ));
 		return false;
 	}
 
@@ -1128,12 +1130,12 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return (GetWindowByName(windowName)->currentState == state_t::MINIMIZED);
+				return (GetWindowByName(windowName)->currentState == state_t::minimized);
 			}
-			return (bool)TINYWINDOW_ERROR;
+			return (bool)TW_error;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return (bool)TINYWINDOW_ERROR;
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return (bool)TW_error;
 	}
 	/**
 	 * Returns whether the given window is minimized
@@ -1144,12 +1146,12 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == state_t::MINIMIZED);
+				return (GetWindowByIndex(windowIndex)->currentState == state_t::minimized);
 			}
-			return (bool)TINYWINDOW_ERROR;
+			return (bool)TW_error;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return (bool)TINYWINDOW_ERROR;
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return (bool)TW_error;
 	}
 
 	/**
@@ -1165,10 +1167,10 @@ public:
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1184,10 +1186,10 @@ public:
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1200,13 +1202,13 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return (GetWindowByName(windowName)->currentState == state_t::MAXIMIZED);
+				return (GetWindowByName(windowName)->currentState == state_t::maximized);
 			}
 
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1218,12 +1220,12 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == state_t::MAXIMIZED);
+				return (GetWindowByIndex(windowIndex)->currentState == state_t::maximized);
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	
@@ -1240,10 +1242,10 @@ public:
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1259,10 +1261,10 @@ public:
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1277,10 +1279,10 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->name;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return nullptr;
 	}	
 	/**
@@ -1294,10 +1296,10 @@ public:
 			{
 				return GetWindowByName( windowName )->iD;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1316,13 +1318,13 @@ public:
 					Platform_SetWindowTitleBar(window, newTitle);
 					return true;
 				}
-				PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
+			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
 			return false;
 		}			
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1340,14 +1342,14 @@ public:
 					Platform_SetWindowTitleBar(window, newName);
 					return true;
 				}
-				PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(INVALID_WINDOW_NAME, errorCategory));
+			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1356,7 +1358,7 @@ public:
 	*/
 	static inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
-		PrintErrorMessage(std::error_code(FUNCTION_NOT_IMPLEMENTED, errorCategory));
+		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
 		return false;
 	/*	if ( GetInstance()->IsInitialized() )
 		{
@@ -1371,15 +1373,15 @@ public:
 #endif
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_WINDOW_NOT_FOUND);
 				return false;
 			}
 
-			TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TINYWINDOW_ERROR_INVALID_ICON_PATH);
+			TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_INVALID_ICON_PATH);
 			return false;
 		}
 
-		TinyWindow_PrintErrorMessage( std::error_code(tinyWindowError_t::TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( std::error_code(tinyWindowError_t::TW_error_NOT_INITIALIZED );
 		return false;*/
 	}
 	/**
@@ -1387,7 +1389,7 @@ public:
 	*/
 	static inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
 	{
-		PrintErrorMessage(std::error_code(FUNCTION_NOT_IMPLEMENTED, errorCategory));
+		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
 		return false;
 		/*if ( GetInstance()->IsInitialized() )
 		{
@@ -1402,13 +1404,13 @@ public:
 #endif
 					return true;
 				}
-				TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TINYWINDOW_ERROR_WINDOW_NOT_FOUND);
+				TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_WINDOW_NOT_FOUND);
 				return false;
 			}
-			TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TINYWINDOW_ERROR_INVALID_ICON_PATH);
+			TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_INVALID_ICON_PATH);
 			return false;
 		}
-		TinyWindow_PrintErrorMessage( std::error_code(tinyWindowError_t::TINYWINDOW_ERROR_NOT_INITIALIZED );
+		TinyWindow_PrintErrorMessage( std::error_code(tinyWindowError_t::TW_error_NOT_INITIALIZED );
 		return false;*/
 	}
 
@@ -1423,10 +1425,10 @@ public:
 			{
 				return GetWindowByName( windowName )->inFocus;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1440,11 +1442,11 @@ public:
 			{
 				return GetWindowByIndex( windowIndex )->inFocus;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1461,10 +1463,10 @@ public:
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1480,10 +1482,10 @@ public:
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1500,10 +1502,10 @@ public:
 				Platform_RestoreWindow(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1519,10 +1521,10 @@ public:
 				Platform_RestoreWindow(window);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1548,14 +1550,14 @@ public:
 			return true;
 		}
 
-		PrintErrorMessage(std::error_code(WINDOWS_CANNOT_INITIALIZE, errorCategory));
+		PrintErrorMessage(std::error_code(windowsCannotInitialize, errorCategory));
 		return false;
 #elif defined(__linux__)
 		instance->currentDisplay = XOpenDisplay(0);
 
 		if (!instance->currentDisplay)
 		{
-			PrintErrorMessage(std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory));
+			PrintErrorMessage(std::error_code(linuxCannotConnectXServer, errorCategory));
 			return false;
 		}
 
@@ -1609,7 +1611,7 @@ public:
 
 		else
 		{
-			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		}
 	}
 
@@ -1637,7 +1639,7 @@ public:
 
 		else
 		{
-			PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		}
 	}
 
@@ -1653,10 +1655,10 @@ public:
 				ShutdownWindow( GetWindowByName( windowName ) );
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1671,10 +1673,10 @@ public:
 				ShutdownWindow( GetWindowByIndex( windowIndex ) );
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1691,10 +1693,10 @@ public:
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1710,10 +1712,10 @@ public:
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1730,10 +1732,10 @@ public:
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1749,10 +1751,10 @@ public:
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1769,10 +1771,10 @@ public:
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1788,10 +1790,10 @@ public:
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1809,14 +1811,14 @@ public:
 					GetWindowByName(windowName)->keyEvent = onKey;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
 
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1833,13 +1835,13 @@ public:
 					GetWindowByIndex(windowIndex)->keyEvent = onKey;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1857,13 +1859,13 @@ public:
 					GetWindowByName(windowName)->mouseButtonEvent = onMouseButton;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1880,13 +1882,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseButtonEvent = onMouseButton;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1904,13 +1906,13 @@ public:
 					GetWindowByName(windowName)->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1927,13 +1929,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1951,13 +1953,13 @@ public:
 					GetWindowByName(windowName)->destroyedEvent = onDestroyed;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -1974,13 +1976,13 @@ public:
 					GetWindowByIndex(windowIndex)->destroyedEvent = onDestroyed;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -1998,13 +2000,13 @@ public:
 					GetWindowByName(windowName)->maximizedEvent = onMaximized;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -2021,13 +2023,13 @@ public:
 					GetWindowByIndex(windowIndex)->maximizedEvent = onMaximized;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -2045,13 +2047,13 @@ public:
 					GetWindowByName(windowName)->minimizedEvent = onMinimized;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -2068,13 +2070,13 @@ public:
 					GetWindowByIndex(windowIndex)->minimizedEvent = onMinimized;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -2092,13 +2094,13 @@ public:
 					GetWindowByName(windowName)->focusEvent = onFocus;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -2115,13 +2117,13 @@ public:
 					GetWindowByIndex(windowIndex)->focusEvent = onFocus;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -2139,14 +2141,14 @@ public:
 					GetWindowByName(windowName)->movedEvent = onMoved;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
 
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -2163,13 +2165,13 @@ public:
 					GetWindowByIndex(windowIndex)->movedEvent = onMoved;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -2187,13 +2189,13 @@ public:
 					GetWindowByName(windowName)->resizeEvent = onResize;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -2210,13 +2212,13 @@ public:
 					GetWindowByIndex(windowIndex)->resizeEvent = onResize;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -2234,13 +2236,13 @@ public:
 					GetWindowByName(windowName)->mouseMoveEvent = onMouseMove;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
@@ -2257,13 +2259,13 @@ public:
 					GetWindowByIndex(windowIndex)->mouseMoveEvent = onMouseMove;
 					return true;
 				}
-				PrintErrorMessage(std::error_code(INVALID_CALLBACK, errorCategory));
+				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -2271,28 +2273,27 @@ private:
 
 	enum error_t : int
 	{
-		TINYWINDOW_ERROR = -1,
-		INVALID_WINDOW_NAME,					/**< If an invalid window name was given */
-		INVALID_ICON_PATH,						/**< If an invalid icon path was given */
-		INVALID_WINDOW_INDEX,					/**< If an invalid window index was given */
-		INVALID_WINDOW_STATE,					/**< If an invalid window state was given */
-		INVALID_RESOLUTION,						/**< If an invalid window resolution was given */
-		INVALID_CONTEXT,						/**< If the OpenGL context for the window is invalid */
-		EXISTING_CONTEXT,						/**< If the window already has an OpenGL context */
-		NOT_INITIALIZED,						/**< If the window is being used without being initialized */
-		ALREADY_INITIALIZED,					/**< If the window was already initialized */
-		INVALID_TITLEBAR,						/**< If the Title-bar text given was invalid */
-		INVALID_CALLBACK,						/**< If the given event callback was invalid */
-		WINDOW_NOT_FOUND,						/**< If the window was not found in the window manager */
-		INVALID_WINDOWSTYLE,					/**< If the window style gives is invalid */
-		FUNCTION_NOT_IMPLEMENTED,				/**< If the function has not yet been implemented in the current version of the API */
-		LINUX_CANNOT_CONNECT_X_SERVER,			/**< Linux: if cannot connect to an X11 server */
-		LINUX_INVALID_VISUALINFO,				/**< Linux: if visual information given was invalid */
-		LINUX_CANNOT_CREATE_WINDOW,				/**< Linux: when X11 fails to create a new window */
-		LINUX_FUNCTION_NOT_IMPLEMENTED,			/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
-		WINDOWS_CANNOT_CREATE_WINDOW,			/**< Windows: when Win32 cannot create a window */
-		WINDOWS_CANNOT_INITIALIZE,				/**< Windows: when Win32 cannot initialize */
-		WINDOWS_FUNCTION_NOT_IMPLEMENTED,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
+		invalidWindowName,					/**< If an invalid window name was given */
+		invalidIconPath,					/**< If an invalid icon path was given */
+		invalidWindowIndex,					/**< If an invalid window index was given */
+		invalidWindowState,					/**< If an invalid window state was given */
+		invalidResolution,					/**< If an invalid window resolution was given */
+		invalidContext,						/**< If the OpenGL context for the window is invalid */
+		existingContext,					/**< If the window already has an OpenGL context */
+		notInitialized,						/**< If the window is being used without being initialized */
+		alreadyInitialized,					/**< If the window was already initialized */
+		invalidTitlebar,					/**< If the Title-bar text given was invalid */
+		invalidCallback,					/**< If the given event callback was invalid */
+		windowNotFound,						/**< If the window was not found in the window manager */
+		invalidWindowStyle,					/**< If the window style gives is invalid */
+		functionNotImplemented,				/**< If the function has not yet been implemented in the current version of the API */
+		linuxCannotConnectXServer,			/**< Linux: if cannot connect to an X11 server */
+		linuxInvalidVisualinfo,				/**< Linux: if visual information given was invalid */
+		linuxCannotCreateWindow,			/**< Linux: when X11 fails to create a new window */
+		linuxFunctionNotImplemented,		/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
+		windowsCannotCreateWindows,			/**< Windows: when Win32 cannot create a window */
+		windowsCannotInitialize,			/**< Windows: when Win32 cannot initialize */
+		windowsFunctionNotImplemented,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
 	struct window_t
@@ -2302,8 +2303,8 @@ private:
 		int								colorBits;												/**< Color format of the window. ( defaults to 32 bit color ) */
 		int								depthBits;												/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
 		int								stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
-		keyState_t						keys[KEY_LAST];											/**< Record of keys that are either pressed or released in the respective window */
-		buttonState_t					mouseButton[(unsigned int)mouseButton_t::LAST];			/**< Record of mouse buttons that are either presses or released */
+		keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
+		buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
 		resolution_t					resolution;												/**< Resolution/Size of the window stored in an array */
 		position_t						position;												/**< Position of the Window relative to the screen co-ordinates */
 		mousePosition_t					mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
@@ -2379,7 +2380,7 @@ private:
 
 		window_t(const char* name = nullptr, unsigned int iD = 0,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-			bool shouldClose = false, state_t currentState = state_t::NORMAL,
+			bool shouldClose = false, state_t currentState = state_t::normal,
 			std::function<void(unsigned int, keyState_t)> keyEvent = nullptr,
 			std::function<void(mouseButton_t, buttonState_t)> mouseButtonEvent = nullptr, std::function<void(mouseScroll_t)> mouseWheelEvent = nullptr,
 			std::function<void(void)> destroyedEvent = nullptr, std::function<void(void)> maximizedEvent = nullptr, std::function<void(void)> minimizedEvent = nullptr,
@@ -2408,7 +2409,7 @@ private:
 
 			initialized = false;
 			contextCreated = false;
-			currentWindowStyle = (unsigned int)style_t::DEFAULT;
+			currentWindowStyle = (unsigned int)style_t::normal;
 
 #if defined( __linux__ )
 			context = 0;
@@ -2452,102 +2453,102 @@ private:
 		{
 			switch (errorValue)
 			{
-			case INVALID_WINDOW_NAME:
+			case invalidWindowName:
 			{
 				return "Error: invalid window name \n";
 			}
 
-			case INVALID_ICON_PATH:
+			case invalidIconPath:
 			{
 				return "Error: invalid icon path \n";
 			}
 
-			case INVALID_WINDOW_INDEX:
+			case invalidWindowIndex:
 			{
 				return "Error: invalid window index \n";
 			}
 
-			case INVALID_WINDOW_STATE:
+			case invalidWindowState:
 			{
 				return "Error: invalid window state \n";
 			}
 
-			case INVALID_RESOLUTION:
+			case invalidResolution:
 			{
 				return "Error: invalid resolution \n";
 			}
 
-			case INVALID_CONTEXT:
+			case invalidContext:
 			{
 				return "Error: Failed to create OpenGL context \n";
 			}
 
-			case EXISTING_CONTEXT:
+			case existingContext:
 			{
 				return "Error: context already created \n";
 			}
 
-			case NOT_INITIALIZED:
+			case notInitialized:
 			{
 				return "Error: Window manager not initialized \n";
 			}
 
-			case ALREADY_INITIALIZED:
+			case alreadyInitialized:
 			{
 				return "Error: window has already been initialized \n";
 			}
 
-			case INVALID_TITLEBAR:
+			case invalidTitlebar:
 			{
 				return "Error: invalid title bar name ( cannot be null or nullptr ) \n";
 			}
 
-			case INVALID_CALLBACK:
+			case invalidCallback:
 			{
 				return "Error: invalid event callback given \n";
 			}
 
-			case WINDOW_NOT_FOUND:
+			case windowNotFound:
 			{
 				return "Error: window was not found \n";
 			}
 
-			case INVALID_WINDOWSTYLE:
+			case invalidWindowStyle:
 			{
 				return "Error: invalid window style given \n";
 			}
 
-			case FUNCTION_NOT_IMPLEMENTED:
+			case functionNotImplemented:
 			{
 				return "Error: I'm sorry but this function has not been implemented yet :( \n";
 			}
 
-			case LINUX_CANNOT_CONNECT_X_SERVER:
+			case linuxCannotConnectXServer:
 			{
 				return "Error: cannot connect to X server \n";
 			}
 
-			case LINUX_INVALID_VISUALINFO:
+			case linuxInvalidVisualinfo:
 			{
 				return "Error: Invalid visual information given \n";
 			}
 
-			case LINUX_CANNOT_CREATE_WINDOW:
+			case linuxCannotCreateWindow:
 			{
 				return "Error: failed to create window \n";
 			}
 
-			case LINUX_FUNCTION_NOT_IMPLEMENTED:
+			case linuxFunctionNotImplemented:
 			{
 				return "Error: function not implemented on Linux platform yet. sorry :( \n";
 			}
 
-			case WINDOWS_CANNOT_CREATE_WINDOW:
+			case windowsCannotCreateWindows:
 			{
 				return "Error: failed to create window \n";
 			}
 
-			case WINDOWS_FUNCTION_NOT_IMPLEMENTED:
+			case windowsFunctionNotImplemented:
 			{
 				return "Error: function not implemented on Windows platform yet. sorry ;( \n";
 			}
@@ -2627,7 +2628,7 @@ private:
 			return true;
 		}
 
-		PrintErrorMessage(std::error_code(INVALID_CONTEXT, errorCategory));
+		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
 		return false;
 #elif defined(__linux__)
 		if (!window->context)
@@ -2659,7 +2660,7 @@ private:
 
 		else
 		{
-			PrintErrorMessage(std::error_code(EXISTING_CONTEXT, errorCategory));
+			PrintErrorMessage(std::error_code(existingContext, errorCategory));
 			return false;
 		}
 		return false;
@@ -2751,7 +2752,7 @@ private:
 		currentEvent.xclient.message_type = window->AtomState;
 		currentEvent.xclient.format = 32;
 		currentEvent.xclient.window = window->windowHandle;
-		currentEvent.xclient.data.l[0] = window->currentState == state_t::FULLSCREEN;
+		currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
 		currentEvent.xclient.data.l[1] = window->AtomFullScreen;
 
 		XSendEvent(instance->currentDisplay,
@@ -2764,7 +2765,7 @@ private:
 	{
 		if (newState)
 		{
-			window->currentState = state_t::MINIMIZED;
+			window->currentState = state_t::minimized;
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_MINIMIZE);
@@ -2776,7 +2777,7 @@ private:
 
 		else
 		{
-			window->currentState = state_t::NORMAL;
+			window->currentState = state_t::normal;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(__linux__)
@@ -2789,7 +2790,7 @@ private:
 	{
 		if (newState)
 		{
-			window->currentState = state_t::MAXIMIZED;
+			window->currentState = state_t::maximized;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_MAXIMIZE);
 #elif defined(__linux__)
@@ -2800,7 +2801,7 @@ private:
 			currentEvent.xclient.message_type = window->AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == state_t::MAXIMIZED);
+			currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
 			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
 			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
 
@@ -2812,7 +2813,7 @@ private:
 
 		else
 		{
-			window->currentState = state_t::NORMAL;
+			window->currentState = state_t::normal;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(__linux__)
@@ -2823,7 +2824,7 @@ private:
 			currentEvent.xclient.message_type = window->AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == state_t::MAXIMIZED);
+			currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
 			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
 			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
 
@@ -2878,28 +2879,28 @@ private:
 #if defined( _WIN32 ) || defined( _WIN64 )
 		switch (windowStyle)
 		{
-		case style_t::DEFAULT:
+		case style_t::normal:
 		{
-			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER |
-				DECORATOR_CLOSEBUTTON | DECORATOR_MINIMIZEBUTTON | DECORATOR_MAXIMIZEBUTTON);
+			EnableWindowDecoratorsByName(window->name, titleBar | border |
+				closeButton | minimizeButton | maximizeButton);
 			break;
 		}
 
-		case style_t::POPUP:
+		case style_t::popup:
 		{
 			EnableWindowDecoratorsByName(window->name, 0);
 			break;
 		}
 
-		case style_t::BARE:
+		case style_t::bare:
 		{
-			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER);
+			EnableWindowDecoratorsByName(window->name, titleBar | border);
 			break;
 		}
 
 		default:
 		{
-			PrintErrorMessage(std::error_code(INVALID_WINDOWSTYLE, errorCategory));
+			PrintErrorMessage(std::error_code(invalidWindowStyle, errorCategory));
 			break;
 		}
 		}
@@ -2907,11 +2908,11 @@ private:
 #elif defined(__linux__)
 		switch (windowStyle)
 		{
-			case style_t::DEFAULT:
+			case style_t::normal:
 		{
 			window->decorators = (1L << 2);
-			window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
-				LINUX_DECORATOR_MAXIMIZE | LINUX_DECORATOR_MINIMIZE;
+			window->currentWindowStyle = linuxMove | linuxClose |
+				linuxMaximize | linuxMinimize;
 			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
@@ -2921,7 +2922,7 @@ private:
 			break;
 		}
 
-			case style_t::BARE:
+			case style_t::bare:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = (1L << 2);
@@ -2934,7 +2935,7 @@ private:
 			break;
 		}
 
-			case style_t::POPUP:
+			case style_t::popup:
 		{
 			window->decorators = 0;
 			window->currentWindowStyle = (1L << 2);
@@ -2949,7 +2950,7 @@ private:
 
 		default:
 		{
-			PrintErrorMessage(std::error_code(INVALID_WINDOWSTYLE, errorCategory));
+			PrintErrorMessage(std::error_code(invalidWindowStyle, errorCategory));
 			break;
 		}
 		}
@@ -2961,37 +2962,37 @@ private:
 #if defined( _WIN32 ) || defined( _WIN64 )
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
 
-		if (decorators & DECORATOR_BORDER)
+		if (decorators & border)
 		{
 			window->currentWindowStyle |= WS_BORDER;
 		}
 
-		if (decorators & DECORATOR_TITLEBAR)
+		if (decorators & titleBar)
 		{
 			window->currentWindowStyle |= WS_CAPTION;
 		}
 
-		if (decorators & DECORATOR_ICON)
+		if (decorators & icon)
 		{
 			window->currentWindowStyle |= WS_ICONIC;
 		}
 
-		if (decorators & DECORATOR_CLOSEBUTTON)
+		if (decorators & closeButton)
 		{
 			window->currentWindowStyle |= WS_SYSMENU;
 		}
 
-		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		if (decorators & minimizeButton)
 		{
 			window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
 		}
 
-		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		if (decorators & maximizeButton)
 		{
 			window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
 		}
 
-		if (decorators & DECORATOR_SIZEABLEBORDER)
+		if (decorators & sizeableBorder)
 		{
 			window->currentWindowStyle |= WS_SIZEBOX;
 		}
@@ -2999,41 +3000,41 @@ private:
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
 			window->currentWindowStyle);
 #elif defined(__linux__)
-		if (decorators & DECORATOR_CLOSEBUTTON)
+		if (decorators & closeButton)
 		{
-			window->currentWindowStyle |= LINUX_DECORATOR_CLOSE;
+			window->currentWindowStyle |= linuxClose;
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		if (decorators & minimizeButton)
 		{
-			window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
+			window->currentWindowStyle |= linuxMinimize;
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		if (decorators & maximizeButton)
 		{
-			window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
+			window->currentWindowStyle |= linuxMaximize;
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_ICON)
+		if (decorators & icon)
 		{
 			//Linux ( at least cinnamon ) does not have icons in the window. only in the task bar icon
 		}
 
 		//just need to set it to 1 to enable all decorators that include title bar 
-		if (decorators & DECORATOR_TITLEBAR)
+		if (decorators & titleBar)
 		{
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_BORDER)
+		if (decorators & border)
 		{
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_SIZEABLEBORDER)
+		if (decorators & sizeableBorder)
 		{
 			window->decorators = 1;
 		}
@@ -3050,37 +3051,37 @@ private:
 	static inline void Platform_DisableWindowDecorators(std::unique_ptr<window_t>& window, unsigned int decorators)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
-		if (decorators & DECORATOR_BORDER)
+		if (decorators & border)
 		{
 			window->currentWindowStyle &= ~WS_BORDER;
 		}
 
-		if (decorators & DECORATOR_TITLEBAR)
+		if (decorators & titleBar)
 		{
 			window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
 		}
 
-		if (decorators & DECORATOR_ICON)
+		if (decorators & icon)
 		{
 			window->currentWindowStyle &= ~WS_ICONIC;
 		}
 
-		if (decorators & DECORATOR_CLOSEBUTTON)
+		if (decorators & closeButton)
 		{
 			window->currentWindowStyle &= ~WS_SYSMENU;
 		}
 
-		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		if (decorators & minimizeButton)
 		{
 			window->currentWindowStyle &= ~WS_MINIMIZEBOX;
 		}
 
-		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		if (decorators & maximizeButton)
 		{
 			window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
 		}
 
-		if (decorators & DECORATOR_SIZEABLEBORDER)
+		if (decorators & sizeableBorder)
 		{
 			window->currentWindowStyle &= ~WS_SIZEBOX;
 		}
@@ -3088,79 +3089,79 @@ private:
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
 			window->currentWindowStyle | WS_VISIBLE);
 #elif defined(__linux__)
-		if (decorators & DECORATOR_CLOSEBUTTON)
+		if (decorators & closeButton)
 		{
 			//I hate doing this but it is necessary to keep functionality going.
 			bool minimizeEnabled = false;
 			bool maximizeEnabled = false;
 
-			if (decorators & DECORATOR_MAXIMIZEBUTTON)
+			if (decorators & maximizeButton)
 			{
 				maximizeEnabled = true;
 			}
 
-			if (decorators & DECORATOR_MINIMIZEBUTTON)
+			if (decorators & minimizeButton)
 			{
 				minimizeEnabled = true;
 			}
 
-			window->currentWindowStyle &= ~LINUX_DECORATOR_CLOSE;
+			window->currentWindowStyle &= ~linuxClose;
 
 			if (maximizeEnabled)
 			{
-				window->currentWindowStyle |= LINUX_DECORATOR_MAXIMIZE;
+				window->currentWindowStyle |= linuxMaximize;
 			}
 
 			if (minimizeEnabled)
 			{
-				window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
+				window->currentWindowStyle |= linuxMinimize;
 			}
 
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_MINIMIZEBUTTON)
+		if (decorators & minimizeButton)
 		{
-			window->currentWindowStyle &= ~LINUX_DECORATOR_MINIMIZE;
+			window->currentWindowStyle &= ~linuxMinimize;
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_MAXIMIZEBUTTON)
+		if (decorators & maximizeButton)
 		{
 			bool minimizeEnabled = false;
 
-			if (decorators & DECORATOR_MINIMIZEBUTTON)
+			if (decorators & minimizeButton)
 			{
 				minimizeEnabled = true;
 			}
 
-			window->currentWindowStyle &= ~LINUX_DECORATOR_MAXIMIZE;
+			window->currentWindowStyle &= ~linuxMaximize;
 
 			if (minimizeEnabled)
 			{
-				window->currentWindowStyle |= LINUX_DECORATOR_MINIMIZE;
+				window->currentWindowStyle |= linuxMinimize;
 			}
 
 			window->decorators = 1;
 		}
 
-		if (decorators & DECORATOR_ICON)
+		if (decorators & icon)
 		{
 			//Linux ( at least cinnamon ) does not have icons in the window. only in the taskb ar icon
 		}
 
 		//just need to set it to 1 to enable all decorators that include title bar 
-		if (decorators & DECORATOR_TITLEBAR)
+		if (decorators & titleBar)
 		{
-			window->decorators = LINUX_DECORATOR_BORDER;
+			window->decorators = linuxBorder;
 		}
 
-		if (decorators & DECORATOR_BORDER)
+		if (decorators & border)
 		{
 			window->decorators = 0;
 		}
 
-		if (decorators & DECORATOR_SIZEABLEBORDER)
+		if (decorators & sizeableBorder)
 		{
 			window->decorators = 0;
 		}
@@ -3196,7 +3197,7 @@ private:
 		window->windowHandle = nullptr;
 		window->glRenderingContextHandle = nullptr;
 #elif defined(__linux__)
-		if (window->currentState == state_t::FULLSCREEN)
+		if (window->currentState == state_t::fullscreen)
 		{
 			RestoreWindowByName(window->name);
 		}
@@ -3223,10 +3224,10 @@ private:
 					}
 				}
 			}
-			PrintErrorMessage( std::error_code(INVALID_WINDOW_NAME, errorCategory ));
+			PrintErrorMessage( std::error_code(invalidWindowName, errorCategory ));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -3239,11 +3240,11 @@ private:
 				return true;
 			}
 
-			PrintErrorMessage( std::error_code(INVALID_WINDOW_INDEX, errorCategory ));
+			PrintErrorMessage( std::error_code(invalidWindowIndex, errorCategory ));
 			return false;
 		}
 
-		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 
@@ -3274,19 +3275,19 @@ private:
 
 	enum keyLong_t
 	{
-		LEFT_CONTROL_DOWN_LONG = 29,
-		RIGHT_CONTROL_DOWN_LONG = 285,
-		LEFT_SHIFT_DOWN_LONG = 42,
-		RIGHT_SHIFT_DOWN_LONG = 54,
-		LEFT_ALT_DOWN_LONG = 8248,
-		RIGHT_ALT_DOWN_LONG = 8504,
+		leftControlDown = 29,
+		rightControlDown = 285,
+		leftShiftDown = 42,
+		rightShiftDown = 54,
+		leftAltDown = 8248,
+		rightAltDown = 8504,
 
-		LEFT_CONTROL_UP_LONG = 49181,
-		RIGHT_CONTROL_UP_LONG = 49437,
-		LEFT_SHIFT_UP_LONG = 49194,
-		RIGHT_SHIFT_UP_LONG = 49206,
-		LEFT_ALT_UP_LONG = 49208,
-		RIGHT_ALT_UP_LONG = 49464,
+		leftControlUp = 49181,
+		rightControlUp = 49437,
+		leftShiftUp = 49194,
+		rightShiftUp = 49206,
+		leftAltUp = 49208,
+		rightAltUp = 49464,
 	};
 
 	MSG		message;
@@ -3402,45 +3403,45 @@ private:
 
 			switch ( HIWORD( longParam ) )
 			{
-			case LEFT_CONTROL_DOWN_LONG:
+			case leftControlDown:
 			{
-				window->keys[ KEY_LEFTCONTROL ] = keyState_t::DOWN;
-				translatedKey = KEY_LEFTCONTROL;
+				window->keys[ leftControl ] = keyState_t::down;
+				translatedKey = leftControl;
 				break;
 			}
 
-			case RIGHT_CONTROL_DOWN_LONG:
+			case rightControlDown:
 			{
-				window->keys[ KEY_RIGHTCONTROL ] = keyState_t::DOWN;
-				translatedKey = KEY_RIGHTCONTROL;
+				window->keys[ rightControl ] = keyState_t::down;
+				translatedKey = rightControl;
 				break;
 			}
 
-			case LEFT_SHIFT_DOWN_LONG:
+			case leftShiftDown:
 			{
-				window->keys[ KEY_LEFTSHIFT ] = keyState_t::DOWN;
-				translatedKey = KEY_LEFTSHIFT;
+				window->keys[ leftShift ] = keyState_t::down;
+				translatedKey = leftShift;
 				break;
 			}
 
-			case RIGHT_SHIFT_DOWN_LONG:
+			case rightShiftDown:
 			{
-				window->keys[ KEY_RIGHTSHIFT ] = keyState_t::DOWN;
-				translatedKey = KEY_RIGHTSHIFT;
+				window->keys[ rightShift ] = keyState_t::down;
+				translatedKey = rightShift;
 				break;
 			}
 
 			default:
 			{
 				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = keyState_t::DOWN;
+				window->keys[ translatedKey ] = keyState_t::down;
 				break;
 			}
 			}
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, keyState_t::DOWN );
+				window->keyEvent( translatedKey, keyState_t::down );
 			}
 			break;
 		}
@@ -3451,45 +3452,45 @@ private:
 
 			switch ( HIWORD( longParam ) )
 			{
-			case LEFT_CONTROL_UP_LONG:
+			case leftControlUp:
 			{
-				window->keys[ KEY_LEFTCONTROL ] = keyState_t::UP;
-				translatedKey = KEY_LEFTCONTROL;
+				window->keys[ leftControl ] = keyState_t::up;
+				translatedKey = leftControl;
 				break;
 			}
 
-			case RIGHT_CONTROL_UP_LONG:
+			case rightControlUp:
 			{
-				window->keys[ KEY_RIGHTCONTROL ] = keyState_t::UP;
-				translatedKey = KEY_RIGHTCONTROL;
+				window->keys[ rightControl ] = keyState_t::up;
+				translatedKey = rightControl;
 				break;
 			}
 
-			case LEFT_SHIFT_UP_LONG:
+			case leftShiftUp:
 			{
-				window->keys[ KEY_LEFTSHIFT ] = keyState_t::UP;
-				translatedKey = KEY_LEFTSHIFT;
+				window->keys[ leftShift ] = keyState_t::up;
+				translatedKey = leftShift;
 				break;
 			}
 
-			case RIGHT_SHIFT_UP_LONG:
+			case rightShiftUp:
 			{
-				window->keys[ KEY_RIGHTSHIFT ] = keyState_t::UP;
-				translatedKey = KEY_RIGHTSHIFT;
+				window->keys[ rightShift ] = keyState_t::up;
+				translatedKey = rightShift;
 				break;
 			}
 
 			default:
 			{
 				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = keyState_t::UP;
+				window->keys[ translatedKey ] = keyState_t::up;
 				break;
 			}
 			}
 
 			if (window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, keyState_t::UP );
+				window->keyEvent( translatedKey, keyState_t::up );
 			}
 			break;
 		}
@@ -3499,18 +3500,18 @@ private:
 			unsigned int translatedKey = 0;
 			switch ( HIWORD( longParam ) )
 			{
-			case LEFT_ALT_DOWN_LONG:
+			case leftAltDown:
 			{
-				window->keys[ KEY_LEFTALT ] = keyState_t::DOWN;
-				translatedKey = KEY_LEFTALT;
+				window->keys[ leftAlt ] = keyState_t::down;
+				translatedKey = leftAlt;
 				break;
 			}
 
 
-			case RIGHT_ALT_DOWN_LONG:
+			case rightAltDown:
 			{
-				window->keys[ KEY_RIGHTALT ] = keyState_t::DOWN;
-				translatedKey = KEY_RIGHTALT;
+				window->keys[ rightAlt ] = keyState_t::down;
+				translatedKey = rightAlt;
 			}
 
 			default:
@@ -3521,7 +3522,7 @@ private:
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, keyState_t::DOWN );
+				window->keyEvent( translatedKey, keyState_t::down );
 			}
 
 			break;
@@ -3532,18 +3533,18 @@ private:
 			unsigned int translatedKey = 0;
 			switch ( HIWORD( longParam ) )
 			{
-			case LEFT_ALT_UP_LONG:
+			case leftAltUp:
 			{
-				window->keys[ KEY_LEFTALT ] = keyState_t::UP;
-				translatedKey = KEY_LEFTALT;
+				window->keys[ leftAlt ] = keyState_t::up;
+				translatedKey = leftAlt;
 				break;
 			}
 
 
-			case RIGHT_ALT_UP_LONG:
+			case rightAltUp:
 			{
-				window->keys[ KEY_RIGHTALT ] = keyState_t::UP;
-				translatedKey = KEY_RIGHTALT;
+				window->keys[ rightAlt ] = keyState_t::up;
+				translatedKey = rightAlt;
 				break;
 			}
 
@@ -3555,7 +3556,7 @@ private:
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, keyState_t::UP );
+				window->keyEvent( translatedKey, keyState_t::up );
 			}
 			break;
 		}
@@ -3601,66 +3602,66 @@ private:
 
 		case WM_LBUTTONDOWN:
 		{
-			window->mouseButton[(unsigned int)mouseButton_t::LEFT] = buttonState_t::DOWN;
+			window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::DOWN );
+				window->mouseButtonEvent( mouseButton_t::left, buttonState_t::down );
 			}
 			break;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			window->mouseButton[(unsigned int)mouseButton_t::LEFT] = buttonState_t::UP;
+			window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::UP );
+				window->mouseButtonEvent( mouseButton_t::left, buttonState_t::up );
 			}
 			break;
 		}
 
 		case WM_RBUTTONDOWN:
 		{
-			window->mouseButton[(unsigned int)mouseButton_t::RIGHT] = buttonState_t::DOWN;
+			window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::DOWN );
+				window->mouseButtonEvent( mouseButton_t::right, buttonState_t::down );
 			}
 			break;
 		}
 
 		case WM_RBUTTONUP:
 		{
-			window->mouseButton[(unsigned int)mouseButton_t::RIGHT] = buttonState_t::UP;
+			window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::UP );
+				window->mouseButtonEvent( mouseButton_t::right, buttonState_t::up );
 			}
 			break;
 		}
 
 		case WM_MBUTTONDOWN:
 		{
-			window->mouseButton[(unsigned int)mouseButton_t::MIDDLE] = buttonState_t::DOWN;
+			window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::DOWN );
+				window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::down );
 			}
 			break;
 		}
 
 		case WM_MBUTTONUP:
 		{
-			window->mouseButton[ (unsigned int)mouseButton_t::MIDDLE ] = buttonState_t::UP;
+			window->mouseButton[ (unsigned int)mouseButton_t::middle ] = buttonState_t::up;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::UP );
+				window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::up );
 			}
 			break;
 		}
@@ -3671,7 +3672,7 @@ private:
 			{
 				if ( window->mouseWheelEvent != nullptr )
 				{
-					window->mouseWheelEvent( mouseScroll_t::DOWN );
+					window->mouseWheelEvent( mouseScroll_t::down );
 				}
 			}
 
@@ -3679,7 +3680,7 @@ private:
 			{
 				if ( window->mouseWheelEvent != nullptr )
 				{
-					window->mouseWheelEvent( mouseScroll_t::UP );
+					window->mouseWheelEvent( mouseScroll_t::up );
 				}
 
 			}
@@ -3817,237 +3818,237 @@ private:
 		{
 			case VK_ESCAPE:
 			{
-				return KEY_ESCAPE;
+				return escape;
 			}
 
 			case VK_F1:
 			{
-				return KEY_F1;
+				return F1;
 			}
 
 			case VK_F2:
 			{
-				return KEY_F2;
+				return F2;
 			}
 
 			case VK_F3:
 			{
-				return KEY_F3;
+				return F3;
 			}
 
 			case VK_F4:
 			{
-				return KEY_F4;
+				return F4;
 			}
 
 			case VK_F5:
 			{
-				return KEY_F5;
+				return F5;
 			}
 
 			case VK_F6:
 			{
-				return KEY_F6;
+				return F6;
 			}
 
 			case VK_F7:
 			{
-				return KEY_F7;
+				return F7;
 			}
 
 			case VK_F8:
 			{
-				return KEY_F8;
+				return F8;
 			}
 
 			case VK_F9:
 			{
-				return KEY_F9;
+				return F9;
 			}
 
 			case VK_F10:
 			{
-				return KEY_F10;
+				return F10;
 			}
 
 			case VK_F11:
 			{
-				return KEY_F11;
+				return F11;
 			}
 
 			case VK_F12:
 			{
-				return KEY_F12;
+				return F12;
 			}
 
 			case VK_BACK:
 			{
-				return KEY_BACKSPACE;
+				return backspace;
 			}
 
 			case VK_TAB:
 			{
-				return KEY_TAB;
+				return tab;
 			}
 
 			case VK_CAPITAL:
 			{
-				return KEY_CAPSLOCK;
+				return capsLock;
 			}
 
 			case VK_RETURN:
 			{
-				return KEY_ENTER;
+				return enter;
 			}
 
 			case VK_PRINT:
 			{
-				return KEY_PRINTSCREEN;
+				return printScreen;
 			}
 
 			case VK_SCROLL:
 			{
-				return KEY_SCROLLLOCK;
+				return scrollLock;
 			}
 
 			case VK_PAUSE:
 			{
-				return KEY_PAUSE;
+				return pause;
 			}
 
 			case VK_INSERT:
 			{
-				return KEY_INSERT;
+				return insert;
 			}
 
 			case VK_HOME:
 			{
-				return KEY_HOME;
+				return home;
 			}
 
 			case VK_DELETE:
 			{
-				return KEY_DELETE;
+				return del;
 			}
 
 			case VK_END:
 			{
-				return KEY_END;
+				return end;
 			}
 
 			case VK_PRIOR:
 			{
-				return KEY_PAGEUP;
+				return pageUp;
 			}
 
 			case VK_NEXT:
 			{
-				return KEY_PAGEDOWN;
+				return pageDown;
 			}
 
 			case VK_DOWN:
 			{
-				return KEY_ARROW_DOWN;
+				return arrowDown;
 			}
 
 			case VK_UP:
 			{
-				return KEY_ARROW_UP;
+				return arrowUp;
 			}
 
 			case VK_LEFT:
 			{
-				return KEY_ARROW_LEFT;
+				return arrowLeft;
 			}
 
 			case VK_RIGHT:
 			{
-				return KEY_ARROW_RIGHT;
+				return arrowRight;
 			}
 
 			case VK_DIVIDE:
 			{
-				return KEY_KEYPAD_DIVIDE;
+				return keypadDivide;
 			}
 
 			case VK_MULTIPLY:
 			{
-				return KEY_KEYPAD_MULTIPLY;
+				return keypadMultiply;
 			}
 
 			case VK_SUBTRACT:
 			{
-				return KEY_KEYPAD_DIVIDE;
+				return keypadDivide;
 			}
 
 			case VK_ADD:
 			{
-				return KEY_KEYPAD_ADD;
+				return keypadAdd;
 			}
 
 			case VK_DECIMAL:
 			{
-				return KEY_KEYPAD_PERIOD;
+				return keypadPeriod;
 			}
 
 			case VK_NUMPAD0:
 			{
-				return KEY_KEYPAD_0;
+				return keypad0;
 			}
 
 			case VK_NUMPAD1:
 			{
-				return KEY_KEYPAD_1;
+				return keypad1;
 			}
 
 			case VK_NUMPAD2:
 			{
-				return KEY_KEYPAD_2;
+				return keypad2;
 			}
 
 			case VK_NUMPAD3:
 			{
-				return KEY_KEYPAD_3;
+				return keypad3;
 			}
 
 			case VK_NUMPAD4:
 			{
-				return KEY_KEYPAD_4;
+				return keypad4;
 			}
 
 			case VK_NUMPAD5:
 			{
-				return KEY_KEYPAD_5;
+				return keypad5;
 			}
 
 			case VK_NUMPAD6:
 			{
-				return KEY_KEYPAD_6;
+				return keypad6;
 			}
 
 			case VK_NUMPAD7:
 			{
-				return KEY_KEYPAD_7;
+				return keypad7;
 			}
 
 			case VK_NUMPAD8:
 			{
-				return KEY_KEYPAD_8;
+				return keypad8;
 			}
 
 			case VK_NUMPAD9:
 			{
-				return KEY_KEYPAD_9;
+				return keypad9;
 			}
 
 			case VK_LWIN:
 			{
-				return KEY_LEFTWINDOW;
+				return leftWindow;
 			}
 
 			case VK_RWIN:
 			{
-				return KEY_RIGHTWINDOW;
+				return rightWindow;
 			}
 
 			default:
@@ -4067,11 +4068,11 @@ private:
 
 	enum linuxDecorator_t
 	{
-		LINUX_DECORATOR_BORDER = 1L << 1,
-		LINUX_DECORATOR_MOVE = 1L << 2,
-		LINUX_DECORATOR_MINIMIZE = 1L << 3,
-		LINUX_DECORATOR_MAXIMIZE = 1L << 4,
-		LINUX_DECORATOR_CLOSE = 1L << 5,
+		linuxBorder = 1L << 1,
+		linuxMove = 1L << 2,
+		linuxMinimize = 1L << 3,
+		linuxMaximize = 1L << 4,
+		linuxClose = 1L << 5,
 	};
 
 	Display*			currentDisplay;
@@ -4221,11 +4222,11 @@ private:
 			None};
 
 		window->decorators = 1;
-		window->currentWindowStyle |= LINUX_DECORATOR_CLOSE | LINUX_DECORATOR_MAXIMIZE | LINUX_DECORATOR_MINIMIZE | LINUX_DECORATOR_MOVE;
+		window->currentWindowStyle |= linuxClose | linuxMaximize | linuxMinimize | linuxMove;
 
 		if ( !instance->currentDisplay )
 		{
-			PrintErrorMessage( std::error_code(LINUX_CANNOT_CONNECT_X_SERVER, errorCategory ));
+			PrintErrorMessage( std::error_code(linuxCannotConnectXServer, errorCategory ));
 			exit( 0 );
 		}
 
@@ -4235,7 +4236,7 @@ private:
 
 		if ( !window->visualInfo )
 		{
-			PrintErrorMessage( std::error_code(LINUX_INVALID_VISUALINFO, errorCategory));
+			PrintErrorMessage( std::error_code(linuxInvalidVisualinfo, errorCategory));
 			exit( 0 );
 		}
 
@@ -4258,7 +4259,7 @@ private:
 
 		if( !window->windowHandle )
 		{
-			PrintErrorMessage( std::error_code(LINUX_CANNOT_CREATE_WINDOW, errorCategory));
+			PrintErrorMessage( std::error_code(linuxCannotCreateWindow, errorCategory));
 			exit( 0 );
 		}
 
@@ -4331,20 +4332,20 @@ private:
 
 				if ( functionKeysym <= 255 )
 				{
-					window->keys[ functionKeysym ] = keyState_t::DOWN;
+					window->keys[ functionKeysym ] = keyState_t::down;
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( functionKeysym, keyState_t::DOWN );
+						window->keyEvent( functionKeysym, keyState_t::down );
 					}
 				}
 
 				else
 				{
-					window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::DOWN;
+					window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::down;
 
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::DOWN );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::down );
 					}
 				}
 
@@ -4368,7 +4369,7 @@ private:
 							currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 						XNextEvent( instance->currentDisplay, &currentEvent );
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::DOWN );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::down );
 						isRetriggered = true;
 					}
 				}
@@ -4380,27 +4381,27 @@ private:
 
 					if ( functionKeysym <= 255 )
 					{
-						window->keys[ functionKeysym ] = keyState_t::UP;
+						window->keys[ functionKeysym ] = keyState_t::up;
 
 						if ( window->keyEvent != nullptr )
 						{
-							window->keyEvent( functionKeysym, keyState_t::UP );
+							window->keyEvent( functionKeysym, keyState_t::up );
 						}
 					}
 
 					else
 					{
-						window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::UP;
+						window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::up;
 
 						if ( window->keyEvent != nullptr )
 						{
-							window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::UP );
+							window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::up );
 						}
 					}
 
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::UP );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::up );
 					}
 				}
 
@@ -4413,55 +4414,55 @@ private:
 				{
 				case 1:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::LEFT ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseButton_t::left ] = buttonState_t::down;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::DOWN );
+						window->mouseButtonEvent( mouseButton_t::left, buttonState_t::down );
 					}
 					break;
 				}
 
 				case 2:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::MIDDLE ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseButton_t::middle ] = buttonState_t::down;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::DOWN );
+						window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::down );
 					}
 					break;
 				}
 
 				case 3:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::RIGHT ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseButton_t::right ] = buttonState_t::down;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::DOWN );
+						window->mouseButtonEvent( mouseButton_t::right, buttonState_t::down );
 					}
 					break;
 				}
 
 				case 4:
 				{
-					window->mouseButton[ (unsigned int)mouseScroll_t::UP ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::up ] = buttonState_t::down;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
-						window->mouseWheelEvent( mouseScroll_t::DOWN );
+						window->mouseWheelEvent( mouseScroll_t::down );
 					}
 					break;
 				}
 
 				case 5:
 				{
-					window->mouseButton[ (unsigned int)mouseScroll_t::DOWN ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::down ] = buttonState_t::down;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
-						window->mouseWheelEvent( mouseScroll_t::DOWN );
+						window->mouseWheelEvent( mouseScroll_t::down );
 					}
 					break;
 				}
@@ -4483,11 +4484,11 @@ private:
 				case 1:
 				{
 					//the left mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::LEFT ] = buttonState_t::UP;
+					window->mouseButton[ (unsigned int)mouseButton_t::left ] = buttonState_t::up;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::UP );
+						window->mouseButtonEvent( mouseButton_t::left, buttonState_t::up );
 					}
 					break;
 				}
@@ -4495,11 +4496,11 @@ private:
 				case 2:
 				{
 					//the middle mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::MIDDLE ] = buttonState_t::UP;
+					window->mouseButton[ (unsigned int)mouseButton_t::middle ] = buttonState_t::up;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::UP );
+						window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::up );
 					}
 					break;
 				}
@@ -4507,11 +4508,11 @@ private:
 				case 3:
 				{
 					//the right mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::RIGHT ] = buttonState_t::UP;
+					window->mouseButton[ (unsigned int)mouseButton_t::right ] = buttonState_t::up;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::UP );
+						window->mouseButtonEvent( mouseButton_t::right, buttonState_t::up );
 					}
 					break;
 				}
@@ -4519,14 +4520,14 @@ private:
 				case 4:
 				{
 					//the mouse wheel was scrolled up
-					window->mouseButton[ (unsigned int)mouseScroll_t::UP ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::up ] = buttonState_t::down;
 					break;
 				}
 
 				case 5:
 				{
 					//the mouse wheel was scrolled down
-					window->mouseButton[ (unsigned int)mouseScroll_t::DOWN ] = buttonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::down ] = buttonState_t::down;
 					break;
 				}
 
@@ -4920,232 +4921,232 @@ private:
 		{
 		case XK_Escape:
 		{
-			return KEY_ESCAPE;
+			return escape;
 		}
 
 		case XK_Home:
 		{
-			return KEY_HOME;
+			return home;
 		}
 
 		case XK_Left:
 		{
-			return KEY_ARROW_LEFT;
+			return arrowLeft;
 		}
 
 		case XK_Right:
 		{
-			return KEY_ARROW_RIGHT;
+			return arrowRight;
 		}
 
 		case XK_Up:
 		{
-			return KEY_ARROW_UP;
+			return arrowUp;
 		}
 
 		case XK_Down:
 		{
-			return KEY_ARROW_DOWN;
+			return arrowDown;
 		}
 
 		case XK_Page_Up:
 		{
-			return KEY_PAGEUP;
+			return pageUp;
 		}
 
 		case XK_Page_Down:
 		{
-			return KEY_PAGEDOWN;
+			return pageDown;
 		}
 
 		case XK_End:
 		{
-			return KEY_END;
+			return end;
 		}
 
 		case XK_Print:
 		{
-			return KEY_PRINTSCREEN;
+			return printScreen;
 		}
 
 		case XK_Insert:
 		{
-			return KEY_INSERT;
+			return insert;
 		}
 
 		case XK_Num_Lock:
 		{
-			return KEY_NUMLOCK;
+			return numLock;
 		}
 
 		case XK_KP_Multiply:
 		{
-			return KEY_KEYPAD_MULTIPLY;
+			return keypadMultiply;
 		}
 
 		case XK_KP_Add:
 		{
-			return KEY_KEYPAD_ADD;
+			return keypadAdd;
 		}
 
 		case XK_KP_Subtract:
 		{
-			return KEY_KEYPAD_SUBTRACT;
+			return keypadSubtract;
 		}
 
 		case XK_KP_Decimal:
 		{
-			return KEY_KEYPAD_PERIOD;
+			return keypadPeriod;
 		}
 
 		case XK_KP_Divide:
 		{
-			return KEY_KEYPAD_DIVIDE;
+			return keypadDivide;
 		}
 
 		case XK_KP_0:
 		{
-			return KEY_KEYPAD_0;
+			return keypad0;
 		}
 
 		case XK_KP_1:
 		{
-			return KEY_KEYPAD_1;
+			return keypad1;
 		}
 
 		case XK_KP_2:
 		{
-			return KEY_KEYPAD_2;
+			return keypad2;
 		}
 
 		case XK_KP_3:
 		{
-			return KEY_KEYPAD_3;
+			return keypad3;
 		}
 
 		case XK_KP_4:
 		{
-			return KEY_KEYPAD_4;
+			return keypad4;
 		}
 
 		case XK_KP_5:
 		{
-			return KEY_KEYPAD_5;
+			return keypad5;
 		}
 
 		case XK_KP_6:
 		{
-			return KEY_KEYPAD_6;
+			return keypad6;
 		}
 
 		case XK_KP_7:
 		{
-			return KEY_KEYPAD_7;
+			return keypad7;
 		}
 
 		case XK_KP_8:
 		{
-			return KEY_KEYPAD_8;
+			return keypad8;
 		}
 
 		case XK_KP_9:
 		{
-			return KEY_KEYPAD_9;
+			return keypad9;
 		}
 
 		case XK_F1:
 		{
-			return KEY_F1;
+			return F1;
 		}
 
 		case XK_F2:
 		{
-			return KEY_F2;
+			return F2;
 		}
 
 		case XK_F3:
 		{
-			return KEY_F3;
+			return F3;
 		}
 
 		case XK_F4:
 		{
-			return KEY_F4;
+			return F4;
 		}
 
 		case XK_F5:
 		{
-			return KEY_F5;
+			return F5;
 		}
 
 		case XK_F6:
 		{
-			return KEY_F6;
+			return F6;
 		}
 
 		case XK_F7:
 		{
-			return KEY_F7;
+			return F7;
 		}
 
 		case XK_F8:
 		{
-			return KEY_F8;
+			return F8;
 		}
 
 		case XK_F9:
 		{
-			return KEY_F9;
+			return F9;
 		}
 
 		case XK_F10:
 		{
-			return KEY_F10;
+			return F10;
 		}
 
 		case XK_F11:
 		{
-			return KEY_F11;
+			return F11;
 		}
 
 		case XK_F12:
 		{
-			return KEY_F12;
+			return F12;
 		}
 
 		case XK_Shift_L:
 		{
-			return KEY_LEFTSHIFT;
+			return leftShift;
 		}
 
 		case XK_Shift_R:
 		{
-			return KEY_RIGHTSHIFT;
+			return rightShift;
 		}
 
 		case XK_Control_R:
 		{
-			return KEY_RIGHTCONTROL;
+			return rightControl;
 		}
 
 		case XK_Control_L:
 		{
-			return KEY_LEFTCONTROL;
+			return leftControl;
 		}
 
 		case XK_Caps_Lock:
 		{
-			return KEY_CAPSLOCK;
+			return capsLock;
 		}
 
 		case XK_Alt_L:
 		{
-			return KEY_LEFTALT;
+			return leftAlt;
 		}
 
 		case XK_Alt_R:
 		{
-			return KEY_RIGHTALT;
+			return rightAlt;
 		}
 
 		default:
@@ -5158,7 +5159,7 @@ private:
 	static void Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
-		PrintErrorMessage( std::error_code(LINUX_FUNCTION_NOT_IMPLEMENTED, errorCategory));
+		PrintErrorMessage( std::error_code(linuxFunctionNotImplemented, errorCategory));
 	}
 
 	static GLXFBConfig GetBestFrameBufferConfig(std::unique_ptr<window_t>& givenWindow)
