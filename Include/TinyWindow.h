@@ -193,8 +193,8 @@ public:
 			instance->windowList.clear();
 			instance->isInitialized = false;
 			
-
 			delete instance;
+			instance = nullptr;
 		}
 		else
 		{
