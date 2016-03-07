@@ -3,7 +3,8 @@
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
 
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(_WIN32) || defined(_WIN64)
+#define TW_WINDOWS
 #include <Windows.h>
 #include <gl/GL.h>
 #include <io.h>
@@ -14,9 +15,10 @@
 //this makes sure that the entry point of your program is main(). not Winmain()
 #pragma comment( linker, "/subsystem:windows /ENTRY:mainCRTStartup" )
 #endif //_MSC_VER
-#endif	//_WIN32 | _WIN64
+#endif	//_WIN32 || _WIN64
 
 #if defined( __linux__ )
+#define TW_LINUX
 #include <GL/glx.h>
 #include <X11/X.h>
 #include <X11/keysym.h>
@@ -293,9 +295,9 @@ public:
 			instance->screenMousePosition[0] = mousePosition[0];
 			instance->screenMousePosition[1] = mousePosition[1];
 
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			SetCursorPos(mousePosition[0], mousePosition[1]);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XWarpPointer(instance->currentDisplay, None,
 				XDefaultRootWindow(instance->currentDisplay), 0, 0,
 				GetScreenResolution()[0],
@@ -317,9 +319,9 @@ public:
 			instance->screenMousePosition[0] = x;
 			instance->screenMousePosition[1] = y;
 
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			SetCursorPos(x, y);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XWarpPointer(instance->currentDisplay, None,
 				XDefaultRootWindow(instance->currentDisplay), 0, 0,
 				GetScreenResolution()[0],
@@ -339,7 +341,7 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			RECT screen;
 			HWND desktop = GetDesktopWindow();
 			GetWindowRect( desktop, &screen );
@@ -348,7 +350,7 @@ public:
 			instance->screenResolution[1] = screen.bottom;
 			return instance->screenResolution;
 
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			instance->screenResolution[0] = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
 			instance->screenResolution[1] = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
 
@@ -366,13 +368,13 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			RECT screen;
 			HWND desktop = GetDesktopWindow();
 			GetWindowRect( desktop, &screen );
 			width = screen.right;
 			Height = screen.bottom;
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			width = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
 			Height = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
 
@@ -1366,9 +1368,9 @@ public:
 			{
 				if (DoesExistByName(windowName))
 				{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 					//Windows_SetWindowIcon(GetWindowByName(windowName), icon, width, height);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 					//Linux_SetWindowIcon();//GetWindowByName(windowName), icon, width, height);
 #endif
 					return true;
@@ -1397,9 +1399,9 @@ public:
 			{
 				if (DoesExistByIndex(windowIndex))
 				{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 					Windows_SetWindowIcon(GetWindowByIndex(windowIndex), icon, width, height);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 					Linux_SetWindowIcon(GetWindowByIndex(windowIndex), icon, width, height);
 #endif
 					return true;
@@ -1534,7 +1536,7 @@ public:
 	static inline bool Initialize( void )
 	{
 		GetInstance()->isInitialized = false;
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		CreateTerminal();
 		RECT desktop;
 
@@ -1552,7 +1554,7 @@ public:
 
 		PrintErrorMessage(std::error_code(windowsCannotInitialize, errorCategory));
 		return false;
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		instance->currentDisplay = XOpenDisplay(0);
 
 		if (!instance->currentDisplay)
@@ -1589,14 +1591,14 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			//only process events if there are any to process
 			if (PeekMessage(&instance->message, 0, 0, 0, PM_REMOVE))
 			{
 				TranslateMessage(&instance->message);
 				DispatchMessage(&instance->message);
 			}
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			//if there are any events to process
 			if (XEventsQueued(instance->currentDisplay, QueuedAfterReading))
 			{
@@ -1622,12 +1624,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			//process even if there aren't any to process
 			GetMessage(&instance->message, 0, 0, 0);
 			TranslateMessage(&instance->message);
 			DispatchMessage(&instance->message);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			//even if there aren't any events to process
 			XNextEvent(instance->currentDisplay, &instance->currentEvent);
 
@@ -2329,7 +2331,7 @@ private:
 		std::function<void(unsigned int, unsigned int)>										resizeEvent;				/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
 		std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent;				/**< This is a callback to be used when the mouse has been moved */
 
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			
 		HDC							deviceContextHandle;			/**< A handle to a device context */
 		HGLRC						glRenderingContextHandle;		/**< A handle to an OpenGL rendering context*/
@@ -2606,16 +2608,16 @@ private:
 
 	static inline void Platform_InitializeWindow( std::unique_ptr<window_t>& window )
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		Windows_InitializeWindow(window);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		Linux_InitializeWindow(window);
 #endif
 	}
 
 	static inline bool Platform_InitializeGL( std::unique_ptr<window_t>& window )
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		window->deviceContextHandle = GetDC(window->windowHandle);
 		InitializePixelFormat(window);
 		window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
@@ -2630,7 +2632,7 @@ private:
 
 		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
 		return false;
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		if (!window->context)
 		{
 			window->context = glXCreateContext(
@@ -2669,12 +2671,12 @@ private:
 
 	static inline void Platform_SetWindowResolution(std::unique_ptr<window_t>& window)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP,
 			window->position[0], window->position[1],
 			window->resolution[0], window->resolution[1],
 			SWP_SHOWWINDOW | SWP_NOMOVE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		XResizeWindow(instance->currentDisplay,
 			window->windowHandle, window->resolution[0], window->resolution[1]);
 #endif
@@ -2682,11 +2684,11 @@ private:
 
 	static inline void Platform_SetWindowPosition(std::unique_ptr<window_t>& window, unsigned int x, unsigned int y)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
 			window->resolution[0], window->resolution[1],
 			SWP_SHOWWINDOW | SWP_NOSIZE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		XWindowChanges windowChanges;
 
 		windowChanges.x = x;
@@ -2700,13 +2702,13 @@ private:
 
 	static inline void Platform_SetMousePositionInWindow(std::unique_ptr<window_t>& window, unsigned int x, unsigned int y)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		POINT mousePoint;
 		mousePoint.x = x;
 		mousePoint.y = y;
 		ScreenToClient(window->windowHandle, &mousePoint);
 		SetCursorPos(mousePoint.x, mousePoint.y);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		XWarpPointer(
 			windowManager::GetDisplay(),
 			window->windowHandle, window->windowHandle,
@@ -2718,19 +2720,19 @@ private:
 
 	static inline void Platform_SwapBuffers(std::unique_ptr<window_t>& window)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		SwapBuffers(window->deviceContextHandle);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		glXSwapBuffers(instance->currentDisplay, window->windowHandle);
 #endif
 	}
 
 	static inline void Platform_MakeCurrentContext(std::unique_ptr<window_t>& window)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		wglMakeCurrent(window->deviceContextHandle,
 			window->glRenderingContextHandle);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		glXMakeCurrent(instance->currentDisplay, window->windowHandle,
 			window->context);
 #endif
@@ -2738,13 +2740,13 @@ private:
 
 	static inline void Platform_SetFullScreen(std::unique_ptr<window_t>& window)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
 		MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
 			windowManager::GetScreenResolution()[1], true);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		XEvent currentEvent;
 		memset(&currentEvent, 0, sizeof(currentEvent));
 
@@ -2767,9 +2769,9 @@ private:
 		{
 			window->currentState = state_t::minimized;
 
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			ShowWindow(window->windowHandle, SW_MINIMIZE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XIconifyWindow(instance->currentDisplay,
 				window->windowHandle, 0);
 #endif
@@ -2778,9 +2780,9 @@ private:
 		else
 		{
 			window->currentState = state_t::normal;
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XMapWindow(instance->currentDisplay, window->windowHandle);
 #endif
 		}
@@ -2791,9 +2793,9 @@ private:
 		if (newState)
 		{
 			window->currentState = state_t::maximized;
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			ShowWindow(window->windowHandle, SW_MAXIMIZE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XEvent currentEvent;
 			memset(&currentEvent, 0, sizeof(currentEvent));
 
@@ -2814,9 +2816,9 @@ private:
 		else
 		{
 			window->currentState = state_t::normal;
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XEvent currentEvent;
 			memset(&currentEvent, 0, sizeof(currentEvent));
 
@@ -2837,9 +2839,9 @@ private:
 
 	static inline void Platform_SetWindowTitleBar(std::unique_ptr<window_t>& window, const char* newTitle)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		SetWindowText(window->windowHandle, newTitle);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		XStoreName(instance->currentDisplay, window->windowHandle, newTitle);
 #endif
 	}
@@ -2848,9 +2850,9 @@ private:
 	{
 		if (newState)
 		{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 			SetFocus(window->windowHandle);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XMapWindow(instance->currentDisplay, window->windowHandle);
 #endif
 		}
@@ -2859,7 +2861,7 @@ private:
 		{
 #if defined(_WIN32) || defined(_WIN64)
 			SetFocus(nullptr);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 			XUnmapWindow(instance->currentDisplay, window->windowHandle);
 #endif
 		}
@@ -2867,16 +2869,16 @@ private:
 
 	static inline void Platform_RestoreWindow(std::unique_ptr<window_t>& window)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		XMapWindow(instance->currentDisplay, window->windowHandle);
 #endif
 	}
 
 	static inline void Platform_SetWindowStyle(std::unique_ptr<window_t>& window, style_t windowStyle)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		switch (windowStyle)
 		{
 		case style_t::normal:
@@ -2905,7 +2907,7 @@ private:
 		}
 		}
 
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		switch (windowStyle)
 		{
 			case style_t::normal:
@@ -2959,7 +2961,7 @@ private:
 
 	static inline void Platform_EnableWindowDecorators(std::unique_ptr<window_t>& window, unsigned int decorators)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
 
 		if (decorators & border)
@@ -2999,7 +3001,7 @@ private:
 
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
 			window->currentWindowStyle);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		if (decorators & closeButton)
 		{
 			window->currentWindowStyle |= linuxClose;
@@ -3050,7 +3052,7 @@ private:
 
 	static inline void Platform_DisableWindowDecorators(std::unique_ptr<window_t>& window, unsigned int decorators)
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		if (decorators & border)
 		{
 			window->currentWindowStyle &= ~WS_BORDER;
@@ -3088,7 +3090,7 @@ private:
 
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
 			window->currentWindowStyle | WS_VISIBLE);
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		if (decorators & closeButton)
 		{
 			//I hate doing this but it is necessary to keep functionality going.
@@ -3177,7 +3179,7 @@ private:
 
 	static inline void ShutdownWindow( std::unique_ptr<window_t>& window )
 	{
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 		if (window->glRenderingContextHandle)
 		{
 			wglMakeCurrent(nullptr, nullptr);
@@ -3196,7 +3198,7 @@ private:
 		window->deviceContextHandle = nullptr;
 		window->windowHandle = nullptr;
 		window->glRenderingContextHandle = nullptr;
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 		if (window->currentState == state_t::fullscreen)
 		{
 			RestoreWindowByName(window->name);
@@ -3271,7 +3273,7 @@ private:
 		return nullWindow;
 	}
 	
-#if defined( _WIN32 ) || defined( _WIN64 )
+#if defined(TW_WINDOWS)
 
 	enum keyLong_t
 	{
@@ -4064,7 +4066,7 @@ private:
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
 	}
 
-#elif defined(__linux__)
+#elif defined(TW_LINUX)
 
 	enum linuxDecorator_t
 	{
