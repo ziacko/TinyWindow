@@ -38,15 +38,15 @@ const int DEFAULT_WINDOW_HEIGHT = 720;
 
 enum class tinyWindowKeyState_t
 {
-	UP = 0,				/**< The key is currently up */
-	DOWN,				/**< The key is currently down */
 	BAD = -1,			/**< If get key state fails (could not name it ERROR) */
+	UP,					/**< The key is currently up */
+	DOWN,				/**< The key is currently down */
 };
 
 enum tinyWindowKey_t
 {
 	KEY_ERROR = -1,					/**< The key pressed is considered invalid */
-	KEY_FIRST = 256 + 1,			/**< The fist key that is not a char */
+	KEY_FIRST = 256 + 1,			/**< The first key that is not a char */
 	KEY_F1, 						/**< The F1 key */
 	KEY_F2,							/**< The F2 key */
 	KEY_F3,							/**< The F3 key */
@@ -107,37 +107,37 @@ enum tinyWindowKey_t
 
 enum class tinyWindowButtonState_t
 {
-	UP = 0,				/**< The mouse button is currently up */
-	DOWN				/**< The mouse button is currently down */
+	UP,				/**< The mouse button is currently up */
+	DOWN			/**< The mouse button is currently down */
 };
 
 enum class tinyWindowMouseButton_t
 {
-	LEFT = 0,			/**< The left mouse button */
-	RIGHT,				/**< The right mouse button */
-	MIDDLE,				/**< The middle mouse button / ScrollWheel */
-	LAST,				/**< The last mouse button to be supported */
+	LEFT,			/**< The left mouse button */
+	RIGHT,			/**< The right mouse button */
+	MIDDLE,			/**< The middle mouse button / ScrollWheel */
+	LAST,			/**< The last mouse button to be supported */
 };
 
 enum class tinyWindowMouseScroll_t
 {
-	DOWN = 0,			/**< The mouse wheel up */
-	UP					/**< The mouse wheel down */
+	DOWN,			/**< The mouse wheel up */
+	UP				/**< The mouse wheel down */
 };
 
 enum class tinyWindowStyle_t
 {
-	BARE = 1,			/**< The window has no decorators but the window border and title bar */
-	DEFAULT,			/**< The default window style for the respective platform */
-	POPUP,				/**< The window has no decorators */
+	BARE,			/**< The window has no decorators but the window border and title bar */
+	DEFAULT,		/**< The default window style for the respective platform */
+	POPUP,			/**< The window has no decorators */
 };
 
 enum class tinyWindowState_t
 {
-	NORMAL = 0,			/**< The window is in its default state */
-	MAXIMIZED,			/**< The window is currently maximized */
-	MINIMIZED,			/**< The window is currently minimized */
-	FULLSCREEN,			/**< The window is currently full screen */
+	NORMAL,			/**< The window is in its default state */
+	MAXIMIZED,		/**< The window is currently maximized */
+	MINIMIZED,		/**< The window is currently minimized */
+	FULLSCREEN,		/**< The window is currently full screen */
 };
 
 enum tinyWindowDecorator_t
@@ -2269,7 +2269,7 @@ private:
 	enum error_t : int
 	{
 		TINYWINDOW_ERROR = -1,
-		INVALID_WINDOW_NAME = 0,				/**< If an invalid window name was given */
+		INVALID_WINDOW_NAME,				/**< If an invalid window name was given */
 		INVALID_ICON_PATH,						/**< If an invalid icon path was given */
 		INVALID_WINDOW_INDEX,					/**< If an invalid window index was given */
 		INVALID_WINDOW_STATE,					/**< If an invalid window state was given */
