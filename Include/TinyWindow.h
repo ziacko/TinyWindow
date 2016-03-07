@@ -216,7 +216,7 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( IsValid( windowName ) )
+			if ( windowName != nullptr )
 			{
 				std::unique_ptr<window_t> newWindow(new window_t);
 				newWindow->name = windowName;
@@ -1310,7 +1310,7 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if (IsValid(newTitle))
+			if (newTitle != nullptr)
 			{
 				if (DoesExistByName(windowName))
 				{
@@ -1334,7 +1334,7 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if (IsValid(newName))
+			if (newName != nullptr)
 			{
 				if (DoesExistByIndex(windowIndex))
 				{
@@ -1360,29 +1360,6 @@ public:
 	{
 		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
 		return false;
-	/*	if ( GetInstance()->IsInitialized() )
-		{
-			if (IsValid(icon))
-			{
-				if (DoesExistByName(windowName))
-				{
-#if defined(TW_WINDOWS)
-					//Windows_SetWindowIcon(GetWindowByName(windowName), icon, width, height);
-#elif defined(TW_LINUX)
-					//Linux_SetWindowIcon();//GetWindowByName(windowName), icon, width, height);
-#endif
-					return true;
-				}
-				TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_WINDOW_NOT_FOUND);
-				return false;
-			}
-
-			TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_INVALID_ICON_PATH);
-			return false;
-		}
-
-		TinyWindow_PrintErrorMessage( std::error_code(tinyWindowError_t::TW_error_NOT_INITIALIZED );
-		return false;*/
 	}
 	/**
 	* Set the window icon by index (currently not functional)
@@ -1391,27 +1368,6 @@ public:
 	{
 		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
 		return false;
-		/*if ( GetInstance()->IsInitialized() )
-		{
-			if (IsValid(icon))
-			{
-				if (DoesExistByIndex(windowIndex))
-				{
-#if defined(TW_WINDOWS)
-					Windows_SetWindowIcon(GetWindowByIndex(windowIndex), icon, width, height);
-#elif defined(TW_LINUX)
-					Linux_SetWindowIcon(GetWindowByIndex(windowIndex), icon, width, height);
-#endif
-					return true;
-				}
-				TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_WINDOW_NOT_FOUND);
-				return false;
-			}
-			TinyWindow_PrintErrorMessage(std::error_code(tinyWindowError_t::TW_error_INVALID_ICON_PATH);
-			return false;
-		}
-		TinyWindow_PrintErrorMessage( std::error_code(tinyWindowError_t::TW_error_NOT_INITIALIZED );
-		return false;*/
 	}
 
 	/**
@@ -2574,15 +2530,10 @@ private:
 	static windowManager*									instance;
 	static errorCategory_t									errorCategory;
 
-	screenResolution_t							screenResolution;
-	screenMousePosition_t							screenMousePosition;
+	screenResolution_t										screenResolution;
+	screenMousePosition_t									screenMousePosition;
 
 	bool													isInitialized;
-
-	static inline bool IsValid( const char* stringParameter )
-	{
-		return ( stringParameter != nullptr );
-	}
 
 	static inline bool WindowExists( unsigned int windowIndex )
 	{
@@ -3214,7 +3165,7 @@ private:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( IsValid( windowName ) )
+			if ( windowName != nullptr )
 			{
 				for ( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
 				{
@@ -4715,7 +4666,7 @@ private:
 			case ClientMessage:
 			{
 				const char* atomName = XGetAtomName( instance->currentDisplay, currentEvent.xclient.message_type );
-				if ( IsValid( atomName ) )
+				if ( atomName != nullptr )
 				{
 					//printf( "%s\n", l_AtomName );
 				}
