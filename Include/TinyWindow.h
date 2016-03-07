@@ -33,17 +33,20 @@
 #include <memory>
 #include <system_error>
 
+namespace TinyWindow
+{
+
 const int DEFAULT_WINDOW_WIDTH = 1280;
 const int DEFAULT_WINDOW_HEIGHT = 720;
 
-enum class tinyWindowKeyState_t
+enum class keyState_t
 {
 	BAD = -1,			/**< If get key state fails (could not name it ERROR) */
 	UP,					/**< The key is currently up */
 	DOWN,				/**< The key is currently down */
 };
 
-enum tinyWindowKey_t
+enum key_t
 {
 	KEY_ERROR = -1,					/**< The key pressed is considered invalid */
 	KEY_FIRST = 256 + 1,			/**< The first key that is not a char */
@@ -105,13 +108,13 @@ enum tinyWindowKey_t
 	KEY_LAST = KEY_ESCAPE,			/**< The last key to be supported */
 };
 
-enum class tinyWindowButtonState_t
+enum class buttonState_t
 {
 	UP,				/**< The mouse button is currently up */
 	DOWN			/**< The mouse button is currently down */
 };
 
-enum class tinyWindowMouseButton_t
+enum class mouseButton_t
 {
 	LEFT,			/**< The left mouse button */
 	RIGHT,			/**< The right mouse button */
@@ -119,20 +122,20 @@ enum class tinyWindowMouseButton_t
 	LAST,			/**< The last mouse button to be supported */
 };
 
-enum class tinyWindowMouseScroll_t
+enum class mouseScroll_t
 {
 	DOWN,			/**< The mouse wheel up */
 	UP				/**< The mouse wheel down */
 };
 
-enum class tinyWindowStyle_t
+enum class style_t
 {
 	BARE,			/**< The window has no decorators but the window border and title bar */
 	DEFAULT,		/**< The default window style for the respective platform */
 	POPUP,			/**< The window has no decorators */
 };
 
-enum class tinyWindowState_t
+enum class state_t
 {
 	NORMAL,			/**< The window is in its default state */
 	MAXIMIZED,		/**< The window is currently maximized */
@@ -140,7 +143,7 @@ enum class tinyWindowState_t
 	FULLSCREEN,		/**< The window is currently full screen */
 };
 
-enum tinyWindowDecorator_t
+enum decorator_t
 {
 	DECORATOR_TITLEBAR = 0x01,				/**< The title bar decoration of the window */
 	DECORATOR_ICON = 0x02,					/**< The icon decoration of the window */
@@ -151,11 +154,11 @@ enum tinyWindowDecorator_t
 	DECORATOR_SIZEABLEBORDER = 0x40,		/**< The sizable border decoration of the window */
 };
 
-typedef unsigned int tinyWindowResolution_t[2];
-typedef unsigned int tinyWindowPosition_t[2];
-typedef unsigned int tinyWindowMousePosition_t[2];
-typedef unsigned int tinyWindowScreenResolution_t[2];
-typedef unsigned int tinyWindowScreenMousePosition_t[2];
+typedef unsigned int resolution_t[2];
+typedef unsigned int position_t[2];
+typedef unsigned int mousePosition_t[2];
+typedef unsigned int screenResolution_t[2];
+typedef unsigned int screenMousePosition_t[2];
 
 const int LINUX_FUNCTION = 1;
 const int LINUX_DECORATOR = 2;
@@ -281,7 +284,7 @@ public:
 	/**
 	 * Set the position of the mouse cursor relative to screen co-ordinates
 	 */
-	static inline bool SetMousePositionInScreen( tinyWindowMousePosition_t mousePosition )
+	static inline bool SetMousePositionInScreen( mousePosition_t mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -462,7 +465,7 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	static inline bool SetWindowResolutionByName( const char* windowName, tinyWindowResolution_t resolution )
+	static inline bool SetWindowResolutionByName( const char* windowName, resolution_t resolution )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -485,7 +488,7 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, tinyWindowResolution_t resolution )
+	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, resolution_t resolution )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -629,7 +632,7 @@ public:
 	/**
 	 * Set the Position of the given window relative to screen co-ordinates
 	 */
-	static inline bool SetWindowPositionByName( const char* windowName, tinyWindowPosition_t windowPosition )
+	static inline bool SetWindowPositionByName( const char* windowName, position_t windowPosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -652,7 +655,7 @@ public:
 	/**
 	 * Set the position of the given window relative to screen co-ordinates
 	 */
-	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, tinyWindowPosition_t windowPosition )
+	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, position_t windowPosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -796,7 +799,7 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	static inline bool SetMousePositionInWindowByName( const char* windowName, tinyWindowMousePosition_t mousePosition )
+	static inline bool SetMousePositionInWindowByName( const char* windowName, mousePosition_t mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -818,7 +821,7 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, tinyWindowMousePosition_t mousePosition )
+	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, mousePosition_t mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -885,7 +888,7 @@ public:
 	/**
 	 * Returns the current state of the given key relative to the given window
 	 */
-	static inline tinyWindowKeyState_t WindowGetKeyByName( const char* windowName, unsigned int key )
+	static inline keyState_t WindowGetKeyByName( const char* windowName, unsigned int key )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -895,15 +898,15 @@ public:
 			}
 
 			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
-			return tinyWindowKeyState_t::BAD;
+			return keyState_t::BAD;
 		}
 		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return tinyWindowKeyState_t::BAD;
+		return keyState_t::BAD;
 	}
 	/**
 	 * Returns the current state of the given key relative to the given window
 	 */
-	static inline tinyWindowKeyState_t WindowGetKeyByIndex(unsigned int windowIndex, unsigned int key)
+	static inline keyState_t WindowGetKeyByIndex(unsigned int windowIndex, unsigned int key)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -912,10 +915,10 @@ public:
 				return GetWindowByIndex( windowIndex )->keys[ key ];
 			}
 			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
-			return tinyWindowKeyState_t::BAD;
+			return keyState_t::BAD;
 		}
 		PrintErrorMessage(std::error_code(NOT_INITIALIZED, errorCategory));
-		return tinyWindowKeyState_t::BAD;
+		return keyState_t::BAD;
 	}
 
 	/**
@@ -1046,7 +1049,7 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return (GetWindowByName(windowName)->currentState == tinyWindowState_t::FULLSCREEN);
+				return (GetWindowByName(windowName)->currentState == state_t::FULLSCREEN);
 			}
 
 			return false;
@@ -1063,7 +1066,7 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::FULLSCREEN);
+				return (GetWindowByIndex(windowIndex)->currentState == state_t::FULLSCREEN);
 			}
 
 			return false;
@@ -1083,7 +1086,7 @@ public:
 			{
 				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 
-				window->currentState = (newState == true) ? tinyWindowState_t::FULLSCREEN : tinyWindowState_t::NORMAL;
+				window->currentState = (newState == true) ? state_t::FULLSCREEN : state_t::NORMAL;
 
 				Platform_SetFullScreen(window);
 				return true;
@@ -1104,7 +1107,7 @@ public:
 			if ( DoesExistByIndex( windowIndex ) )
 			{
 				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
-				window->currentState = (newState == true) ? tinyWindowState_t::FULLSCREEN : tinyWindowState_t::NORMAL;
+				window->currentState = (newState == true) ? state_t::FULLSCREEN : state_t::NORMAL;
 
 				Platform_SetFullScreen(window);
 				return true;
@@ -1125,7 +1128,7 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return (GetWindowByName(windowName)->currentState == tinyWindowState_t::MINIMIZED);
+				return (GetWindowByName(windowName)->currentState == state_t::MINIMIZED);
 			}
 			return (bool)TINYWINDOW_ERROR;
 		}
@@ -1141,7 +1144,7 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::MINIMIZED);
+				return (GetWindowByIndex(windowIndex)->currentState == state_t::MINIMIZED);
 			}
 			return (bool)TINYWINDOW_ERROR;
 		}
@@ -1197,7 +1200,7 @@ public:
 		{
 			if ( DoesExistByName( windowName ) )
 			{
-				return (GetWindowByName(windowName)->currentState == tinyWindowState_t::MAXIMIZED);
+				return (GetWindowByName(windowName)->currentState == state_t::MAXIMIZED);
 			}
 
 			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
@@ -1215,7 +1218,7 @@ public:
 		{
 			if ( DoesExistByIndex( windowIndex ) )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == tinyWindowState_t::MAXIMIZED);
+				return (GetWindowByIndex(windowIndex)->currentState == state_t::MAXIMIZED);
 			}
 			PrintErrorMessage(std::error_code(WINDOW_NOT_FOUND, errorCategory));
 			return false;
@@ -1678,7 +1681,7 @@ public:
 	/**
 	* Set the window style preset by name
 	*/
-	static inline bool SetWindowStyleByName( const char* windowName, tinyWindowStyle_t windowStyle )
+	static inline bool SetWindowStyleByName( const char* windowName, style_t windowStyle )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1697,7 +1700,7 @@ public:
 	/**
 	* Set the window style preset by index
 	*/
-	static inline bool SetWindowStyleByIndex( unsigned int windowIndex, tinyWindowStyle_t windowStyle )
+	static inline bool SetWindowStyleByIndex( unsigned int windowIndex, style_t windowStyle )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1795,7 +1798,7 @@ public:
 	/**
 	* Set the window on key event callback by name
 	*/
-	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, tinyWindowKeyState_t)> onKey)
+	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, keyState_t)> onKey)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1819,7 +1822,7 @@ public:
 	/**
 	* Set the window on key event callback by index
 	*/
-	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, tinyWindowKeyState_t)> onKey)
+	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, keyState_t)> onKey)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1843,7 +1846,7 @@ public:
 	/**
 	* Set the window on mouse button event callback by name
 	*/
-	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> onMouseButton)
+	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(mouseButton_t, buttonState_t)> onMouseButton)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1866,7 +1869,7 @@ public:
 	/**
 	* Set the window on mouse button event callback by index
 	*/
-	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> onMouseButton)
+	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(mouseButton_t, buttonState_t)> onMouseButton)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1890,7 +1893,7 @@ public:
 	/**
 	* Set the window on mouse wheel event callback by name
 	*/
-	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(tinyWindowMouseScroll_t)> onMouseWheel)
+	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(mouseScroll_t)> onMouseWheel)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -1913,7 +1916,7 @@ public:
 	/**
 	* Set the window on mouse wheel event callback by index
 	*/
-	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(tinyWindowMouseScroll_t)> onMouseWheel)
+	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(mouseScroll_t)> onMouseWheel)
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -2269,7 +2272,7 @@ private:
 	enum error_t : int
 	{
 		TINYWINDOW_ERROR = -1,
-		INVALID_WINDOW_NAME,				/**< If an invalid window name was given */
+		INVALID_WINDOW_NAME,					/**< If an invalid window name was given */
 		INVALID_ICON_PATH,						/**< If an invalid icon path was given */
 		INVALID_WINDOW_INDEX,					/**< If an invalid window index was given */
 		INVALID_WINDOW_STATE,					/**< If an invalid window state was given */
@@ -2294,29 +2297,29 @@ private:
 
 	struct window_t
 	{
-		const char*						name;															/**< Name of the window */
-		unsigned int					iD;																/**< ID of the Window. ( where it belongs in the window manager ) */
-		int								colorBits;														/**< Color format of the window. ( defaults to 32 bit color ) */
-		int								depthBits;														/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
-		int								stencilBits;													/**< Size of the stencil buffer, ( defaults to 8 bit ) */
-		tinyWindowKeyState_t			keys[KEY_LAST];													/**< Record of keys that are either pressed or released in the respective window */
-		tinyWindowButtonState_t			mouseButton[(unsigned int)tinyWindowMouseButton_t::LAST];		/**< Record of mouse buttons that are either presses or released */
-		tinyWindowResolution_t			resolution;														/**< Resolution/Size of the window stored in an array */
-		tinyWindowPosition_t			position;														/**< Position of the Window relative to the screen co-ordinates */
-		tinyWindowMousePosition_t		mousePosition;													/**< Position of the Mouse cursor relative to the window co-ordinates */
-		bool							shouldClose;													/**< Whether the Window should be closing */
-		bool							inFocus;														/**< Whether the Window is currently in focus( if it is the current window be used ) */
+		const char*						name;													/**< Name of the window */
+		unsigned int					iD;														/**< ID of the Window. ( where it belongs in the window manager ) */
+		int								colorBits;												/**< Color format of the window. ( defaults to 32 bit color ) */
+		int								depthBits;												/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
+		int								stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
+		keyState_t						keys[KEY_LAST];											/**< Record of keys that are either pressed or released in the respective window */
+		buttonState_t					mouseButton[(unsigned int)mouseButton_t::LAST];			/**< Record of mouse buttons that are either presses or released */
+		resolution_t					resolution;												/**< Resolution/Size of the window stored in an array */
+		position_t						position;												/**< Position of the Window relative to the screen co-ordinates */
+		mousePosition_t					mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
+		bool							shouldClose;											/**< Whether the Window should be closing */
+		bool							inFocus;												/**< Whether the Window is currently in focus( if it is the current window be used ) */
 
-		bool							initialized;													/**< Whether the window has been successfully initialized */
-		bool							contextCreated;													/**< Whether the OpenGL context has been successfully created */
-		bool							isCurrentContext;												/**< Whether the window is the current window being drawn to */
+		bool							initialized;											/**< Whether the window has been successfully initialized */
+		bool							contextCreated;											/**< Whether the OpenGL context has been successfully created */
+		bool							isCurrentContext;										/**< Whether the window is the current window being drawn to */
 
-		tinyWindowState_t				currentState;													/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-		unsigned int					currentWindowStyle;												/**< The current style of the window */
+		state_t							currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
+		unsigned int					currentWindowStyle;										/**< The current style of the window */
 
-		std::function<void(unsigned int, tinyWindowKeyState_t)>								keyEvent;					/**< This is the callback to be used when a key has been pressed */
-		std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)>				mouseButtonEvent;			/**< This is the callback to be used when a mouse button has been pressed */
-		std::function<void(tinyWindowMouseScroll_t)>										mouseWheelEvent;			/**< This is the callback to be used when the mouse wheel has been scrolled. */
+		std::function<void(unsigned int, keyState_t)>										keyEvent;					/**< This is the callback to be used when a key has been pressed */
+		std::function<void(mouseButton_t, buttonState_t)>									mouseButtonEvent;			/**< This is the callback to be used when a mouse button has been pressed */
+		std::function<void(mouseScroll_t)>													mouseWheelEvent;			/**< This is the callback to be used when the mouse wheel has been scrolled. */
 		std::function<void(void)>															destroyedEvent;				/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
 		std::function<void(void)>															maximizedEvent;				/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
 		std::function<void(void)>															minimizedEvent;				/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
@@ -2376,9 +2379,9 @@ private:
 
 		window_t(const char* name = nullptr, unsigned int iD = 0,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-			bool shouldClose = false, tinyWindowState_t currentState = tinyWindowState_t::NORMAL,
-			std::function<void(unsigned int, tinyWindowKeyState_t)> keyEvent = nullptr,
-			std::function<void(tinyWindowMouseButton_t, tinyWindowButtonState_t)> mouseButtonEvent = nullptr, std::function<void(tinyWindowMouseScroll_t)> mouseWheelEvent = nullptr,
+			bool shouldClose = false, state_t currentState = state_t::NORMAL,
+			std::function<void(unsigned int, keyState_t)> keyEvent = nullptr,
+			std::function<void(mouseButton_t, buttonState_t)> mouseButtonEvent = nullptr, std::function<void(mouseScroll_t)> mouseWheelEvent = nullptr,
 			std::function<void(void)> destroyedEvent = nullptr, std::function<void(void)> maximizedEvent = nullptr, std::function<void(void)> minimizedEvent = nullptr,
 			std::function<void(bool)> focusEvent = nullptr,
 			std::function<void(unsigned int, unsigned int)> movedEvent = nullptr, std::function<void(unsigned int, unsigned int)> resizeEvent = nullptr,
@@ -2405,7 +2408,7 @@ private:
 
 			initialized = false;
 			contextCreated = false;
-			currentWindowStyle = (unsigned int)tinyWindowStyle_t::DEFAULT;
+			currentWindowStyle = (unsigned int)style_t::DEFAULT;
 
 #if defined( __linux__ )
 			context = 0;
@@ -2570,8 +2573,8 @@ private:
 	static windowManager*									instance;
 	static errorCategory_t									errorCategory;
 
-	tinyWindowScreenResolution_t							screenResolution;
-	tinyWindowScreenMousePosition_t							screenMousePosition;
+	screenResolution_t							screenResolution;
+	screenMousePosition_t							screenMousePosition;
 
 	bool													isInitialized;
 
@@ -2748,7 +2751,7 @@ private:
 		currentEvent.xclient.message_type = window->AtomState;
 		currentEvent.xclient.format = 32;
 		currentEvent.xclient.window = window->windowHandle;
-		currentEvent.xclient.data.l[0] = window->currentState == tinyWindowState_t::FULLSCREEN;
+		currentEvent.xclient.data.l[0] = window->currentState == state_t::FULLSCREEN;
 		currentEvent.xclient.data.l[1] = window->AtomFullScreen;
 
 		XSendEvent(instance->currentDisplay,
@@ -2761,7 +2764,7 @@ private:
 	{
 		if (newState)
 		{
-			window->currentState = tinyWindowState_t::MINIMIZED;
+			window->currentState = state_t::MINIMIZED;
 
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_MINIMIZE);
@@ -2773,7 +2776,7 @@ private:
 
 		else
 		{
-			window->currentState = tinyWindowState_t::NORMAL;
+			window->currentState = state_t::NORMAL;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(__linux__)
@@ -2786,7 +2789,7 @@ private:
 	{
 		if (newState)
 		{
-			window->currentState = tinyWindowState_t::MAXIMIZED;
+			window->currentState = state_t::MAXIMIZED;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_MAXIMIZE);
 #elif defined(__linux__)
@@ -2797,7 +2800,7 @@ private:
 			currentEvent.xclient.message_type = window->AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == tinyWindowState_t::MAXIMIZED);
+			currentEvent.xclient.data.l[0] = (window->currentState == state_t::MAXIMIZED);
 			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
 			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
 
@@ -2809,7 +2812,7 @@ private:
 
 		else
 		{
-			window->currentState = tinyWindowState_t::NORMAL;
+			window->currentState = state_t::NORMAL;
 #if defined( _WIN32 ) || defined( _WIN64 )
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(__linux__)
@@ -2820,7 +2823,7 @@ private:
 			currentEvent.xclient.message_type = window->AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == tinyWindowState_t::MAXIMIZED);
+			currentEvent.xclient.data.l[0] = (window->currentState == state_t::MAXIMIZED);
 			currentEvent.xclient.data.l[1] = window->AtomMaxVert;
 			currentEvent.xclient.data.l[2] = window->AtomMaxHorz;
 
@@ -2870,25 +2873,25 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowStyle(std::unique_ptr<window_t>& window, tinyWindowStyle_t windowStyle)
+	static inline void Platform_SetWindowStyle(std::unique_ptr<window_t>& window, style_t windowStyle)
 	{
 #if defined( _WIN32 ) || defined( _WIN64 )
 		switch (windowStyle)
 		{
-		case tinyWindowStyle_t::DEFAULT:
+		case style_t::DEFAULT:
 		{
 			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER |
 				DECORATOR_CLOSEBUTTON | DECORATOR_MINIMIZEBUTTON | DECORATOR_MAXIMIZEBUTTON);
 			break;
 		}
 
-		case tinyWindowStyle_t::POPUP:
+		case style_t::POPUP:
 		{
 			EnableWindowDecoratorsByName(window->name, 0);
 			break;
 		}
 
-		case tinyWindowStyle_t::BARE:
+		case style_t::BARE:
 		{
 			EnableWindowDecoratorsByName(window->name, DECORATOR_TITLEBAR | DECORATOR_BORDER);
 			break;
@@ -2904,7 +2907,7 @@ private:
 #elif defined(__linux__)
 		switch (windowStyle)
 		{
-			case tinyWindowStyle_t::DEFAULT:
+			case style_t::DEFAULT:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = LINUX_DECORATOR_MOVE | LINUX_DECORATOR_CLOSE |
@@ -2918,7 +2921,7 @@ private:
 			break;
 		}
 
-			case tinyWindowStyle_t::BARE:
+			case style_t::BARE:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = (1L << 2);
@@ -2931,7 +2934,7 @@ private:
 			break;
 		}
 
-			case tinyWindowStyle_t::POPUP:
+			case style_t::POPUP:
 		{
 			window->decorators = 0;
 			window->currentWindowStyle = (1L << 2);
@@ -3193,7 +3196,7 @@ private:
 		window->windowHandle = nullptr;
 		window->glRenderingContextHandle = nullptr;
 #elif defined(__linux__)
-		if (window->currentState == tinyWindowState_t::FULLSCREEN)
+		if (window->currentState == state_t::FULLSCREEN)
 		{
 			RestoreWindowByName(window->name);
 		}
@@ -3401,28 +3404,28 @@ private:
 			{
 			case LEFT_CONTROL_DOWN_LONG:
 			{
-				window->keys[ KEY_LEFTCONTROL ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ KEY_LEFTCONTROL ] = keyState_t::DOWN;
 				translatedKey = KEY_LEFTCONTROL;
 				break;
 			}
 
 			case RIGHT_CONTROL_DOWN_LONG:
 			{
-				window->keys[ KEY_RIGHTCONTROL ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ KEY_RIGHTCONTROL ] = keyState_t::DOWN;
 				translatedKey = KEY_RIGHTCONTROL;
 				break;
 			}
 
 			case LEFT_SHIFT_DOWN_LONG:
 			{
-				window->keys[ KEY_LEFTSHIFT ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ KEY_LEFTSHIFT ] = keyState_t::DOWN;
 				translatedKey = KEY_LEFTSHIFT;
 				break;
 			}
 
 			case RIGHT_SHIFT_DOWN_LONG:
 			{
-				window->keys[ KEY_RIGHTSHIFT ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ KEY_RIGHTSHIFT ] = keyState_t::DOWN;
 				translatedKey = KEY_RIGHTSHIFT;
 				break;
 			}
@@ -3430,14 +3433,14 @@ private:
 			default:
 			{
 				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ translatedKey ] = keyState_t::DOWN;
 				break;
 			}
 			}
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, tinyWindowKeyState_t::DOWN );
+				window->keyEvent( translatedKey, keyState_t::DOWN );
 			}
 			break;
 		}
@@ -3450,28 +3453,28 @@ private:
 			{
 			case LEFT_CONTROL_UP_LONG:
 			{
-				window->keys[ KEY_LEFTCONTROL ] = tinyWindowKeyState_t::UP;
+				window->keys[ KEY_LEFTCONTROL ] = keyState_t::UP;
 				translatedKey = KEY_LEFTCONTROL;
 				break;
 			}
 
 			case RIGHT_CONTROL_UP_LONG:
 			{
-				window->keys[ KEY_RIGHTCONTROL ] = tinyWindowKeyState_t::UP;
+				window->keys[ KEY_RIGHTCONTROL ] = keyState_t::UP;
 				translatedKey = KEY_RIGHTCONTROL;
 				break;
 			}
 
 			case LEFT_SHIFT_UP_LONG:
 			{
-				window->keys[ KEY_LEFTSHIFT ] = tinyWindowKeyState_t::UP;
+				window->keys[ KEY_LEFTSHIFT ] = keyState_t::UP;
 				translatedKey = KEY_LEFTSHIFT;
 				break;
 			}
 
 			case RIGHT_SHIFT_UP_LONG:
 			{
-				window->keys[ KEY_RIGHTSHIFT ] = tinyWindowKeyState_t::UP;
+				window->keys[ KEY_RIGHTSHIFT ] = keyState_t::UP;
 				translatedKey = KEY_RIGHTSHIFT;
 				break;
 			}
@@ -3479,14 +3482,14 @@ private:
 			default:
 			{
 				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = tinyWindowKeyState_t::UP;
+				window->keys[ translatedKey ] = keyState_t::UP;
 				break;
 			}
 			}
 
 			if (window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, tinyWindowKeyState_t::UP );
+				window->keyEvent( translatedKey, keyState_t::UP );
 			}
 			break;
 		}
@@ -3498,7 +3501,7 @@ private:
 			{
 			case LEFT_ALT_DOWN_LONG:
 			{
-				window->keys[ KEY_LEFTALT ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ KEY_LEFTALT ] = keyState_t::DOWN;
 				translatedKey = KEY_LEFTALT;
 				break;
 			}
@@ -3506,7 +3509,7 @@ private:
 
 			case RIGHT_ALT_DOWN_LONG:
 			{
-				window->keys[ KEY_RIGHTALT ] = tinyWindowKeyState_t::DOWN;
+				window->keys[ KEY_RIGHTALT ] = keyState_t::DOWN;
 				translatedKey = KEY_RIGHTALT;
 			}
 
@@ -3518,7 +3521,7 @@ private:
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, tinyWindowKeyState_t::DOWN );
+				window->keyEvent( translatedKey, keyState_t::DOWN );
 			}
 
 			break;
@@ -3531,7 +3534,7 @@ private:
 			{
 			case LEFT_ALT_UP_LONG:
 			{
-				window->keys[ KEY_LEFTALT ] = tinyWindowKeyState_t::UP;
+				window->keys[ KEY_LEFTALT ] = keyState_t::UP;
 				translatedKey = KEY_LEFTALT;
 				break;
 			}
@@ -3539,7 +3542,7 @@ private:
 
 			case RIGHT_ALT_UP_LONG:
 			{
-				window->keys[ KEY_RIGHTALT ] = tinyWindowKeyState_t::UP;
+				window->keys[ KEY_RIGHTALT ] = keyState_t::UP;
 				translatedKey = KEY_RIGHTALT;
 				break;
 			}
@@ -3552,7 +3555,7 @@ private:
 
 			if ( window->keyEvent != nullptr )
 			{
-				window->keyEvent( translatedKey, tinyWindowKeyState_t::UP );
+				window->keyEvent( translatedKey, keyState_t::UP );
 			}
 			break;
 		}
@@ -3598,66 +3601,66 @@ private:
 
 		case WM_LBUTTONDOWN:
 		{
-			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::LEFT] = tinyWindowButtonState_t::DOWN;
+			window->mouseButton[(unsigned int)mouseButton_t::LEFT] = buttonState_t::DOWN;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::DOWN );
+				window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::DOWN );
 			}
 			break;
 		}
 
 		case WM_LBUTTONUP:
 		{
-			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::LEFT] = tinyWindowButtonState_t::UP;
+			window->mouseButton[(unsigned int)mouseButton_t::LEFT] = buttonState_t::UP;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::UP );
+				window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::UP );
 			}
 			break;
 		}
 
 		case WM_RBUTTONDOWN:
 		{
-			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::RIGHT] = tinyWindowButtonState_t::DOWN;
+			window->mouseButton[(unsigned int)mouseButton_t::RIGHT] = buttonState_t::DOWN;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::DOWN );
+				window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::DOWN );
 			}
 			break;
 		}
 
 		case WM_RBUTTONUP:
 		{
-			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::RIGHT] = tinyWindowButtonState_t::UP;
+			window->mouseButton[(unsigned int)mouseButton_t::RIGHT] = buttonState_t::UP;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::UP );
+				window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::UP );
 			}
 			break;
 		}
 
 		case WM_MBUTTONDOWN:
 		{
-			window->mouseButton[(unsigned int)tinyWindowMouseButton_t::MIDDLE] = tinyWindowButtonState_t::DOWN;
+			window->mouseButton[(unsigned int)mouseButton_t::MIDDLE] = buttonState_t::DOWN;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::DOWN );
+				window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::DOWN );
 			}
 			break;
 		}
 
 		case WM_MBUTTONUP:
 		{
-			window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::UP;
+			window->mouseButton[ (unsigned int)mouseButton_t::MIDDLE ] = buttonState_t::UP;
 
 			if ( window->mouseButtonEvent != nullptr )
 			{
-				window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::UP );
+				window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::UP );
 			}
 			break;
 		}
@@ -3668,7 +3671,7 @@ private:
 			{
 				if ( window->mouseWheelEvent != nullptr )
 				{
-					window->mouseWheelEvent( tinyWindowMouseScroll_t::DOWN );
+					window->mouseWheelEvent( mouseScroll_t::DOWN );
 				}
 			}
 
@@ -3676,7 +3679,7 @@ private:
 			{
 				if ( window->mouseWheelEvent != nullptr )
 				{
-					window->mouseWheelEvent( tinyWindowMouseScroll_t::UP );
+					window->mouseWheelEvent( mouseScroll_t::UP );
 				}
 
 			}
@@ -4328,20 +4331,20 @@ private:
 
 				if ( functionKeysym <= 255 )
 				{
-					window->keys[ functionKeysym ] = tinyWindowKeyState_t::DOWN;
+					window->keys[ functionKeysym ] = keyState_t::DOWN;
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( functionKeysym, tinyWindowKeyState_t::DOWN );
+						window->keyEvent( functionKeysym, keyState_t::DOWN );
 					}
 				}
 
 				else
 				{
-					window->keys[ Linux_TranslateKey( functionKeysym ) ] = tinyWindowKeyState_t::DOWN;
+					window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::DOWN;
 
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::DOWN );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::DOWN );
 					}
 				}
 
@@ -4365,7 +4368,7 @@ private:
 							currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 						XNextEvent( instance->currentDisplay, &currentEvent );
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::DOWN );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::DOWN );
 						isRetriggered = true;
 					}
 				}
@@ -4377,27 +4380,27 @@ private:
 
 					if ( functionKeysym <= 255 )
 					{
-						window->keys[ functionKeysym ] = tinyWindowKeyState_t::UP;
+						window->keys[ functionKeysym ] = keyState_t::UP;
 
 						if ( window->keyEvent != nullptr )
 						{
-							window->keyEvent( functionKeysym, tinyWindowKeyState_t::UP );
+							window->keyEvent( functionKeysym, keyState_t::UP );
 						}
 					}
 
 					else
 					{
-						window->keys[ Linux_TranslateKey( functionKeysym ) ] = tinyWindowKeyState_t::UP;
+						window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::UP;
 
 						if ( window->keyEvent != nullptr )
 						{
-							window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::UP );
+							window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::UP );
 						}
 					}
 
 					if ( window->keyEvent != nullptr )
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), tinyWindowKeyState_t::UP );
+						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::UP );
 					}
 				}
 
@@ -4410,55 +4413,55 @@ private:
 				{
 				case 1:
 				{
-					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseButton_t::LEFT ] = buttonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::DOWN );
+						window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::DOWN );
 					}
 					break;
 				}
 
 				case 2:
 				{
-					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseButton_t::MIDDLE ] = buttonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::DOWN );
+						window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::DOWN );
 					}
 					break;
 				}
 
 				case 3:
 				{
-					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseButton_t::RIGHT ] = buttonState_t::DOWN;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::DOWN );
+						window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::DOWN );
 					}
 					break;
 				}
 
 				case 4:
 				{
-					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::UP ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::UP ] = buttonState_t::DOWN;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
-						window->mouseWheelEvent( tinyWindowMouseScroll_t::DOWN );
+						window->mouseWheelEvent( mouseScroll_t::DOWN );
 					}
 					break;
 				}
 
 				case 5:
 				{
-					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::DOWN ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::DOWN ] = buttonState_t::DOWN;
 
 					if ( window->mouseWheelEvent != nullptr )
 					{
-						window->mouseWheelEvent( tinyWindowMouseScroll_t::DOWN );
+						window->mouseWheelEvent( mouseScroll_t::DOWN );
 					}
 					break;
 				}
@@ -4480,11 +4483,11 @@ private:
 				case 1:
 				{
 					//the left mouse button was released
-					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::LEFT ] = tinyWindowButtonState_t::UP;
+					window->mouseButton[ (unsigned int)mouseButton_t::LEFT ] = buttonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( tinyWindowMouseButton_t::LEFT, tinyWindowButtonState_t::UP );
+						window->mouseButtonEvent( mouseButton_t::LEFT, buttonState_t::UP );
 					}
 					break;
 				}
@@ -4492,11 +4495,11 @@ private:
 				case 2:
 				{
 					//the middle mouse button was released
-					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::MIDDLE ] = tinyWindowButtonState_t::UP;
+					window->mouseButton[ (unsigned int)mouseButton_t::MIDDLE ] = buttonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( tinyWindowMouseButton_t::MIDDLE, tinyWindowButtonState_t::UP );
+						window->mouseButtonEvent( mouseButton_t::MIDDLE, buttonState_t::UP );
 					}
 					break;
 				}
@@ -4504,11 +4507,11 @@ private:
 				case 3:
 				{
 					//the right mouse button was released
-					window->mouseButton[ (unsigned int)tinyWindowMouseButton_t::RIGHT ] = tinyWindowButtonState_t::UP;
+					window->mouseButton[ (unsigned int)mouseButton_t::RIGHT ] = buttonState_t::UP;
 
 					if ( window->mouseButtonEvent != nullptr )
 					{
-						window->mouseButtonEvent( tinyWindowMouseButton_t::RIGHT, tinyWindowButtonState_t::UP );
+						window->mouseButtonEvent( mouseButton_t::RIGHT, buttonState_t::UP );
 					}
 					break;
 				}
@@ -4516,14 +4519,14 @@ private:
 				case 4:
 				{
 					//the mouse wheel was scrolled up
-					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::UP ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::UP ] = buttonState_t::DOWN;
 					break;
 				}
 
 				case 5:
 				{
 					//the mouse wheel was scrolled down
-					window->mouseButton[ (unsigned int)tinyWindowMouseScroll_t::DOWN ] = tinyWindowButtonState_t::DOWN;
+					window->mouseButton[ (unsigned int)mouseScroll_t::DOWN ] = buttonState_t::DOWN;
 					break;
 				}
 
@@ -5213,5 +5216,8 @@ private:
 windowManager* windowManager::instance = nullptr;
 std::unique_ptr<windowManager::window_t> windowManager::nullWindow = nullptr;
 windowManager::errorCategory_t windowManager::errorCategory = windowManager::errorCategory_t();
+}
+
+
 
 #endif
