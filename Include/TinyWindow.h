@@ -226,11 +226,11 @@ public:
 				newWindow->depthBits = depthBits;
 				newWindow->stencilBits = stencilBits;
 
-				instance->windowList.push_back( std::move(newWindow));
-				instance->windowList[instance->windowList.size() - 1]->iD = GetNumWindows() - 1;
+				instance->windowList.push_back( std::move(newWindow) );
+				instance->windowList.back()->iD = GetNumWindows() - 1;
 				//newWindow->iD = GetNumWindows() - 1;
 
-				Platform_InitializeWindow(instance->windowList[instance->windowList.size() - 1]);
+				Platform_InitializeWindow(instance->windowList.back());
 
 				return instance;
 			}
