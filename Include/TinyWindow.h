@@ -225,11 +225,9 @@ public:
 				newWindow->colorBits = colourBits;
 				newWindow->depthBits = depthBits;
 				newWindow->stencilBits = stencilBits;
+				newWindow->iD = GetNumWindows();
 
 				instance->windowList.push_back( std::move(newWindow) );
-				instance->windowList.back()->iD = GetNumWindows() - 1;
-				//newWindow->iD = GetNumWindows() - 1;
-
 				Platform_InitializeWindow(instance->windowList.back());
 
 				return instance;
