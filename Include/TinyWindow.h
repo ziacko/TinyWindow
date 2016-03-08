@@ -223,7 +223,7 @@ public:
 				newWindow->iD = GetNumWindows();
 
 				instance->windowList.push_back( std::move(newWindow) );
-				Platform_InitializeWindow(instance->windowList.back());
+				Platform_InitializeWindow(instance->windowList.back().get());
 
 				return instance;
 			}
@@ -236,7 +236,7 @@ public:
 	}
 
 	/**
-	 * Return the total amount of windows the manager has
+	 * Return the total amount of windows the manager has. returns -1 if failed
 	 */
 	static inline int GetNumWindows( void )
 	{
@@ -388,10 +388,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr)
 			{
-				width = GetWindowByName( windowName )->resolution[ 0 ];
-				height = GetWindowByName( windowName )->resolution[ 1 ];
+				width = window->resolution[ 0 ];
+				height = window->resolution[ 1 ];
 				return false;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -407,10 +408,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				width = GetWindowByIndex( windowIndex )->resolution[ 0 ];
-				height = GetWindowByIndex( windowIndex )->resolution[ 1 ];
+				width = window->resolution[ 0 ];
+				height = window->resolution[ 1 ];
 
 				return true;
 			}
@@ -429,9 +431,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+
+			if (window != nullptr)
 			{
-				return GetWindowByName( windowName )->resolution;
+				return window->resolution;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
@@ -447,9 +451,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return GetWindowByIndex( windowIndex )->resolution;
+				return window->resolution;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
@@ -466,11 +471,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				GetWindowByName( windowName )->resolution[ 0 ] = resolution[0];
-				GetWindowByName( windowName )->resolution[ 1 ] = resolution[1];
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
+				window->resolution[ 0 ] = resolution[0];
+				window->resolution[1] = resolution[1];
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -493,7 +498,7 @@ public:
 			{
 				GetWindowByIndex(windowIndex)->resolution[0] = resolution[0];
 				GetWindowByIndex( windowIndex )->resolution[ 1 ] = resolution[1];
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
+				window_t* window = GetWindowByIndex(windowIndex);
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -511,11 +516,11 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByName(windowName))
+			window_t* window = GetWindowByName(windowName);
+			if (window != nullptr)
 			{
-				GetWindowByName(windowName)->resolution[0] = width;
-				GetWindowByName(windowName)->resolution[1] = height;
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
+				window->resolution[0] = width;
+				window->resolution[1] = height;
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -534,11 +539,12 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				GetWindowByIndex(windowIndex)->resolution[0] = width;
-				GetWindowByIndex(windowIndex)->resolution[1] = height;
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
+				window->resolution[0] = width;
+				window->resolution[1] = height;
+				
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -558,10 +564,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				x = GetWindowByName( windowName )->position[ 0 ];
-				y = GetWindowByName( windowName )->position[ 1 ];
+				x = window->position[ 0 ];
+				y = window->position[ 1 ];
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -577,10 +584,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				x = GetWindowByIndex( windowIndex )->position[ 0 ];
-				y = GetWindowByIndex( windowIndex )->position[ 1 ];
+				x = window->position[ 0 ];
+				y = window->position[ 1 ];
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -597,9 +605,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return GetWindowByName( windowName )->position;
+				return window->position;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
@@ -615,7 +624,8 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				return GetWindowByIndex( windowIndex )->position;
 			}
@@ -633,11 +643,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				GetWindowByName( windowName )->position[ 0 ] = windowPosition[0];
-				GetWindowByName( windowName )->position[ 1 ] = windowPosition[1];
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
+				window->position[ 0 ] = windowPosition[0];
+				window->position[ 1 ] = windowPosition[1];
 
 				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
 				return true;
@@ -656,11 +666,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				GetWindowByIndex( windowIndex )->position[ 0 ] = windowPosition[0];
-				GetWindowByIndex( windowIndex )->position[ 1 ] = windowPosition[1];
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
+				window->position[ 0 ] = windowPosition[0];
+				window->position[ 1 ] = windowPosition[1];
 				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
 				return true;
 			}
@@ -679,14 +689,13 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByName(windowName))
+			window_t* window = GetWindowByName(windowName);
+			if (window != nullptr)
 			{
-				GetWindowByName(windowName)->position[0] = x;
-				GetWindowByName(windowName)->position[1] = y;
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
+				window->position[0] = x;
+				window->position[1] = y;
 
 				Platform_SetWindowPosition(window, x, y);
-				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -703,11 +712,12 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				GetWindowByIndex(windowIndex)->position[0] = x;
-				GetWindowByIndex(windowIndex)->position[1] = y;
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
+				window->position[0] = x;
+				window->position[1] = y;
+
 				Platform_SetWindowPosition(window, x, y);
 				return true;
 			}
@@ -727,10 +737,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				x = GetWindowByName( windowName )->mousePosition[ 0 ];
-				y = GetWindowByName( windowName )->mousePosition[ 1 ];
+				x = window->mousePosition[ 0 ];
+				y = window->mousePosition[ 1 ];
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -746,10 +757,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				x = GetWindowByIndex( windowIndex )->mousePosition[ 0 ];
-				y = GetWindowByIndex( windowIndex )->mousePosition[ 1 ];
+				x = window->mousePosition[ 0 ];
+				y = window->mousePosition[ 1 ];
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -766,9 +778,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return GetWindowByName( windowName )->mousePosition;
+				return window->mousePosition;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
@@ -783,10 +796,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return GetWindowByIndex( windowIndex )->mousePosition;
+				return window->mousePosition;
 			}
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -800,11 +815,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				GetWindowByName( windowName )->mousePosition[ 0 ] = mousePosition[0];
-				GetWindowByName( windowName )->mousePosition[ 1 ] = mousePosition[1];
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
+				window->mousePosition[ 0 ] = mousePosition[0];
+				window->mousePosition[ 1 ] = mousePosition[1];
+
 				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
 			}
@@ -822,11 +838,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				GetWindowByIndex( windowIndex )->mousePosition[ 0 ] = mousePosition[0];
-				GetWindowByIndex( windowIndex )->mousePosition[ 1 ] = mousePosition[1];
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
+				window->mousePosition[ 0 ] = mousePosition[0];
+				window->mousePosition[ 1 ] = mousePosition[1];
 
 				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
 				return true;
@@ -844,11 +860,11 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				GetWindowByIndex(windowIndex)->mousePosition[0] = x;
-				GetWindowByIndex(windowIndex)->mousePosition[1] = y;
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
+				window->mousePosition[0] = x;
+				window->mousePosition[1] = y;
 
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
@@ -866,11 +882,12 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByName(windowName))
+			window_t* window = GetWindowByName(windowName);
+			if (window != nullptr)
 			{
-				GetWindowByName(windowName)->mousePosition[0] = x;
-				GetWindowByName(windowName)->mousePosition[1] = y;
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
+				window->mousePosition[0] = x;
+				window->mousePosition[1] = y;
+
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
@@ -889,9 +906,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return GetWindowByName( windowName )->keys[ key ];
+				return window->keys[ key ];
 			}
 
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -907,9 +925,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return GetWindowByIndex( windowIndex )->keys[ key ];
+				return window->keys[ key ];
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return keyState_t::bad;
@@ -925,9 +944,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return GetWindowByName( windowName )->shouldClose;
+				return window->shouldClose;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
@@ -943,9 +963,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return GetWindowByIndex( windowIndex )->shouldClose;
+				return window->shouldClose;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
@@ -962,11 +983,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_SwapBuffers(window);
-
 				return true;
 			}
 			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -983,9 +1003,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_SwapBuffers(window);
 				return true;
 			}
@@ -1003,11 +1023,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_MakeCurrentContext(window);
-
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -1023,11 +1042,10 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_MakeCurrentContext(window);
-
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -1044,11 +1062,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return (GetWindowByName(windowName)->currentState == state_t::fullscreen);
+				return (window->currentState == state_t::fullscreen);
 			}
-
+			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -1061,11 +1080,13 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == state_t::fullscreen);
+				return (window->currentState == state_t::fullscreen);
 			}
 
+			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -1079,10 +1100,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
-
 				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
 				Platform_SetFullScreen(window);
@@ -1101,11 +1121,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
-
 				Platform_SetFullScreen(window);
 				return true;
 			}
@@ -1123,10 +1142,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return (GetWindowByName(windowName)->currentState == state_t::minimized);
+				return (window->currentState == state_t::minimized);
 			}
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -1139,10 +1160,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == state_t::minimized);
+				return (window->currentState == state_t::minimized);
 			}
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -1156,9 +1179,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
@@ -1175,9 +1198,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_MinimizeWindow(window, newState);
 				return true;
 			}
@@ -1195,11 +1218,11 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return (GetWindowByName(windowName)->currentState == state_t::maximized);
+				return (window->currentState == state_t::maximized);
 			}
-
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
@@ -1213,9 +1236,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return (GetWindowByIndex(windowIndex)->currentState == state_t::maximized);
+				return (window->currentState == state_t::maximized);
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
@@ -1231,9 +1255,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
@@ -1250,9 +1274,9 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_MaximizeWindow(window, newState);
 				return true;
 			}
@@ -1270,9 +1294,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return GetWindowByIndex( windowIndex )->name;
+				return window->name;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return nullptr;
@@ -1287,9 +1312,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return GetWindowByName( windowName )->iD;
+				return window->iD;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
@@ -1305,18 +1331,18 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
+			window_t* window = GetWindowByName(windowName);
 			if (newTitle != nullptr)
 			{
-				if (DoesExistByName(windowName))
+				if (window != nullptr)
 				{
-					std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 					Platform_SetWindowTitleBar(window, newTitle);
 					return true;
 				}
 				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 				return false;
 			}
-			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
+			PrintErrorMessage(std::error_code(invalidTitlebar, errorCategory));
 			return false;
 		}			
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -1331,9 +1357,9 @@ public:
 		{
 			if (newName != nullptr)
 			{
-				if (DoesExistByIndex(windowIndex))
+				window_t* window = GetWindowByIndex(windowIndex);
+				if (window != nullptr)
 				{
-					std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 					Platform_SetWindowTitleBar(window, newName);
 					return true;
 				}
@@ -1343,7 +1369,6 @@ public:
 			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
 			return false;
 		}
-
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
@@ -1372,9 +1397,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				return GetWindowByName( windowName )->inFocus;
+				return window->inFocus;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
@@ -1389,14 +1415,14 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				return GetWindowByIndex( windowIndex )->inFocus;
+				return window->inFocus;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
@@ -1408,9 +1434,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
@@ -1427,9 +1453,9 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_FocusWindow(window, newState);
 				return true;
 			}
@@ -1447,9 +1473,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_RestoreWindow(window);
 				return true;
 			}
@@ -1466,9 +1492,9 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_RestoreWindow(window);
 				return true;
 			}
@@ -1486,7 +1512,7 @@ public:
 	{
 		GetInstance()->isInitialized = false;
 #if defined(TW_WINDOWS)
-		CreateTerminal();
+		//CreateTerminal();
 		RECT desktop;
 
 		HWND desktopHandle = GetDesktopWindow();
@@ -1542,17 +1568,16 @@ public:
 		{
 #if defined(TW_WINDOWS)
 			//only process events if there are any to process
-			if (PeekMessage(&instance->message, 0, 0, 0, PM_REMOVE))
+			if (PeekMessage(&instance->winMessage, 0, 0, 0, PM_REMOVE))
 			{
-				TranslateMessage(&instance->message);
-				DispatchMessage(&instance->message);
+				TranslateMessage(&instance->winMessage);
+				DispatchMessage(&instance->winMessage);
 			}
 #elif defined(TW_LINUX)
 			//if there are any events to process
 			if (XEventsQueued(instance->currentDisplay, QueuedAfterReading))
 			{
 				XNextEvent(instance->currentDisplay, &instance->currentEvent);
-
 				XEvent currentEvent = instance->currentEvent;
 
 				Linux_ProcessEvents(currentEvent);
@@ -1575,9 +1600,9 @@ public:
 		{
 #if defined(TW_WINDOWS)
 			//process even if there aren't any to process
-			GetMessage(&instance->message, 0, 0, 0);
-			TranslateMessage(&instance->message);
-			DispatchMessage(&instance->message);
+			GetMessage(&instance->winMessage, 0, 0, 0);
+			TranslateMessage(&instance->winMessage);
+			DispatchMessage(&instance->winMessage);
 #elif defined(TW_LINUX)
 			//even if there aren't any events to process
 			XNextEvent(instance->currentDisplay, &instance->currentEvent);
@@ -1601,9 +1626,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				ShutdownWindow( GetWindowByName( windowName ) );
+				ShutdownWindow(window);
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -1619,9 +1645,10 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				ShutdownWindow( GetWindowByIndex( windowIndex ) );
+				ShutdownWindow( window );
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -1638,9 +1665,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
@@ -1657,9 +1684,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_SetWindowStyle(window, windowStyle);
 				return true;
 			}
@@ -1677,9 +1704,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
@@ -1696,9 +1723,9 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			if (DoesExistByIndex(windowIndex))
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_EnableWindowDecorators(window, decorators);
 				return true;
 			}
@@ -1716,9 +1743,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByName(windowName);
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
@@ -1735,9 +1762,9 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				std::unique_ptr<window_t>& window = GetWindowByIndex(windowIndex);
 				Platform_DisableWindowDecorators(window, decorators);
 				return true;
 			}
@@ -1755,11 +1782,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onKey != nullptr)
 				{
-					GetWindowByName(windowName)->keyEvent = onKey;
+					window->keyEvent = onKey;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1779,11 +1807,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onKey != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->keyEvent = onKey;
+					window->keyEvent = onKey;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1803,11 +1832,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onMouseButton != nullptr)
 				{
-					GetWindowByName(windowName)->mouseButtonEvent = onMouseButton;
+					window->mouseButtonEvent = onMouseButton;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1826,11 +1856,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onMouseButton != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->mouseButtonEvent = onMouseButton;
+					window->mouseButtonEvent = onMouseButton;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1850,11 +1881,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onMouseWheel != nullptr)
 				{
-					GetWindowByName(windowName)->mouseWheelEvent = onMouseWheel;
+					window->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1873,11 +1905,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onMouseWheel != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->mouseWheelEvent = onMouseWheel;
+					window->mouseWheelEvent = onMouseWheel;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1897,11 +1930,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onDestroyed != nullptr)
 				{
-					GetWindowByName(windowName)->destroyedEvent = onDestroyed;
+					window->destroyedEvent = onDestroyed;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1920,11 +1954,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
 				if (onDestroyed != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->destroyedEvent = onDestroyed;
+					window->destroyedEvent = onDestroyed;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1944,11 +1979,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onMaximized != nullptr)
 				{
-					GetWindowByName(windowName)->maximizedEvent = onMaximized;
+					window->maximizedEvent = onMaximized;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1967,11 +2003,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onMaximized != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->maximizedEvent = onMaximized;
+					window->maximizedEvent = onMaximized;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -1991,11 +2028,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onMinimized != nullptr)
 				{
-					GetWindowByName(windowName)->minimizedEvent = onMinimized;
+					window->minimizedEvent = onMinimized;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2014,11 +2052,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onMinimized != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->minimizedEvent = onMinimized;
+					window->minimizedEvent = onMinimized;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2038,11 +2077,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onFocus != nullptr)
 				{
-					GetWindowByName(windowName)->focusEvent = onFocus;
+					window->focusEvent = onFocus;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2061,11 +2101,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr)
 			{
 				if (onFocus != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->focusEvent = onFocus;
+					window->focusEvent = onFocus;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2085,17 +2126,17 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onMoved != nullptr)
 				{
-					GetWindowByName(windowName)->movedEvent = onMoved;
+					window->movedEvent = onMoved;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 				return false;
 			}
-
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
@@ -2109,7 +2150,8 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onMoved != nullptr)
 				{
@@ -2133,11 +2175,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onResize != nullptr)
 				{
-					GetWindowByName(windowName)->resizeEvent = onResize;
+					window->resizeEvent = onResize;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2156,11 +2199,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onResize != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->resizeEvent = onResize;
+					window->resizeEvent = onResize;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2180,7 +2224,8 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByName( windowName ) )
+			window_t* window = GetWindowByName(windowName);
+			if ( window != nullptr )
 			{
 				if (onMouseMove != nullptr)
 				{
@@ -2203,11 +2248,12 @@ public:
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( DoesExistByIndex( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
 				if (onMouseMove != nullptr)
 				{
-					GetWindowByIndex(windowIndex)->mouseMoveEvent = onMouseMove;
+					window->mouseMoveEvent = onMouseMove;
 					return true;
 				}
 				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
@@ -2224,7 +2270,7 @@ private:
 
 	enum error_t : int
 	{
-		success = 0,						/**< If a Function call was successful*/
+		success = 0,						/**< If a function call was successful*/
 		invalidWindowName,					/**< If an invalid window name was given */
 		invalidIconPath,					/**< If an invalid icon path was given */
 		invalidWindowIndex,					/**< If an invalid window index was given */
@@ -2522,7 +2568,7 @@ private:
 	}
 
 	std::vector< std::unique_ptr<window_t> >				windowList;
-	static std::unique_ptr<window_t>						nullWindow;
+	//static std::unique_ptr<window_t>						nullWindow;
 	static windowManager*									instance;
 	static errorCategory_t									errorCategory;
 
@@ -2551,7 +2597,7 @@ private:
 		}
 	}
 
-	static inline void Platform_InitializeWindow( std::unique_ptr<window_t>& window )
+	static inline void Platform_InitializeWindow( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		Windows_InitializeWindow(window);
@@ -2560,7 +2606,7 @@ private:
 #endif
 	}
 
-	static inline bool Platform_InitializeGL( std::unique_ptr<window_t>& window )
+	static inline bool Platform_InitializeGL( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		window->deviceContextHandle = GetDC(window->windowHandle);
@@ -2614,7 +2660,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowResolution(std::unique_ptr<window_t>& window)
+	static inline void Platform_SetWindowResolution(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP,
@@ -2627,7 +2673,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowPosition(std::unique_ptr<window_t>& window, unsigned int x, unsigned int y)
+	static inline void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
@@ -2645,7 +2691,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetMousePositionInWindow(std::unique_ptr<window_t>& window, unsigned int x, unsigned int y)
+	static inline void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
 	{
 #if defined(TW_WINDOWS)
 		POINT mousePoint;
@@ -2663,7 +2709,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SwapBuffers(std::unique_ptr<window_t>& window)
+	static inline void Platform_SwapBuffers(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SwapBuffers(window->deviceContextHandle);
@@ -2672,7 +2718,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_MakeCurrentContext(std::unique_ptr<window_t>& window)
+	static inline void Platform_MakeCurrentContext(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		wglMakeCurrent(window->deviceContextHandle,
@@ -2683,7 +2729,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetFullScreen(std::unique_ptr<window_t>& window)
+	static inline void Platform_SetFullScreen(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
@@ -2708,7 +2754,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_MinimizeWindow(std::unique_ptr<window_t>& window, bool newState)
+	static inline void Platform_MinimizeWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -2733,7 +2779,7 @@ private:
 		}
 	}
 
-	static inline void Platform_MaximizeWindow(std::unique_ptr<window_t>& window, bool newState)
+	static inline void Platform_MaximizeWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -2782,7 +2828,7 @@ private:
 		}
 	}
 
-	static inline void Platform_SetWindowTitleBar(std::unique_ptr<window_t>& window, const char* newTitle)
+	static inline void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowText(window->windowHandle, newTitle);
@@ -2791,7 +2837,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_FocusWindow(std::unique_ptr<window_t>& window, bool newState)
+	static inline void Platform_FocusWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -2812,7 +2858,7 @@ private:
 		}
 	}
 
-	static inline void Platform_RestoreWindow(std::unique_ptr<window_t>& window)
+	static inline void Platform_RestoreWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		ShowWindow(window->windowHandle, SW_RESTORE);
@@ -2821,7 +2867,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetWindowStyle(std::unique_ptr<window_t>& window, style_t windowStyle)
+	static inline void Platform_SetWindowStyle(window_t* window, style_t windowStyle)
 	{
 #if defined(TW_WINDOWS)
 		switch (windowStyle)
@@ -2904,7 +2950,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_EnableWindowDecorators(std::unique_ptr<window_t>& window, unsigned int decorators)
+	static inline void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
 	{
 #if defined(TW_WINDOWS)
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
@@ -2995,7 +3041,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_DisableWindowDecorators(std::unique_ptr<window_t>& window, unsigned int decorators)
+	static inline void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
 	{
 #if defined(TW_WINDOWS)
 		if (decorators & border)
@@ -3122,7 +3168,7 @@ private:
 #endif
 	}
 
-	static inline void ShutdownWindow( std::unique_ptr<window_t>& window )
+	static inline void ShutdownWindow( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		if (window->glRenderingContextHandle)
@@ -3157,65 +3203,27 @@ private:
 #endif
 	}
 
-	static inline bool DoesExistByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			if ( windowName != nullptr )
-			{
-				for ( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
-				{
-					if( !strcmp( instance->windowList[iter]->name, windowName ) )
-					{
-						return true;
-					}
-				}
-			}
-			PrintErrorMessage( std::error_code(invalidWindowName, errorCategory ));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	static inline bool DoesExistByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			if ( windowIndex <= ( instance->windowList.size() - 1 ) )
-			{
-				return true;
-			}
-
-			PrintErrorMessage( std::error_code(invalidWindowIndex, errorCategory ));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	static inline std::unique_ptr<window_t>& GetWindowByName( const char* windowName )
+	static inline window_t* GetWindowByName( const char* windowName )
 	{
 			for( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
 			{
 				if ( !strcmp( instance->windowList[iter]->name, windowName ) )
 				{
-					return instance->windowList[iter];
+					return instance->windowList[iter].get();
 				}
 			}
 
-			return nullWindow;
+			return nullptr;
 	}
 
 	//return a static pointer to a window that corresponds to the given window index
-	static inline std::unique_ptr<window_t>& GetWindowByIndex( unsigned int windowIndex )
+	static inline window_t* GetWindowByIndex( unsigned int windowIndex )
 	{
 		if ( windowIndex <= instance->windowList.size() - 1 )
 		{
-			return instance->windowList[windowIndex];
+			return instance->windowList[windowIndex].get();
 		}
-		return nullWindow;
+		return nullptr;
 	}
 	
 #if defined(TW_WINDOWS)
@@ -3237,19 +3245,19 @@ private:
 		rightAltUp = 49464,
 	};
 
-	MSG		message;
+	MSG		winMessage;
 	HDC		deviceContextHandle;
 
 	//the window procedure for all windows. This is used mainly to handle window events
 	LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam )
 	{
-		std::unique_ptr<window_t>& window = GetWindowByHandle( windowHandle );
+		window_t* window = GetWindowByHandle( windowHandle );
 		switch ( winMessage )
 		{
 		case WM_CREATE:
 		{
-			GetWindowByIndex( windowList.size() - 1 )->windowHandle = windowHandle;
-			Platform_InitializeGL(GetWindowByIndex(windowList.size() - 1));
+			windowList.back()->windowHandle = windowHandle;
+			Platform_InitializeGL(windowList.back().get());
 			break;
 		}
 
@@ -3323,7 +3331,6 @@ private:
 						window->resizeEvent( window->resolution[ 0 ],
 							window->resolution[ 1 ] );
 					}
-
 					break;
 				}
 			}
@@ -3340,7 +3347,6 @@ private:
 				window->resizeEvent( window->resolution[ 0 ],
 					window->resolution[ 1 ] );
 			}
-
 			break;
 		}
 
@@ -3653,21 +3659,20 @@ private:
 	}
 
 	//get the window that is associated with this Win32 window handle
-	static inline std::unique_ptr<window_t>& GetWindowByHandle( HWND windowHandle )
+	static inline window_t* GetWindowByHandle( HWND windowHandle )
 	{
 		for ( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
 		{
 			if ( instance->windowList[iter]->windowHandle == windowHandle )
 			{
-				return instance->windowList[iter];
+				return instance->windowList[iter].get();
 			}
 		}
-
-		return nullWindow;
+		return nullptr;
 	}
 
 	//initialize the given window using Win32
-	static inline void Windows_InitializeWindow( std::unique_ptr<window_t>& window,
+	static inline void Windows_InitializeWindow( window_t* window,
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int clearScreenExtra = 0,
 		int windowExtra = 0,
@@ -3700,7 +3705,7 @@ private:
 	}
 
 	//initialize the pixel format for the selected window
-	static inline void InitializePixelFormat( std::unique_ptr<window_t>& window )
+	static inline void InitializePixelFormat( window_t* window )
 	{
 		window->pixelFormatDescriptor = {
 			sizeof( PIXELFORMATDESCRIPTOR ), /* size */
@@ -3709,7 +3714,7 @@ private:
 			PFD_DRAW_TO_WINDOW |
 			PFD_DOUBLEBUFFER, /* support double-buffering */
 			PFD_TYPE_RGBA, /* color type */
-			( BYTE )window->colorBits, 0, /* prefered color depth */
+			( BYTE )window->colorBits, 0, /* preferred color depth */
 			0, 0,
 			0, 0,
 			0, 0,
@@ -4005,7 +4010,7 @@ private:
 		}
 	}
 
-	static inline void Windows_SetWindowIcon( std::unique_ptr<window_t>& window, const char* icon, unsigned int width, unsigned int height )
+	static inline void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height )
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
@@ -4028,19 +4033,19 @@ private:
 	static int linuxFunction;
 	static int linuxDecorator;
 	
-	static std::unique_ptr<window_t>& GetWindowByHandle( Window windowHandle )
+	static window_t* GetWindowByHandle( Window windowHandle )
 	{
 		for(unsigned int iter = 0; iter < GetInstance()->windowList.size(); iter++ )
 		{
 			if ( instance->windowList[iter]->windowHandle == windowHandle )
 			{
-				return instance->windowList[iter];
+				return instance->windowList[iter].get();
 			}
 		}
-		return nullWindow;
+		return nullptr;
 	}
 
-	static std::unique_ptr<window_t>& GetWindowByEvent( XEvent currentEvent )
+	static window_t* GetWindowByEvent( XEvent currentEvent )
 	{
 		switch( currentEvent.type )
 		{
@@ -4126,12 +4131,12 @@ private:
 
 			default:
 			{
-				return nullWindow;
+				return nullptr;
 			}
 		}
 	}
 
-	static void InitializeAtoms( std::unique_ptr<window_t>& window )
+	static void InitializeAtoms( window_t* window )
 	{
 		window->AtomState = XInternAtom(instance->currentDisplay, "_NET_WM_STATE", false);
 		window->AtomFullScreen = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
@@ -4162,7 +4167,7 @@ private:
 		window->AtomDesktopGeometry = XInternAtom(instance->currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 	}
 
-	static void Linux_InitializeWindow( std::unique_ptr<window_t>& window )
+	static void Linux_InitializeWindow( window_t* window )
 	{
 		window->attributes = new int[ 5 ]{
 			GLX_RGBA,
@@ -4224,7 +4229,7 @@ private:
 		Platform_InitializeGL(window);
 	}
 
-	static void Linux_ShutdownWindow( std::unique_ptr<window_t>& window )
+	static void Linux_ShutdownWindow( window_t* window )
 	{
 		XDestroyWindow(instance->currentDisplay, window->windowHandle);	
 	}
@@ -5112,7 +5117,7 @@ private:
 		PrintErrorMessage( std::error_code(linuxFunctionNotImplemented, errorCategory));
 	}
 
-	static GLXFBConfig GetBestFrameBufferConfig(std::unique_ptr<window_t>& givenWindow)
+	static GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
 	{
 		const int visualAttributes[  ] =
 		{
@@ -5165,14 +5170,11 @@ private:
 };
 
 windowManager* windowManager::instance = nullptr;
-std::unique_ptr<windowManager::window_t> windowManager::nullWindow = nullptr;
 windowManager::errorCategory_t windowManager::errorCategory = windowManager::errorCategory_t();
 #if defined(TW_LINUX)
 int windowManager::linuxFunction = 1;
 int windowManager::linuxDecorator = 2;
 #endif //TW_LINUX
 }
-
-
 
 #endif
