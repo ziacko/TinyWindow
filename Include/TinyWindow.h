@@ -162,9 +162,6 @@ typedef unsigned int mousePosition_t[2];
 typedef unsigned int screenResolution_t[2];
 typedef unsigned int screenMousePosition_t[2];
 
-const int LINUX_FUNCTION = 1;
-const int LINUX_DECORATOR = 2;
-
 const int TW_error = -1;
 
 class windowManager
@@ -2864,7 +2861,7 @@ private:
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = linuxMove | linuxClose |
 				linuxMaximize | linuxMinimize;
-			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -2877,7 +2874,7 @@ private:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -2890,7 +2887,7 @@ private:
 		{
 			window->decorators = 0;
 			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -2990,7 +2987,7 @@ private:
 			window->decorators = 1;
 		}
 
-		long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+		long hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 		XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
@@ -3117,7 +3114,7 @@ private:
 			window->decorators = 0;
 		}
 
-		long hints[5] = { LINUX_FUNCTION | LINUX_DECORATOR, window->currentWindowStyle, window->decorators, 0, 0 };
+		long hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 		XChangeProperty(instance->currentDisplay, window->windowHandle, window->AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
@@ -4028,6 +4025,9 @@ private:
 
 	Display*			currentDisplay;
 	XEvent				currentEvent;
+
+	const int linuxFunction = 1;
+	const int linuxDecorator = 2;
 	
 	static std::unique_ptr<window_t>& GetWindowByHandle( Window windowHandle )
 	{
