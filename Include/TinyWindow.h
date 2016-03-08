@@ -2480,8 +2480,8 @@ private:
 
 				XGetWindowAttributes(instance->currentDisplay,
 					window->windowHandle, &l_Attributes);
-				window->position[0] = l_Attributes.x;
-				window->position[1] = l_Attributes.y;
+				window->position.x = l_Attributes.x;
+				window->position.y = l_Attributes.y;
 
 				window->contextCreated = true;
 				return true;
@@ -2521,7 +2521,7 @@ private:
 		resolution.height = screen.bottom;
 #elif defined(TW_LINUX)
 		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
-		resolution.Height = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
+		resolution.height = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
 
 		instance->screenResolution.x = resolution.width;
 		instance->screenResolution.y = resolution.height;
@@ -2571,8 +2571,8 @@ private:
 		XWarpPointer(
 			windowManager::GetDisplay(),
 			window->windowHandle, window->windowHandle,
-			window->position[0], window->position[1],
-			window->resolution[0], window->resolution[1],
+			window->position.x, window->position.y,
+			window->resolution.width, window->resolution.height,
 			x, y);
 #endif
 	}
@@ -4075,7 +4075,7 @@ private:
 		
 		window->windowHandle = XCreateWindow( instance->currentDisplay,
 			XDefaultRootWindow( instance->currentDisplay ), 0, 0,
-			window->resolution[ 0 ], window->resolution[ 1 ],
+			window->resolution.width, window->resolution.height,
 			0, window->visualInfo->depth, InputOutput,
 			window->visualInfo->visual, CWColormap | CWEventMask,
 			&window->setAttributes );
@@ -4367,15 +4367,15 @@ private:
 			case MotionNotify:
 			{
 				//set the windows mouse position to match the event
-				window->mousePosition[ 0 ] =
+				window->mousePosition.x =
 					currentEvent.xmotion.x;
 
-				window->mousePosition[ 1 ] =
+				window->mousePosition.y =
 					currentEvent.xmotion.y;
 
 				///set the screen mouse position to match the event
-				instance->screenMousePosition[ 0 ] = currentEvent.xmotion.x_root;
-				instance->screenMousePosition[ 1 ] = currentEvent.xmotion.y_root;
+				instance->screenMousePosition.x = currentEvent.xmotion.x_root;
+				instance->screenMousePosition.y = currentEvent.xmotion.y_root;
 
 				if ( window->mouseMoveEvent != nullptr )
 				{
@@ -4414,12 +4414,12 @@ private:
 			//dragging out the window or programmatically
 			case ResizeRequest:
 			{
-				window->resolution[ 0 ] = currentEvent.xresizerequest.width;
-				window->resolution[ 1 ] = currentEvent.xresizerequest.height;
+				window->resolution.width = currentEvent.xresizerequest.width;
+				window->resolution.height = currentEvent.xresizerequest.height;
 
 				glViewport( 0, 0,
-					window->resolution[ 0 ],
-					window->resolution[ 1 ] );
+					window->resolution.width,
+					window->resolution.height );
 
 				if ( window->resizeEvent != nullptr )
 				{
@@ -4437,29 +4437,29 @@ private:
 					currentEvent.xconfigure.height );
 
 				//check if window was resized
-				if ( ( unsigned int )currentEvent.xconfigure.width != window->resolution[ 0 ]
-					|| ( unsigned int )currentEvent.xconfigure.height != window->resolution[ 1 ] )
+				if ( ( unsigned int )currentEvent.xconfigure.width != window->resolution.width
+					|| ( unsigned int )currentEvent.xconfigure.height != window->resolution.height )
 				{
 					if ( window->resizeEvent != nullptr )
 					{
 						window->resizeEvent( currentEvent.xconfigure.width, currentEvent.xconfigure.height );
 					}
 
-					window->resolution[ 0 ] = currentEvent.xconfigure.width;
-					window->resolution[ 1 ] = currentEvent.xconfigure.height;
+					window->resolution.width = currentEvent.xconfigure.width;
+					window->resolution.height = currentEvent.xconfigure.height;
 				}
 
 				//check if window was moved
-				if ( ( unsigned int )currentEvent.xconfigure.x != window->position[ 0 ]
-					|| ( unsigned int )currentEvent.xconfigure.y != window->position[ 1 ] )
+				if ( ( unsigned int )currentEvent.xconfigure.x != window->position.x
+					|| ( unsigned int )currentEvent.xconfigure.y != window->position.y )
 				{
 					if ( window->movedEvent != nullptr )
 					{
 						window->movedEvent( currentEvent.xconfigure.x, currentEvent.xconfigure.y );
 					}
 
-					window->position[ 0 ] = currentEvent.xconfigure.x;
-					window->position[ 1 ] = currentEvent.xconfigure.y;
+					window->position.x = currentEvent.xconfigure.x;
+					window->position.y = currentEvent.xconfigure.y;
 				}
 				break;
 			}
