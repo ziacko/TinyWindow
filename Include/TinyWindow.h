@@ -41,6 +41,44 @@ namespace TinyWindow
 const int defaultWindowWidth = 1280;
 const int defaultWindowHeight = 720;
 
+//typedef unsigned int resolution_t[2];
+//typedef unsigned int position_t[2];
+//typedef unsigned int mousePosition_t[2];
+//typedef unsigned int screenResolution_t[2];
+//typedef unsigned int screenMousePosition_t[2];
+
+struct uiVec2
+{
+	uiVec2()
+	{
+		this->x = 0;
+		this->y = 0;
+	}
+
+	uiVec2(unsigned int x, unsigned int y)
+	{
+		this->x = x;
+		this->y = y;
+	}
+
+	union
+	{
+		unsigned int x;
+		unsigned int width;
+	};
+
+	union
+	{
+		unsigned int y;
+		unsigned int height;
+	};
+
+	static uiVec2 Zero()
+	{
+		return uiVec2(0, 0);
+	}
+};
+
 enum class keyState_t
 {
 	bad = -1,						/**< If get key state fails (could not name it ERROR) */
@@ -156,12 +194,6 @@ enum decorator_t
 	sizeableBorder = 0x40,			/**< The sizable border decoration of the window */
 };
 
-typedef unsigned int resolution_t[2];
-typedef unsigned int position_t[2];
-typedef unsigned int mousePosition_t[2];
-typedef unsigned int screenResolution_t[2];
-typedef unsigned int screenMousePosition_t[2];
-
 class windowManager
 {
 	struct window_t;
@@ -169,7 +201,7 @@ class windowManager
 
 public:
 
-	windowManager(){}
+	windowManager( void ){}
 
 	/**
 	 * Shutdown and delete all windows in the manager
@@ -215,8 +247,8 @@ public:
 			{
 				std::unique_ptr<window_t> newWindow(new window_t);
 				newWindow->name = windowName;
-				newWindow->resolution[ 0 ] = width;
-				newWindow->resolution[ 1 ] = height;
+				newWindow->resolution.width = width;
+				newWindow->resolution.height = height;
 				newWindow->colorBits = colourBits;
 				newWindow->depthBits = depthBits;
 				newWindow->stencilBits = stencilBits;
@@ -250,53 +282,30 @@ public:
 	}
 
 	/**
-	 * Return the mouse position in screen co-ordinates
-	 */
-	static inline bool GetMousePositionInScreen( unsigned int& x, unsigned int& y )
+	* Return the mouse position in screen co-ordinates
+	*/
+	static inline TinyWindow::uiVec2 GetMousePositionInScreen( void )
 	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			x = instance->screenMousePosition[0];
-			y = instance->screenMousePosition[1];
-			return true;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return the mouse position in screen co-ordinates
-	 */
-	static inline unsigned int* GetMousePositionInScreen( void )
-	{
-		if ( GetInstance()->IsInitialized() )
+		if (GetInstance()->IsInitialized())
 		{
 			return instance->screenMousePosition;
 		}
 
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 
 	/**
 	 * Set the position of the mouse cursor relative to screen co-ordinates
 	 */
-	static inline bool SetMousePositionInScreen( mousePosition_t mousePosition )
+	static inline bool SetMousePositionInScreen( TinyWindow::uiVec2 mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			instance->screenMousePosition[0] = mousePosition[0];
-			instance->screenMousePosition[1] = mousePosition[1];
+			instance->screenMousePosition.x = mousePosition.x;
+			instance->screenMousePosition.y = mousePosition.y;
 
-#if defined(TW_WINDOWS)
-			SetCursorPos(mousePosition[0], mousePosition[1]);
-#elif defined(TW_LINUX)
-			XWarpPointer(instance->currentDisplay, None,
-				XDefaultRootWindow(instance->currentDisplay), 0, 0,
-				GetScreenResolution()[0],
-				GetScreenResolution()[1],
-				mousePosition[0], mousePosition[1]);
-#endif
+			Platform_SetMousePositionInScreen();
 			return true;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -309,18 +318,10 @@ public:
 	{
 		if (GetInstance()->IsInitialized())
 		{
-			instance->screenMousePosition[0] = x;
-			instance->screenMousePosition[1] = y;
+			instance->screenMousePosition.x = x;
+			instance->screenMousePosition.y = y;
 
-#if defined(TW_WINDOWS)
-			SetCursorPos(x, y);
-#elif defined(TW_LINUX)
-			XWarpPointer(instance->currentDisplay, None,
-				XDefaultRootWindow(instance->currentDisplay), 0, 0,
-				GetScreenResolution()[0],
-				GetScreenResolution()[1],
-				x, y);
-#endif
+			Platform_SetMousePositionInScreen();
 			return true;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
@@ -328,106 +329,25 @@ public:
 	}
 
 	/**
-	 * Return the Resolution of the current screen
-	 */
-	static inline unsigned int* GetScreenResolution( void )
+	* Return the Resolution of the current screen
+	*/
+	static inline TinyWindow::uiVec2 GetScreenResolution( void )
 	{
-		if ( GetInstance()->IsInitialized() )
+		if (GetInstance()->IsInitialized())
 		{
-#if defined(TW_WINDOWS)
-			RECT screen;
-			HWND desktop = GetDesktopWindow();
-			GetWindowRect( desktop, &screen );
-
-			instance->screenResolution[0] = screen.right;
-			instance->screenResolution[1] = screen.bottom;
-			return instance->screenResolution;
-
-#elif defined(TW_LINUX)
-			instance->screenResolution[0] = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
-			instance->screenResolution[1] = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
-
-			return instance->screenResolution;
-#endif
+			uiVec2 resolution;
+			Platform_GetScreenResolution(resolution);
+			return resolution;
 		}
 
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
-	}
-	/**
-	 * Return the Resolution of the current screen
-	 */
-	static inline bool GetScreenResolution( unsigned int& width, unsigned int& Height )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-#if defined(TW_WINDOWS)
-			RECT screen;
-			HWND desktop = GetDesktopWindow();
-			GetWindowRect( desktop, &screen );
-			width = screen.right;
-			Height = screen.bottom;
-#elif defined(TW_LINUX)
-			width = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
-			Height = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
-
-			instance->screenResolution[0] = width;
-			instance->screenResolution[1] = Height;
-#endif
-			return true;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Return the Resolution of the given window by setting width and height
-	 */
-	static inline bool GetWindowResolutionByName( const char* windowName, unsigned int& width, unsigned int& height )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr)
-			{
-				width = window->resolution[ 0 ];
-				height = window->resolution[ 1 ];
-				return false;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return the Resolution of the given window by setting width and height
-	 */
-	static inline bool GetWindowResolutionByIndex( unsigned int windowIndex, unsigned int& width, unsigned int& height )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				width = window->resolution[ 0 ];
-				height = window->resolution[ 1 ];
-
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
+		return uiVec2::Zero();
 	}
 
 	/**
 	 * Return the Resolution of the given Window as an array of doubles
 	 */
-	static inline unsigned int* GetWindowResolutionByName( const char* windowName )
+	static inline TinyWindow::uiVec2 GetWindowResolutionByName( const char* windowName )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -438,16 +358,16 @@ public:
 				return window->resolution;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
+			return TinyWindow::uiVec2::Zero();
 		}
 
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 	/**
 	 * Return the Resolution of the Given Window as an array of doubles
 	 */
-	static inline unsigned int* GetWindowResolutionByIndex( unsigned int windowIndex )
+	static inline TinyWindow::uiVec2 GetWindowResolutionByIndex( unsigned int windowIndex )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -457,25 +377,25 @@ public:
 				return window->resolution;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
+			return TinyWindow::uiVec2::Zero();
 		}
 
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	static inline bool SetWindowResolutionByName( const char* windowName, resolution_t resolution )
+	static inline bool SetWindowResolutionByName( const char* windowName, TinyWindow::uiVec2 resolution )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			window_t* window = GetWindowByName(windowName);
 			if ( window != nullptr )
 			{
-				window->resolution[ 0 ] = resolution[0];
-				window->resolution[1] = resolution[1];
+				window->resolution.width = resolution.width;
+				window->resolution.height = resolution.height;
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -490,15 +410,15 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, resolution_t resolution )
+	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, TinyWindow::uiVec2 resolution )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
-			if ( WindowExists( windowIndex ) )
+			window_t* window = GetWindowByIndex(windowIndex);
+			if ( window != nullptr )
 			{
-				GetWindowByIndex(windowIndex)->resolution[0] = resolution[0];
-				GetWindowByIndex( windowIndex )->resolution[ 1 ] = resolution[1];
-				window_t* window = GetWindowByIndex(windowIndex);
+				window->resolution.width = resolution.width;
+				window->resolution.height = resolution.height;
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -519,8 +439,8 @@ public:
 			window_t* window = GetWindowByName(windowName);
 			if (window != nullptr)
 			{
-				window->resolution[0] = width;
-				window->resolution[1] = height;
+				window->resolution.x = width;
+				window->resolution.y = height;
 
 				Platform_SetWindowResolution(window);
 				return true;
@@ -542,8 +462,8 @@ public:
 			window_t* window = GetWindowByIndex(windowIndex);
 			if (window != nullptr)
 			{
-				window->resolution[0] = width;
-				window->resolution[1] = height;
+				window->resolution.x = width;
+				window->resolution.y = height;
 				
 
 				Platform_SetWindowResolution(window);
@@ -558,50 +478,9 @@ public:
 	}
 
 	/**
-	 * Return the Position of the given window relative to screen co-ordinates by setting X and Y
-	 */ 
-	static inline bool GetWindowPositionByName( const char* windowName, unsigned int& x, unsigned int& y )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				x = window->position[ 0 ];
-				y = window->position[ 1 ];
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return the Position of the given window relative to screen co-ordinates by setting X and Y
-	 */
-	static inline bool GetWindowPositionByIndex( unsigned int windowIndex, unsigned int& x, unsigned int& y )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				x = window->position[ 0 ];
-				y = window->position[ 1 ];
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
 	 * Return the Position of the given window relative to screen co-ordinates as an array
 	 */
-	static inline unsigned int* GetWindowPositionByName( const char* windowName )
+	static inline TinyWindow::uiVec2 GetWindowPositionByName( const char* windowName )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -611,16 +490,16 @@ public:
 				return window->position;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
+			return TinyWindow::uiVec2::Zero();
 		}
 
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 	/**
 	 * Return the Position of the given window relative to screen co-ordinates as an array
 	 */
-	static inline unsigned int* GetWindowPositionByIndex( unsigned int windowIndex )
+	static inline TinyWindow::uiVec2 GetWindowPositionByIndex( unsigned int windowIndex )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -630,26 +509,26 @@ public:
 				return GetWindowByIndex( windowIndex )->position;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
+			return TinyWindow::uiVec2::Zero();
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 
 	/**
 	 * Set the Position of the given window relative to screen co-ordinates
 	 */
-	static inline bool SetWindowPositionByName( const char* windowName, position_t windowPosition )
+	static inline bool SetWindowPositionByName( const char* windowName, TinyWindow::uiVec2 windowPosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			window_t* window = GetWindowByName(windowName);
 			if ( window != nullptr )
 			{
-				window->position[ 0 ] = windowPosition[0];
-				window->position[ 1 ] = windowPosition[1];
+				window->position.x = windowPosition.x;
+				window->position.y = windowPosition.y;
 
-				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
+				Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -662,16 +541,16 @@ public:
 	/**
 	 * Set the position of the given window relative to screen co-ordinates
 	 */
-	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, position_t windowPosition )
+	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, TinyWindow::uiVec2 windowPosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			window_t* window = GetWindowByIndex(windowIndex);
 			if ( window != nullptr )
 			{
-				window->position[ 0 ] = windowPosition[0];
-				window->position[ 1 ] = windowPosition[1];
-				Platform_SetWindowPosition(window, windowPosition[0], windowPosition[1]);
+				window->position.x = windowPosition.x;
+				window->position.y = windowPosition.y;
+				Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
 				return true;
 			}
 
@@ -692,8 +571,8 @@ public:
 			window_t* window = GetWindowByName(windowName);
 			if (window != nullptr)
 			{
-				window->position[0] = x;
-				window->position[1] = y;
+				window->position.x = x;
+				window->position.y = y;
 
 				Platform_SetWindowPosition(window, x, y);
 				return true;
@@ -715,8 +594,8 @@ public:
 			window_t* window = GetWindowByIndex(windowIndex);
 			if (window != nullptr)
 			{
-				window->position[0] = x;
-				window->position[1] = y;
+				window->position.x = x;
+				window->position.y = y;
 
 				Platform_SetWindowPosition(window, x, y);
 				return true;
@@ -731,50 +610,9 @@ public:
 	}
 
 	/**
-	 * Return the mouse Position relative to the given window's co-ordinates by setting X and Y
-	 */
-	static inline bool GetMousePositionInWindowByName( const char* windowName, unsigned int& x, unsigned int& y )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				x = window->mousePosition[ 0 ];
-				y = window->mousePosition[ 1 ];
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return the mouse position relative to the given window's co-ordinates by setting X and Y
-	 */
-	static inline bool GetMousePositionInWindowByIndex( unsigned int windowIndex, unsigned int& x, unsigned int& y )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				x = window->mousePosition[ 0 ];
-				y = window->mousePosition[ 1 ];
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
 	 * Return the mouse Position relative to the given window's co-ordinates as an array
 	 */
-	static inline unsigned int* GetMousePositionInWindowByName( const char* windowName )
+	static inline TinyWindow::uiVec2 GetMousePositionInWindowByName( const char* windowName )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -784,15 +622,15 @@ public:
 				return window->mousePosition;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
+			return TinyWindow::uiVec2::Zero();
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 	/**
 	 * Return the mouse Position relative to the given window's co-ordinates as an array
 	 */
-	static inline unsigned int* GetMousePositionInWindowByIndex( unsigned int windowIndex )
+	static inline TinyWindow::uiVec2 GetMousePositionInWindowByIndex( unsigned int windowIndex )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
@@ -802,26 +640,26 @@ public:
 				return window->mousePosition;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
+			return TinyWindow::uiVec2::Zero();
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
+		return TinyWindow::uiVec2::Zero();
 	}
 
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	static inline bool SetMousePositionInWindowByName( const char* windowName, mousePosition_t mousePosition )
+	static inline bool SetMousePositionInWindowByName( const char* windowName, TinyWindow::uiVec2 mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			window_t* window = GetWindowByName(windowName);
 			if ( window != nullptr )
 			{
-				window->mousePosition[ 0 ] = mousePosition[0];
-				window->mousePosition[ 1 ] = mousePosition[1];
+				window->mousePosition.x = mousePosition.x;
+				window->mousePosition.y = mousePosition.y;
 
-				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
+				Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -834,17 +672,17 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, mousePosition_t mousePosition )
+	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, TinyWindow::uiVec2 mousePosition )
 	{
 		if ( GetInstance()->IsInitialized() )
 		{
 			window_t* window = GetWindowByIndex(windowIndex);
 			if ( window != nullptr )
 			{
-				window->mousePosition[ 0 ] = mousePosition[0];
-				window->mousePosition[ 1 ] = mousePosition[1];
+				window->mousePosition.x = mousePosition.x;
+				window->mousePosition.y = mousePosition.y;
 
-				Platform_SetMousePositionInWindow(window, mousePosition[0], mousePosition[1]);
+				Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
@@ -863,8 +701,8 @@ public:
 			window_t* window = GetWindowByIndex(windowIndex);
 			if (window != nullptr)
 			{
-				window->mousePosition[0] = x;
-				window->mousePosition[1] = y;
+				window->mousePosition.x = x;
+				window->mousePosition.y = y;
 
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
@@ -885,8 +723,8 @@ public:
 			window_t* window = GetWindowByName(windowName);
 			if (window != nullptr)
 			{
-				window->mousePosition[0] = x;
-				window->mousePosition[1] = y;
+				window->mousePosition.x = x;
+				window->mousePosition.y = y;
 
 				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
@@ -1512,7 +1350,7 @@ public:
 	{
 		GetInstance()->isInitialized = false;
 #if defined(TW_WINDOWS)
-		//CreateTerminal();
+		CreateTerminal(); //feel free to comment this out
 		RECT desktop;
 
 		HWND desktopHandle = GetDesktopWindow();
@@ -1521,8 +1359,8 @@ public:
 		{
 			GetWindowRect(desktopHandle, &desktop);
 
-			instance->screenResolution[0] = desktop.right;
-			instance->screenResolution[1] = desktop.bottom;
+			instance->screenResolution.x = desktop.right;
+			instance->screenResolution.y = desktop.bottom;
 			instance->isInitialized = true;
 			return true;
 		}
@@ -1538,11 +1376,11 @@ public:
 			return false;
 		}
 
-		instance->screenResolution[0] = WidthOfScreen(
+		instance->screenResolution.x = WidthOfScreen(
 			XScreenOfDisplay(instance->currentDisplay,
 			DefaultScreen(instance->currentDisplay)));
 
-		instance->screenResolution[1] = HeightOfScreen(
+		instance->screenResolution.y = HeightOfScreen(
 			XScreenOfDisplay(instance->currentDisplay,
 			DefaultScreen(instance->currentDisplay)));
 
@@ -2303,9 +2141,9 @@ private:
 		int								stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
 		keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
 		buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
-		resolution_t					resolution;												/**< Resolution/Size of the window stored in an array */
-		position_t						position;												/**< Position of the Window relative to the screen co-ordinates */
-		mousePosition_t					mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
+		TinyWindow::uiVec2				resolution;												/**< Resolution/Size of the window stored in an array */
+		TinyWindow::uiVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
+		TinyWindow::uiVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
 		bool							shouldClose;											/**< Whether the Window should be closing */
 		bool							inFocus;												/**< Whether the Window is currently in focus( if it is the current window be used ) */
 
@@ -2572,8 +2410,8 @@ private:
 	static windowManager*									instance;
 	static errorCategory_t									errorCategory;
 
-	screenResolution_t										screenResolution;
-	screenMousePosition_t									screenMousePosition;
+	TinyWindow::uiVec2										screenResolution;
+	TinyWindow::uiVec2										screenMousePosition;
 
 	bool													isInitialized;
 
@@ -2660,16 +2498,46 @@ private:
 #endif
 	}
 
+	static inline void Platform_SetMousePositionInScreen()
+	{
+#if defined(TW_WINDOWS)
+		SetCursorPos(instance->screenMousePosition.y, instance->screenMousePosition.y);
+#elif defined(TW_LINUX)
+		XWarpPointer(instance->currentDisplay, None,
+			XDefaultRootWindow(instance->currentDisplay), 0, 0,
+			instance->screenResolution.x,
+			instance->screenResolution.y,
+			instance->screenMousePosition.x, instance->screenMousePosition.y);
+#endif
+	}
+
+	static inline void Platform_GetScreenResolution(uiVec2 resolution)
+	{
+#if defined(TW_WINDOWS)
+		RECT screen;
+		HWND desktop = GetDesktopWindow();
+		GetWindowRect(desktop, &screen);
+		resolution.width = screen.right;
+		resolution.height = screen.bottom;
+#elif defined(TW_LINUX)
+		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
+		resolution.Height = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
+
+		instance->screenResolution.x = resolution.width;
+		instance->screenResolution.y = resolution.height;
+#endif
+	}
+
 	static inline void Platform_SetWindowResolution(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP,
-			window->position[0], window->position[1],
-			window->resolution[0], window->resolution[1],
+			window->position.x, window->position.y,
+			window->resolution.x, window->resolution.y,
 			SWP_SHOWWINDOW | SWP_NOMOVE);
 #elif defined(TW_LINUX)
 		XResizeWindow(instance->currentDisplay,
-			window->windowHandle, window->resolution[0], window->resolution[1]);
+			window->windowHandle, window->resolution.x, window->resolution.y);
 #endif
 	}
 
@@ -2677,7 +2545,7 @@ private:
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
-			window->resolution[0], window->resolution[1],
+			window->resolution.x, window->resolution.y,
 			SWP_SHOWWINDOW | SWP_NOSIZE);
 #elif defined(TW_LINUX)
 		XWindowChanges windowChanges;
@@ -2735,8 +2603,8 @@ private:
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
 			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
-		MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution()[0],
-			windowManager::GetScreenResolution()[1], true);
+		MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
+			windowManager::GetScreenResolution().height, true);
 #elif defined(TW_LINUX)
 		XEvent currentEvent;
 		memset(&currentEvent, 0, sizeof(currentEvent));
@@ -3275,12 +3143,12 @@ private:
 		}
 		case WM_MOVE:
 		{
-			window->position[ 0 ] = LOWORD( longParam );
-			window->position[ 1 ] = HIWORD( longParam );
+			window->position.x = LOWORD( longParam );
+			window->position.y = HIWORD( longParam );
 
 			if ( window->movedEvent != nullptr )
 			{
-				window->movedEvent( window->position[ 0 ], window->position[ 1 ] );
+				window->movedEvent( window->position.x, window->position.y );
 			}
 
 			break;
@@ -3288,20 +3156,20 @@ private:
 
 		case WM_MOVING:
 		{
-			window->position[ 0 ] = LOWORD( longParam );
-			window->position[ 1 ] = HIWORD( longParam );
+			window->position.x = LOWORD( longParam );
+			window->position.y = HIWORD( longParam );
 
 			if ( window->movedEvent != nullptr )
 			{
-				window->movedEvent( window->position[ 0 ], window->position[ 1 ] );
+				window->movedEvent( window->position.x, window->position.y );
 			}
 			break;
 		}
 
 		case WM_SIZE:
 		{
-			window->resolution[ 0 ] = ( unsigned int )LOWORD( longParam );
-			window->resolution[ 1 ] = ( unsigned int )HIWORD( longParam );
+			window->resolution.width = ( unsigned int )LOWORD( longParam );
+			window->resolution.height = ( unsigned int )HIWORD( longParam );
 
 			switch ( wordParam )
 			{
@@ -3328,8 +3196,8 @@ private:
 				{
 					if ( window->resizeEvent != nullptr )
 					{
-						window->resizeEvent( window->resolution[ 0 ],
-							window->resolution[ 1 ] );
+						window->resizeEvent( window->resolution.width,
+							window->resolution.height );
 					}
 					break;
 				}
@@ -3339,13 +3207,13 @@ private:
 
 		case WM_SIZING:
 		{
-			window->resolution[ 0 ] = ( unsigned int )LOWORD( longParam );
-			window->resolution[ 1 ] = ( unsigned int )HIWORD( longParam );
+			window->resolution.width = ( unsigned int )LOWORD( longParam );
+			window->resolution.height = ( unsigned int )HIWORD( longParam );
 
 			if ( window->resizeEvent != nullptr )
 			{
-				window->resizeEvent( window->resolution[ 0 ],
-					window->resolution[ 1 ] );
+				window->resizeEvent( window->resolution.width,
+					window->resolution.height );
 			}
 			break;
 		}
@@ -3536,19 +3404,19 @@ private:
 
 		case WM_MOUSEMOVE:
 		{
-			window->mousePosition[ 0 ] = ( unsigned int )LOWORD( longParam );
-			window->mousePosition[ 1 ] = ( unsigned int )HIWORD( longParam );
+			window->mousePosition.x = ( unsigned int )LOWORD( longParam );
+			window->mousePosition.y = ( unsigned int )HIWORD( longParam );
 
 			POINT point;
-			point.x = (LONG)window->mousePosition[ 0 ];
-			point.y = (LONG)window->mousePosition[ 1 ];
+			point.x = (LONG)window->mousePosition.x;
+			point.y = (LONG)window->mousePosition.y;
 
 			ClientToScreen( windowHandle, &point );
 
 			if ( window->mouseMoveEvent != nullptr )
 			{
-				window->mouseMoveEvent( window->mousePosition[ 0 ],
-					window->mousePosition[ 1 ], point.x, point.y );
+				window->mouseMoveEvent( window->mousePosition.x,
+					window->mousePosition.y, point.x, point.y );
 			}
 			break;
 		}
@@ -3696,8 +3564,8 @@ private:
 
 		window->windowHandle =
 			CreateWindow( window->name, window->name, WS_OVERLAPPEDWINDOW, 0,
-			0, window->resolution[ 0 ],
-			window->resolution[ 1 ],
+			0, window->resolution.width,
+			window->resolution.height,
 			0, 0, 0, 0 );
 
 		ShowWindow( window->windowHandle, true );
