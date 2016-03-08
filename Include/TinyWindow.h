@@ -10,9 +10,9 @@
 #include <io.h>
 #include <fcntl.h>
 #if defined(_MSC_VER)
-//this automatically loads the OpenGL library if you are using Visual studio 
+//this automatically loads the OpenGL library if you are using Visual studio. feel free to comment out
 #pragma comment ( lib, "opengl32.lib" )
-//this makes sure that the entry point of your program is main(). not Winmain()
+//this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
 #pragma comment( linker, "/subsystem:windows /ENTRY:mainCRTStartup" )
 #endif //_MSC_VER
 #endif	//_WIN32 || _WIN64
@@ -162,8 +162,6 @@ typedef unsigned int mousePosition_t[2];
 typedef unsigned int screenResolution_t[2];
 typedef unsigned int screenMousePosition_t[2];
 
-const int TW_error = -1;
-
 class windowManager
 {
 	struct window_t;
@@ -248,7 +246,7 @@ public:
 		}
 
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TW_error;
+		return -1;
 	}
 
 	/**
@@ -758,7 +756,7 @@ public:
 			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return (bool)TW_error;
+		return false;
 	}
 
 	/**
@@ -1129,10 +1127,10 @@ public:
 			{
 				return (GetWindowByName(windowName)->currentState == state_t::minimized);
 			}
-			return (bool)TW_error;
+			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return (bool)TW_error;
+		return false;
 	}
 	/**
 	 * Returns whether the given window is minimized
@@ -1145,10 +1143,10 @@ public:
 			{
 				return (GetWindowByIndex(windowIndex)->currentState == state_t::minimized);
 			}
-			return (bool)TW_error;
+			return false;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return (bool)TW_error;
+		return false;
 	}
 
 	/**
@@ -2226,6 +2224,7 @@ private:
 
 	enum error_t : int
 	{
+		success = 0,						/**< If a Function call was successful*/
 		invalidWindowName,					/**< If an invalid window name was given */
 		invalidIconPath,					/**< If an invalid icon path was given */
 		invalidWindowIndex,					/**< If an invalid window index was given */
