@@ -4026,8 +4026,8 @@ private:
 	Display*			currentDisplay;
 	XEvent				currentEvent;
 
-	const int linuxFunction = 1;
-	const int linuxDecorator = 2;
+	static int linuxFunction;
+	static int linuxDecorator;
 	
 	static std::unique_ptr<window_t>& GetWindowByHandle( Window windowHandle )
 	{
@@ -5168,6 +5168,10 @@ private:
 windowManager* windowManager::instance = nullptr;
 std::unique_ptr<windowManager::window_t> windowManager::nullWindow = nullptr;
 windowManager::errorCategory_t windowManager::errorCategory = windowManager::errorCategory_t();
+#if defined(TW_LINUX)
+int windowManager::linuxFunction = 1;
+int windowManager::linuxDecorator = 2;
+#endif //TW_LINUX
 }
 
 
