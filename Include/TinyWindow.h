@@ -4238,7 +4238,7 @@ private:
 	{
 		for(unsigned int iter = 0; iter < instance->windowList.size(); iter++)
 		{
-			Linux_ShutdownWindow(instance->windowList[iter]);
+			Linux_ShutdownWindow(instance->windowList[iter].get());
 		}
 
 		XCloseDisplay( instance->currentDisplay );
@@ -4246,7 +4246,7 @@ private:
 
 	static void Linux_ProcessEvents( XEvent currentEvent )
 	{
-		std::unique_ptr<window_t>& window = GetWindowByEvent( currentEvent );
+		window_t* window = GetWindowByEvent( currentEvent );
 
 		switch ( currentEvent.type )	
 		{
