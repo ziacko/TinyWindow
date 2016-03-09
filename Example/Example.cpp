@@ -1,8 +1,10 @@
 #include "TinyWindow.h"
 //#include "TutorialConfig.h"
-void handleKeyPresses(unsigned int key, TinyWindow::keyState_t keyState)
+
+using namespace TinyWindow;
+void handleKeyPresses(unsigned int key, keyState_t keyState)
 {
-	if(keyState == TinyWindow::keyState_t::down)
+	if(keyState == keyState_t::down)
 	{
 		printf("%c \t", key);
 	}
@@ -10,21 +12,21 @@ void handleKeyPresses(unsigned int key, TinyWindow::keyState_t keyState)
 
 int main()
 {
-	TinyWindow::windowManager::Initialize();
+	windowManager* manager = new windowManager();
 
-	TinyWindow::windowManager::AddWindow("Example");
-	TinyWindow::windowManager::SetWindowOnKeyEventByName("Example", handleKeyPresses);
+	manager->AddWindow("Example");
+	manager->SetWindowOnKeyEventByName("Example", handleKeyPresses);
 
-	while (!TinyWindow::windowManager::GetWindowShouldCloseByIndex(0))
+	while (!manager->GetWindowShouldCloseByIndex(0))
 	{
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
-		TinyWindow::windowManager::PollForEvents();// or WaitForEvents
+		manager->PollForEvents();// or WaitForEvents
 		
-		TinyWindow::windowManager::MakeWindowCurrentContextByIndex(0);
-		TinyWindow::windowManager::WindowSwapBuffersByIndex(0);
+		manager->MakeWindowCurrentContextByIndex(0);
+		manager->WindowSwapBuffersByIndex(0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	TinyWindow::windowManager::ShutDown();
+	manager->ShutDown();
 	return 0;
 }
