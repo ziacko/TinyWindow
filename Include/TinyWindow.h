@@ -1,4 +1,4 @@
-//created my Ziyad Barakat 2014 - 2015
+//created by Ziyad Barakat 2014 - 2015
 
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
@@ -231,7 +231,7 @@ struct window_t
 	HWND						windowHandle;					/**< A handle to A window */
 	HINSTANCE					instanceHandle;
 
-#else
+#elif defined(TW_LINUX)
 	Window						windowHandle;					/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
 	GLXContext					context;						/**< The handle to the GLX rendering context */
 	XVisualInfo*				visualInfo;						/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
@@ -333,7 +333,7 @@ public:
 	/**
 	 * Use this to shutdown the window manager when your program is finished
 	 */
-	 inline void ShutDown( void ) 
+	void ShutDown( void ) 
 	{
 #if defined(__linux__)
 		Linux_Shutdown();
@@ -344,7 +344,7 @@ public:
 	/**
 	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	inline window_t* AddWindow( const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
+	window_t* AddWindow( const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
 	{
 		if ( windowName != nullptr )
 		{
@@ -369,7 +369,7 @@ public:
 	/**
 	 * Return the total amount of windows the manager has. returns -1 if failed
 	 */
-	inline int GetNumWindows( void )
+	int GetNumWindows( void )
 	{
 		return windowList.size();
 	}
@@ -377,7 +377,7 @@ public:
 	/**
 	* Return the mouse position in screen co-ordinates
 	*/
-	inline TinyWindow::uiVec2 GetMousePositionInScreen( void )
+	TinyWindow::uiVec2 GetMousePositionInScreen( void )
 	{
 		return screenMousePosition;
 	}
@@ -385,7 +385,7 @@ public:
 	/**
 	 * Set the position of the mouse cursor relative to screen co-ordinates
 	 */
-	inline void SetMousePositionInScreen( TinyWindow::uiVec2 mousePosition )
+	void SetMousePositionInScreen( TinyWindow::uiVec2 mousePosition )
 	{
 		screenMousePosition.x = mousePosition.x;
 		screenMousePosition.y = mousePosition.y;
@@ -395,7 +395,7 @@ public:
 	/**
 	* Set the position of the mouse cursor relative to screen co-ordinates
 	*/
-	inline void SetMousePositionInScreen(unsigned int x, unsigned int y)
+	void SetMousePositionInScreen(unsigned int x, unsigned int y)
 	{
 		screenMousePosition.x = x;
 		screenMousePosition.y = y;
@@ -406,7 +406,7 @@ public:
 	/**
 	* Return the Resolution of the current screen
 	*/
-	inline TinyWindow::uiVec2 GetScreenResolution( void )
+	TinyWindow::uiVec2 GetScreenResolution( void )
 	{
 		uiVec2 resolution;
 		Platform_GetScreenResolution(resolution);
@@ -416,7 +416,7 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	inline bool SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution )
+	bool SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution )
 	{
 		if ( window != nullptr )
 		{
@@ -432,7 +432,7 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	inline bool SetWindowResolution(window_t* window, unsigned int width, unsigned int height)
+	bool SetWindowResolution(window_t* window, unsigned int width, unsigned int height)
 	{
 		if (window != nullptr)
 		{
@@ -449,7 +449,7 @@ public:
 	/**
 	 * Set the Position of the given window relative to screen co-ordinates
 	 */
-	inline bool SetWindowPosition( window_t* window, TinyWindow::uiVec2 windowPosition )
+	bool SetWindowPosition( window_t* window, TinyWindow::uiVec2 windowPosition )
 	{
 		if ( window != nullptr )
 		{
@@ -465,7 +465,7 @@ public:
 	/**
 	* Set the Position of the given window relative to screen co-ordinates
 	*/
-	inline bool SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
+	bool SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
 	{
 		if (window != nullptr)
 		{
@@ -482,7 +482,7 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	inline bool SetMousePositionInWindow( window_t* window, TinyWindow::uiVec2 mousePosition )
+	bool SetMousePositionInWindow( window_t* window, TinyWindow::uiVec2 mousePosition )
 	{
 		if ( window != nullptr )
 		{
@@ -498,7 +498,7 @@ public:
 	/**
 	* Set the mouse Position of the given window's co-ordinates
 	*/
-	inline bool SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
+	bool SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
 	{
 		if (window != nullptr)
 		{
@@ -529,7 +529,7 @@ public:
 	/**
 	 * Make the given window be the current OpenGL Context to be drawn to
 	 */
-	inline bool MakeWindowCurrentContext( window_t* window )
+	bool MakeWindowCurrentContext( window_t* window )
 	{
 		if ( window != nullptr )
 		{
@@ -543,7 +543,7 @@ public:
 	/**
 	 * Toggle the given window's full screen mode
 	 */
-	inline bool SetFullScreen( window_t* window, bool newState )
+	bool SetFullScreen( window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
@@ -559,7 +559,7 @@ public:
 	/**
 	 * Toggle the minimization state of the given window
 	 */
-	inline bool MinimizeWindow(window_t* window, bool newState )
+	bool MinimizeWindow(window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
@@ -573,7 +573,7 @@ public:
 	/**
 	 * Toggle the maximization state of the current window
 	 */
-	inline bool MaximizeWindow( window_t* window, bool newState )
+	bool MaximizeWindow( window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
@@ -587,7 +587,7 @@ public:
 	/**
 	 * Set the window title bar	by name
 	 */
-	inline bool SetWindowTitleBar( window_t* window, const char* newTitle )
+	bool SetWindowTitleBar( window_t* window, const char* newTitle )
 	{
 		if (newTitle != nullptr)
 		{
@@ -606,7 +606,7 @@ public:
 	/**
 	* Set the window icon by name (currently not functional)
 	*/
-	inline bool SetWindowIcon( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
+	bool SetWindowIcon( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
 		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
 		return false;
@@ -615,7 +615,7 @@ public:
 	/**
 	* Set the window to be in focus by name
 	*/
-	inline bool FocusWindow( window_t* window, bool newState )
+	bool FocusWindow( window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
@@ -629,7 +629,7 @@ public:
 	/**
 	 * Restore the window by name
 	 */
-	inline bool RestoreWindow( window_t* window )
+	bool RestoreWindow( window_t* window )
 	{
 		if ( window != nullptr )
 		{
@@ -684,7 +684,7 @@ public:
 	/**
 	* Remove window from the manager by name
 	*/
-	inline bool RemoveWindow( window_t* window ) 
+	bool RemoveWindow( window_t* window ) 
 	{
 		if ( window != nullptr )
 		{
@@ -698,7 +698,7 @@ public:
 	/**
 	* Set the window style preset by name
 	*/
-	inline bool SetWindowStyle( window_t* window, style_t windowStyle )
+	bool SetWindowStyle( window_t* window, style_t windowStyle )
 	{
 		if ( window != nullptr )
 		{
@@ -712,7 +712,7 @@ public:
 	/**
 	* Enable window decorators by name
 	*/
-	inline bool EnableWindowDecorators( window_t* window, unsigned int decorators )
+	bool EnableWindowDecorators( window_t* window, unsigned int decorators )
 	{
 		if ( window != nullptr )
 		{
@@ -726,7 +726,7 @@ public:
 	/**
 	* Disable windows decorators by name
 	*/
-	inline bool DisableWindowDecorators( window_t* window, unsigned int decorators )
+	bool DisableWindowDecorators( window_t* window, unsigned int decorators )
 	{
 		if ( window != nullptr )
 		{
@@ -923,12 +923,7 @@ private:
 	TinyWindow::uiVec2										screenResolution;
 	TinyWindow::uiVec2										screenMousePosition;
 
-	inline bool WindowExists( unsigned int windowIndex )
-	{
-		return ( windowIndex <= windowList.size() - 1 );
-	}
-
-	inline void Platform_InitializeWindow( window_t* window )
+	void Platform_InitializeWindow( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		Windows_InitializeWindow(window);
@@ -937,7 +932,7 @@ private:
 #endif
 	}
 
-	inline bool Platform_InitializeGL( window_t* window )
+	bool Platform_InitializeGL( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		window->deviceContextHandle = GetDC(window->windowHandle);
@@ -992,7 +987,7 @@ private:
 #endif
 	}
 
-	inline void Platform_SetMousePositionInScreen()
+	void Platform_SetMousePositionInScreen()
 	{
 #if defined(TW_WINDOWS)
 		SetCursorPos(screenMousePosition.y, screenMousePosition.y);
@@ -1005,7 +1000,7 @@ private:
 #endif
 	}
 
-	inline void Platform_GetScreenResolution(uiVec2 resolution)
+	void Platform_GetScreenResolution(uiVec2 resolution)
 	{
 #if defined(TW_WINDOWS)
 		RECT screen;
@@ -1022,7 +1017,7 @@ private:
 #endif
 	}
 
-	inline void Platform_SetWindowResolution(window_t* window)
+	void Platform_SetWindowResolution(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP,
@@ -1035,7 +1030,7 @@ private:
 #endif
 	}
 
-	inline void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
+	void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
@@ -1053,7 +1048,7 @@ private:
 #endif
 	}
 
-	inline void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
+	void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
 	{
 #if defined(TW_WINDOWS)
 		POINT mousePoint;
@@ -1091,7 +1086,7 @@ private:
 #endif
 	}
 
-	inline void Platform_SetFullScreen(window_t* window)
+	void Platform_SetFullScreen(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
@@ -1116,7 +1111,7 @@ private:
 #endif
 	}
 
-	inline void Platform_MinimizeWindow(window_t* window, bool newState)
+	void Platform_MinimizeWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -1141,7 +1136,7 @@ private:
 		}
 	}
 
-	inline void Platform_MaximizeWindow(window_t* window, bool newState)
+	void Platform_MaximizeWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -1190,7 +1185,7 @@ private:
 		}
 	}
 
-	inline void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
+	void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowText(window->windowHandle, newTitle);
@@ -1199,7 +1194,7 @@ private:
 #endif
 	}
 
-	inline void Platform_FocusWindow(window_t* window, bool newState)
+	void Platform_FocusWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -1220,7 +1215,7 @@ private:
 		}
 	}
 
-	inline void Platform_RestoreWindow(window_t* window)
+	void Platform_RestoreWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		ShowWindow(window->windowHandle, SW_RESTORE);
@@ -1229,7 +1224,7 @@ private:
 #endif
 	}
 
-	inline void Platform_SetWindowStyle(window_t* window, style_t windowStyle)
+	void Platform_SetWindowStyle(window_t* window, style_t windowStyle)
 	{
 #if defined(TW_WINDOWS)
 		switch (windowStyle)
@@ -1312,7 +1307,7 @@ private:
 #endif
 	}
 
-	inline void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
+	void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
 	{
 #if defined(TW_WINDOWS)
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
@@ -1403,7 +1398,7 @@ private:
 #endif
 	}
 
-	inline void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
+	void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
 	{
 #if defined(TW_WINDOWS)
 		if (decorators & border)
@@ -1530,7 +1525,7 @@ private:
 #endif
 	}
 
-	inline void ShutdownWindow( window_t* window )
+	void ShutdownWindow( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		if (window->glRenderingContextHandle)
@@ -2052,7 +2047,7 @@ private:
 	}
 
 	//initialize the pixel format for the selected window
-	inline void InitializePixelFormat( window_t* window )
+	void InitializePixelFormat( window_t* window )
 	{
 		window->pixelFormatDescriptor = {
 			sizeof( PIXELFORMATDESCRIPTOR ), /* size */
@@ -2088,12 +2083,12 @@ private:
 		return;
 	}
 	
-	inline void Windows_Shutown( void )
+	void Windows_Shutown( void )
 	{
 
 	}
 
-	inline void CreateTerminal( void )
+	void CreateTerminal( void )
 	{
 		int conHandle;
 		long stdHandle;
@@ -2111,7 +2106,7 @@ private:
 		setvbuf( stdout, nullptr, _IONBF, 0 );
 	}
 
-	static inline unsigned int Windows_TranslateKey( WPARAM wordParam)
+	static unsigned int Windows_TranslateKey( WPARAM wordParam)
 	{
 		switch ( wordParam )
 		{
@@ -2357,7 +2352,7 @@ private:
 		}
 	}
 
-	static inline void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height )
+	void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height )
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
