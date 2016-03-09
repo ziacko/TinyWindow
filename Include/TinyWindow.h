@@ -235,9 +235,6 @@ public:
 		screenResolution.y = HeightOfScreen(
 			XScreenOfDisplay(currentDisplay,
 				DefaultScreen(currentDisplay)));
-
-		isInitialized = true;
-		return true;
 #endif
 	}
 
@@ -1093,7 +1090,6 @@ public:
 		if (XEventsQueued(currentDisplay, QueuedAfterReading))
 		{
 			XNextEvent(currentDisplay, &currentEvent);
-			XEvent currentEvent = currentEvent;
 
 			Linux_ProcessEvents(currentEvent);
 		}
@@ -1113,8 +1109,6 @@ public:
 #elif defined(TW_LINUX)
 		//even if there aren't any events to process
 		XNextEvent(currentDisplay, &currentEvent);
-
-		XEvent currentEvent = currentEvent;
 
 		Linux_ProcessEvents(currentEvent);
 #endif
@@ -2044,7 +2038,7 @@ private:
 		SetCursorPos(mousePoint.x, mousePoint.y);
 #elif defined(TW_LINUX)
 		XWarpPointer(
-			windowManager::GetDisplay(),
+			currentDisplay,
 			window->windowHandle, window->windowHandle,
 			window->position.x, window->position.y,
 			window->resolution.width, window->resolution.height,
@@ -3403,9 +3397,9 @@ private:
 	static int linuxFunction;
 	static int linuxDecorator;
 	
-	static window_t* GetWindowByHandle( Window windowHandle )
+	window_t* GetWindowByHandle( Window windowHandle )
 	{
-		for(unsigned int iter = 0; iter < GetInstance()->windowList.size(); iter++ )
+		for(unsigned int iter = 0; iter < windowList.size(); iter++ )
 		{
 			if ( windowList[iter]->windowHandle == windowHandle )
 			{
@@ -3415,7 +3409,7 @@ private:
 		return nullptr;
 	}
 
-	static window_t* GetWindowByEvent( XEvent currentEvent )
+	window_t* GetWindowByEvent( XEvent currentEvent )
 	{
 		switch( currentEvent.type )
 		{
@@ -3506,7 +3500,7 @@ private:
 		}
 	}
 
-	static void InitializeAtoms( )
+	void InitializeAtoms( )
 	{
 		AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
 		AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
@@ -3537,7 +3531,7 @@ private:
 		AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 	}
 
-	static void Linux_InitializeWindow( window_t* window )
+	void Linux_InitializeWindow( window_t* window )
 	{
 		window->attributes = new int[ 5 ]{
 			GLX_RGBA,
@@ -3599,12 +3593,12 @@ private:
 		Platform_InitializeGL(window);
 	}
 
-	static void Linux_ShutdownWindow( window_t* window )
+	void Linux_ShutdownWindow( window_t* window )
 	{
 		XDestroyWindow(currentDisplay, window->windowHandle);	
 	}
 
-	static void Linux_Shutdown( void )
+	void Linux_Shutdown( void )
 	{
 		for(unsigned int iter = 0; iter < windowList.size(); iter++)
 		{
@@ -3614,7 +3608,7 @@ private:
 		XCloseDisplay( currentDisplay );
 	}
 
-	static void Linux_ProcessEvents( XEvent currentEvent )
+	void Linux_ProcessEvents( XEvent currentEvent )
 	{
 		window_t* window = GetWindowByEvent( currentEvent );
 
@@ -4071,12 +4065,6 @@ private:
 		}
 	}
 
-	//get pointer to X11 display
-	static Display* GetDisplay( void )
-	{
-		return GetInstance()->currentDisplay;
-	}
-
 	//debugging. used to determine what type of event was generated
 	static const char* Linux_GetEventType( XEvent currentEvent )
 	{
@@ -4487,7 +4475,7 @@ private:
 		PrintErrorMessage( std::error_code(linuxFunctionNotImplemented, errorCategory));
 	}
 
-	static GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
+	GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
 	{
 		const int visualAttributes[  ] =
 		{
