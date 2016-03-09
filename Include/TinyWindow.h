@@ -2526,7 +2526,16 @@ private:
 		window->deviceContextHandle = nullptr;
 		window->windowHandle = nullptr;
 		window->glRenderingContextHandle = nullptr;
-		windowList.erase(windowList.begin() + window->iD);
+
+		if (windowList.size() > 1)
+		{
+			windowList.erase(windowList.begin() + window->iD);
+		}
+
+		else
+		{
+			windowList.erase(windowList.begin());
+		}
 #elif defined(TW_LINUX)
 		if (window->currentState == state_t::fullscreen)
 		{
