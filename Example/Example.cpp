@@ -1,5 +1,4 @@
 #include "TinyWindow.h"
-//#include "TutorialConfig.h"
 
 using namespace TinyWindow;
 void handleKeyPresses(unsigned int key, keyState_t keyState)
