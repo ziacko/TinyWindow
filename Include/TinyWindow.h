@@ -201,1154 +201,8 @@ class windowManager
 
 public:
 
-	windowManager( void ){}
-
-	/**
-	 * Shutdown and delete all windows in the manager
-	 */
-	~windowManager( void )
+	windowManager( void )
 	{
-		if ( !GetInstance()->windowList.empty() )
-		{
-			GetInstance()->windowList.clear();
-		}
-	}
-
-	/**
-	 * Use this to shutdown the window manager when your program is finished
-	 */
-	 static inline void ShutDown( void ) 
-	{
-		if (GetInstance()->IsInitialized())
-		{
-#if defined(__linux__)
-			Linux_Shutdown();
-#endif
-			instance->windowList.clear();
-			instance->isInitialized = false;
-			
-			delete instance;
-			instance = nullptr;
-		}
-		else
-		{
-			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		}
-	}
-
-	/**
-	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
-	 */
-	static inline windowManager* AddWindow( const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			if ( windowName != nullptr )
-			{
-				std::unique_ptr<window_t> newWindow(new window_t);
-				newWindow->name = windowName;
-				newWindow->resolution.width = width;
-				newWindow->resolution.height = height;
-				newWindow->colorBits = colourBits;
-				newWindow->depthBits = depthBits;
-				newWindow->stencilBits = stencilBits;
-				newWindow->iD = GetNumWindows();
-
-				instance->windowList.push_back( std::move(newWindow) );
-				Platform_InitializeWindow(instance->windowList.back().get());
-
-				return instance;
-			}
-			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
-			return nullptr;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
-	}
-
-	/**
-	 * Return the total amount of windows the manager has. returns -1 if failed
-	 */
-	static inline int GetNumWindows( void )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			return instance->windowList.size();
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return -1;
-	}
-
-	/**
-	* Return the mouse position in screen co-ordinates
-	*/
-	static inline TinyWindow::uiVec2 GetMousePositionInScreen( void )
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			return instance->screenMousePosition;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-
-	/**
-	 * Set the position of the mouse cursor relative to screen co-ordinates
-	 */
-	static inline bool SetMousePositionInScreen( TinyWindow::uiVec2 mousePosition )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			instance->screenMousePosition.x = mousePosition.x;
-			instance->screenMousePosition.y = mousePosition.y;
-
-			Platform_SetMousePositionInScreen();
-			return true;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the position of the mouse cursor relative to screen co-ordinates
-	*/
-	static inline bool SetMousePositionInScreen(unsigned int x, unsigned int y)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			instance->screenMousePosition.x = x;
-			instance->screenMousePosition.y = y;
-
-			Platform_SetMousePositionInScreen();
-			return true;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	* Return the Resolution of the current screen
-	*/
-	static inline TinyWindow::uiVec2 GetScreenResolution( void )
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			uiVec2 resolution;
-			Platform_GetScreenResolution(resolution);
-			return resolution;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return uiVec2::Zero();
-	}
-
-	/**
-	 * Return the Resolution of the given Window as an array of doubles
-	 */
-	static inline TinyWindow::uiVec2 GetWindowResolutionByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-
-			if (window != nullptr)
-			{
-				return window->resolution;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return TinyWindow::uiVec2::Zero();
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-	/**
-	 * Return the Resolution of the Given Window as an array of doubles
-	 */
-	static inline TinyWindow::uiVec2 GetWindowResolutionByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return window->resolution;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return TinyWindow::uiVec2::Zero();
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-
-	/**
-	 * Set the Size/Resolution of the given window
-	 */
-	static inline bool SetWindowResolutionByName( const char* windowName, TinyWindow::uiVec2 resolution )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				window->resolution.width = resolution.width;
-				window->resolution.height = resolution.height;
-
-				Platform_SetWindowResolution(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
-		return false;
-	}
-	/**
-	 * Set the Size/Resolution of the given window
-	 */
-	static inline bool SetWindowResolutionByIndex( unsigned int windowIndex, TinyWindow::uiVec2 resolution )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				window->resolution.width = resolution.width;
-				window->resolution.height = resolution.height;
-
-				Platform_SetWindowResolution(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/** 
-	 * Set the Size/Resolution of the given window
-	 */
-	static inline bool SetWindowResolutionByName(const char* windowName, unsigned int width, unsigned int height)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByName(windowName);
-			if (window != nullptr)
-			{
-				window->resolution.x = width;
-				window->resolution.y = height;
-
-				Platform_SetWindowResolution(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
-		return false;
-	}
-	/**
-	* Set the Size/Resolution of the given window
-	*/
-	static inline bool SetWindowResolutionByIndex(unsigned int windowIndex, unsigned int width, unsigned int height)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				window->resolution.x = width;
-				window->resolution.y = height;
-				
-
-				Platform_SetWindowResolution(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(invalidContext, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Return the Position of the given window relative to screen co-ordinates as an array
-	 */
-	static inline TinyWindow::uiVec2 GetWindowPositionByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return window->position;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return TinyWindow::uiVec2::Zero();
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-	/**
-	 * Return the Position of the given window relative to screen co-ordinates as an array
-	 */
-	static inline TinyWindow::uiVec2 GetWindowPositionByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return GetWindowByIndex( windowIndex )->position;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return TinyWindow::uiVec2::Zero();
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-
-	/**
-	 * Set the Position of the given window relative to screen co-ordinates
-	 */
-	static inline bool SetWindowPositionByName( const char* windowName, TinyWindow::uiVec2 windowPosition )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				window->position.x = windowPosition.x;
-				window->position.y = windowPosition.y;
-
-				Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Set the position of the given window relative to screen co-ordinates
-	 */
-	static inline bool SetWindowPositionByIndex( unsigned int windowIndex, TinyWindow::uiVec2 windowPosition )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				window->position.x = windowPosition.x;
-				window->position.y = windowPosition.y;
-				Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
-				return true;
-			}
-
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the Position of the given window relative to screen co-ordinates
-	*/
-	static inline bool SetWindowPositionByName(const char* windowName, unsigned int x, unsigned int y)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByName(windowName);
-			if (window != nullptr)
-			{
-				window->position.x = x;
-				window->position.y = y;
-
-				Platform_SetWindowPosition(window, x, y);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the position of the given window relative to screen co-ordinates
-	*/
-	static inline bool SetWindowPositionByIndex(unsigned int windowIndex, unsigned int x, unsigned int y)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				window->position.x = x;
-				window->position.y = y;
-
-				Platform_SetWindowPosition(window, x, y);
-				return true;
-			}
-
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Return the mouse Position relative to the given window's co-ordinates as an array
-	 */
-	static inline TinyWindow::uiVec2 GetMousePositionInWindowByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return window->mousePosition;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return TinyWindow::uiVec2::Zero();
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-	/**
-	 * Return the mouse Position relative to the given window's co-ordinates as an array
-	 */
-	static inline TinyWindow::uiVec2 GetMousePositionInWindowByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return window->mousePosition;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return TinyWindow::uiVec2::Zero();
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return TinyWindow::uiVec2::Zero();
-	}
-
-	/**
-	 * Set the mouse Position of the given window's co-ordinates
-	 */
-	static inline bool SetMousePositionInWindowByName( const char* windowName, TinyWindow::uiVec2 mousePosition )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				window->mousePosition.x = mousePosition.x;
-				window->mousePosition.y = mousePosition.y;
-
-				Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Set the mouse Position of the given window's co-ordinates
-	 */
-	static inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, TinyWindow::uiVec2 mousePosition )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				window->mousePosition.x = mousePosition.x;
-				window->mousePosition.y = mousePosition.y;
-
-				Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the mouse Position of the given window's co-ordinates
-	*/
-	static inline bool SetMousePositionInWindowByIndex(unsigned int windowIndex, unsigned int x, unsigned int y)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				window->mousePosition.x = x;
-				window->mousePosition.y = y;
-
-				Platform_SetMousePositionInWindow(window, x, y);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the mouse Position of the given window's co-ordinates
-	*/
-	static inline bool SetMousePositionInWindowByName(const char* windowName, unsigned int x, unsigned int y)
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByName(windowName);
-			if (window != nullptr)
-			{
-				window->mousePosition.x = x;
-				window->mousePosition.y = y;
-
-				Platform_SetMousePositionInWindow(window, x, y);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Returns the current state of the given key relative to the given window
-	 */
-	static inline keyState_t WindowGetKeyByName( const char* windowName, unsigned int key )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return window->keys[ key ];
-			}
-
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return keyState_t::bad;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return keyState_t::bad;
-	}
-	/**
-	 * Returns the current state of the given key relative to the given window
-	 */
-	static inline keyState_t WindowGetKeyByIndex(unsigned int windowIndex, unsigned int key)
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return window->keys[ key ];
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return keyState_t::bad;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return keyState_t::bad;
-	}
-
-	/**
-	 * Return whether the given window should be closing
-	 */
-	static inline bool GetWindowShouldCloseByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return window->shouldClose;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return whether the given window should be closing
-	 */
-	static inline bool GetWindowShouldCloseByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return window->shouldClose;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Swap the draw buffers of the given window
-	 */
-	static inline bool WindowSwapBuffersByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_SwapBuffers(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-			return false;
-		}
-
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Swap the draw buffers of the given window
-	 */
-	static inline bool WindowSwapBuffersByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				Platform_SwapBuffers(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Make the given window be the current OpenGL Context to be drawn to
-	 */
-	static inline bool MakeWindowCurrentContextByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_MakeCurrentContext(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Make the given window be the current OpenGL Context to be drawn to
-	 */
-	static inline bool MakeWindowCurrentContextByIndex( unsigned int windowIndex )
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				Platform_MakeCurrentContext(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Return whether the given window is in full screen mode
-	 */
-	static inline bool GetWindowIsFullScreenByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return (window->currentState == state_t::fullscreen);
-			}
-			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return whether the given window is in full screen mode
-	 */
-	static inline bool GetWindowIsFullScreenByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return (window->currentState == state_t::fullscreen);
-			}
-
-			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}	
-
-	/**
-	 * Toggle the given window's full screen mode
-	 */
-	static inline bool SetFullScreenByName( const char* windowName, bool newState )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
-
-				Platform_SetFullScreen(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/*
-	 * Toggle the given window's full screen mode
-	 */
-	static inline bool SetFullScreenByIndex( unsigned int windowIndex, bool newState )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
-				Platform_SetFullScreen(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage( std::error_code(notInitialized, errorCategory ));
-		return false;
-	}
-
-	/**
-	 * Returns whether the given window is minimized
-	 */
-	static inline bool GetWindowIsMinimizedByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return (window->currentState == state_t::minimized);
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Returns whether the given window is minimized
-	 */
-	static inline bool GetWindowIsMinimizedByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return (window->currentState == state_t::minimized);
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Toggle the minimization state of the given window
-	 */
-	static inline bool MinimizeWindowByName( const char* windowName, bool newState )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_MinimizeWindow(window, newState);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Toggle the minimization state of the window
-	 */
-	static inline bool MinimizeWindowByIndex( unsigned int windowIndex, bool newState )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				Platform_MinimizeWindow(window, newState);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Return whether the current window is currently maximized
-	 */
-	static inline bool GetWindowIsMaximizedByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return (window->currentState == state_t::maximized);
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Return whether the given window is currently maximized
-	 */
-	static inline bool GetWindowIsMaximizedByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return (window->currentState == state_t::maximized);
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	
-	/**
-	 * Toggle the maximization state of the current window
-	 */
-	static inline bool MaximizeWindowByName( const char* windowName, bool newState )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_MaximizeWindow(window, newState);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	 * Toggle the maximization state of the current window
-	 */
-	static inline bool MaximizeWindowByIndex( unsigned int windowIndex, bool newState )
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				Platform_MaximizeWindow(window, newState);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Get window name by index
-	 */
-	static inline const char* GetWindowNameByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return window->name;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return nullptr;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return nullptr;
-	}	
-	/**
-	* Get window index by name
-	*/
-	static inline unsigned int GetWindowIndexByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return window->iD;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Set the window title bar	by name
-	 */
-	static inline bool SetWindowTitleBarByName( const char* windowName, const char* newTitle )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if (newTitle != nullptr)
-			{
-				if (window != nullptr)
-				{
-					Platform_SetWindowTitleBar(window, newTitle);
-					return true;
-				}
-				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-				return false;
-			}
-			PrintErrorMessage(std::error_code(invalidTitlebar, errorCategory));
-			return false;
-		}			
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the window title bar by index
-	*/
-	static inline bool SetWindowTitleBarByIndex( unsigned int windowIndex, const char* newName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			if (newName != nullptr)
-			{
-				window_t* window = GetWindowByIndex(windowIndex);
-				if (window != nullptr)
-				{
-					Platform_SetWindowTitleBar(window, newName);
-					return true;
-				}
-				PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-				return false;
-			}
-			PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	* Set the window icon by name (currently not functional)
-	*/
-	static inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
-	{
-		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
-		return false;
-	}
-	/**
-	* Set the window icon by index (currently not functional)
-	*/
-	static inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
-	{
-		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
-		return false;
-	}
-
-	/**
-	* Get whether the window is in focus by name
-	*/
-	static inline bool GetWindowIsInFocusByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				return window->inFocus;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Get whether the window is in focus by index
-	*/
-	static inline bool GetWindowIsInFocusByIndex( unsigned int windowIndex )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				return window->inFocus;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	* Set the window to be in focus by name
-	*/
-	static inline bool FocusWindowByName( const char* windowName, bool newState )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_FocusWindow(window, newState);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Set the window to be in focus by index
-	*/
-	static inline bool FocusWindowByIndex( unsigned int windowIndex, bool newState )
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				Platform_FocusWindow(window, newState);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	 * Restore the window by name
-	 */
-	static inline bool RestoreWindowByName( const char* windowName )
-	{
-		if ( GetInstance()->IsInitialized() )
-		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_RestoreWindow(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-	/**
-	* Restore the window by index
-	*/
-	static inline bool RestoreWindowByIndex( unsigned int windowIndex )
-	{
-		if (GetInstance()->IsInitialized())
-		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				Platform_RestoreWindow(window);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
-		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
-	}
-
-	/**
-	* Initialize the window manager
-	*/
-	static inline bool Initialize( void )
-	{
-		GetInstance()->isInitialized = false;
 #if defined(TW_WINDOWS)
 		CreateTerminal(); //feel free to comment this out
 		RECT desktop;
@@ -1359,748 +213,1417 @@ public:
 		{
 			GetWindowRect(desktopHandle, &desktop);
 
-			instance->screenResolution.x = desktop.right;
-			instance->screenResolution.y = desktop.bottom;
-			instance->isInitialized = true;
-			return true;
+			screenResolution.x = desktop.right;
+			screenResolution.y = desktop.bottom;
+			return;
 		}
 
 		PrintErrorMessage(std::error_code(windowsCannotInitialize, errorCategory));
-		return false;
 #elif defined(TW_LINUX)
-		instance->currentDisplay = XOpenDisplay(0);
+		currentDisplay = XOpenDisplay(0);
 
-		if (!instance->currentDisplay)
+		if (!currentDisplay)
 		{
 			PrintErrorMessage(std::error_code(linuxCannotConnectXServer, errorCategory));
-			return false;
+			return;
 		}
 
-		instance->screenResolution.x = WidthOfScreen(
-			XScreenOfDisplay(instance->currentDisplay,
-			DefaultScreen(instance->currentDisplay)));
+		screenResolution.x = WidthOfScreen(
+			XScreenOfDisplay(currentDisplay,
+				DefaultScreen(currentDisplay)));
 
-		instance->screenResolution.y = HeightOfScreen(
-			XScreenOfDisplay(instance->currentDisplay,
-			DefaultScreen(instance->currentDisplay)));
+		screenResolution.y = HeightOfScreen(
+			XScreenOfDisplay(currentDisplay,
+				DefaultScreen(currentDisplay)));
 
-		instance->isInitialized = true;
+		isInitialized = true;
 		return true;
 #endif
 	}
 
 	/**
-	* Return whether the window manager has been initialized
-	*/
-	static inline bool IsInitialized( void )
+	 * Shutdown and delete all windows in the manager
+	 */
+	~windowManager( void )
 	{
-		return GetInstance()->isInitialized;
+		ShutDown();
 	}
 
 	/**
-	* Ask the window manager to poll for events
-	*/
-	static inline void PollForEvents( void )
+	 * Use this to shutdown the window manager when your program is finished
+	 */
+	 inline void ShutDown( void ) 
 	{
-		if ( GetInstance()->IsInitialized() )
-		{
-#if defined(TW_WINDOWS)
-			//only process events if there are any to process
-			if (PeekMessage(&instance->winMessage, 0, 0, 0, PM_REMOVE))
-			{
-				TranslateMessage(&instance->winMessage);
-				DispatchMessage(&instance->winMessage);
-			}
-#elif defined(TW_LINUX)
-			//if there are any events to process
-			if (XEventsQueued(instance->currentDisplay, QueuedAfterReading))
-			{
-				XNextEvent(instance->currentDisplay, &instance->currentEvent);
-				XEvent currentEvent = instance->currentEvent;
-
-				Linux_ProcessEvents(currentEvent);
-			}
+#if defined(__linux__)
+		Linux_Shutdown();
 #endif
-		}
-
-		else
-		{
-			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		}
+		windowList.clear();
 	}
 
 	/**
-	* Ask the window manager to wait for events
-	*/
-	static inline void WaitForEvents( void )
+	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
+	 */
+	inline windowManager* AddWindow( const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
 	{
-		if ( GetInstance()->IsInitialized() )
+		if ( windowName != nullptr )
 		{
-#if defined(TW_WINDOWS)
-			//process even if there aren't any to process
-			GetMessage(&instance->winMessage, 0, 0, 0);
-			TranslateMessage(&instance->winMessage);
-			DispatchMessage(&instance->winMessage);
-#elif defined(TW_LINUX)
-			//even if there aren't any events to process
-			XNextEvent(instance->currentDisplay, &instance->currentEvent);
+			std::unique_ptr<window_t> newWindow(new window_t);
+			newWindow->name = windowName;
+			newWindow->resolution.width = width;
+			newWindow->resolution.height = height;
+			newWindow->colorBits = colourBits;
+			newWindow->depthBits = depthBits;
+			newWindow->stencilBits = stencilBits;
+			newWindow->iD = GetNumWindows();
 
-			XEvent currentEvent = instance->currentEvent;
+			windowList.push_back( std::move(newWindow) );
+			Platform_InitializeWindow(windowList.back().get());
 
-			Linux_ProcessEvents(currentEvent);
-#endif
+			return this;
 		}
-
-		else
-		{
-			PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		}
+		PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
+		return nullptr;
 	}
 
 	/**
-	* Remove window from the manager by name
-	*/
-	static inline bool RemoveWindowByName( const char* windowName ) 
+	 * Return the total amount of windows the manager has. returns -1 if failed
+	 */
+	inline int GetNumWindows( void )
 	{
-		if ( GetInstance()->IsInitialized() )
+		return windowList.size();
+	}
+
+	/**
+	* Return the mouse position in screen co-ordinates
+	*/
+	inline TinyWindow::uiVec2 GetMousePositionInScreen( void )
+	{
+		return screenMousePosition;
+	}
+
+	/**
+	 * Set the position of the mouse cursor relative to screen co-ordinates
+	 */
+	inline void SetMousePositionInScreen( TinyWindow::uiVec2 mousePosition )
+	{
+		screenMousePosition.x = mousePosition.x;
+		screenMousePosition.y = mousePosition.y;
+
+		Platform_SetMousePositionInScreen();
+	}
+	/**
+	* Set the position of the mouse cursor relative to screen co-ordinates
+	*/
+	inline void SetMousePositionInScreen(unsigned int x, unsigned int y)
+	{
+		screenMousePosition.x = x;
+		screenMousePosition.y = y;
+
+		Platform_SetMousePositionInScreen();
+	}
+
+	/**
+	* Return the Resolution of the current screen
+	*/
+	inline TinyWindow::uiVec2 GetScreenResolution( void )
+	{
+		uiVec2 resolution;
+		Platform_GetScreenResolution(resolution);
+		return resolution;
+	}
+
+	/**
+	 * Return the Resolution of the given Window as an array of doubles
+	 */
+	inline TinyWindow::uiVec2 GetWindowResolutionByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+
+		if (window != nullptr)
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			return window->resolution;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return TinyWindow::uiVec2::Zero();
+	}
+	/**
+	 * Return the Resolution of the Given Window as an array of doubles
+	 */
+	inline TinyWindow::uiVec2 GetWindowResolutionByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
+		{
+			return window->resolution;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return TinyWindow::uiVec2::Zero();
+	}
+
+	/**
+	 * Set the Size/Resolution of the given window
+	 */
+	inline bool SetWindowResolutionByName( const char* windowName, TinyWindow::uiVec2 resolution )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			window->resolution.width = resolution.width;
+			window->resolution.height = resolution.height;
+
+			Platform_SetWindowResolution(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Set the Size/Resolution of the given window
+	 */
+	inline bool SetWindowResolutionByIndex( unsigned int windowIndex, TinyWindow::uiVec2 resolution )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			window->resolution.width = resolution.width;
+			window->resolution.height = resolution.height;
+
+			Platform_SetWindowResolution(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/** 
+	 * Set the Size/Resolution of the given window
+	 */
+	inline bool SetWindowResolutionByName(const char* windowName, unsigned int width, unsigned int height)
+	{
+		window_t* window = GetWindowByName(windowName);
+		if (window != nullptr)
+		{
+			window->resolution.x = width;
+			window->resolution.y = height;
+
+			Platform_SetWindowResolution(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Set the Size/Resolution of the given window
+	*/
+	inline bool SetWindowResolutionByIndex(unsigned int windowIndex, unsigned int width, unsigned int height)
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
+		{
+			window->resolution.x = width;
+			window->resolution.y = height;
+				
+
+			Platform_SetWindowResolution(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Return the Position of the given window relative to screen co-ordinates as an array
+	 */
+	inline TinyWindow::uiVec2 GetWindowPositionByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return window->position;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return TinyWindow::uiVec2::Zero();
+	}
+	/**
+	 * Return the Position of the given window relative to screen co-ordinates as an array
+	 */
+	inline TinyWindow::uiVec2 GetWindowPositionByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return GetWindowByIndex( windowIndex )->position;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return TinyWindow::uiVec2::Zero();
+	}
+
+	/**
+	 * Set the Position of the given window relative to screen co-ordinates
+	 */
+	inline bool SetWindowPositionByName( const char* windowName, TinyWindow::uiVec2 windowPosition )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			window->position.x = windowPosition.x;
+			window->position.y = windowPosition.y;
+
+			Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Set the position of the given window relative to screen co-ordinates
+	 */
+	inline bool SetWindowPositionByIndex( unsigned int windowIndex, TinyWindow::uiVec2 windowPosition )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			window->position.x = windowPosition.x;
+			window->position.y = windowPosition.y;
+			Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
+			return true;
+		}
+
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Set the Position of the given window relative to screen co-ordinates
+	*/
+	inline bool SetWindowPositionByName(const char* windowName, unsigned int x, unsigned int y)
+	{
+		window_t* window = GetWindowByName(windowName);
+		if (window != nullptr)
+		{
+			window->position.x = x;
+			window->position.y = y;
+
+			Platform_SetWindowPosition(window, x, y);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Set the position of the given window relative to screen co-ordinates
+	*/
+	inline bool SetWindowPositionByIndex(unsigned int windowIndex, unsigned int x, unsigned int y)
+	{
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
 			{
-				ShutdownWindow(window);
+				window->position.x = x;
+				window->position.y = y;
+
+				Platform_SetWindowPosition(window, x, y);
+				return true;
+			}
+
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			return false;
+	}
+
+	/**
+	 * Return the mouse Position relative to the given window's co-ordinates as an array
+	 */
+	inline TinyWindow::uiVec2 GetMousePositionInWindowByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return window->mousePosition;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return TinyWindow::uiVec2::Zero();
+	}
+	/**
+	 * Return the mouse Position relative to the given window's co-ordinates as an array
+	 */
+	inline TinyWindow::uiVec2 GetMousePositionInWindowByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return window->mousePosition;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return TinyWindow::uiVec2::Zero();
+	}
+
+	/**
+	 * Set the mouse Position of the given window's co-ordinates
+	 */
+	inline bool SetMousePositionInWindowByName( const char* windowName, TinyWindow::uiVec2 mousePosition )
+{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			window->mousePosition.x = mousePosition.x;
+			window->mousePosition.y = mousePosition.y;
+
+			Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Set the mouse Position of the given window's co-ordinates
+	 */
+	inline bool SetMousePositionInWindowByIndex( unsigned int windowIndex, TinyWindow::uiVec2 mousePosition )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			window->mousePosition.x = mousePosition.x;
+			window->mousePosition.y = mousePosition.y;
+
+			Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Set the mouse Position of the given window's co-ordinates
+	*/
+	inline bool SetMousePositionInWindowByIndex(unsigned int windowIndex, unsigned int x, unsigned int y)
+	{
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
+			{
+				window->mousePosition.x = x;
+				window->mousePosition.y = y;
+
+				Platform_SetMousePositionInWindow(window, x, y);
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
+	}
+	/**
+	* Set the mouse Position of the given window's co-ordinates
+	*/
+	inline bool SetMousePositionInWindowByName(const char* windowName, unsigned int x, unsigned int y)
+	{
+		window_t* window = GetWindowByName(windowName);
+		if (window != nullptr)
+		{
+			window->mousePosition.x = x;
+			window->mousePosition.y = y;
+
+			Platform_SetMousePositionInWindow(window, x, y);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Returns the current state of the given key relative to the given window
+	 */
+	inline keyState_t WindowGetKeyByName( const char* windowName, unsigned int key )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return window->keys[ key ];
+		}
+
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return keyState_t::bad;
+	}
+	/**
+	 * Returns the current state of the given key relative to the given window
+	 */
+	inline keyState_t WindowGetKeyByIndex(unsigned int windowIndex, unsigned int key)
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return window->keys[ key ];
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return keyState_t::bad;
+	}
+
+	/**
+	 * Return whether the given window should be closing
+	 */
+	inline bool GetWindowShouldCloseByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if (window != nullptr)
+		{
+			return window->shouldClose;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Return whether the given window should be closing
+	 */
+	inline bool GetWindowShouldCloseByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return window->shouldClose;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Swap the draw buffers of the given window
+	 */
+	inline bool WindowSwapBuffersByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			Platform_SwapBuffers(window);
+			return true;
 		}
 		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
 		return false;
 	}
 	/**
-	* Remove window from the manager by index
-	*/
-	static inline bool RemoveWindowByIndex( unsigned int windowIndex )
+	 * Swap the draw buffers of the given window
+	 */
+	inline bool WindowSwapBuffersByIndex( unsigned int windowIndex )
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			Platform_SwapBuffers(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Make the given window be the current OpenGL Context to be drawn to
+	 */
+	inline bool MakeWindowCurrentContextByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			Platform_MakeCurrentContext(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Make the given window be the current OpenGL Context to be drawn to
+	 */
+	inline bool MakeWindowCurrentContextByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
+		{
+			Platform_MakeCurrentContext(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Return whether the given window is in full screen mode
+	 */
+	inline bool GetWindowIsFullScreenByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return (window->currentState == state_t::fullscreen);
+		}
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return false;
+	}
+	/**
+	 * Return whether the given window is in full screen mode
+	 */
+	inline bool GetWindowIsFullScreenByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return (window->currentState == state_t::fullscreen);
+		}
+
+		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		return false;
+	}	
+
+	/**
+	 * Toggle the given window's full screen mode
+	 */
+	inline bool SetFullScreenByName( const char* windowName, bool newState )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
+
+			Platform_SetFullScreen(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/*
+	 * Toggle the given window's full screen mode
+	 */
+	inline bool SetFullScreenByIndex( unsigned int windowIndex, bool newState )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
+			Platform_SetFullScreen(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Returns whether the given window is minimized
+	 */
+	inline bool GetWindowIsMinimizedByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return (window->currentState == state_t::minimized);
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Returns whether the given window is minimized
+	 */
+	inline bool GetWindowIsMinimizedByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return (window->currentState == state_t::minimized);
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Toggle the minimization state of the given window
+	 */
+	inline bool MinimizeWindowByName( const char* windowName, bool newState )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			Platform_MinimizeWindow(window, newState);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Toggle the minimization state of the window
+	 */
+	inline bool MinimizeWindowByIndex( unsigned int windowIndex, bool newState )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			Platform_MinimizeWindow(window, newState);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Return whether the current window is currently maximized
+	 */
+	inline bool GetWindowIsMaximizedByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return (window->currentState == state_t::maximized);
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Return whether the given window is currently maximized
+	 */
+	inline bool GetWindowIsMaximizedByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return (window->currentState == state_t::maximized);
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	
+	/**
+	 * Toggle the maximization state of the current window
+	 */
+	inline bool MaximizeWindowByName( const char* windowName, bool newState )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			Platform_MaximizeWindow(window, newState);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	 * Toggle the maximization state of the current window
+	 */
+	inline bool MaximizeWindowByIndex( unsigned int windowIndex, bool newState )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
+		{
+			Platform_MaximizeWindow(window, newState);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Get window name by index
+	 */
+	inline const char* GetWindowNameByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return window->name;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return nullptr;
+	}	
+	/**
+	* Get window index by name
+	*/
+	inline unsigned int GetWindowIndexByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return window->iD;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Set the window title bar	by name
+	 */
+	inline bool SetWindowTitleBarByName( const char* windowName, const char* newTitle )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if (newTitle != nullptr)
+		{
+			if (window != nullptr)
 			{
-				ShutdownWindow( window );
+				Platform_SetWindowTitleBar(window, newTitle);
 				return true;
 			}
 			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(invalidTitlebar, errorCategory));
+		return false;
+	}
+	/**
+	* Set the window title bar by index
+	*/
+	inline bool SetWindowTitleBarByIndex( unsigned int windowIndex, const char* newName )
+	{
+		if (newName != nullptr)
+		{
+			window_t* window = GetWindowByIndex(windowIndex);
+			if (window != nullptr)
+			{
+				Platform_SetWindowTitleBar(window, newName);
+				return true;
+			}
+			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			return false;
+		}
+		PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
+		return false;
+	}
+
+	/**
+	* Set the window icon by name (currently not functional)
+	*/
+	inline bool SetWindowIconByName( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
+	{
+		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
+		return false;
+	}
+	/**
+	* Set the window icon by index (currently not functional)
+	*/
+	inline bool SetWindowIconByIndex( void )//unsigned int windowIndex, const char* icon, unsigned int width, unsigned int height )
+	{
+		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
+		return false;
+	}
+
+	/**
+	* Get whether the window is in focus by name
+	*/
+	inline bool GetWindowIsInFocusByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			return window->inFocus;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Get whether the window is in focus by index
+	*/
+	inline bool GetWindowIsInFocusByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			return window->inFocus;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	* Set the window to be in focus by name
+	*/
+	inline bool FocusWindowByName( const char* windowName, bool newState )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			Platform_FocusWindow(window, newState);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Set the window to be in focus by index
+	*/
+	inline bool FocusWindowByIndex( unsigned int windowIndex, bool newState )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
+		{
+			Platform_FocusWindow(window, newState);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	 * Restore the window by name
+	 */
+	inline bool RestoreWindowByName( const char* windowName )
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			Platform_RestoreWindow(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Restore the window by index
+	*/
+	inline bool RestoreWindowByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
+		{
+			Platform_RestoreWindow(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+
+	/**
+	* Ask the window manager to poll for events
+	*/
+	inline void PollForEvents( void )
+	{
+#if defined(TW_WINDOWS)
+		//only process events if there are any to process
+		if (PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&winMessage);
+			DispatchMessage(&winMessage);
+		}
+#elif defined(TW_LINUX)
+		//if there are any events to process
+		if (XEventsQueued(currentDisplay, QueuedAfterReading))
+		{
+			XNextEvent(currentDisplay, &currentEvent);
+			XEvent currentEvent = currentEvent;
+
+			Linux_ProcessEvents(currentEvent);
+		}
+#endif
+	}
+
+	/**
+	* Ask the window manager to wait for events
+	*/
+	inline void WaitForEvents( void )
+	{
+#if defined(TW_WINDOWS)
+		//process even if there aren't any to process
+		GetMessage(&winMessage, 0, 0, 0);
+		TranslateMessage(&winMessage);
+		DispatchMessage(&winMessage);
+#elif defined(TW_LINUX)
+		//even if there aren't any events to process
+		XNextEvent(currentDisplay, &currentEvent);
+
+		XEvent currentEvent = currentEvent;
+
+		Linux_ProcessEvents(currentEvent);
+#endif
+	}
+
+	/**
+	* Remove window from the manager by name
+	*/
+	inline bool RemoveWindowByName( const char* windowName ) 
+	{
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
+		{
+			ShutdownWindow(window);
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+		return false;
+	}
+	/**
+	* Remove window from the manager by index
+	*/
+	inline bool RemoveWindowByIndex( unsigned int windowIndex )
+	{
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
+		{
+			ShutdownWindow( window );
+			return true;
+		}
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window style preset by name
 	*/
-	static inline bool SetWindowStyleByName( const char* windowName, style_t windowStyle )
+	inline bool SetWindowStyleByName( const char* windowName, style_t windowStyle )
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_SetWindowStyle(window, windowStyle);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
+			Platform_SetWindowStyle(window, windowStyle);
+			return true;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window style preset by index
 	*/
-	static inline bool SetWindowStyleByIndex( unsigned int windowIndex, style_t windowStyle )
+	inline bool SetWindowStyleByIndex( unsigned int windowIndex, style_t windowStyle )
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window )
-			{
-				Platform_SetWindowStyle(window, windowStyle);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
+			Platform_SetWindowStyle(window, windowStyle);
+			return true;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Enable window decorators by name
 	*/
-	static inline bool EnableWindowDecoratorsByName( const char* windowName, unsigned int decorators )
+	inline bool EnableWindowDecoratorsByName( const char* windowName, unsigned int decorators )
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_EnableWindowDecorators(window, decorators);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
+			Platform_EnableWindowDecorators(window, decorators);
+			return true;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Enable windows decorators by index
 	*/
-	static inline bool EnableWindowDecoratorsByIndex( unsigned int windowIndex, unsigned int decorators )
+	inline bool EnableWindowDecoratorsByIndex( unsigned int windowIndex, unsigned int decorators )
 	{
-		if (GetInstance()->IsInitialized())
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
-			{
-				Platform_EnableWindowDecorators(window, decorators);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
+			Platform_EnableWindowDecorators(window, decorators);
+			return true;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Disable windows decorators by name
 	*/
-	static inline bool DisableWindowDecoratorByName( const char* windowName, unsigned int decorators )
+	inline bool DisableWindowDecoratorByName( const char* windowName, unsigned int decorators )
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
-			{
-				Platform_DisableWindowDecorators(window, decorators);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
+			Platform_DisableWindowDecorators(window, decorators);
+			return true;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Disable windows decorators by index
 	*/
-	static inline bool DisableWindowDecoratorByIndex( unsigned int windowIndex, unsigned int decorators )
+	inline bool DisableWindowDecoratorByIndex( unsigned int windowIndex, unsigned int decorators )
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
-			{
-				Platform_DisableWindowDecorators(window, decorators);
-				return true;
-			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
-			return false;
+			Platform_DisableWindowDecorators(window, decorators);
+			return true;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on key event callback by name
 	*/
-	static inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, keyState_t)> onKey)
+	inline bool SetWindowOnKeyEventByName(const char* windowName, std::function<void(unsigned int, keyState_t)> onKey)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onKey != nullptr)
 			{
-				if (onKey != nullptr)
-				{
-					window->keyEvent = onKey;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->keyEvent = onKey;
+				return true;
 			}
-
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on key event callback by index
 	*/
-	static inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, keyState_t)> onKey)
+	inline bool SetWindowOnKeyEventByIndex(unsigned int windowIndex, std::function<void(unsigned int, keyState_t)> onKey)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onKey != nullptr)
 			{
-				if (onKey != nullptr)
-				{
-					window->keyEvent = onKey;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->keyEvent = onKey;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on mouse button event callback by name
 	*/
-	static inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(mouseButton_t, buttonState_t)> onMouseButton)
+	inline bool SetWindowOnMouseButtonEventByName(const char* windowName, std::function<void(mouseButton_t, buttonState_t)> onMouseButton)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onMouseButton != nullptr)
 			{
-				if (onMouseButton != nullptr)
-				{
-					window->mouseButtonEvent = onMouseButton;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->mouseButtonEvent = onMouseButton;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on mouse button event callback by index
 	*/
-	static inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(mouseButton_t, buttonState_t)> onMouseButton)
+	inline bool SetWindowOnMouseButtonEventByIndex(unsigned int windowIndex, std::function<void(mouseButton_t, buttonState_t)> onMouseButton)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onMouseButton != nullptr)
 			{
-				if (onMouseButton != nullptr)
-				{
-					window->mouseButtonEvent = onMouseButton;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->mouseButtonEvent = onMouseButton;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on mouse wheel event callback by name
 	*/
-	static inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(mouseScroll_t)> onMouseWheel)
+	inline bool SetWindowOnMouseWheelEventByName(const char* windowName, std::function<void(mouseScroll_t)> onMouseWheel)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onMouseWheel != nullptr)
 			{
-				if (onMouseWheel != nullptr)
-				{
-					window->mouseWheelEvent = onMouseWheel;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->mouseWheelEvent = onMouseWheel;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on mouse wheel event callback by index
 	*/
-	static inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(mouseScroll_t)> onMouseWheel)
+	inline bool SetWindowOnMouseWheelEventByIndex(unsigned int windowIndex, std::function<void(mouseScroll_t)> onMouseWheel)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onMouseWheel != nullptr)
 			{
-				if (onMouseWheel != nullptr)
-				{
-					window->mouseWheelEvent = onMouseWheel;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->mouseWheelEvent = onMouseWheel;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on destroyed event callback by name
 	*/
-	static inline bool SetWindowOnDestroyedByName(const char* windowName, std::function<void(void)> onDestroyed)
+	inline bool SetWindowOnDestroyedByName(const char* windowName, std::function<void(void)> onDestroyed)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onDestroyed != nullptr)
 			{
-				if (onDestroyed != nullptr)
-				{
-					window->destroyedEvent = onDestroyed;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->destroyedEvent = onDestroyed;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on destroyed event callback by index
 	*/
-	static inline bool SetWindowOnDestroyedByIndex(unsigned int windowIndex, std::function<void(void)> onDestroyed)
+	inline bool SetWindowOnDestroyedByIndex(unsigned int windowIndex, std::function<void(void)> onDestroyed)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if (window != nullptr)
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if (window != nullptr)
+			if (onDestroyed != nullptr)
 			{
-				if (onDestroyed != nullptr)
-				{
-					window->destroyedEvent = onDestroyed;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->destroyedEvent = onDestroyed;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on maximized event callback by name
 	*/
-	static inline bool SetWindowOnMaximizedByName(const char* windowName, std::function<void(void)> onMaximized)
+	inline bool SetWindowOnMaximizedByName(const char* windowName, std::function<void(void)> onMaximized)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onMaximized != nullptr)
 			{
-				if (onMaximized != nullptr)
-				{
-					window->maximizedEvent = onMaximized;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->maximizedEvent = onMaximized;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on maximized event callback by index
 	*/
-	static inline bool SetWindowOnMaximizedByIndex(unsigned int windowIndex, std::function<void(void)> onMaximized)
+	inline bool SetWindowOnMaximizedByIndex(unsigned int windowIndex, std::function<void(void)> onMaximized)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onMaximized != nullptr)
 			{
-				if (onMaximized != nullptr)
-				{
-					window->maximizedEvent = onMaximized;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->maximizedEvent = onMaximized;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on minimized event callback by name
 	*/
-	static inline bool SetWindowOnMinimizedByName(const char* windowName, std::function<void(void)> onMinimized)
+	inline bool SetWindowOnMinimizedByName(const char* windowName, std::function<void(void)> onMinimized)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onMinimized != nullptr)
 			{
-				if (onMinimized != nullptr)
-				{
-					window->minimizedEvent = onMinimized;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->minimizedEvent = onMinimized;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on minimized event callback by index
 	*/
-	static inline bool SetWindowOnMinimizedByIndex(unsigned int windowIndex, std::function<void(void)> onMinimized)
+	inline bool SetWindowOnMinimizedByIndex(unsigned int windowIndex, std::function<void(void)> onMinimized)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onMinimized != nullptr)
 			{
-				if (onMinimized != nullptr)
-				{
-					window->minimizedEvent = onMinimized;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->minimizedEvent = onMinimized;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on focus event callback by name
 	*/
-	static inline bool SetWindowOnFocusByName(const char* windowName, std::function<void(bool)> onFocus)
+	inline bool SetWindowOnFocusByName(const char* windowName, std::function<void(bool)> onFocus)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onFocus != nullptr)
 			{
-				if (onFocus != nullptr)
-				{
-					window->focusEvent = onFocus;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->focusEvent = onFocus;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on focus event callback by index
 	*/
-	static inline bool SetWindowOnFocusByIndex(unsigned int windowIndex, std::function<void(bool)> onFocus)
+	inline bool SetWindowOnFocusByIndex(unsigned int windowIndex, std::function<void(bool)> onFocus)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr)
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr)
+			if (onFocus != nullptr)
 			{
-				if (onFocus != nullptr)
-				{
-					window->focusEvent = onFocus;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->focusEvent = onFocus;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on moved event callback by name
 	*/
-	static inline bool SetWindowOnMovedByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onMoved)
+	inline bool SetWindowOnMovedByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onMoved)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onMoved != nullptr)
 			{
-				if (onMoved != nullptr)
-				{
-					window->movedEvent = onMoved;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->movedEvent = onMoved;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on moved event callback by index
 	*/
-	static inline bool SetWindowOnMovedByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onMoved)
+	inline bool SetWindowOnMovedByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onMoved)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onMoved != nullptr)
 			{
-				if (onMoved != nullptr)
-				{
-					GetWindowByIndex(windowIndex)->movedEvent = onMoved;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				GetWindowByIndex(windowIndex)->movedEvent = onMoved;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on resized event callback by name
 	*/
-	static inline bool SetWindowOnResizeByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onResize)
+	inline bool SetWindowOnResizeByName(const char* windowName, std::function<void(unsigned int, unsigned int)> onResize)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onResize != nullptr)
 			{
-				if (onResize != nullptr)
-				{
-					window->resizeEvent = onResize;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->resizeEvent = onResize;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on resized event callback by index
 	*/
-	static inline bool SetWindowOnResizeByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onResize)
+	inline bool SetWindowOnResizeByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int)> onResize)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onResize != nullptr)
 			{
-				if (onResize != nullptr)
-				{
-					window->resizeEvent = onResize;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->resizeEvent = onResize;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
 	/**
 	* Set the window on mouse move event callback by name
 	*/
-	static inline bool SetWindowOnMouseMoveByName(const char* windowName, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
+	inline bool SetWindowOnMouseMoveByName(const char* windowName, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByName(windowName);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByName(windowName);
-			if ( window != nullptr )
+			if (onMouseMove != nullptr)
 			{
-				if (onMouseMove != nullptr)
-				{
-					GetWindowByName(windowName)->mouseMoveEvent = onMouseMove;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				GetWindowByName(windowName)->mouseMoveEvent = onMouseMove;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 	/**
 	* Set the window on mouse move event callback by index
 	*/
-	static inline bool SetWindowOnMouseMoveByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
+	inline bool SetWindowOnMouseMoveByIndex(unsigned int windowIndex, std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> onMouseMove)
 	{
-		if ( GetInstance()->IsInitialized() )
+		window_t* window = GetWindowByIndex(windowIndex);
+		if ( window != nullptr )
 		{
-			window_t* window = GetWindowByIndex(windowIndex);
-			if ( window != nullptr )
+			if (onMouseMove != nullptr)
 			{
-				if (onMouseMove != nullptr)
-				{
-					window->mouseMoveEvent = onMouseMove;
-					return true;
-				}
-				PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
-				return false;
+				window->mouseMoveEvent = onMouseMove;
+				return true;
 			}
-			PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
+			PrintErrorMessage(std::error_code(invalidCallback, errorCategory));
 			return false;
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
+		PrintErrorMessage(std::error_code(windowNotFound, errorCategory));
 		return false;
 	}
 
@@ -2376,36 +1899,17 @@ private:
 	}
 
 	std::vector< std::unique_ptr<window_t> >				windowList;
-	//static std::unique_ptr<window_t>						nullWindow;
-	static windowManager*									instance;
 	static errorCategory_t									errorCategory;
 
 	TinyWindow::uiVec2										screenResolution;
 	TinyWindow::uiVec2										screenMousePosition;
 
-	bool													isInitialized;
-
-	static inline bool WindowExists( unsigned int windowIndex )
+	inline bool WindowExists( unsigned int windowIndex )
 	{
-		return ( windowIndex <= instance->windowList.size() - 1 );
+		return ( windowIndex <= windowList.size() - 1 );
 	}
 
-	//get a static reference to the window manager
-	static inline windowManager* GetInstance( void )
-	{
-		if ( windowManager::instance == nullptr )
-		{
-			windowManager::instance = new windowManager();
-			return windowManager::instance;
-		}
-
-		else
-		{
-			return windowManager::instance;
-		}
-	}
-
-	static inline void Platform_InitializeWindow( window_t* window )
+	inline void Platform_InitializeWindow( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		Windows_InitializeWindow(window);
@@ -2414,7 +1918,7 @@ private:
 #endif
 	}
 
-	static inline bool Platform_InitializeGL( window_t* window )
+	inline bool Platform_InitializeGL( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		window->deviceContextHandle = GetDC(window->windowHandle);
@@ -2435,20 +1939,20 @@ private:
 		if (!window->context)
 		{
 			window->context = glXCreateContext(
-				instance->currentDisplay,
+				currentDisplay,
 				window->visualInfo,
 				0,
 				true);
 
 			if (window->context)
 			{
-				glXMakeCurrent(instance->currentDisplay,
+				glXMakeCurrent(currentDisplay,
 					window->windowHandle,
 					window->context);
 
 				XWindowAttributes l_Attributes;
 
-				XGetWindowAttributes(instance->currentDisplay,
+				XGetWindowAttributes(currentDisplay,
 					window->windowHandle, &l_Attributes);
 				window->position.x = l_Attributes.x;
 				window->position.y = l_Attributes.y;
@@ -2469,20 +1973,20 @@ private:
 #endif
 	}
 
-	static inline void Platform_SetMousePositionInScreen()
+	inline void Platform_SetMousePositionInScreen()
 	{
 #if defined(TW_WINDOWS)
-		SetCursorPos(instance->screenMousePosition.y, instance->screenMousePosition.y);
+		SetCursorPos(screenMousePosition.y, screenMousePosition.y);
 #elif defined(TW_LINUX)
-		XWarpPointer(instance->currentDisplay, None,
-			XDefaultRootWindow(instance->currentDisplay), 0, 0,
-			instance->screenResolution.x,
-			instance->screenResolution.y,
-			instance->screenMousePosition.x, instance->screenMousePosition.y);
+		XWarpPointer(currentDisplay, None,
+			XDefaultRootWindow(currentDisplay), 0, 0,
+			screenResolution.x,
+			screenResolution.y,
+			screenMousePosition.x, screenMousePosition.y);
 #endif
 	}
 
-	static inline void Platform_GetScreenResolution(uiVec2 resolution)
+	inline void Platform_GetScreenResolution(uiVec2 resolution)
 	{
 #if defined(TW_WINDOWS)
 		RECT screen;
@@ -2491,15 +1995,15 @@ private:
 		resolution.width = screen.right;
 		resolution.height = screen.bottom;
 #elif defined(TW_LINUX)
-		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
-		resolution.height = HeightOfScreen(XDefaultScreenOfDisplay(instance->currentDisplay));
+		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+		resolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
 
-		instance->screenResolution.x = resolution.width;
-		instance->screenResolution.y = resolution.height;
+		screenResolution.x = resolution.width;
+		screenResolution.y = resolution.height;
 #endif
 	}
 
-	static inline void Platform_SetWindowResolution(window_t* window)
+	inline void Platform_SetWindowResolution(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP,
@@ -2507,12 +2011,12 @@ private:
 			window->resolution.x, window->resolution.y,
 			SWP_SHOWWINDOW | SWP_NOMOVE);
 #elif defined(TW_LINUX)
-		XResizeWindow(instance->currentDisplay,
+		XResizeWindow(currentDisplay,
 			window->windowHandle, window->resolution.x, window->resolution.y);
 #endif
 	}
 
-	static inline void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
+	inline void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
@@ -2525,12 +2029,12 @@ private:
 		windowChanges.y = y;
 
 		XConfigureWindow(
-			instance->currentDisplay,
+			currentDisplay,
 			window->windowHandle, CWX | CWY, &windowChanges);
 #endif
 	}
 
-	static inline void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
+	inline void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
 	{
 #if defined(TW_WINDOWS)
 		POINT mousePoint;
@@ -2548,27 +2052,27 @@ private:
 #endif
 	}
 
-	static inline void Platform_SwapBuffers(window_t* window)
+	inline void Platform_SwapBuffers(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SwapBuffers(window->deviceContextHandle);
 #elif defined(TW_LINUX)
-		glXSwapBuffers(instance->currentDisplay, window->windowHandle);
+		glXSwapBuffers(currentDisplay, window->windowHandle);
 #endif
 	}
 
-	static inline void Platform_MakeCurrentContext(window_t* window)
+	inline void Platform_MakeCurrentContext(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		wglMakeCurrent(window->deviceContextHandle,
 			window->glRenderingContextHandle);
 #elif defined(TW_LINUX)
-		glXMakeCurrent(instance->currentDisplay, window->windowHandle,
+		glXMakeCurrent(currentDisplay, window->windowHandle,
 			window->context);
 #endif
 	}
 
-	static inline void Platform_SetFullScreen(window_t* window)
+	inline void Platform_SetFullScreen(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
@@ -2581,19 +2085,19 @@ private:
 		memset(&currentEvent, 0, sizeof(currentEvent));
 
 		currentEvent.xany.type = ClientMessage;
-		currentEvent.xclient.message_type = instance->AtomState;
+		currentEvent.xclient.message_type = AtomState;
 		currentEvent.xclient.format = 32;
 		currentEvent.xclient.window = window->windowHandle;
 		currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
-		currentEvent.xclient.data.l[1] = instance->AtomFullScreen;
+		currentEvent.xclient.data.l[1] = AtomFullScreen;
 
-		XSendEvent(instance->currentDisplay,
-			XDefaultRootWindow(instance->currentDisplay),
+		XSendEvent(currentDisplay,
+			XDefaultRootWindow(currentDisplay),
 			0, SubstructureNotifyMask, &currentEvent);
 #endif
 	}
 
-	static inline void Platform_MinimizeWindow(window_t* window, bool newState)
+	inline void Platform_MinimizeWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -2602,7 +2106,7 @@ private:
 #if defined(TW_WINDOWS)
 			ShowWindow(window->windowHandle, SW_MINIMIZE);
 #elif defined(TW_LINUX)
-			XIconifyWindow(instance->currentDisplay,
+			XIconifyWindow(currentDisplay,
 				window->windowHandle, 0);
 #endif
 		}
@@ -2613,12 +2117,12 @@ private:
 #if defined(TW_WINDOWS)
 			ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(TW_LINUX)
-			XMapWindow(instance->currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, window->windowHandle);
 #endif
 		}
 	}
 
-	static inline void Platform_MaximizeWindow(window_t* window, bool newState)
+	inline void Platform_MaximizeWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
@@ -2630,15 +2134,15 @@ private:
 			memset(&currentEvent, 0, sizeof(currentEvent));
 
 			currentEvent.xany.type = ClientMessage;
-			currentEvent.xclient.message_type = instance->AtomState;
+			currentEvent.xclient.message_type = AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
 			currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
-			currentEvent.xclient.data.l[1] = instance->AtomMaxVert;
-			currentEvent.xclient.data.l[2] = instance->AtomMaxHorz;
+			currentEvent.xclient.data.l[1] = AtomMaxVert;
+			currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
-			XSendEvent(instance->currentDisplay,
-				XDefaultRootWindow(instance->currentDisplay),
+			XSendEvent(currentDisplay,
+				XDefaultRootWindow(currentDisplay),
 				0, SubstructureNotifyMask, &currentEvent);
 #endif
 		}
@@ -2653,37 +2157,37 @@ private:
 			memset(&currentEvent, 0, sizeof(currentEvent));
 
 			currentEvent.xany.type = ClientMessage;
-			currentEvent.xclient.message_type = instance->AtomState;
+			currentEvent.xclient.message_type = AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = window->windowHandle;
 			currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
-			currentEvent.xclient.data.l[1] = instance->AtomMaxVert;
-			currentEvent.xclient.data.l[2] = instance->AtomMaxHorz;
+			currentEvent.xclient.data.l[1] = AtomMaxVert;
+			currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
-			XSendEvent(instance->currentDisplay,
-				XDefaultRootWindow(instance->currentDisplay),
+			XSendEvent(currentDisplay,
+				XDefaultRootWindow(currentDisplay),
 				0, SubstructureNotifyMask, &currentEvent);
 #endif
 		}
 	}
 
-	static inline void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
+	inline void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
 	{
 #if defined(TW_WINDOWS)
 		SetWindowText(window->windowHandle, newTitle);
 #elif defined(TW_LINUX)
-		XStoreName(instance->currentDisplay, window->windowHandle, newTitle);
+		XStoreName(currentDisplay, window->windowHandle, newTitle);
 #endif
 	}
 
-	static inline void Platform_FocusWindow(window_t* window, bool newState)
+	inline void Platform_FocusWindow(window_t* window, bool newState)
 	{
 		if (newState)
 		{
 #if defined(TW_WINDOWS)
 			SetFocus(window->windowHandle);
 #elif defined(TW_LINUX)
-			XMapWindow(instance->currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, window->windowHandle);
 #endif
 		}
 
@@ -2692,21 +2196,21 @@ private:
 #if defined(_WIN32) || defined(_WIN64)
 			SetFocus(nullptr);
 #elif defined(TW_LINUX)
-			XUnmapWindow(instance->currentDisplay, window->windowHandle);
+			XUnmapWindow(currentDisplay, window->windowHandle);
 #endif
 		}
 	}
 
-	static inline void Platform_RestoreWindow(window_t* window)
+	inline void Platform_RestoreWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		ShowWindow(window->windowHandle, SW_RESTORE);
 #elif defined(TW_LINUX)
-		XMapWindow(instance->currentDisplay, window->windowHandle);
+		XMapWindow(currentDisplay, window->windowHandle);
 #endif
 	}
 
-	static inline void Platform_SetWindowStyle(window_t* window, style_t windowStyle)
+	inline void Platform_SetWindowStyle(window_t* window, style_t windowStyle)
 	{
 #if defined(TW_WINDOWS)
 		switch (windowStyle)
@@ -2747,10 +2251,10 @@ private:
 				linuxMaximize | linuxMinimize;
 			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
-			XChangeProperty(instance->currentDisplay, window->windowHandle, instance->AtomHints, XA_ATOM, 32, PropModeReplace,
+			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
 
-			XMapWindow(instance->currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, window->windowHandle);
 			break;
 		}
 
@@ -2760,10 +2264,10 @@ private:
 			window->currentWindowStyle = (1L << 2);
 			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
-			XChangeProperty(instance->currentDisplay, window->windowHandle, instance->AtomHints, XA_ATOM, 32, PropModeReplace,
+			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
 
-			XMapWindow(instance->currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, window->windowHandle);
 			break;
 		}
 
@@ -2773,10 +2277,10 @@ private:
 			window->currentWindowStyle = (1L << 2);
 			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
-			XChangeProperty(instance->currentDisplay, window->windowHandle, instance->AtomHints, XA_ATOM, 32, PropModeReplace,
+			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
 
-			XMapWindow(instance->currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, window->windowHandle);
 			break;
 		}
 
@@ -2789,7 +2293,7 @@ private:
 #endif
 	}
 
-	static inline void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
+	inline void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
 	{
 #if defined(TW_WINDOWS)
 		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
@@ -2873,14 +2377,14 @@ private:
 
 		long hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
-		XChangeProperty(instance->currentDisplay, window->windowHandle, instance->AtomHints, XA_ATOM, 32,
+		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
 
-		XMapWindow(instance->currentDisplay, window->windowHandle);
+		XMapWindow(currentDisplay, window->windowHandle);
 #endif
 	}
 
-	static inline void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
+	inline void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
 	{
 #if defined(TW_WINDOWS)
 		if (decorators & border)
@@ -3000,14 +2504,14 @@ private:
 
 		long hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
-		XChangeProperty(instance->currentDisplay, window->windowHandle, instance->AtomHints, XA_ATOM, 32,
+		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
 
-		XMapWindow(instance->currentDisplay, window->windowHandle);
+		XMapWindow(currentDisplay, window->windowHandle);
 #endif
 	}
 
-	static inline void ShutdownWindow( window_t* window )
+	inline void ShutdownWindow( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		if (window->glRenderingContextHandle)
@@ -3028,27 +2532,28 @@ private:
 		window->deviceContextHandle = nullptr;
 		window->windowHandle = nullptr;
 		window->glRenderingContextHandle = nullptr;
+		windowList.erase(windowList.begin() + window->iD);
 #elif defined(TW_LINUX)
 		if (window->currentState == state_t::fullscreen)
 		{
 			RestoreWindowByName(window->name);
 		}
 
-		glXDestroyContext(instance->currentDisplay, window->context);
-		XUnmapWindow(instance->currentDisplay, window->windowHandle);
-		XDestroyWindow(instance->currentDisplay, window->windowHandle);
+		glXDestroyContext(currentDisplay, window->context);
+		XUnmapWindow(currentDisplay, window->windowHandle);
+		XDestroyWindow(currentDisplay, window->windowHandle);
 		window->windowHandle = 0;
 		window->context = 0;
 #endif
 	}
 
-	static inline window_t* GetWindowByName( const char* windowName )
+	inline window_t* GetWindowByName( const char* windowName )
 	{
-			for( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
+			for( unsigned int iter = 0; iter < windowList.size(); iter++ )
 			{
-				if ( !strcmp( instance->windowList[iter]->name, windowName ) )
+				if ( !strcmp( windowList[iter]->name, windowName ) )
 				{
-					return instance->windowList[iter].get();
+					return windowList[iter].get();
 				}
 			}
 
@@ -3056,11 +2561,11 @@ private:
 	}
 
 	//return a static pointer to a window that corresponds to the given window index
-	static inline window_t* GetWindowByIndex( unsigned int windowIndex )
+	inline window_t* GetWindowByIndex( unsigned int windowIndex )
 	{
-		if ( windowIndex <= instance->windowList.size() - 1 )
+		if ( windowIndex <= windowList.size() - 1 )
 		{
-			return instance->windowList[windowIndex].get();
+			return windowList[windowIndex].get();
 		}
 		return nullptr;
 	}
@@ -3088,65 +2593,67 @@ private:
 	HDC		deviceContextHandle;
 
 	//the window procedure for all windows. This is used mainly to handle window events
-	LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam )
+	static LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam )
 	{
-		window_t* window = GetWindowByHandle( windowHandle );
-		switch ( winMessage )
+		windowManager* manager = (windowManager*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
+		window_t* window = nullptr;
+		if (manager != nullptr)
 		{
-		case WM_CREATE:
-		{
-			windowList.back()->windowHandle = windowHandle;
-			Platform_InitializeGL(windowList.back().get());
-			break;
+			window = manager->GetWindowByHandle(windowHandle);
 		}
-
-		case WM_DESTROY:
-		{
-			window->shouldClose = true;
-
-			if (window->destroyedEvent != nullptr )
+		
+			switch (winMessage)
 			{
-				window->destroyedEvent();
+			case WM_DESTROY:
+			{
+				if (manager != nullptr)
+				{
+					window->shouldClose = true;
+
+					if (window->destroyedEvent != nullptr)
+					{
+						window->destroyedEvent();
+					}
+
+					manager->ShutdownWindow(window);
+				}
+				break;
+			}
+			case WM_MOVE:
+			{
+				window->position.x = LOWORD(longParam);
+				window->position.y = HIWORD(longParam);
+
+				if (window->movedEvent != nullptr)
+				{
+					window->movedEvent(window->position.x, window->position.y);
+				}
+
+				break;
 			}
 
-			ShutdownWindow( window);
-			break;
-		}
-		case WM_MOVE:
-		{
-			window->position.x = LOWORD( longParam );
-			window->position.y = HIWORD( longParam );
-
-			if ( window->movedEvent != nullptr )
+			case WM_MOVING:
 			{
-				window->movedEvent( window->position.x, window->position.y );
+				window->position.x = LOWORD(longParam);
+				window->position.y = HIWORD(longParam);
+
+				if (window->movedEvent != nullptr)
+				{
+					window->movedEvent(window->position.x, window->position.y);
+				}
+				break;
 			}
 
-			break;
-		}
-
-		case WM_MOVING:
-		{
-			window->position.x = LOWORD( longParam );
-			window->position.y = HIWORD( longParam );
-
-			if ( window->movedEvent != nullptr )
+			case WM_SIZE:
 			{
-				window->movedEvent( window->position.x, window->position.y );
-			}
-			break;
-		}
+				window->resolution.width = (unsigned int)LOWORD(longParam);
+				window->resolution.height = (unsigned int)HIWORD(longParam);
 
-		case WM_SIZE:
-		{
-			window->resolution.width = ( unsigned int )LOWORD( longParam );
-			window->resolution.height = ( unsigned int )HIWORD( longParam );
-
-			switch ( wordParam )
-			{
+				switch (wordParam)
+				{
 				case SIZE_MAXIMIZED:
 				{
-					if ( window->maximizedEvent != nullptr )
+					if (window->maximizedEvent != nullptr)
 					{
 						window->maximizedEvent();
 					}
@@ -3156,7 +2663,7 @@ private:
 
 				case SIZE_MINIMIZED:
 				{
-					if ( window->minimizedEvent != nullptr )
+					if (window->minimizedEvent != nullptr)
 					{
 						window->minimizedEvent();
 					}
@@ -3165,353 +2672,345 @@ private:
 
 				default:
 				{
-					if ( window->resizeEvent != nullptr )
+					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent( window->resolution.width,
-							window->resolution.height );
+						window->resizeEvent(window->resolution.width,
+							window->resolution.height);
 					}
 					break;
 				}
-			}
-			break;
-		}
-
-		case WM_SIZING:
-		{
-			window->resolution.width = ( unsigned int )LOWORD( longParam );
-			window->resolution.height = ( unsigned int )HIWORD( longParam );
-
-			if ( window->resizeEvent != nullptr )
-			{
-				window->resizeEvent( window->resolution.width,
-					window->resolution.height );
-			}
-			break;
-		}
-
-		case WM_KEYDOWN:
-		{
-			unsigned int translatedKey = 0;
-
-			switch ( HIWORD( longParam ) )
-			{
-			case leftControlDown:
-			{
-				window->keys[ leftControl ] = keyState_t::down;
-				translatedKey = leftControl;
-				break;
-			}
-
-			case rightControlDown:
-			{
-				window->keys[ rightControl ] = keyState_t::down;
-				translatedKey = rightControl;
-				break;
-			}
-
-			case leftShiftDown:
-			{
-				window->keys[ leftShift ] = keyState_t::down;
-				translatedKey = leftShift;
-				break;
-			}
-
-			case rightShiftDown:
-			{
-				window->keys[ rightShift ] = keyState_t::down;
-				translatedKey = rightShift;
-				break;
-			}
-
-			default:
-			{
-				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = keyState_t::down;
-				break;
-			}
-			}
-
-			if ( window->keyEvent != nullptr )
-			{
-				window->keyEvent( translatedKey, keyState_t::down );
-			}
-			break;
-		}
-
-		case WM_KEYUP:
-		{
-			unsigned int translatedKey = 0;
-
-			switch ( HIWORD( longParam ) )
-			{
-			case leftControlUp:
-			{
-				window->keys[ leftControl ] = keyState_t::up;
-				translatedKey = leftControl;
-				break;
-			}
-
-			case rightControlUp:
-			{
-				window->keys[ rightControl ] = keyState_t::up;
-				translatedKey = rightControl;
-				break;
-			}
-
-			case leftShiftUp:
-			{
-				window->keys[ leftShift ] = keyState_t::up;
-				translatedKey = leftShift;
-				break;
-			}
-
-			case rightShiftUp:
-			{
-				window->keys[ rightShift ] = keyState_t::up;
-				translatedKey = rightShift;
-				break;
-			}
-
-			default:
-			{
-				translatedKey = Windows_TranslateKey( wordParam );
-				window->keys[ translatedKey ] = keyState_t::up;
-				break;
-			}
-			}
-
-			if (window->keyEvent != nullptr )
-			{
-				window->keyEvent( translatedKey, keyState_t::up );
-			}
-			break;
-		}
-
-		case WM_SYSKEYDOWN:
-		{
-			unsigned int translatedKey = 0;
-			switch ( HIWORD( longParam ) )
-			{
-			case leftAltDown:
-			{
-				window->keys[ leftAlt ] = keyState_t::down;
-				translatedKey = leftAlt;
-				break;
-			}
-
-
-			case rightAltDown:
-			{
-				window->keys[ rightAlt ] = keyState_t::down;
-				translatedKey = rightAlt;
-			}
-
-			default:
-			{
-				break;
-			}
-			}
-
-			if ( window->keyEvent != nullptr )
-			{
-				window->keyEvent( translatedKey, keyState_t::down );
-			}
-
-			break;
-		}
-
-		case WM_SYSKEYUP:
-		{
-			unsigned int translatedKey = 0;
-			switch ( HIWORD( longParam ) )
-			{
-			case leftAltUp:
-			{
-				window->keys[ leftAlt ] = keyState_t::up;
-				translatedKey = leftAlt;
-				break;
-			}
-
-
-			case rightAltUp:
-			{
-				window->keys[ rightAlt ] = keyState_t::up;
-				translatedKey = rightAlt;
-				break;
-			}
-
-			default:
-			{
-				break;
-			}
-			}
-
-			if ( window->keyEvent != nullptr )
-			{
-				window->keyEvent( translatedKey, keyState_t::up );
-			}
-			break;
-		}
-
-		//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
-		/*case WM_CHAR:
-		{
-			int keyDown = longParam & 0x31;
-			if (keyDown == 1)
-			{
-				window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
-			}
-
-			else if (keyDown == 0)
-			{
-				window->keys[wordParam] = tinyWindowKeyState_t::UP;
-			}
-
-			if (window->keyEvent != nullptr)
-			{
-				window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
-			}
-		}*/
-
-		case WM_MOUSEMOVE:
-		{
-			window->mousePosition.x = ( unsigned int )LOWORD( longParam );
-			window->mousePosition.y = ( unsigned int )HIWORD( longParam );
-
-			POINT point;
-			point.x = (LONG)window->mousePosition.x;
-			point.y = (LONG)window->mousePosition.y;
-
-			ClientToScreen( windowHandle, &point );
-
-			if ( window->mouseMoveEvent != nullptr )
-			{
-				window->mouseMoveEvent( window->mousePosition.x,
-					window->mousePosition.y, point.x, point.y );
-			}
-			break;
-		}
-
-		case WM_LBUTTONDOWN:
-		{
-			window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
-
-			if ( window->mouseButtonEvent != nullptr )
-			{
-				window->mouseButtonEvent( mouseButton_t::left, buttonState_t::down );
-			}
-			break;
-		}
-
-		case WM_LBUTTONUP:
-		{
-			window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
-
-			if ( window->mouseButtonEvent != nullptr )
-			{
-				window->mouseButtonEvent( mouseButton_t::left, buttonState_t::up );
-			}
-			break;
-		}
-
-		case WM_RBUTTONDOWN:
-		{
-			window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
-
-			if ( window->mouseButtonEvent != nullptr )
-			{
-				window->mouseButtonEvent( mouseButton_t::right, buttonState_t::down );
-			}
-			break;
-		}
-
-		case WM_RBUTTONUP:
-		{
-			window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
-
-			if ( window->mouseButtonEvent != nullptr )
-			{
-				window->mouseButtonEvent( mouseButton_t::right, buttonState_t::up );
-			}
-			break;
-		}
-
-		case WM_MBUTTONDOWN:
-		{
-			window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
-
-			if ( window->mouseButtonEvent != nullptr )
-			{
-				window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::down );
-			}
-			break;
-		}
-
-		case WM_MBUTTONUP:
-		{
-			window->mouseButton[ (unsigned int)mouseButton_t::middle ] = buttonState_t::up;
-
-			if ( window->mouseButtonEvent != nullptr )
-			{
-				window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::up );
-			}
-			break;
-		}
-
-		case WM_MOUSEWHEEL:
-		{
-			if ( ( wordParam % WHEEL_DELTA ) > 0 )
-			{
-				if ( window->mouseWheelEvent != nullptr )
-				{
-					window->mouseWheelEvent( mouseScroll_t::down );
 				}
+				break;
 			}
 
-			else
+			case WM_SIZING:
 			{
-				if ( window->mouseWheelEvent != nullptr )
+				window->resolution.width = (unsigned int)LOWORD(longParam);
+				window->resolution.height = (unsigned int)HIWORD(longParam);
+
+				if (window->resizeEvent != nullptr)
 				{
-					window->mouseWheelEvent( mouseScroll_t::up );
+					window->resizeEvent(window->resolution.width,
+						window->resolution.height);
+				}
+				break;
+			}
+
+			case WM_KEYDOWN:
+			{
+				unsigned int translatedKey = 0;
+
+				switch (HIWORD(longParam))
+				{
+				case leftControlDown:
+				{
+					window->keys[leftControl] = keyState_t::down;
+					translatedKey = leftControl;
+					break;
 				}
 
+				case rightControlDown:
+				{
+					window->keys[rightControl] = keyState_t::down;
+					translatedKey = rightControl;
+					break;
+				}
+
+				case leftShiftDown:
+				{
+					window->keys[leftShift] = keyState_t::down;
+					translatedKey = leftShift;
+					break;
+				}
+
+				case rightShiftDown:
+				{
+					window->keys[rightShift] = keyState_t::down;
+					translatedKey = rightShift;
+					break;
+				}
+
+				default:
+				{
+					translatedKey = Windows_TranslateKey(wordParam);
+					window->keys[translatedKey] = keyState_t::down;
+					break;
+				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::down);
+				}
+				break;
 			}
-			break;
-		}
+
+			case WM_KEYUP:
+			{
+				unsigned int translatedKey = 0;
+
+				switch (HIWORD(longParam))
+				{
+				case leftControlUp:
+				{
+					window->keys[leftControl] = keyState_t::up;
+					translatedKey = leftControl;
+					break;
+				}
+
+				case rightControlUp:
+				{
+					window->keys[rightControl] = keyState_t::up;
+					translatedKey = rightControl;
+					break;
+				}
+
+				case leftShiftUp:
+				{
+					window->keys[leftShift] = keyState_t::up;
+					translatedKey = leftShift;
+					break;
+				}
+
+				case rightShiftUp:
+				{
+					window->keys[rightShift] = keyState_t::up;
+					translatedKey = rightShift;
+					break;
+				}
+
+				default:
+				{
+					translatedKey = Windows_TranslateKey(wordParam);
+					window->keys[translatedKey] = keyState_t::up;
+					break;
+				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::up);
+				}
+				break;
+			}
+
+			case WM_SYSKEYDOWN:
+			{
+				unsigned int translatedKey = 0;
+				switch (HIWORD(longParam))
+				{
+				case leftAltDown:
+				{
+					window->keys[leftAlt] = keyState_t::down;
+					translatedKey = leftAlt;
+					break;
+				}
 
 
+				case rightAltDown:
+				{
+					window->keys[rightAlt] = keyState_t::down;
+					translatedKey = rightAlt;
+				}
 
-		default:
-		{
-			//instance->windowList[getWindow]
-			return DefWindowProc( windowHandle, winMessage, wordParam, longParam );
-		}
-		}
-		return 0;
+				default:
+				{
+					break;
+				}
+				}
 
-	}
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::down);
+				}
 
-	//this returns a static reference to the win32 window procedure. Oddly a Win32 procedure cannot be a member variable
-	static LRESULT CALLBACK StaticWindowProcedure( HWND windowHandle, UINT message, WPARAM wordParam, LPARAM longParam )
-	{
-		return instance->WindowProcedure( windowHandle, message, wordParam, longParam );
+				break;
+			}
+
+			case WM_SYSKEYUP:
+			{
+				unsigned int translatedKey = 0;
+				switch (HIWORD(longParam))
+				{
+				case leftAltUp:
+				{
+					window->keys[leftAlt] = keyState_t::up;
+					translatedKey = leftAlt;
+					break;
+				}
+
+
+				case rightAltUp:
+				{
+					window->keys[rightAlt] = keyState_t::up;
+					translatedKey = rightAlt;
+					break;
+				}
+
+				default:
+				{
+					break;
+				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::up);
+				}
+				break;
+			}
+
+			//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
+			/*case WM_CHAR:
+			{
+				int keyDown = longParam & 0x31;
+				if (keyDown == 1)
+				{
+					window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
+				}
+
+				else if (keyDown == 0)
+				{
+					window->keys[wordParam] = tinyWindowKeyState_t::UP;
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
+				}
+			}*/
+
+			case WM_MOUSEMOVE:
+			{
+				window->mousePosition.x = (unsigned int)LOWORD(longParam);
+				window->mousePosition.y = (unsigned int)HIWORD(longParam);
+
+				POINT point;
+				point.x = (LONG)window->mousePosition.x;
+				point.y = (LONG)window->mousePosition.y;
+
+				ClientToScreen(windowHandle, &point);
+
+				if (window->mouseMoveEvent != nullptr)
+				{
+					window->mouseMoveEvent(window->mousePosition.x,
+						window->mousePosition.y, point.x, point.y);
+				}
+				break;
+			}
+
+			case WM_LBUTTONDOWN:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
+				}
+				break;
+			}
+
+			case WM_LBUTTONUP:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
+				}
+				break;
+			}
+
+			case WM_RBUTTONDOWN:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
+				}
+				break;
+			}
+
+			case WM_RBUTTONUP:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
+				}
+				break;
+			}
+
+			case WM_MBUTTONDOWN:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
+				}
+				break;
+			}
+
+			case WM_MBUTTONUP:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::up;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+				}
+				break;
+			}
+
+			case WM_MOUSEWHEEL:
+			{
+				if ((wordParam % WHEEL_DELTA) > 0)
+				{
+					if (window->mouseWheelEvent != nullptr)
+					{
+						window->mouseWheelEvent(mouseScroll_t::down);
+					}
+				}
+
+				else
+				{
+					if (window->mouseWheelEvent != nullptr)
+					{
+						window->mouseWheelEvent(mouseScroll_t::up);
+					}
+
+				}
+				break;
+			}
+
+			default:
+			{
+				//windowList[getWindow]
+				return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
+			}
+			}
+			return 0;
+
 	}
 
 	//get the window that is associated with this Win32 window handle
-	static inline window_t* GetWindowByHandle( HWND windowHandle )
+	inline window_t* GetWindowByHandle( HWND windowHandle )
 	{
-		for ( unsigned int iter = 0; iter < instance->windowList.size(); iter++ )
+		for ( unsigned int iter = 0; iter < windowList.size(); iter++ )
 		{
-			if ( instance->windowList[iter]->windowHandle == windowHandle )
+			if ( windowList[iter]->windowHandle == windowHandle )
 			{
-				return instance->windowList[iter].get();
+				return windowList[iter].get();
 			}
 		}
 		return nullptr;
 	}
 
 	//initialize the given window using Win32
-	static inline void Windows_InitializeWindow( window_t* window,
+	inline void Windows_InitializeWindow( window_t* window,
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int clearScreenExtra = 0,
 		int windowExtra = 0,
@@ -3522,7 +3021,7 @@ private:
 	{
 		window->instanceHandle = winInstance;
 		window->windowClass.style = style;
-		window->windowClass.lpfnWndProc = windowManager::StaticWindowProcedure;
+		window->windowClass.lpfnWndProc = windowManager::WindowProcedure;
 		window->windowClass.cbClsExtra = clearScreenExtra;
 		window->windowClass.cbWndExtra = windowExtra;
 		window->windowClass.hInstance = window->instanceHandle;
@@ -3539,12 +3038,16 @@ private:
 			window->resolution.height,
 			0, 0, 0, 0 );
 
+		SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (long)this);
+
+		Platform_InitializeGL(window);
+
 		ShowWindow( window->windowHandle, true );
 		UpdateWindow( window->windowHandle );
 	}
 
 	//initialize the pixel format for the selected window
-	static inline void InitializePixelFormat( window_t* window )
+	inline void InitializePixelFormat( window_t* window )
 	{
 		window->pixelFormatDescriptor = {
 			sizeof( PIXELFORMATDESCRIPTOR ), /* size */
@@ -3580,12 +3083,12 @@ private:
 		return;
 	}
 	
-	static inline void Windows_Shutown( void )
+	inline void Windows_Shutown( void )
 	{
 
 	}
 
-	static inline void CreateTerminal( void )
+	inline void CreateTerminal( void )
 	{
 		int conHandle;
 		long stdHandle;
@@ -3868,8 +3371,7 @@ private:
 
 	Display*			currentDisplay;
 	XEvent				currentEvent;
-	/* these atoms are needed to change window states via the extended window manager
-		I might move them to window manager considering these are essentially constants	*/
+	/* these atoms are needed to change window states via the extended window manager*/
 	Atom						AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
 	Atom						AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
 	Atom						AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
@@ -3905,9 +3407,9 @@ private:
 	{
 		for(unsigned int iter = 0; iter < GetInstance()->windowList.size(); iter++ )
 		{
-			if ( instance->windowList[iter]->windowHandle == windowHandle )
+			if ( windowList[iter]->windowHandle == windowHandle )
 			{
-				return instance->windowList[iter].get();
+				return windowList[iter].get();
 			}
 		}
 		return nullptr;
@@ -4006,33 +3508,33 @@ private:
 
 	static void InitializeAtoms( )
 	{
-		instance->AtomState = XInternAtom(instance->currentDisplay, "_NET_WM_STATE", false);
-		instance->AtomFullScreen = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
-		instance->AtomMaxHorz = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
-		instance->AtomMaxVert = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", false);
-		instance->AtomClose = XInternAtom(instance->currentDisplay, "WM_DELETE_WINDOW", false);
-		instance->AtomHidden = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_HIDDEN", false);
-		instance->AtomActive = XInternAtom(instance->currentDisplay, "_NET_ACTIVE_WINDOW", false);
-		instance->AtomDemandsAttention = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", false);
-		instance->AtomFocused = XInternAtom(instance->currentDisplay, "_NET_WM_STATE_FOCUSED", false);
-		instance->AtomCardinal = XInternAtom(instance->currentDisplay, "CARDINAL", false);
-		instance->AtomIcon = XInternAtom(instance->currentDisplay, "_NET_WM_ICON", false);
-		instance->AtomHints = XInternAtom(instance->currentDisplay, "_MOTIF_WM_HINTS", true);
+		AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
+		AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
+		AtomMaxHorz = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
+		AtomMaxVert = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", false);
+		AtomClose = XInternAtom(currentDisplay, "WM_DELETE_WINDOW", false);
+		AtomHidden = XInternAtom(currentDisplay, "_NET_WM_STATE_HIDDEN", false);
+		AtomActive = XInternAtom(currentDisplay, "_NET_ACTIVE_WINDOW", false);
+		AtomDemandsAttention = XInternAtom(currentDisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", false);
+		AtomFocused = XInternAtom(currentDisplay, "_NET_WM_STATE_FOCUSED", false);
+		AtomCardinal = XInternAtom(currentDisplay, "CARDINAL", false);
+		AtomIcon = XInternAtom(currentDisplay, "_NET_WM_ICON", false);
+		AtomHints = XInternAtom(currentDisplay, "_MOTIF_WM_HINTS", true);
 
-		instance->AtomWindowType = XInternAtom(instance->currentDisplay, "_NET_WM_WINDOW_TYPE", false);
-		instance->AtomWindowTypeDesktop = XInternAtom(instance->currentDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", false);
-		instance->AtomWindowTypeSplash = XInternAtom(instance->currentDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", false);
-		instance->AtomWindowTypeNormal = XInternAtom(instance->currentDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", false);
+		AtomWindowType = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE", false);
+		AtomWindowTypeDesktop = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", false);
+		AtomWindowTypeSplash = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", false);
+		AtomWindowTypeNormal = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", false);
 
-		instance->AtomAllowedActions = XInternAtom(instance->currentDisplay, "_NET_WM_ALLOWED_ACTIONS", false);
-		instance->AtomActionResize = XInternAtom(instance->currentDisplay, "WM_ACTION_RESIZE", false);
-		instance->AtomActionMinimize = XInternAtom(instance->currentDisplay, "_WM_ACTION_MINIMIZE", false);
-		instance->AtomActionShade = XInternAtom(instance->currentDisplay, "WM_ACTION_SHADE", false);
-		instance->AtomActionMaximizeHorz = XInternAtom(instance->currentDisplay, "_WM_ACTION_MAXIMIZE_HORZ", false);
-		instance->AtomActionMaximizeVert = XInternAtom(instance->currentDisplay, "_WM_ACTION_MAXIMIZE_VERT", false);
-		instance->AtomActionClose = XInternAtom(instance->currentDisplay, "_WM_ACTION_CLOSE", false);
+		AtomAllowedActions = XInternAtom(currentDisplay, "_NET_WM_ALLOWED_ACTIONS", false);
+		AtomActionResize = XInternAtom(currentDisplay, "WM_ACTION_RESIZE", false);
+		AtomActionMinimize = XInternAtom(currentDisplay, "_WM_ACTION_MINIMIZE", false);
+		AtomActionShade = XInternAtom(currentDisplay, "WM_ACTION_SHADE", false);
+		AtomActionMaximizeHorz = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_HORZ", false);
+		AtomActionMaximizeVert = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_VERT", false);
+		AtomActionClose = XInternAtom(currentDisplay, "_WM_ACTION_CLOSE", false);
 
-		instance->AtomDesktopGeometry = XInternAtom(instance->currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
+		AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 	}
 
 	static void Linux_InitializeWindow( window_t* window )
@@ -4047,7 +3549,7 @@ private:
 		window->decorators = 1;
 		window->currentWindowStyle |= linuxClose | linuxMaximize | linuxMinimize | linuxMove;
 
-		if ( !instance->currentDisplay )
+		if ( !currentDisplay )
 		{
 			PrintErrorMessage( std::error_code(linuxCannotConnectXServer, errorCategory ));
 			exit( 0 );
@@ -4055,7 +3557,7 @@ private:
 
 		//window->VisualInfo = glXGetVisualFromFBConfig( GetDisplay(), GetBestFrameBufferConfig( window ) ); 
 
-		window->visualInfo = glXChooseVisual( instance->currentDisplay, 0, window->attributes );
+		window->visualInfo = glXChooseVisual( currentDisplay, 0, window->attributes );
 
 		if ( !window->visualInfo )
 		{
@@ -4063,8 +3565,8 @@ private:
 			exit( 0 );
 		}
 
-		window->setAttributes.colormap = XCreateColormap( instance->currentDisplay,
-			DefaultRootWindow( instance->currentDisplay ),
+		window->setAttributes.colormap = XCreateColormap( currentDisplay,
+			DefaultRootWindow( currentDisplay ),
 			window->visualInfo->visual, AllocNone );
 
 		window->setAttributes.event_mask = ExposureMask | KeyPressMask 
@@ -4073,8 +3575,8 @@ private:
 			Button4MotionMask | Button5MotionMask | PointerMotionMask | FocusChangeMask
 			| VisibilityChangeMask | PropertyChangeMask | SubstructureNotifyMask;
 		
-		window->windowHandle = XCreateWindow( instance->currentDisplay,
-			XDefaultRootWindow( instance->currentDisplay ), 0, 0,
+		window->windowHandle = XCreateWindow( currentDisplay,
+			XDefaultRootWindow( currentDisplay ), 0, 0,
 			window->resolution.width, window->resolution.height,
 			0, window->visualInfo->depth, InputOutput,
 			window->visualInfo->visual, CWColormap | CWEventMask,
@@ -4086,30 +3588,30 @@ private:
 			exit( 0 );
 		}
 
-		XMapWindow( instance->currentDisplay, window->windowHandle );
-		XStoreName( instance->currentDisplay, window->windowHandle,
+		XMapWindow( currentDisplay, window->windowHandle );
+		XStoreName( currentDisplay, window->windowHandle,
 			window->name );
 
 		
 
-		XSetWMProtocols( instance->currentDisplay, window->windowHandle, &instance->AtomClose, true );	
+		XSetWMProtocols( currentDisplay, window->windowHandle, &AtomClose, true );	
 
 		Platform_InitializeGL(window);
 	}
 
 	static void Linux_ShutdownWindow( window_t* window )
 	{
-		XDestroyWindow(instance->currentDisplay, window->windowHandle);	
+		XDestroyWindow(currentDisplay, window->windowHandle);	
 	}
 
 	static void Linux_Shutdown( void )
 	{
-		for(unsigned int iter = 0; iter < instance->windowList.size(); iter++)
+		for(unsigned int iter = 0; iter < windowList.size(); iter++)
 		{
-			Linux_ShutdownWindow(instance->windowList[iter].get());
+			Linux_ShutdownWindow(windowList[iter].get());
 		}
 
-		XCloseDisplay( instance->currentDisplay );
+		XCloseDisplay( currentDisplay );
 	}
 
 	static void Linux_ProcessEvents( XEvent currentEvent )
@@ -4151,7 +3653,7 @@ private:
 			case KeyPress:
 			{
 				unsigned int functionKeysym = XkbKeycodeToKeysym( 
-					instance->currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
+					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 				if ( functionKeysym <= 255 )
 				{
@@ -4178,20 +3680,20 @@ private:
 			case KeyRelease:
 			{
 				bool isRetriggered = false;
-				if ( XEventsQueued( instance->currentDisplay, QueuedAfterReading ) )
+				if ( XEventsQueued( currentDisplay, QueuedAfterReading ) )
 				{
 					XEvent nextEvent;
-					XPeekEvent( instance->currentDisplay, &nextEvent );
+					XPeekEvent( currentDisplay, &nextEvent );
 
 					if ( nextEvent.type == KeyPress &&
 						nextEvent.xkey.time == currentEvent.xkey.time &&
 						nextEvent.xkey.keycode == currentEvent.xkey.keycode )
 					{
 						unsigned int functionKeysym = XkbKeycodeToKeysym( 
-							instance->currentDisplay, currentEvent.xkey.keycode, 0, 
+							currentDisplay, currentEvent.xkey.keycode, 0, 
 							currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
-						XNextEvent( instance->currentDisplay, &currentEvent );
+						XNextEvent( currentDisplay, &currentEvent );
 						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::down );
 						isRetriggered = true;
 					}
@@ -4200,7 +3702,7 @@ private:
 				if ( !isRetriggered )
 				{
 					unsigned int functionKeysym = XkbKeycodeToKeysym( 
-					instance->currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
+					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
 
 					if ( functionKeysym <= 255 )
 					{
@@ -4374,8 +3876,8 @@ private:
 					currentEvent.xmotion.y;
 
 				///set the screen mouse position to match the event
-				instance->screenMousePosition.x = currentEvent.xmotion.x_root;
-				instance->screenMousePosition.y = currentEvent.xmotion.y_root;
+				screenMousePosition.x = currentEvent.xmotion.x_root;
+				screenMousePosition.y = currentEvent.xmotion.y_root;
 
 				if ( window->mouseMoveEvent != nullptr )
 				{
@@ -4477,8 +3979,8 @@ private:
 				ulong numItems, bytesAfter;
 				unsigned char*  properties = nullptr;
 
-				XGetWindowProperty( instance->currentDisplay, currentEvent.xproperty.window,
-					instance->AtomState,
+				XGetWindowProperty( currentDisplay, currentEvent.xproperty.window,
+					AtomState,
 					0, LONG_MAX, false, AnyPropertyType,
 					&type, &format, &numItems, &bytesAfter,
 					& properties );
@@ -4490,7 +3992,7 @@ private:
 					{
 						Atom currentProperty = ( ( long* )(  properties ) )[ currentItem ];
 
-						if ( currentProperty == instance->AtomHidden )
+						if ( currentProperty == AtomHidden )
 						{
 							//window was minimized
 							if ( window->minimizedEvent != nullptr )
@@ -4500,8 +4002,8 @@ private:
 							}
 						}
 
-						if ( currentProperty == instance->AtomMaxVert ||
-							currentProperty == instance->AtomMaxVert )
+						if ( currentProperty == AtomMaxVert ||
+							currentProperty == AtomMaxVert )
 						{
 							//window was maximized
 							if ( window->maximizedEvent != nullptr )
@@ -4511,12 +4013,12 @@ private:
 							}
 						}
 
-						if ( currentProperty == instance->AtomFocused )
+						if ( currentProperty == AtomFocused )
 						{
 							//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
 						}
 
-						if ( currentProperty == instance->AtomDemandsAttention )
+						if ( currentProperty == AtomDemandsAttention )
 						{
 							//the window demands attention like a celebrity
 							printf( "window demands attention \n" );
@@ -4537,13 +4039,13 @@ private:
 			//check for events that were created by the TinyWindow manager
 			case ClientMessage:
 			{
-				const char* atomName = XGetAtomName( instance->currentDisplay, currentEvent.xclient.message_type );
+				const char* atomName = XGetAtomName( currentDisplay, currentEvent.xclient.message_type );
 				if ( atomName != nullptr )
 				{
 					//printf( "%s\n", l_AtomName );
 				}
 
-				if ( ( Atom )currentEvent.xclient.data.l[ 0 ] == instance->AtomClose )
+				if ( ( Atom )currentEvent.xclient.data.l[ 0 ] == AtomClose )
 				{
 					window->shouldClose = true;
 					if( window->destroyedEvent != nullptr )
@@ -4554,7 +4056,7 @@ private:
 				}
 
 				//check if full screen
-				if ( ( Atom )currentEvent.xclient.data.l[ 1 ] == instance->AtomFullScreen )
+				if ( ( Atom )currentEvent.xclient.data.l[ 1 ] == AtomFullScreen )
 				{
 					break;
 				}
@@ -5004,18 +4506,18 @@ private:
 
 		int frameBufferCount;
 		unsigned int bestBufferConfig;//, bestNumSamples = 0;
-		GLXFBConfig* configs = glXChooseFBConfig(instance->currentDisplay, 0, visualAttributes, &frameBufferCount);
+		GLXFBConfig* configs = glXChooseFBConfig(currentDisplay, 0, visualAttributes, &frameBufferCount);
 
 		for ( int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++ )
 		{
-			XVisualInfo* visualInfo = glXGetVisualFromFBConfig(instance->currentDisplay, configs[currentConfig]);
+			XVisualInfo* visualInfo = glXGetVisualFromFBConfig(currentDisplay, configs[currentConfig]);
 
 			if ( visualInfo )
 			{
 				//printf( "%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size );
 				int samples, sampleBuffer;
-				glXGetFBConfigAttrib( instance->currentDisplay, configs[ currentConfig ], GLX_SAMPLE_BUFFERS, &sampleBuffer );
-				glXGetFBConfigAttrib(instance->currentDisplay, configs[currentConfig], GLX_SAMPLES, &samples);
+				glXGetFBConfigAttrib( currentDisplay, configs[ currentConfig ], GLX_SAMPLE_BUFFERS, &sampleBuffer );
+				glXGetFBConfigAttrib(currentDisplay, configs[currentConfig], GLX_SAMPLES, &samples);
 
 				if ( sampleBuffer && samples > -1 )
 				{
@@ -5036,8 +4538,6 @@ private:
 
 #endif
 };
-
-windowManager* windowManager::instance = nullptr;
 windowManager::errorCategory_t windowManager::errorCategory = windowManager::errorCategory_t();
 #if defined(TW_LINUX)
 int windowManager::linuxFunction = 1;
