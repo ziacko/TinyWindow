@@ -16,7 +16,7 @@ int main()
 	window_t* window = nullptr;
 
 	window = manager->AddWindow("Example");
-	manager->SetWindowOnKeyEvent(window, handleKeyPresses);
+	window->keyEvent = handleKeyPresses;
 
 	while (!window->shouldClose)
 	{
