@@ -1,4 +1,4 @@
-//created by Ziyad Barakat 2014 - 2015
+//created my Ziyad Barakat 2014 - 2015
 
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
@@ -231,7 +231,7 @@ struct window_t
 	HWND						windowHandle;					/**< A handle to A window */
 	HINSTANCE					instanceHandle;
 
-#elif defined(TW_LINUX)
+#else
 	Window						windowHandle;					/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
 	GLXContext					context;						/**< The handle to the GLX rendering context */
 	XVisualInfo*				visualInfo;						/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
@@ -308,7 +308,7 @@ public:
 
 		if (!currentDisplay)
 		{
-			PrintErrorMessage(std::error_code(linuxCannotConnectXServer, errorCategory));
+			//PrintErrorMessage(std::error_code(linuxCannotConnectXServer, errorCategory));
 			return;
 		}
 
@@ -333,7 +333,7 @@ public:
 	/**
 	 * Use this to shutdown the window manager when your program is finished
 	 */
-	void ShutDown( void ) 
+	 void ShutDown( void ) 
 	{
 #if defined(__linux__)
 		Linux_Shutdown();
@@ -362,7 +362,7 @@ public:
 
 			return windowList.back().get();
 		}
-		PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
+		//PrintErrorMessage(std::error_code(invalidWindowName, errorCategory));
 		return nullptr;
 	}
 
@@ -416,7 +416,7 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	bool SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution )
+	std::error_code SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution )
 	{
 		if ( window != nullptr )
 		{
@@ -424,15 +424,14 @@ public:
 			window->resolution.height = resolution.height;
 
 			Platform_SetWindowResolution(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	bool SetWindowResolution(window_t* window, unsigned int width, unsigned int height)
+	std::error_code SetWindowResolution(window_t* window, unsigned int width, unsigned int height)
 	{
 		if (window != nullptr)
 		{
@@ -440,16 +439,15 @@ public:
 			window->resolution.y = height;
 
 			Platform_SetWindowResolution(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Set the Position of the given window relative to screen co-ordinates
 	 */
-	bool SetWindowPosition( window_t* window, TinyWindow::uiVec2 windowPosition )
+	std::error_code SetWindowPosition( window_t* window, TinyWindow::uiVec2 windowPosition )
 	{
 		if ( window != nullptr )
 		{
@@ -457,15 +455,14 @@ public:
 			window->position.y = windowPosition.y;
 
 			Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 	/**
 	* Set the Position of the given window relative to screen co-ordinates
 	*/
-	bool SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
+	std::error_code SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
 	{
 		if (window != nullptr)
 		{
@@ -473,16 +470,15 @@ public:
 			window->position.y = y;
 
 			Platform_SetWindowPosition(window, x, y);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	bool SetMousePositionInWindow( window_t* window, TinyWindow::uiVec2 mousePosition )
+	std::error_code SetMousePositionInWindow( window_t* window, TinyWindow::uiVec2 mousePosition )
 	{
 		if ( window != nullptr )
 		{
@@ -490,15 +486,14 @@ public:
 			window->mousePosition.y = mousePosition.y;
 
 			Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 	/**
 	* Set the mouse Position of the given window's co-ordinates
 	*/
-	bool SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
+	std::error_code SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
 	{
 		if (window != nullptr)
 		{
@@ -506,138 +501,127 @@ public:
 			window->mousePosition.y = y;
 
 			Platform_SetMousePositionInWindow(window, x, y);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Swap the draw buffers of the given window
 	 */
-	inline bool SwapWindowBuffers( window_t* window )
+	inline std::error_code SwapWindowBuffers( window_t* window )
 	{
 		if ( window != nullptr )
 		{
 			Platform_SwapBuffers(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(notInitialized, errorCategory));
-		return false;
+		return std::error_code(notInitialized, errorCategory);
 	}
 
 	/**
 	 * Make the given window be the current OpenGL Context to be drawn to
 	 */
-	bool MakeWindowCurrentContext( window_t* window )
+	std::error_code MakeWindowCurrentContext( window_t* window )
 	{
 		if ( window != nullptr )
 		{
 			Platform_MakeCurrentContext(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Toggle the given window's full screen mode
 	 */
-	bool SetFullScreen( window_t* window, bool newState )
+	std::error_code SetFullScreen( window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
 			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
 			Platform_SetFullScreen(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Toggle the minimization state of the given window
 	 */
-	bool MinimizeWindow(window_t* window, bool newState )
+	std::error_code MinimizeWindow(window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
 			Platform_MinimizeWindow(window, newState);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 	
 	/**
 	 * Toggle the maximization state of the current window
 	 */
-	bool MaximizeWindow( window_t* window, bool newState )
+	std::error_code MaximizeWindow( window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
 			Platform_MaximizeWindow(window, newState);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Set the window title bar	by name
 	 */
-	bool SetWindowTitleBar( window_t* window, const char* newTitle )
+	std::error_code SetWindowTitleBar( window_t* window, const char* newTitle )
 	{
 		if (newTitle != nullptr)
 		{
 			if (window != nullptr)
 			{
 				Platform_SetWindowTitleBar(window, newTitle);
-				return true;
+				return std::error_code(success, errorCategory);
 			}
-			PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-			return false;
+			return std::error_code(windowInvalid, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(invalidTitlebar, errorCategory));
-		return false;
+		return std::error_code(invalidTitlebar, errorCategory);
 	}
 
 	/**
 	* Set the window icon by name (currently not functional)
 	*/
-	bool SetWindowIcon( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
+	std::error_code SetWindowIcon( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
 	{
-		PrintErrorMessage(std::error_code(functionNotImplemented, errorCategory));
-		return false;
+		return std::error_code(functionNotImplemented, errorCategory);
 	}
 
 	/**
 	* Set the window to be in focus by name
 	*/
-	bool FocusWindow( window_t* window, bool newState )
+	std::error_code FocusWindow( window_t* window, bool newState )
 	{
 		if ( window != nullptr )
 		{
 			Platform_FocusWindow(window, newState);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	 * Restore the window by name
 	 */
-	bool RestoreWindow( window_t* window )
+	std::error_code RestoreWindow( window_t* window )
 	{
 		if ( window != nullptr )
 		{
 			Platform_RestoreWindow(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
@@ -684,57 +668,53 @@ public:
 	/**
 	* Remove window from the manager by name
 	*/
-	bool RemoveWindow( window_t* window ) 
+	std::error_code RemoveWindow( window_t* window ) 
 	{
 		if ( window != nullptr )
 		{
 			ShutdownWindow(window);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	* Set the window style preset by name
 	*/
-	bool SetWindowStyle( window_t* window, style_t windowStyle )
+	std::error_code SetWindowStyle( window_t* window, style_t windowStyle )
 	{
 		if ( window != nullptr )
 		{
 			Platform_SetWindowStyle(window, windowStyle);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	* Enable window decorators by name
 	*/
-	bool EnableWindowDecorators( window_t* window, unsigned int decorators )
+	std::error_code EnableWindowDecorators( window_t* window, unsigned int decorators )
 	{
 		if ( window != nullptr )
 		{
 			Platform_EnableWindowDecorators(window, decorators);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 	/**
 	* Disable windows decorators by name
 	*/
-	bool DisableWindowDecorators( window_t* window, unsigned int decorators )
+	std::error_code DisableWindowDecorators( window_t* window, unsigned int decorators )
 	{
 		if ( window != nullptr )
 		{
 			Platform_DisableWindowDecorators(window, decorators);
-			return true;
+			return std::error_code(success, errorCategory);
 		}
-		PrintErrorMessage(std::error_code(windowInvalid, errorCategory));
-		return false;
+		return std::error_code(windowInvalid, errorCategory);
 	}
 
 private:
@@ -768,31 +748,11 @@ private:
 	class errorCategory_t : public std::error_category
 	{
 		public:
-		virtual ~errorCategory_t() throw(){}
-
+		
 		const char* name() const throw() override
 		{
 			return "tinyWindow";
 		} 
-
-		virtual std::error_condition default_error_condition(int ev) const throw() override
-		{
-			if (ev < 15)
-			{
-				return std::error_condition();
-			}
-
-			else
-			{
-				return std::error_condition();
-			}
-		}
-
-		virtual bool equivalent(const std::error_code& code, int condition) const throw() override
-		{
-			return *this == code.category() &&
-				static_cast<int>(default_error_condition(code.value()).value()) == condition;
-		}
 
 		/**
 		* return the error message associated with the given error number
@@ -907,21 +867,19 @@ private:
 			}
 			}
 		}
-
-		errorCategory_t(const errorCategory_t& copy);
 		errorCategory_t(){};
 	};
 
-	static void PrintErrorMessage(std::error_code e)
-	{
-		printf("%s", e.message().c_str());
-	}
-
 	std::vector< std::unique_ptr<window_t> >				windowList;
-	static errorCategory_t									errorCategory;
+	errorCategory_t											errorCategory;
 
 	TinyWindow::uiVec2										screenResolution;
 	TinyWindow::uiVec2										screenMousePosition;
+
+	bool WindowExists( unsigned int windowIndex )
+	{
+		return ( windowIndex <= windowList.size() - 1 );
+	}
 
 	void Platform_InitializeWindow( window_t* window )
 	{
@@ -932,7 +890,7 @@ private:
 #endif
 	}
 
-	bool Platform_InitializeGL( window_t* window )
+	std::error_code Platform_InitializeGL( window_t* window )
 	{
 #if defined(TW_WINDOWS)
 		window->deviceContextHandle = GetDC(window->windowHandle);
@@ -973,17 +931,16 @@ private:
 
 				window->contextCreated = true;
 				InitializeAtoms();
-				return true;
+				return std::error_code(success, errorCategory);
 			}
-			return false;
+			return std::error_code(linuxCannotConnectXServer, errorCategory);
 		}
 
 		else
 		{
-			PrintErrorMessage(std::error_code(existingContext, errorCategory));
-			return false;
+			return std::error_code(existingContext, errorCategory);
 		}
-		return false;
+		return std::error_code(existingContext, errorCategory);
 #endif
 	}
 
@@ -1075,7 +1032,7 @@ private:
 #endif
 	}
 
-	inline void Platform_MakeCurrentContext(window_t* window)
+	void Platform_MakeCurrentContext(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		wglMakeCurrent(window->deviceContextHandle,
@@ -1224,7 +1181,7 @@ private:
 #endif
 	}
 
-	void Platform_SetWindowStyle(window_t* window, style_t windowStyle)
+	std::error_code Platform_SetWindowStyle(window_t* window, style_t windowStyle)
 	{
 #if defined(TW_WINDOWS)
 		switch (windowStyle)
@@ -1263,7 +1220,7 @@ private:
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = linuxMove | linuxClose |
 				linuxMaximize | linuxMinimize;
-			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = { hint_t::function |hint_t::decorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -1276,7 +1233,7 @@ private:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -1289,7 +1246,7 @@ private:
 		{
 			window->decorators = 0;
 			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -1300,11 +1257,11 @@ private:
 
 		default:
 		{
-			PrintErrorMessage(std::error_code(invalidWindowStyle, errorCategory));
-			break;
+			return std::error_code(invalidWindowStyle, errorCategory);
 		}
 		}
 #endif
+		return std::error_code(success, errorCategory);
 	}
 
 	void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
@@ -1389,7 +1346,7 @@ private:
 			window->decorators = 1;
 		}
 
-		long hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
+		long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
@@ -1516,7 +1473,7 @@ private:
 			window->decorators = 0;
 		}
 
-		long hints[5] = { linuxFunction | linuxDecorator, window->currentWindowStyle, window->decorators, 0, 0 };
+		long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
 
 		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
@@ -1997,7 +1954,7 @@ private:
 	}
 
 	//get the window that is associated with this Win32 window handle
-	inline window_t* GetWindowByHandle( HWND windowHandle )
+	window_t* GetWindowByHandle( HWND windowHandle )
 	{
 		for ( unsigned int iter = 0; iter < windowList.size(); iter++ )
 		{
@@ -2010,7 +1967,7 @@ private:
 	}
 
 	//initialize the given window using Win32
-	inline void Windows_InitializeWindow( window_t* window,
+	void Windows_InitializeWindow( window_t* window,
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int clearScreenExtra = 0,
 		int windowExtra = 0,
@@ -2352,7 +2309,7 @@ private:
 		}
 	}
 
-	void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height )
+	static void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height )
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
@@ -2360,13 +2317,19 @@ private:
 
 #elif defined(TW_LINUX)
 
-	enum linuxDecorator_t
+	enum decorator_t
 	{
 		linuxBorder = 1L << 1,
 		linuxMove = 1L << 2,
 		linuxMinimize = 1L << 3,
 		linuxMaximize = 1L << 4,
 		linuxClose = 1L << 5,
+	};
+
+	enum hint_t
+	{
+		function = 1,
+		decorator,
 	};
 
 	Display*			currentDisplay;
@@ -2399,9 +2362,6 @@ private:
 	Atom						AtomActionClose;				/**< Atom for allowing the window to be closed */
 
 	Atom						AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
-
-	static int linuxFunction;
-	static int linuxDecorator;
 	
 	window_t* GetWindowByHandle( Window windowHandle )
 	{
@@ -2537,7 +2497,7 @@ private:
 		AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 	}
 
-	void Linux_InitializeWindow( window_t* window )
+	std::error_code Linux_InitializeWindow( window_t* window )
 	{
 		window->attributes = new int[ 5 ]{
 			GLX_RGBA,
@@ -2551,8 +2511,7 @@ private:
 
 		if ( !currentDisplay )
 		{
-			PrintErrorMessage( std::error_code(linuxCannotConnectXServer, errorCategory ));
-			exit( 0 );
+			return std::error_code(linuxCannotConnectXServer, errorCategory);
 		}
 
 		//window->VisualInfo = glXGetVisualFromFBConfig( GetDisplay(), GetBestFrameBufferConfig( window ) ); 
@@ -2561,8 +2520,7 @@ private:
 
 		if ( !window->visualInfo )
 		{
-			PrintErrorMessage( std::error_code(linuxInvalidVisualinfo, errorCategory));
-			exit( 0 );
+			return std::error_code(linuxInvalidVisualinfo, errorCategory);
 		}
 
 		window->setAttributes.colormap = XCreateColormap( currentDisplay,
@@ -2584,7 +2542,7 @@ private:
 
 		if( !window->windowHandle )
 		{
-			PrintErrorMessage( std::error_code(linuxCannotCreateWindow, errorCategory));
+			return std::error_code(linuxCannotCreateWindow, errorCategory);
 			exit( 0 );
 		}
 
@@ -2592,11 +2550,10 @@ private:
 		XStoreName( currentDisplay, window->windowHandle,
 			window->name );
 
-		
-
 		XSetWMProtocols( currentDisplay, window->windowHandle, &AtomClose, true );	
 
 		Platform_InitializeGL(window);
+		return std::error_code(success, errorCategory);
 	}
 
 	void Linux_ShutdownWindow( window_t* window )
@@ -3475,10 +3432,10 @@ private:
 		}
 	}
 
-	static void Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
+	std::error_code Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :( 
-		PrintErrorMessage( std::error_code(linuxFunctionNotImplemented, errorCategory));
+		return std::error_code(linuxFunctionNotImplemented, errorCategory);
 	}
 
 	GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
@@ -3532,11 +3489,6 @@ private:
 
 #endif
 };
-windowManager::errorCategory_t windowManager::errorCategory = windowManager::errorCategory_t();
-#if defined(TW_LINUX)
-int windowManager::linuxFunction = 1;
-int windowManager::linuxDecorator = 2;
-#endif //TW_LINUX
 }
 
 #endif
