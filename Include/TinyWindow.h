@@ -879,11 +879,6 @@ private:
 	TinyWindow::uiVec2										screenResolution;
 	TinyWindow::uiVec2										screenMousePosition;
 
-	bool WindowExists(unsigned int windowIndex)
-	{
-		return (windowIndex <= windowList.size() - 1);
-	}
-
 	void Platform_InitializeWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
@@ -2341,33 +2336,33 @@ private:
 	Display*			currentDisplay;
 	XEvent				currentEvent;
 	/* these atoms are needed to change window states via the extended window manager*/
-	Atom						AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
-	Atom						AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
-	Atom						AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
-	Atom						AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
-	Atom						AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
-	Atom						AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
-	Atom						AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
-	Atom						AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
-	Atom						AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
-	Atom						AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
-	Atom						AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
-	Atom						AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
+	Atom				AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
+	Atom				AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
+	Atom				AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
+	Atom				AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
+	Atom				AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
+	Atom				AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
+	Atom				AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
+	Atom				AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
+	Atom				AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
+	Atom				AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
+	Atom				AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
+	Atom				AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
 
-	Atom						AtomWindowType;					/**< Atom for the type of window */
-	Atom						AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
-	Atom						AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
-	Atom						AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
+	Atom				AtomWindowType;					/**< Atom for the type of window */
+	Atom				AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
+	Atom				AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
+	Atom				AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
 
-	Atom						AtomAllowedActions;				/**< Atom for allowed window actions */
-	Atom						AtomActionResize;				/**< Atom for allowing the window to be resized */
-	Atom						AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
-	Atom						AtomActionShade;				/**< Atom for allowing the window to be shaded */
-	Atom						AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
-	Atom						AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
-	Atom						AtomActionClose;				/**< Atom for allowing the window to be closed */
+	Atom				AtomAllowedActions;				/**< Atom for allowed window actions */
+	Atom				AtomActionResize;				/**< Atom for allowing the window to be resized */
+	Atom				AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
+	Atom				AtomActionShade;				/**< Atom for allowing the window to be shaded */
+	Atom				AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
+	Atom				AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
+	Atom				AtomActionClose;				/**< Atom for allowing the window to be closed */
 
-	Atom						AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
+	Atom				AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
 	
 	window_t* GetWindowByHandle(Window windowHandle)
 	{
