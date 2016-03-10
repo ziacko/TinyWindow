@@ -11,13 +11,13 @@
 #include <fcntl.h>
 #if defined(_MSC_VER)
 //this automatically loads the OpenGL library if you are using Visual studio. feel free to comment out
-#pragma comment ( lib, "opengl32.lib" )
+#pragma comment (lib, "opengl32.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
-#pragma comment( linker, "/subsystem:windows /ENTRY:mainCRTStartup" )
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif //_MSC_VER
 #endif	//_WIN32 || _WIN64
 
-#if defined( __linux__ )
+#if defined(__linux__)
 #define TW_LINUX
 #include <GL/glx.h>
 #include <X11/X.h>
@@ -191,17 +191,17 @@ enum decorator_t
 struct window_t
 {
 	const char*						name;													/**< Name of the window */
-	unsigned int					iD;														/**< ID of the Window. ( where it belongs in the window manager ) */
-	int								colorBits;												/**< Color format of the window. ( defaults to 32 bit color ) */
-	int								depthBits;												/**< Size of the Depth buffer. ( defaults to 8 bit depth ) */
-	int								stencilBits;											/**< Size of the stencil buffer, ( defaults to 8 bit ) */
+	unsigned int					iD;														/**< ID of the Window. (where it belongs in the window manager) */
+	int								colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
+	int								depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
+	int								stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
 	keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
 	buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
 	TinyWindow::uiVec2				resolution;												/**< Resolution/Size of the window stored in an array */
 	TinyWindow::uiVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
 	TinyWindow::uiVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
 	bool							shouldClose;											/**< Whether the Window should be closing */
-	bool							inFocus;												/**< Whether the Window is currently in focus( if it is the current window be used ) */
+	bool							inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
 
 	bool							initialized;											/**< Whether the window has been successfully initialized */
 	bool							contextCreated;											/**< Whether the OpenGL context has been successfully created */
@@ -273,7 +273,7 @@ struct window_t
 		contextCreated = false;
 		currentWindowStyle = (unsigned int)style_t::normal;
 
-#if defined( __linux__ )
+#if defined(__linux__)
 		context = 0;
 #endif 
 	}
@@ -285,7 +285,7 @@ class windowManager
 
 public:
 
-	windowManager( void )
+	windowManager(void)
 	{
 #if defined(TW_WINDOWS)
 		CreateTerminal(); //feel free to comment this out
@@ -322,7 +322,7 @@ public:
 	/**
 	 * Shutdown and delete all windows in the manager
 	 */
-	~windowManager( void )
+	~windowManager(void)
 	{
 		ShutDown();
 	}
@@ -330,7 +330,7 @@ public:
 	/**
 	 * Use this to shutdown the window manager when your program is finished
 	 */
-	 void ShutDown( void ) 
+	 void ShutDown(void) 
 	{
 #if defined(__linux__)
 		Linux_Shutdown();
@@ -341,9 +341,9 @@ public:
 	/**
 	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	window_t* AddWindow( const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8 )
+	window_t* AddWindow(const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8)
 	{
-		if ( windowName != nullptr )
+		if (windowName != nullptr)
 		{
 			std::unique_ptr<window_t> newWindow(new window_t);
 			newWindow->name = windowName;
@@ -354,7 +354,7 @@ public:
 			newWindow->stencilBits = stencilBits;
 			newWindow->iD = GetNumWindows();
 
-			windowList.push_back( std::move(newWindow) );
+			windowList.push_back(std::move(newWindow));
 			Platform_InitializeWindow(windowList.back().get());
 
 			return windowList.back().get();
@@ -366,7 +366,7 @@ public:
 	/**
 	 * Return the total amount of windows the manager has. returns -1 if failed
 	 */
-	int GetNumWindows( void )
+	int GetNumWindows(void)
 	{
 		return windowList.size();
 	}
@@ -374,7 +374,7 @@ public:
 	/**
 	* Return the mouse position in screen co-ordinates
 	*/
-	TinyWindow::uiVec2 GetMousePositionInScreen( void )
+	TinyWindow::uiVec2 GetMousePositionInScreen(void)
 	{
 		return screenMousePosition;
 	}
@@ -382,7 +382,7 @@ public:
 	/**
 	 * Set the position of the mouse cursor relative to screen co-ordinates
 	 */
-	void SetMousePositionInScreen( TinyWindow::uiVec2 mousePosition )
+	void SetMousePositionInScreen(TinyWindow::uiVec2 mousePosition)
 	{
 		screenMousePosition.x = mousePosition.x;
 		screenMousePosition.y = mousePosition.y;
@@ -403,7 +403,7 @@ public:
 	/**
 	* Return the Resolution of the current screen
 	*/
-	TinyWindow::uiVec2 GetScreenResolution( void )
+	TinyWindow::uiVec2 GetScreenResolution(void)
 	{
 		uiVec2 resolution;
 		Platform_GetScreenResolution(resolution);
@@ -413,9 +413,9 @@ public:
 	/**
 	 * Set the Size/Resolution of the given window
 	 */
-	std::error_code SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution )
+	std::error_code SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			window->resolution.width = resolution.width;
 			window->resolution.height = resolution.height;
@@ -444,9 +444,9 @@ public:
 	/**
 	 * Set the Position of the given window relative to screen co-ordinates
 	 */
-	std::error_code SetWindowPosition( window_t* window, TinyWindow::uiVec2 windowPosition )
+	std::error_code SetWindowPosition(window_t* window, TinyWindow::uiVec2 windowPosition)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			window->position.x = windowPosition.x;
 			window->position.y = windowPosition.y;
@@ -475,9 +475,9 @@ public:
 	/**
 	 * Set the mouse Position of the given window's co-ordinates
 	 */
-	std::error_code SetMousePositionInWindow( window_t* window, TinyWindow::uiVec2 mousePosition )
+	std::error_code SetMousePositionInWindow(window_t* window, TinyWindow::uiVec2 mousePosition)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			window->mousePosition.x = mousePosition.x;
 			window->mousePosition.y = mousePosition.y;
@@ -506,9 +506,9 @@ public:
 	/**
 	 * Swap the draw buffers of the given window
 	 */
-	inline std::error_code SwapWindowBuffers( window_t* window )
+	inline std::error_code SwapWindowBuffers(window_t* window)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_SwapBuffers(window);
 			return make_error_code(success);
@@ -519,9 +519,9 @@ public:
 	/**
 	 * Make the given window be the current OpenGL Context to be drawn to
 	 */
-	std::error_code MakeWindowCurrentContext( window_t* window )
+	std::error_code MakeWindowCurrentContext(window_t* window)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_MakeCurrentContext(window);
 			return make_error_code(success);
@@ -532,9 +532,9 @@ public:
 	/**
 	 * Toggle the given window's full screen mode
 	 */
-	std::error_code SetFullScreen( window_t* window, bool newState )
+	std::error_code SetFullScreen(window_t* window, bool newState)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
@@ -547,9 +547,9 @@ public:
 	/**
 	 * Toggle the minimization state of the given window
 	 */
-	std::error_code MinimizeWindow(window_t* window, bool newState )
+	std::error_code MinimizeWindow(window_t* window, bool newState)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_MinimizeWindow(window, newState);
 			return make_error_code(success);
@@ -560,9 +560,9 @@ public:
 	/**
 	 * Toggle the maximization state of the current window
 	 */
-	std::error_code MaximizeWindow( window_t* window, bool newState )
+	std::error_code MaximizeWindow(window_t* window, bool newState)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_MaximizeWindow(window, newState);
 			return make_error_code(success);
@@ -573,7 +573,7 @@ public:
 	/**
 	 * Set the window title bar	by name
 	 */
-	std::error_code SetWindowTitleBar( window_t* window, const char* newTitle )
+	std::error_code SetWindowTitleBar(window_t* window, const char* newTitle)
 	{
 		if (newTitle != nullptr)
 		{
@@ -590,7 +590,7 @@ public:
 	/**
 	* Set the window icon by name (currently not functional)
 	*/
-	std::error_code SetWindowIcon( void )//const char* windowName, const char* icon, unsigned int width, unsigned int height )
+	std::error_code SetWindowIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
 	{
 		return make_error_code(functionNotImplemented);
 	}
@@ -598,9 +598,9 @@ public:
 	/**
 	* Set the window to be in focus by name
 	*/
-	std::error_code FocusWindow( window_t* window, bool newState )
+	std::error_code FocusWindow(window_t* window, bool newState)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_FocusWindow(window, newState);
 			return make_error_code(success);
@@ -611,9 +611,9 @@ public:
 	/**
 	 * Restore the window by name
 	 */
-	std::error_code RestoreWindow( window_t* window )
+	std::error_code RestoreWindow(window_t* window)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_RestoreWindow(window);
 			return make_error_code(success);
@@ -624,7 +624,7 @@ public:
 	/**
 	* Ask the window manager to poll for events
 	*/
-	inline void PollForEvents( void )
+	inline void PollForEvents(void)
 	{
 #if defined(TW_WINDOWS)
 		//only process events if there are any to process
@@ -647,7 +647,7 @@ public:
 	/**
 	* Ask the window manager to wait for events
 	*/
-	inline void WaitForEvents( void )
+	inline void WaitForEvents(void)
 	{
 #if defined(TW_WINDOWS)
 		//process even if there aren't any to process
@@ -665,9 +665,9 @@ public:
 	/**
 	* Remove window from the manager by name
 	*/
-	std::error_code RemoveWindow( window_t* window ) 
+	std::error_code RemoveWindow(window_t* window) 
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			ShutdownWindow(window);
 			return make_error_code(success);
@@ -678,9 +678,9 @@ public:
 	/**
 	* Set the window style preset by name
 	*/
-	std::error_code SetWindowStyle( window_t* window, style_t windowStyle )
+	std::error_code SetWindowStyle(window_t* window, style_t windowStyle)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_SetWindowStyle(window, windowStyle);
 			return make_error_code(success);
@@ -691,9 +691,9 @@ public:
 	/**
 	* Enable window decorators by name
 	*/
-	std::error_code EnableWindowDecorators( window_t* window, unsigned int decorators )
+	std::error_code EnableWindowDecorators(window_t* window, unsigned int decorators)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_EnableWindowDecorators(window, decorators);
 			return make_error_code(success);
@@ -704,9 +704,9 @@ public:
 	/**
 	* Disable windows decorators by name
 	*/
-	std::error_code DisableWindowDecorators( window_t* window, unsigned int decorators )
+	std::error_code DisableWindowDecorators(window_t* window, unsigned int decorators)
 	{
-		if ( window != nullptr )
+		if (window != nullptr)
 		{
 			Platform_DisableWindowDecorators(window, decorators);
 			return make_error_code(success);
@@ -805,7 +805,7 @@ private:
 
 			case invalidTitlebar:
 			{
-				return "Error: invalid title bar name ( cannot be null or nullptr ) \n";
+				return "Error: invalid title bar name (cannot be null or nullptr) \n";
 			}
 
 			case invalidCallback:
@@ -825,7 +825,7 @@ private:
 
 			case functionNotImplemented:
 			{
-				return "Error: I'm sorry but this function has not been implemented yet :( \n";
+				return "Error: I'm sorry but this function has not been implemented yet :(\n";
 			}
 
 			case linuxCannotConnectXServer:
@@ -845,7 +845,7 @@ private:
 
 			case linuxFunctionNotImplemented:
 			{
-				return "Error: function not implemented on Linux platform yet. sorry :( \n";
+				return "Error: function not implemented on Linux platform yet. sorry :(\n";
 			}
 
 			case windowsCannotCreateWindows:
@@ -855,7 +855,7 @@ private:
 
 			case windowsFunctionNotImplemented:
 			{
-				return "Error: function not implemented on Windows platform yet. sorry ;( \n";
+				return "Error: function not implemented on Windows platform yet. sorry ;(\n";
 			}
 
 			default:
@@ -879,12 +879,12 @@ private:
 	TinyWindow::uiVec2										screenResolution;
 	TinyWindow::uiVec2										screenMousePosition;
 
-	bool WindowExists( unsigned int windowIndex )
+	bool WindowExists(unsigned int windowIndex)
 	{
-		return ( windowIndex <= windowList.size() - 1 );
+		return (windowIndex <= windowList.size() - 1);
 	}
 
-	void Platform_InitializeWindow( window_t* window )
+	void Platform_InitializeWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		Windows_InitializeWindow(window);
@@ -893,7 +893,7 @@ private:
 #endif
 	}
 
-	std::error_code Platform_InitializeGL( window_t* window )
+	std::error_code Platform_InitializeGL(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		window->deviceContextHandle = GetDC(window->windowHandle);
@@ -1221,7 +1221,7 @@ private:
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = linuxMove | linuxClose |
 				linuxMaximize | linuxMinimize;
-			long Hints[5] = { hint_t::function |hint_t::decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = {hint_t::function |hint_t::decorator, window->currentWindowStyle, window->decorators, 0, 0};
 
 			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -1234,7 +1234,7 @@ private:
 		{
 			window->decorators = (1L << 2);
 			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
 
 			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -1247,7 +1247,7 @@ private:
 		{
 			window->decorators = 0;
 			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long Hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
 
 			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 				(unsigned char*)Hints, 5);
@@ -1328,7 +1328,7 @@ private:
 
 		if (decorators & icon)
 		{
-			//Linux ( at least cinnamon ) does not have icons in the window. only in the task bar icon
+			//Linux (at least cinnamon) does not have icons in the window. only in the task bar icon
 		}
 
 		//just need to set it to 1 to enable all decorators that include title bar 
@@ -1347,7 +1347,7 @@ private:
 			window->decorators = 1;
 		}
 
-		long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+		long hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
 
 		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
@@ -1455,7 +1455,7 @@ private:
 
 		if (decorators & icon)
 		{
-			//Linux ( at least cinnamon ) does not have icons in the window. only in the taskb ar icon
+			//Linux (at least cinnamon) does not have icons in the window. only in the taskb ar icon
 		}
 
 		//just need to set it to 1 to enable all decorators that include title bar 
@@ -1474,7 +1474,7 @@ private:
 			window->decorators = 0;
 		}
 
-		long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+		long hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
 
 		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
 			PropModeReplace, (unsigned char*)hints, 5);
@@ -1483,7 +1483,7 @@ private:
 #endif
 	}
 
-	void ShutdownWindow( window_t* window )
+	void ShutdownWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
 		if (window->glRenderingContextHandle)
@@ -1556,7 +1556,7 @@ private:
 	HDC		deviceContextHandle;
 
 	//the window procedure for all windows. This is used mainly to handle window events
-	static LRESULT CALLBACK WindowProcedure( HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam )
+	static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
 	{
 		windowManager* manager = (windowManager*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
 		window_t* window = nullptr;
@@ -1960,11 +1960,11 @@ private:
 	}
 
 	//get the window that is associated with this Win32 window handle
-	window_t* GetWindowByHandle( HWND windowHandle )
+	window_t* GetWindowByHandle(HWND windowHandle)
 	{
-		for ( unsigned int iter = 0; iter < windowList.size(); iter++ )
+		for (unsigned int iter = 0; iter < windowList.size(); iter++)
 		{
-			if ( windowList[iter]->windowHandle == windowHandle )
+			if (windowList[iter]->windowHandle == windowHandle)
 			{
 				return windowList[iter].get();
 			}
@@ -1973,14 +1973,14 @@ private:
 	}
 
 	//initialize the given window using Win32
-	void Windows_InitializeWindow( window_t* window,
+	void Windows_InitializeWindow(window_t* window,
 		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
 		int clearScreenExtra = 0,
 		int windowExtra = 0,
-		HINSTANCE winInstance = GetModuleHandle( 0 ),
-		HICON icon = LoadIcon( 0, IDI_APPLICATION ),
-		HCURSOR cursor = LoadCursor( 0, IDC_ARROW ),
-		HBRUSH brush = ( HBRUSH )BLACK_BRUSH )
+		HINSTANCE winInstance = GetModuleHandle(0),
+		HICON icon = LoadIcon(0, IDI_APPLICATION),
+		HCURSOR cursor = LoadCursor(0, IDC_ARROW),
+		HBRUSH brush = (HBRUSH)BLACK_BRUSH)
 	{
 		window->instanceHandle = winInstance;
 		window->windowClass.style = style;
@@ -1993,65 +1993,65 @@ private:
 		window->windowClass.hbrBackground = brush;
 		window->windowClass.lpszMenuName = window->name;
 		window->windowClass.lpszClassName = window->name;
-		RegisterClass( &window->windowClass );
+		RegisterClass(&window->windowClass);
 
 		window->windowHandle =
-			CreateWindow( window->name, window->name, WS_OVERLAPPEDWINDOW, 0,
+			CreateWindow(window->name, window->name, WS_OVERLAPPEDWINDOW, 0,
 			0, window->resolution.width,
 			window->resolution.height,
-			0, 0, 0, 0 );
+			0, 0, 0, 0);
 
 		SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (long)this);
 
 		Platform_InitializeGL(window);
 
-		ShowWindow( window->windowHandle, true );
-		UpdateWindow( window->windowHandle );
+		ShowWindow(window->windowHandle, true);
+		UpdateWindow(window->windowHandle);
 	}
 
 	//initialize the pixel format for the selected window
-	void InitializePixelFormat( window_t* window )
+	void InitializePixelFormat(window_t* window)
 	{
 		window->pixelFormatDescriptor = {
-			sizeof( PIXELFORMATDESCRIPTOR ), /* size */
+			sizeof(PIXELFORMATDESCRIPTOR), /* size */
 			1, /* version */
 			PFD_SUPPORT_OPENGL |
 			PFD_DRAW_TO_WINDOW |
 			PFD_DOUBLEBUFFER, /* support double-buffering */
 			PFD_TYPE_RGBA, /* color type */
-			( BYTE )window->colorBits, 0, /* preferred color depth */
+			(BYTE)window->colorBits, 0, /* preferred color depth */
 			0, 0,
 			0, 0,
 			0, 0,
-			0, /* color bits ( ignored ) */ /* no alpha buffer */ /* alpha bits ( ignored ) */
+			0, /* color bits (ignored) */ /* no alpha buffer */ /* alpha bits (ignored) */
 			0, /* no accumulation buffer */
-			0, 0, 0, 0, /* accum bits ( ignored ) */
-			( BYTE )window->depthBits, /* depth buffer */
-			( BYTE )window->stencilBits, /* no stencil buffer */
+			0, 0, 0, 0, /* accum bits (ignored) */
+			(BYTE)window->depthBits, /* depth buffer */
+			(BYTE)window->stencilBits, /* no stencil buffer */
 			0, /* no auxiliary buffers */
 			PFD_MAIN_PLANE, /* main layer */
 			0, /* reserved */
 			0, 0, 0, /* no layer, visible, damage masks */
 		};
 
-		int LocalPixelFormat = ChoosePixelFormat( window->deviceContextHandle,
-			&window->pixelFormatDescriptor );
+		int LocalPixelFormat = ChoosePixelFormat(window->deviceContextHandle,
+			&window->pixelFormatDescriptor);
 
-		if ( LocalPixelFormat )
+		if (LocalPixelFormat)
 		{
-			SetPixelFormat( window->deviceContextHandle, LocalPixelFormat,
-				&window->pixelFormatDescriptor );
+			SetPixelFormat(window->deviceContextHandle, LocalPixelFormat,
+				&window->pixelFormatDescriptor);
 			return;
 		}
 		return;
 	}
 	
-	void Windows_Shutown( void )
+	void Windows_Shutown(void)
 	{
 
 	}
 
-	void CreateTerminal( void )
+	void CreateTerminal(void)
 	{
 		int conHandle;
 		long stdHandle;
@@ -2061,17 +2061,17 @@ private:
 		AllocConsole();
 
 		// redirect unbuffered STDOUT to the console
-		stdHandle = ( long )GetStdHandle( STD_OUTPUT_HANDLE );
-		conHandle = _open_osfhandle( stdHandle, _O_TEXT );
-		fp = _fdopen( conHandle, "w" );
+		stdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+		conHandle = _open_osfhandle(stdHandle, _O_TEXT);
+		fp = _fdopen(conHandle, "w");
 		*stdout = *fp;
 
-		setvbuf( stdout, nullptr, _IONBF, 0 );
+		setvbuf(stdout, nullptr, _IONBF, 0);
 	}
 
-	static unsigned int Windows_TranslateKey( WPARAM wordParam)
+	static unsigned int Windows_TranslateKey(WPARAM wordParam)
 	{
-		switch ( wordParam )
+		switch (wordParam)
 		{
 			case VK_ESCAPE:
 			{
@@ -2315,7 +2315,7 @@ private:
 		}
 	}
 
-	static void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height )
+	static void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height)
 	{
 		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
 			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
@@ -2369,11 +2369,11 @@ private:
 
 	Atom						AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
 	
-	window_t* GetWindowByHandle( Window windowHandle )
+	window_t* GetWindowByHandle(Window windowHandle)
 	{
-		for(unsigned int iter = 0; iter < windowList.size(); iter++ )
+		for(unsigned int iter = 0; iter < windowList.size(); iter++)
 		{
-			if ( windowList[iter]->windowHandle == windowHandle )
+			if (windowList[iter]->windowHandle == windowHandle)
 			{
 				return windowList[iter].get();
 			}
@@ -2381,88 +2381,88 @@ private:
 		return nullptr;
 	}
 
-	window_t* GetWindowByEvent( XEvent currentEvent )
+	window_t* GetWindowByEvent(XEvent currentEvent)
 	{
-		switch( currentEvent.type )
+		switch(currentEvent.type)
 		{
 			case Expose:
 			{
-				return GetWindowByHandle( currentEvent.xexpose.window );
+				return GetWindowByHandle(currentEvent.xexpose.window);
 			}	
 
 			case DestroyNotify:
 			{
-				return GetWindowByHandle( currentEvent.xdestroywindow.window );
+				return GetWindowByHandle(currentEvent.xdestroywindow.window);
 			}
 
 			case CreateNotify:
 			{
-				return GetWindowByHandle( currentEvent.xcreatewindow.window );
+				return GetWindowByHandle(currentEvent.xcreatewindow.window);
 			}	
 
 			case KeyPress:
 			{
-				return GetWindowByHandle( currentEvent.xkey.window );
+				return GetWindowByHandle(currentEvent.xkey.window);
 			}
 
 			case KeyRelease:
 			{
-				return GetWindowByHandle( currentEvent.xkey.window );
+				return GetWindowByHandle(currentEvent.xkey.window);
 			}
 
 			case ButtonPress:
 			{
-				return GetWindowByHandle( currentEvent.xbutton.window );
+				return GetWindowByHandle(currentEvent.xbutton.window);
 			}
 
 			case ButtonRelease:
 			{
-				return GetWindowByHandle( currentEvent.xbutton.window );
+				return GetWindowByHandle(currentEvent.xbutton.window);
 			}
 
 			case MotionNotify:
 			{
-				return GetWindowByHandle( currentEvent.xmotion.window );
+				return GetWindowByHandle(currentEvent.xmotion.window);
 			}	
 
 			case FocusIn:
 			{
-				return GetWindowByHandle( currentEvent.xfocus.window );
+				return GetWindowByHandle(currentEvent.xfocus.window);
 			}
 
 			case FocusOut:
 			{
-				return GetWindowByHandle( currentEvent.xfocus.window );
+				return GetWindowByHandle(currentEvent.xfocus.window);
 			}
 
 			case ResizeRequest:
 			{
-				return GetWindowByHandle( currentEvent.xresizerequest.window );
+				return GetWindowByHandle(currentEvent.xresizerequest.window);
 			}
 
 			case ConfigureNotify:
 			{
-				return GetWindowByHandle( currentEvent.xconfigure.window );
+				return GetWindowByHandle(currentEvent.xconfigure.window);
 			}
 
 			case PropertyNotify:
 			{
-				return GetWindowByHandle( currentEvent.xproperty.window );
+				return GetWindowByHandle(currentEvent.xproperty.window);
 			}
 
 			case GravityNotify:
 			{
-				return GetWindowByHandle( currentEvent.xgravity.window );
+				return GetWindowByHandle(currentEvent.xgravity.window);
 			}
 
 			case ClientMessage:
 			{
-				return GetWindowByHandle( currentEvent.xclient.window );
+				return GetWindowByHandle(currentEvent.xclient.window);
 			}
 
 			case VisibilityNotify:
 			{
-				return GetWindowByHandle( currentEvent.xvisibility.window );
+				return GetWindowByHandle(currentEvent.xvisibility.window);
 			}	
 
 			default:
@@ -2472,7 +2472,7 @@ private:
 		}
 	}
 
-	void InitializeAtoms( )
+	void InitializeAtoms()
 	{
 		AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
 		AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
@@ -2503,9 +2503,9 @@ private:
 		AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 	}
 
-	std::error_code Linux_InitializeWindow( window_t* window )
+	std::error_code Linux_InitializeWindow(window_t* window)
 	{
-		window->attributes = new int[ 5 ]{
+		window->attributes = new int[ 5]{
 			GLX_RGBA,
 			GLX_DOUBLEBUFFER, 
 			GLX_DEPTH_SIZE, 
@@ -2515,23 +2515,23 @@ private:
 		window->decorators = 1;
 		window->currentWindowStyle |= linuxClose | linuxMaximize | linuxMinimize | linuxMove;
 
-		if ( !currentDisplay )
+		if (!currentDisplay)
 		{
 			return make_error_code(linuxCannotConnectXServer);
 		}
 
-		//window->VisualInfo = glXGetVisualFromFBConfig( GetDisplay(), GetBestFrameBufferConfig( window ) ); 
+		//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window)); 
 
-		window->visualInfo = glXChooseVisual( currentDisplay, 0, window->attributes );
+		window->visualInfo = glXChooseVisual(currentDisplay, 0, window->attributes);
 
-		if ( !window->visualInfo )
+		if (!window->visualInfo)
 		{
 			return make_error_code(linuxInvalidVisualinfo);
 		}
 
-		window->setAttributes.colormap = XCreateColormap( currentDisplay,
-			DefaultRootWindow( currentDisplay ),
-			window->visualInfo->visual, AllocNone );
+		window->setAttributes.colormap = XCreateColormap(currentDisplay,
+			DefaultRootWindow(currentDisplay),
+			window->visualInfo->visual, AllocNone);
 
 		window->setAttributes.event_mask = ExposureMask | KeyPressMask 
 			| KeyReleaseMask | MotionNotify | ButtonPressMask | ButtonReleaseMask
@@ -2539,49 +2539,49 @@ private:
 			Button4MotionMask | Button5MotionMask | PointerMotionMask | FocusChangeMask
 			| VisibilityChangeMask | PropertyChangeMask | SubstructureNotifyMask;
 		
-		window->windowHandle = XCreateWindow( currentDisplay,
-			XDefaultRootWindow( currentDisplay ), 0, 0,
+		window->windowHandle = XCreateWindow(currentDisplay,
+			XDefaultRootWindow(currentDisplay), 0, 0,
 			window->resolution.width, window->resolution.height,
 			0, window->visualInfo->depth, InputOutput,
 			window->visualInfo->visual, CWColormap | CWEventMask,
-			&window->setAttributes );
+			&window->setAttributes);
 
-		if( !window->windowHandle )
+		if(!window->windowHandle)
 		{
 			return make_error_code(linuxCannotCreateWindow);
-			exit( 0 );
+			exit(0);
 		}
 
-		XMapWindow( currentDisplay, window->windowHandle );
-		XStoreName( currentDisplay, window->windowHandle,
-			window->name );
+		XMapWindow(currentDisplay, window->windowHandle);
+		XStoreName(currentDisplay, window->windowHandle,
+			window->name);
 
-		XSetWMProtocols( currentDisplay, window->windowHandle, &AtomClose, true );	
+		XSetWMProtocols(currentDisplay, window->windowHandle, &AtomClose, true);	
 
 		Platform_InitializeGL(window);
 		return make_error_code(success);
 	}
 
-	void Linux_ShutdownWindow( window_t* window )
+	void Linux_ShutdownWindow(window_t* window)
 	{
 		XDestroyWindow(currentDisplay, window->windowHandle);	
 	}
 
-	void Linux_Shutdown( void )
+	void Linux_Shutdown(void)
 	{
 		for(unsigned int iter = 0; iter < windowList.size(); iter++)
 		{
 			Linux_ShutdownWindow(windowList[iter].get());
 		}
 
-		XCloseDisplay( currentDisplay );
+		XCloseDisplay(currentDisplay);
 	}
 
-	void Linux_ProcessEvents( XEvent currentEvent )
+	void Linux_ProcessEvents(XEvent currentEvent)
 	{
-		window_t* window = GetWindowByEvent( currentEvent );
+		window_t* window = GetWindowByEvent(currentEvent);
 
-		switch ( currentEvent.type )	
+		switch (currentEvent.type)	
 		{
 			case Expose:
 			{
@@ -2591,7 +2591,7 @@ private:
 			case DestroyNotify:
 			{
 				printf("shutting down \n");
-				if ( window->destroyedEvent != nullptr )
+				if (window->destroyedEvent != nullptr)
 				{
 					window->destroyedEvent();
 				}
@@ -2602,10 +2602,10 @@ private:
 
 			/*case CreateNotify:
 			{
-			printf( "Window was created\n" );
+			printf("Window was created\n");
 			l_Window->InitializeGL();
 
-			if( IsValid( l_Window->m_OnCreated ) )
+			if(IsValid(l_Window->m_OnCreated))
 			{
 			l_Window->m_OnCreated();
 			}
@@ -2615,25 +2615,25 @@ private:
 
 			case KeyPress:
 			{
-				unsigned int functionKeysym = XkbKeycodeToKeysym( 
-					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
+				unsigned int functionKeysym = XkbKeycodeToKeysym(
+					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-				if ( functionKeysym <= 255 )
+				if (functionKeysym <= 255)
 				{
-					window->keys[ functionKeysym ] = keyState_t::down;
-					if ( window->keyEvent != nullptr )
+					window->keys[ functionKeysym] = keyState_t::down;
+					if (window->keyEvent != nullptr)
 					{
-						window->keyEvent( functionKeysym, keyState_t::down );
+						window->keyEvent(functionKeysym, keyState_t::down);
 					}
 				}
 
 				else
 				{
-					window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::down;
+					window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::down;
 
-					if ( window->keyEvent != nullptr )
+					if (window->keyEvent != nullptr)
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::down );
+						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
 					}
 				}
 
@@ -2643,53 +2643,53 @@ private:
 			case KeyRelease:
 			{
 				bool isRetriggered = false;
-				if ( XEventsQueued( currentDisplay, QueuedAfterReading ) )
+				if (XEventsQueued(currentDisplay, QueuedAfterReading))
 				{
 					XEvent nextEvent;
-					XPeekEvent( currentDisplay, &nextEvent );
+					XPeekEvent(currentDisplay, &nextEvent);
 
-					if ( nextEvent.type == KeyPress &&
+					if (nextEvent.type == KeyPress &&
 						nextEvent.xkey.time == currentEvent.xkey.time &&
-						nextEvent.xkey.keycode == currentEvent.xkey.keycode )
+						nextEvent.xkey.keycode == currentEvent.xkey.keycode)
 					{
-						unsigned int functionKeysym = XkbKeycodeToKeysym( 
+						unsigned int functionKeysym = XkbKeycodeToKeysym(
 							currentDisplay, currentEvent.xkey.keycode, 0, 
-							currentEvent.xkey.state & ShiftMask ? 1 : 0 );
+							currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-						XNextEvent( currentDisplay, &currentEvent );
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::down );
+						XNextEvent(currentDisplay, &currentEvent);
+						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
 						isRetriggered = true;
 					}
 				}
 
-				if ( !isRetriggered )
+				if (!isRetriggered)
 				{
-					unsigned int functionKeysym = XkbKeycodeToKeysym( 
-					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0 );
+					unsigned int functionKeysym = XkbKeycodeToKeysym(
+					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-					if ( functionKeysym <= 255 )
+					if (functionKeysym <= 255)
 					{
-						window->keys[ functionKeysym ] = keyState_t::up;
+						window->keys[ functionKeysym] = keyState_t::up;
 
-						if ( window->keyEvent != nullptr )
+						if (window->keyEvent != nullptr)
 						{
-							window->keyEvent( functionKeysym, keyState_t::up );
+							window->keyEvent(functionKeysym, keyState_t::up);
 						}
 					}
 
 					else
 					{
-						window->keys[ Linux_TranslateKey( functionKeysym ) ] = keyState_t::up;
+						window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::up;
 
-						if ( window->keyEvent != nullptr )
+						if (window->keyEvent != nullptr)
 						{
-							window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::up );
+							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
 						}
 					}
 
-					if ( window->keyEvent != nullptr )
+					if (window->keyEvent != nullptr)
 					{
-						window->keyEvent( Linux_TranslateKey( functionKeysym ), keyState_t::up );
+						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
 					}
 				}
 
@@ -2698,59 +2698,59 @@ private:
 
 			case ButtonPress:
 			{
-				switch ( currentEvent.xbutton.button )
+				switch (currentEvent.xbutton.button)
 				{
 				case 1:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::left ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::down;
 
-					if ( window->mouseButtonEvent != nullptr )
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent( mouseButton_t::left, buttonState_t::down );
+						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
 					}
 					break;
 				}
 
 				case 2:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::middle ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::down;
 
-					if ( window->mouseButtonEvent != nullptr )
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::down );
+						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
 					}
 					break;
 				}
 
 				case 3:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::right ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::down;
 
-					if ( window->mouseButtonEvent != nullptr )
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent( mouseButton_t::right, buttonState_t::down );
+						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
 					}
 					break;
 				}
 
 				case 4:
 				{
-					window->mouseButton[ (unsigned int)mouseScroll_t::up ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
 
-					if ( window->mouseWheelEvent != nullptr )
+					if (window->mouseWheelEvent != nullptr)
 					{
-						window->mouseWheelEvent( mouseScroll_t::down );
+						window->mouseWheelEvent(mouseScroll_t::down);
 					}
 					break;
 				}
 
 				case 5:
 				{
-					window->mouseButton[ (unsigned int)mouseScroll_t::down ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
 
-					if ( window->mouseWheelEvent != nullptr )
+					if (window->mouseWheelEvent != nullptr)
 					{
-						window->mouseWheelEvent( mouseScroll_t::down );
+						window->mouseWheelEvent(mouseScroll_t::down);
 					}
 					break;
 				}
@@ -2767,16 +2767,16 @@ private:
 
 			case ButtonRelease:
 			{
-				switch ( currentEvent.xbutton.button )
+				switch (currentEvent.xbutton.button)
 				{
 				case 1:
 				{
 					//the left mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::left ] = buttonState_t::up;
+					window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::up;
 
-					if ( window->mouseButtonEvent != nullptr )
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent( mouseButton_t::left, buttonState_t::up );
+						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
 					}
 					break;
 				}
@@ -2784,11 +2784,11 @@ private:
 				case 2:
 				{
 					//the middle mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::middle ] = buttonState_t::up;
+					window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::up;
 
-					if ( window->mouseButtonEvent != nullptr )
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent( mouseButton_t::middle, buttonState_t::up );
+						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
 					}
 					break;
 				}
@@ -2796,11 +2796,11 @@ private:
 				case 3:
 				{
 					//the right mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::right ] = buttonState_t::up;
+					window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::up;
 
-					if ( window->mouseButtonEvent != nullptr )
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent( mouseButton_t::right, buttonState_t::up );
+						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
 					}
 					break;
 				}
@@ -2808,14 +2808,14 @@ private:
 				case 4:
 				{
 					//the mouse wheel was scrolled up
-					window->mouseButton[ (unsigned int)mouseScroll_t::up ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
 					break;
 				}
 
 				case 5:
 				{
 					//the mouse wheel was scrolled down
-					window->mouseButton[ (unsigned int)mouseScroll_t::down ] = buttonState_t::down;
+					window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
 					break;
 				}
 
@@ -2842,11 +2842,11 @@ private:
 				screenMousePosition.x = currentEvent.xmotion.x_root;
 				screenMousePosition.y = currentEvent.xmotion.y_root;
 
-				if ( window->mouseMoveEvent != nullptr )
+				if (window->mouseMoveEvent != nullptr)
 				{
-					window->mouseMoveEvent( currentEvent.xmotion.x,
+					window->mouseMoveEvent(currentEvent.xmotion.x,
 						currentEvent.xmotion.y, currentEvent.xmotion.x_root,
-						currentEvent.xmotion.y_root );
+						currentEvent.xmotion.y_root);
 				}
 				break;
 			}
@@ -2855,22 +2855,22 @@ private:
 			case FocusOut:
 			{
 				window->inFocus = false;
-				if ( window->focusEvent != nullptr )
+				if (window->focusEvent != nullptr)
 				{
-					window->focusEvent( 
-						window->inFocus );
+					window->focusEvent(
+						window->inFocus);
 				}
 				break;
 			}
 
-			//when the window is back in focus ( use to call restore callback? )
+			//when the window is back in focus (use to call restore callback?)
 			case FocusIn:
 			{
 				window->inFocus = true;
 
-				if ( window->focusEvent != nullptr )
+				if (window->focusEvent != nullptr)
 				{
-					window->focusEvent( window->inFocus );
+					window->focusEvent(window->inFocus);
 				}
 				break;
 			}
@@ -2882,14 +2882,14 @@ private:
 				window->resolution.width = currentEvent.xresizerequest.width;
 				window->resolution.height = currentEvent.xresizerequest.height;
 
-				glViewport( 0, 0,
+				glViewport(0, 0,
 					window->resolution.width,
-					window->resolution.height );
+					window->resolution.height);
 
-				if ( window->resizeEvent != nullptr )
+				if (window->resizeEvent != nullptr)
 				{
-					window->resizeEvent( currentEvent.xresizerequest.width,
-						currentEvent.xresizerequest.height );
+					window->resizeEvent(currentEvent.xresizerequest.width,
+						currentEvent.xresizerequest.height);
 				}
 
 				break;
@@ -2898,16 +2898,16 @@ private:
 			//when a request to configure the window is made
 			case ConfigureNotify:
 			{
-				glViewport( 0, 0, currentEvent.xconfigure.width,
-					currentEvent.xconfigure.height );
+				glViewport(0, 0, currentEvent.xconfigure.width,
+					currentEvent.xconfigure.height);
 
 				//check if window was resized
-				if ( ( unsigned int )currentEvent.xconfigure.width != window->resolution.width
-					|| ( unsigned int )currentEvent.xconfigure.height != window->resolution.height )
+				if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
+					|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
 				{
-					if ( window->resizeEvent != nullptr )
+					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent( currentEvent.xconfigure.width, currentEvent.xconfigure.height );
+						window->resizeEvent(currentEvent.xconfigure.width, currentEvent.xconfigure.height);
 					}
 
 					window->resolution.width = currentEvent.xconfigure.width;
@@ -2915,12 +2915,12 @@ private:
 				}
 
 				//check if window was moved
-				if ( ( unsigned int )currentEvent.xconfigure.x != window->position.x
-					|| ( unsigned int )currentEvent.xconfigure.y != window->position.y )
+				if ((unsigned int)currentEvent.xconfigure.x != window->position.x
+					|| (unsigned int)currentEvent.xconfigure.y != window->position.y)
 				{
-					if ( window->movedEvent != nullptr )
+					if (window->movedEvent != nullptr)
 					{
-						window->movedEvent( currentEvent.xconfigure.x, currentEvent.xconfigure.y );
+						window->movedEvent(currentEvent.xconfigure.x, currentEvent.xconfigure.y);
 					}
 
 					window->position.x = currentEvent.xconfigure.x;
@@ -2933,58 +2933,57 @@ private:
 			{
 				//this is needed in order to read from the windows WM_STATE Atomic
 				//to determine if the property notify event was caused by a client
-				//iconify event( minimizing the window ), a maximise event, a focus 
+				//iconify event(minimizing the window), a maximise event, a focus 
 				//event and an attention demand event. NOTE these should only be 
 				//for eventts that are not triggered programatically 
 
 				Atom type;
 				int format;
 				ulong numItems, bytesAfter;
-				unsigned char*  properties = nullptr;
+				unsigned char* properties = nullptr;
 
-				XGetWindowProperty( currentDisplay, currentEvent.xproperty.window,
+				XGetWindowProperty(currentDisplay, currentEvent.xproperty.window,
 					AtomState,
 					0, LONG_MAX, false, AnyPropertyType,
 					&type, &format, &numItems, &bytesAfter,
-					& properties );
+					& properties);
 
-				if (  properties && ( format == 32 ) )
+				if (properties && (format == 32))
 				{
 					//go through each property and match it to an existing Atomic state
-					for ( unsigned int currentItem = 0; currentItem < numItems; currentItem++ )
+					for (unsigned int currentItem = 0; currentItem < numItems; currentItem++)
 					{
-						Atom currentProperty = ( ( long* )(  properties ) )[ currentItem ];
+						Atom currentProperty = ((long*)(properties))[ currentItem];
 
-						if ( currentProperty == AtomHidden )
+						if (currentProperty == AtomHidden)
 						{
 							//window was minimized
-							if ( window->minimizedEvent != nullptr )
+							if (window->minimizedEvent != nullptr)
 							{
 								//if the minimized callback for the window was set							
 								window->minimizedEvent();
 							}
 						}
 
-						if ( currentProperty == AtomMaxVert ||
-							currentProperty == AtomMaxVert )
+						if (currentProperty == AtomMaxVert ||
+							currentProperty == AtomMaxVert)
 						{
 							//window was maximized
-							if ( window->maximizedEvent != nullptr )
+							if (window->maximizedEvent != nullptr)
 							{
 								//if the maximized callback for the window was set
 								window->maximizedEvent();
 							}
 						}
 
-						if ( currentProperty == AtomFocused )
+						if (currentProperty == AtomFocused)
 						{
 							//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
 						}
 
-						if ( currentProperty == AtomDemandsAttention )
+						if (currentProperty == AtomDemandsAttention)
 						{
-							//the window demands attention like a celebrity
-							printf( "window demands attention \n" );
+							//the window demands user attention
 						}
 					}
 				}
@@ -2994,7 +2993,7 @@ private:
 
 			case GravityNotify:
 			{
-				//this is only supposed to pop up when the parent of this window( if any ) has something happen
+				//this is only supposed to pop up when the parent of this window(if any) has something happen
 				//to it so that this window can react to said event as well.
 				break;
 			}
@@ -3002,16 +3001,16 @@ private:
 			//check for events that were created by the TinyWindow manager
 			case ClientMessage:
 			{
-				const char* atomName = XGetAtomName( currentDisplay, currentEvent.xclient.message_type );
-				if ( atomName != nullptr )
+				const char* atomName = XGetAtomName(currentDisplay, currentEvent.xclient.message_type);
+				if (atomName != nullptr)
 				{
-					//printf( "%s\n", l_AtomName );
+					//printf("%s\n", l_AtomName);
 				}
 
-				if ( ( Atom )currentEvent.xclient.data.l[ 0 ] == AtomClose )
+				if ((Atom)currentEvent.xclient.data.l[ 0] == AtomClose)
 				{
 					window->shouldClose = true;
-					if( window->destroyedEvent != nullptr )
+					if(window->destroyedEvent != nullptr)
 					{
 						window->destroyedEvent();
 					}
@@ -3019,7 +3018,7 @@ private:
 				}
 
 				//check if full screen
-				if ( ( Atom )currentEvent.xclient.data.l[ 1 ] == AtomFullScreen )
+				if ((Atom)currentEvent.xclient.data.l[ 1] == AtomFullScreen)
 				{
 					break;
 				}
@@ -3035,9 +3034,9 @@ private:
 	}
 
 	//debugging. used to determine what type of event was generated
-	static const char* Linux_GetEventType( XEvent currentEvent )
+	static const char* Linux_GetEventType(XEvent currentEvent)
 	{
-		switch ( currentEvent.type )
+		switch (currentEvent.type)
 		{
 		case MotionNotify:
 		{
@@ -3197,9 +3196,9 @@ private:
 	}
 
 	//translate keys from X keys to TinyWindow Keys
-	static unsigned int Linux_TranslateKey( unsigned int keySymbol )
+	static unsigned int Linux_TranslateKey(unsigned int keySymbol)
 	{
-		switch ( keySymbol )
+		switch (keySymbol)
 		{
 		case XK_Escape:
 		{
@@ -3438,15 +3437,15 @@ private:
 		}
 	}
 
-	std::error_code Linux_SetWindowIcon( void ) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
+	std::error_code Linux_SetWindowIcon(void) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
-		//sorry :( 
+		//sorry :(
 		return make_error_code(linuxFunctionNotImplemented);
 	}
 
 	GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
 	{
-		const int visualAttributes[  ] =
+		const int visualAttributes[ ] =
 		{
 			GLX_X_RENDERABLE, true,
 			GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
@@ -3465,30 +3464,30 @@ private:
 		unsigned int bestBufferConfig;//, bestNumSamples = 0;
 		GLXFBConfig* configs = glXChooseFBConfig(currentDisplay, 0, visualAttributes, &frameBufferCount);
 
-		for ( int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++ )
+		for (int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++)
 		{
 			XVisualInfo* visualInfo = glXGetVisualFromFBConfig(currentDisplay, configs[currentConfig]);
 
-			if ( visualInfo )
+			if (visualInfo)
 			{
-				//printf( "%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size );
+				//printf("%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size);
 				int samples, sampleBuffer;
-				glXGetFBConfigAttrib( currentDisplay, configs[ currentConfig ], GLX_SAMPLE_BUFFERS, &sampleBuffer );
+				glXGetFBConfigAttrib(currentDisplay, configs[ currentConfig], GLX_SAMPLE_BUFFERS, &sampleBuffer);
 				glXGetFBConfigAttrib(currentDisplay, configs[currentConfig], GLX_SAMPLES, &samples);
 
-				if ( sampleBuffer && samples > -1 )
+				if (sampleBuffer && samples > -1)
 				{
 					bestBufferConfig = currentConfig;
 					//bestNumSamples = samples;
 				}
 			}
 
-			XFree( visualInfo );
+			XFree(visualInfo);
 		}
 
-		GLXFBConfig BestConfig = configs[ bestBufferConfig ];
+		GLXFBConfig BestConfig = configs[ bestBufferConfig];
 
-		XFree( configs );
+		XFree(configs);
 
 		return BestConfig;
 	}
