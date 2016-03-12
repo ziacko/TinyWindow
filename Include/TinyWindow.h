@@ -38,155 +38,344 @@
 namespace TinyWindow
 {
 
-const int defaultWindowWidth = 1280;
-const int defaultWindowHeight = 720;
+	const int defaultWindowWidth = 1280;
+	const int defaultWindowHeight = 720;
 
-struct uiVec2
-{
-	uiVec2()
+	struct uiVec2
 	{
-		this->x = 0;
-		this->y = 0;
-	}
+		uiVec2()
+		{
+			this->x = 0;
+			this->y = 0;
+		}
 
-	uiVec2(unsigned int x, unsigned int y)
-	{
-		this->x = x;
-		this->y = y;
-	}
+		uiVec2(unsigned int x, unsigned int y)
+		{
+			this->x = x;
+			this->y = y;
+		}
 
-	union
-	{
-		unsigned int x;
-		unsigned int width;
+		union
+		{
+			unsigned int x;
+			unsigned int width;
+		};
+
+		union
+		{
+			unsigned int y;
+			unsigned int height;
+		};
+
+		static uiVec2 Zero()
+		{
+			return uiVec2(0, 0);
+		}
 	};
 
-	union
+	enum class keyState_t
 	{
-		unsigned int y;
-		unsigned int height;
+		bad = -1,						/**< If get key state fails (could not name it ERROR) */
+		up,								/**< The key is currently up */
+		down,							/**< The key is currently down */
 	};
 
-	static uiVec2 Zero()
+	enum key_t
 	{
-		return uiVec2(0, 0);
+		bad = -1,						/**< The key pressed is considered invalid */
+		first = 256 + 1,				/**< The first key that is not a char */
+		F1, 							/**< The F1 key */
+		F2,								/**< The F2 key */
+		F3,								/**< The F3 key */
+		F4,								/**< The F4 key */
+		F5,								/**< The F5 key */
+		F6,								/**< The F6 key */
+		F7,								/**< The F7 key */
+		F8,								/**< The F8 key */
+		F9,								/**< The F9 key */
+		F10,							/**< The F10 key */
+		F11,							/**< The F11 key */
+		F12,							/**< The F12 key */
+		capsLock,						/**< The CapsLock key */
+		leftShift,						/**< The left Shift key */
+		rightShift,						/**< The right Shift key */
+		leftControl,					/**< The left Control key */
+		rightControl,					/**< The right Control key */
+		leftWindow,						/**< The left Window key */
+		rightWindow,					/**< The right Window key */
+		leftAlt,						/**< The left Alternate key */
+		rightAlt,						/**< The right Alternate key */
+		enter,							/**< The Enter/Return key */
+		printScreen,					/**< The PrintScreen key */
+		scrollLock,						/**< The ScrollLock key */
+		numLock,						/**< The NumLock key */
+		pause,							/**< The pause/break key */
+		insert,							/**< The insert key */
+		home,							/**< The Home key */
+		end,							/**< The End key */
+		pageUp,							/**< The PageUp key */
+		pageDown,						/**< The PageDown key */
+		arrowDown,						/**< The ArrowDown key */
+		arrowUp,						/**< The ArrowUp key */
+		arrowLeft,						/**< The ArrowLeft key */
+		arrowRight,						/**< The ArrowRight key */
+		keypadDivide,					/**< The KeyPad Divide key */
+		keypadMultiply,					/**< The Keypad Multiply key */
+		keypadSubtract,					/**< The Keypad Subtract key */
+		keypadAdd,						/**< The Keypad Add key */
+		keypadEnter,					/**< The Keypad Enter key */
+		keypadPeriod,					/**< The Keypad Period/Decimal key */
+		keypad0,						/**< The Keypad 0 key */
+		keypad1,						/**< The Keypad 1 key */
+		keypad2,						/**< The Keypad 2 key */
+		keypad3,						/**< The Keypad 3 key */
+		keypad4,						/**< The Keypad 4 key */
+		keypad5,						/**< The Keypad 5 key */
+		keypad6,						/**< The Keypad 6 key */
+		keypad7,						/**< The Keypad 7 key */
+		keypad8,						/**< The keypad 8 key */
+		keypad9,						/**< The Keypad 9 key */
+		backspace,						/**< The Backspace key */
+		tab,							/**< The Tab key */
+		del,							/**< The Delete key */
+		escape,							/**< The Escape key */
+		last = escape,					/**< The last key to be supported */
+	};
+
+	enum class buttonState_t
+	{
+		up,								/**< The mouse button is currently up */
+		down							/**< The mouse button is currently down */
+	};
+
+	enum class mouseButton_t
+	{
+		left,							/**< The left mouse button */
+		right,							/**< The right mouse button */
+		middle,							/**< The middle mouse button / ScrollWheel */
+		last,							/**< The last mouse button to be supported */
+	};
+
+	enum class mouseScroll_t
+	{
+		down,							/**< The mouse wheel up */
+		up								/**< The mouse wheel down */
+	};
+
+	enum class style_t
+	{
+		bare,							/**< The window has no decorators but the window border and title bar */
+		normal,							/**< The default window style for the respective platform */
+		popup,							/**< The window has no decorators */
+	};
+
+	enum class state_t
+	{
+		normal,							/**< The window is in its default state */
+		maximized,						/**< The window is currently maximized */
+		minimized,						/**< The window is currently minimized */
+		fullscreen,						/**< The window is currently full screen */
+	};
+
+	enum decorator_t
+	{
+		titleBar = 0x01,				/**< The title bar decoration of the window */
+		icon = 0x02,					/**< The icon decoration of the window */
+		border = 0x04,					/**< The border decoration of the window */
+		minimizeButton = 0x08,			/**< The minimize button decoration of the window */
+		maximizeButton = 0x010,			/**< The maximize button decoration pf the window */
+		closeButton = 0x20,				/**< The close button decoration of the window */
+		sizeableBorder = 0x40,			/**< The sizable border decoration of the window */
+	};
+
+	enum class error_t : int
+	{
+		success = 0,						/**< If a function call was successful*/
+		invalidWindowName,					/**< If an invalid window name was given */
+		invalidIconPath,					/**< If an invalid icon path was given */
+		invalidWindowIndex,					/**< If an invalid window index was given */
+		invalidWindowState,					/**< If an invalid window state was given */
+		invalidResolution,					/**< If an invalid window resolution was given */
+		invalidContext,						/**< If the OpenGL context for the window is invalid */
+		existingContext,					/**< If the window already has an OpenGL context */
+		notInitialized,						/**< If the window is being used without being initialized */
+		alreadyInitialized,					/**< If the window was already initialized */
+		invalidTitlebar,					/**< If the Title-bar text given was invalid */
+		invalidCallback,					/**< If the given event callback was invalid */
+		windowInvalid,						/**< If the window given was invalid */
+		invalidWindowStyle,					/**< If the window style gives is invalid */
+		functionNotImplemented,				/**< If the function has not yet been implemented in the current version of the API */
+		linuxCannotConnectXServer,			/**< Linux: if cannot connect to an X11 server */
+		linuxInvalidVisualinfo,				/**< Linux: if visual information given was invalid */
+		linuxCannotCreateWindow,			/**< Linux: when X11 fails to create a new window */
+		linuxFunctionNotImplemented,		/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
+		windowsCannotCreateWindows,			/**< Windows: when Win32 cannot create a window */
+		windowsCannotInitialize,			/**< Windows: when Win32 cannot initialize */
+		windowsFunctionNotImplemented,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
+	};
+
+	typedef std::function<void(unsigned int, keyState_t)>										keyEvent_t;
+	typedef std::function<void(mouseButton_t, buttonState_t)>									mouseButtonEvent_t;
+	typedef std::function<void(mouseScroll_t)>													mouseWheelEvent_t;
+	typedef std::function<void(void)>															destroyedEvent_t;
+	typedef std::function<void(void)>															maximizedEvent_t;
+	typedef std::function<void(void)>															minimizedEvent_t;
+	typedef std::function<void(bool)>															focusEvent_t;
+	typedef std::function<void(unsigned int, unsigned int)>										movedEvent_t;
+	typedef std::function<void(unsigned int, unsigned int)>										resizeEvent_t;
+	typedef std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent_t;
+
+	class errorCategory_t : public std::error_category
+	{
+	public:
+
+		const char* name() const throw() override
+		{
+			return "tinyWindow";
+		}
+
+		/**
+		* return the error message associated with the given error number
+		*/
+		virtual std::string message(int errorValue) const override
+		{
+			error_t err = (error_t)errorValue;
+			switch (err)
+			{
+			case error_t::invalidWindowName:
+			{
+				return "Error: invalid window name \n";
+			}
+
+			case error_t::invalidIconPath:
+			{
+				return "Error: invalid icon path \n";
+			}
+
+			case error_t::invalidWindowIndex:
+			{
+				return "Error: invalid window index \n";
+			}
+
+			case error_t::invalidWindowState:
+			{
+				return "Error: invalid window state \n";
+			}
+
+			case error_t::invalidResolution:
+			{
+				return "Error: invalid resolution \n";
+			}
+
+			case error_t::invalidContext:
+			{
+				return "Error: Failed to create OpenGL context \n";
+			}
+
+			case error_t::existingContext:
+			{
+				return "Error: context already created \n";
+			}
+
+			case error_t::notInitialized:
+			{
+				return "Error: Window manager not initialized \n";
+			}
+
+			case error_t::alreadyInitialized:
+			{
+				return "Error: window has already been initialized \n";
+			}
+
+			case error_t::invalidTitlebar:
+			{
+				return "Error: invalid title bar name (cannot be null or nullptr) \n";
+			}
+
+			case error_t::invalidCallback:
+			{
+				return "Error: invalid event callback given \n";
+			}
+
+			case error_t::windowInvalid:
+			{
+				return "Error: window was not found \n";
+			}
+
+			case error_t::invalidWindowStyle:
+			{
+				return "Error: invalid window style given \n";
+			}
+
+			case error_t::functionNotImplemented:
+			{
+				return "Error: I'm sorry but this function has not been implemented yet :(\n";
+			}
+
+			case error_t::linuxCannotConnectXServer:
+			{
+				return "Error: cannot connect to X server \n";
+			}
+
+			case error_t::linuxInvalidVisualinfo:
+			{
+				return "Error: Invalid visual information given \n";
+			}
+
+			case error_t::linuxCannotCreateWindow:
+			{
+				return "Error: failed to create window \n";
+			}
+
+			case error_t::linuxFunctionNotImplemented:
+			{
+				return "Error: function not implemented on Linux platform yet. sorry :(\n";
+			}
+
+			case error_t::windowsCannotCreateWindows:
+			{
+				return "Error: failed to create window \n";
+			}
+
+			case error_t::windowsFunctionNotImplemented:
+			{
+				return "Error: function not implemented on Windows platform yet. sorry ;(\n";
+			}
+
+			case error_t::success:
+			{
+				return "function call was successful \n";
+			}
+
+			default:
+			{
+				return "Error: unspecified Error \n";
+			}
+			}
+		}
+		errorCategory_t() {};
+
+		const static errorCategory_t& get()
+		{
+			const static errorCategory_t category;
+			return category;
+
+		}
+	};
+
+	std::error_code make_error_code(error_t eCode)
+	{
+		return std::error_code(static_cast<int>(eCode), errorCategory_t::get());
 	}
 };
-
-enum class keyState_t
+//uggh I hate this hack
+namespace std
 {
-	bad = -1,						/**< If get key state fails (could not name it ERROR) */
-	up,								/**< The key is currently up */
-	down,							/**< The key is currently down */
+	template<> struct is_error_code_enum<TinyWindow::error_t> : std::true_type {};
 };
 
-enum key_t
+namespace TinyWindow
 {
-	bad = -1,						/**< The key pressed is considered invalid */
-	first = 256 + 1,				/**< The first key that is not a char */
-	F1, 							/**< The F1 key */
-	F2,								/**< The F2 key */
-	F3,								/**< The F3 key */
-	F4,								/**< The F4 key */
-	F5,								/**< The F5 key */
-	F6,								/**< The F6 key */
-	F7,								/**< The F7 key */
-	F8,								/**< The F8 key */
-	F9,								/**< The F9 key */
-	F10,							/**< The F10 key */
-	F11,							/**< The F11 key */
-	F12,							/**< The F12 key */
-	capsLock,						/**< The CapsLock key */
-	leftShift,						/**< The left Shift key */
-	rightShift,						/**< The right Shift key */
-	leftControl,					/**< The left Control key */
-	rightControl,					/**< The right Control key */
-	leftWindow,						/**< The left Window key */
-	rightWindow,					/**< The right Window key */
-	leftAlt,						/**< The left Alternate key */
-	rightAlt,						/**< The right Alternate key */
-	enter,							/**< The Enter/Return key */
-	printScreen,					/**< The PrintScreen key */
-	scrollLock,						/**< The ScrollLock key */
-	numLock,						/**< The NumLock key */
-	pause,							/**< The pause/break key */
-	insert,							/**< The insert key */
-	home,							/**< The Home key */
-	end,							/**< The End key */
-	pageUp,							/**< The PageUp key */
-	pageDown,						/**< The PageDown key */
-	arrowDown,						/**< The ArrowDown key */
-	arrowUp,						/**< The ArrowUp key */
-	arrowLeft,						/**< The ArrowLeft key */
-	arrowRight,						/**< The ArrowRight key */
-	keypadDivide,					/**< The KeyPad Divide key */
-	keypadMultiply,					/**< The Keypad Multiply key */
-	keypadSubtract,					/**< The Keypad Subtract key */
-	keypadAdd,						/**< The Keypad Add key */
-	keypadEnter,					/**< The Keypad Enter key */
-	keypadPeriod,					/**< The Keypad Period/Decimal key */
-	keypad0,						/**< The Keypad 0 key */
-	keypad1,						/**< The Keypad 1 key */
-	keypad2,						/**< The Keypad 2 key */
-	keypad3,						/**< The Keypad 3 key */
-	keypad4,						/**< The Keypad 4 key */
-	keypad5,						/**< The Keypad 5 key */
-	keypad6,						/**< The Keypad 6 key */
-	keypad7,						/**< The Keypad 7 key */
-	keypad8,						/**< The keypad 8 key */
-	keypad9,						/**< The Keypad 9 key */
-	backspace,						/**< The Backspace key */
-	tab,							/**< The Tab key */
-	del,							/**< The Delete key */
-	escape,							/**< The Escape key */
-	last = escape,					/**< The last key to be supported */
-};
-
-enum class buttonState_t
-{
-	up,								/**< The mouse button is currently up */
-	down							/**< The mouse button is currently down */
-};
-
-enum class mouseButton_t
-{
-	left,							/**< The left mouse button */
-	right,							/**< The right mouse button */
-	middle,							/**< The middle mouse button / ScrollWheel */
-	last,							/**< The last mouse button to be supported */
-};
-
-enum class mouseScroll_t
-{
-	down,							/**< The mouse wheel up */
-	up								/**< The mouse wheel down */
-};
-
-enum class style_t
-{
-	bare,							/**< The window has no decorators but the window border and title bar */
-	normal,							/**< The default window style for the respective platform */
-	popup,							/**< The window has no decorators */
-};
-
-enum class state_t
-{
-	normal,							/**< The window is in its default state */
-	maximized,						/**< The window is currently maximized */
-	minimized,						/**< The window is currently minimized */
-	fullscreen,						/**< The window is currently full screen */
-};
-
-enum decorator_t
-{
-	titleBar = 0x01,				/**< The title bar decoration of the window */
-	icon = 0x02,					/**< The icon decoration of the window */
-	border = 0x04,					/**< The border decoration of the window */
-	minimizeButton = 0x08,			/**< The minimize button decoration of the window */
-	maximizeButton = 0x010,			/**< The maximize button decoration pf the window */
-	closeButton = 0x20,				/**< The close button decoration of the window */
-	sizeableBorder = 0x40,			/**< The sizable border decoration of the window */
-};
 
 struct window_t
 {
@@ -210,16 +399,16 @@ struct window_t
 	state_t							currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
 	unsigned int					currentWindowStyle;										/**< The current style of the window */
 
-	std::function<void(unsigned int, keyState_t)>										keyEvent;					/**< This is the callback to be used when a key has been pressed */
-	std::function<void(mouseButton_t, buttonState_t)>									mouseButtonEvent;			/**< This is the callback to be used when a mouse button has been pressed */
-	std::function<void(mouseScroll_t)>													mouseWheelEvent;			/**< This is the callback to be used when the mouse wheel has been scrolled. */
-	std::function<void(void)>															destroyedEvent;				/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
-	std::function<void(void)>															maximizedEvent;				/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
-	std::function<void(void)>															minimizedEvent;				/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
-	std::function<void(bool)>															focusEvent;					/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
-	std::function<void(unsigned int, unsigned int)>										movedEvent;					/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
-	std::function<void(unsigned int, unsigned int)>										resizeEvent;				/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
-	std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent;				/**< This is a callback to be used when the mouse has been moved */
+	keyEvent_t						keyEvent;												/**< This is the callback to be used when a key has been pressed */
+	mouseButtonEvent_t				mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
+	mouseWheelEvent_t				mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
+	destroyedEvent_t				destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
+	maximizedEvent_t				maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
+	minimizedEvent_t				minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
+	focusEvent_t					focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
+	movedEvent_t					movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
+	resizeEvent_t					resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
+	mouseMoveEvent_t				mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
 
 #if defined(TW_WINDOWS)
 
@@ -243,12 +432,16 @@ struct window_t
 	window_t(const char* name = nullptr, unsigned int iD = 0,
 		unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 		bool shouldClose = false, state_t currentState = state_t::normal,
-		std::function<void(unsigned int, keyState_t)> keyEvent = nullptr,
-		std::function<void(mouseButton_t, buttonState_t)> mouseButtonEvent = nullptr, std::function<void(mouseScroll_t)> mouseWheelEvent = nullptr,
-		std::function<void(void)> destroyedEvent = nullptr, std::function<void(void)> maximizedEvent = nullptr, std::function<void(void)> minimizedEvent = nullptr,
-		std::function<void(bool)> focusEvent = nullptr,
-		std::function<void(unsigned int, unsigned int)> movedEvent = nullptr, std::function<void(unsigned int, unsigned int)> resizeEvent = nullptr,
-		std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> mouseMoveEvent = nullptr)
+		keyEvent_t keyEvent = nullptr,
+		mouseButtonEvent_t mouseButtonEvent = nullptr, 
+		mouseWheelEvent_t mouseWheelEvent = nullptr,
+		destroyedEvent_t destroyedEvent = nullptr,
+		maximizedEvent_t maximizedEvent = nullptr, 
+		minimizedEvent_t minimizedEvent = nullptr,
+		focusEvent_t focusEvent = nullptr,
+		movedEvent_t movedEvent = nullptr, 
+		resizeEvent_t resizeEvent = nullptr,
+		mouseMoveEvent_t mouseMoveEvent = nullptr)
 	{
 		this->name = name;
 		this->iD = iD;
@@ -364,7 +557,7 @@ public:
 	}
 
 	/**
-	 * Return the total amount of windows the manager has. returns -1 if failed
+	 * Return the total amount of windows the manager has
 	 */
 	int GetNumWindows(void)
 	{
@@ -421,9 +614,9 @@ public:
 			window->resolution.height = resolution.height;
 
 			Platform_SetWindowResolution(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 	/**
 	 * Set the Size/Resolution of the given window
@@ -436,9 +629,9 @@ public:
 			window->resolution.y = height;
 
 			Platform_SetWindowResolution(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -452,9 +645,9 @@ public:
 			window->position.y = windowPosition.y;
 
 			Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 	/**
 	* Set the Position of the given window relative to screen co-ordinates
@@ -467,9 +660,9 @@ public:
 			window->position.y = y;
 
 			Platform_SetWindowPosition(window, x, y);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -483,9 +676,9 @@ public:
 			window->mousePosition.y = mousePosition.y;
 
 			Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 	/**
 	* Set the mouse Position of the given window's co-ordinates
@@ -498,9 +691,9 @@ public:
 			window->mousePosition.y = y;
 
 			Platform_SetMousePositionInWindow(window, x, y);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -511,9 +704,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_SwapBuffers(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(notInitialized);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -524,9 +717,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_MakeCurrentContext(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -539,9 +732,9 @@ public:
 			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
 			Platform_SetFullScreen(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -552,9 +745,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_MinimizeWindow(window, newState);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 	
 	/**
@@ -565,9 +758,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_MaximizeWindow(window, newState);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -580,11 +773,11 @@ public:
 			if (window != nullptr)
 			{
 				Platform_SetWindowTitleBar(window, newTitle);
-				return make_error_code(success);
+				return TinyWindow::error_t::success;
 			}
-			return make_error_code(windowInvalid);
+			return TinyWindow::error_t::windowInvalid;
 		}
-		return make_error_code(invalidTitlebar);
+		return TinyWindow::error_t::invalidTitlebar;
 	}
 
 	/**
@@ -592,7 +785,7 @@ public:
 	*/
 	std::error_code SetWindowIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
 	{
-		return make_error_code(functionNotImplemented);
+		return TinyWindow::error_t::functionNotImplemented;
 	}
 
 	/**
@@ -603,9 +796,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_FocusWindow(window, newState);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -616,9 +809,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_RestoreWindow(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -670,9 +863,9 @@ public:
 		if (window != nullptr)
 		{
 			ShutdownWindow(window);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -683,9 +876,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_SetWindowStyle(window, windowStyle);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -696,9 +889,9 @@ public:
 		if (window != nullptr)
 		{
 			Platform_EnableWindowDecorators(window, decorators);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -709,170 +902,12 @@ public:
 		if (window != nullptr)
 		{
 			Platform_DisableWindowDecorators(window, decorators);
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
-		return make_error_code(windowInvalid);
+		return TinyWindow::error_t::windowInvalid;
 	}
 
 private:
-
-	enum error_t : int
-	{
-		success = 0,						/**< If a function call was successful*/
-		invalidWindowName,					/**< If an invalid window name was given */
-		invalidIconPath,					/**< If an invalid icon path was given */
-		invalidWindowIndex,					/**< If an invalid window index was given */
-		invalidWindowState,					/**< If an invalid window state was given */
-		invalidResolution,					/**< If an invalid window resolution was given */
-		invalidContext,						/**< If the OpenGL context for the window is invalid */
-		existingContext,					/**< If the window already has an OpenGL context */
-		notInitialized,						/**< If the window is being used without being initialized */
-		alreadyInitialized,					/**< If the window was already initialized */
-		invalidTitlebar,					/**< If the Title-bar text given was invalid */
-		invalidCallback,					/**< If the given event callback was invalid */
-		windowInvalid,						/**< If the window given was invalid */
-		invalidWindowStyle,					/**< If the window style gives is invalid */
-		functionNotImplemented,				/**< If the function has not yet been implemented in the current version of the API */
-		linuxCannotConnectXServer,			/**< Linux: if cannot connect to an X11 server */
-		linuxInvalidVisualinfo,				/**< Linux: if visual information given was invalid */
-		linuxCannotCreateWindow,			/**< Linux: when X11 fails to create a new window */
-		linuxFunctionNotImplemented,		/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
-		windowsCannotCreateWindows,			/**< Windows: when Win32 cannot create a window */
-		windowsCannotInitialize,			/**< Windows: when Win32 cannot initialize */
-		windowsFunctionNotImplemented,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
-	};
-
-	class errorCategory_t : public std::error_category
-	{
-		public:
-		
-		const char* name() const throw() override
-		{
-			return "tinyWindow";
-		} 
-
-		/**
-		* return the error message associated with the given error number
-		*/
-		virtual std::string message(int errorValue) const override
-		{
-			switch (errorValue)
-			{
-			case invalidWindowName:
-			{
-				return "Error: invalid window name \n";
-			}
-
-			case invalidIconPath:
-			{
-				return "Error: invalid icon path \n";
-			}
-
-			case invalidWindowIndex:
-			{
-				return "Error: invalid window index \n";
-			}
-
-			case invalidWindowState:
-			{
-				return "Error: invalid window state \n";
-			}
-
-			case invalidResolution:
-			{
-				return "Error: invalid resolution \n";
-			}
-
-			case invalidContext:
-			{
-				return "Error: Failed to create OpenGL context \n";
-			}
-
-			case existingContext:
-			{
-				return "Error: context already created \n";
-			}
-
-			case notInitialized:
-			{
-				return "Error: Window manager not initialized \n";
-			}
-
-			case alreadyInitialized:
-			{
-				return "Error: window has already been initialized \n";
-			}
-
-			case invalidTitlebar:
-			{
-				return "Error: invalid title bar name (cannot be null or nullptr) \n";
-			}
-
-			case invalidCallback:
-			{
-				return "Error: invalid event callback given \n";
-			}
-
-			case windowInvalid:
-			{
-				return "Error: window was not found \n";
-			}
-
-			case invalidWindowStyle:
-			{
-				return "Error: invalid window style given \n";
-			}
-
-			case functionNotImplemented:
-			{
-				return "Error: I'm sorry but this function has not been implemented yet :(\n";
-			}
-
-			case linuxCannotConnectXServer:
-			{
-				return "Error: cannot connect to X server \n";
-			}
-
-			case linuxInvalidVisualinfo:
-			{
-				return "Error: Invalid visual information given \n";
-			}
-
-			case linuxCannotCreateWindow:
-			{
-				return "Error: failed to create window \n";
-			}
-
-			case linuxFunctionNotImplemented:
-			{
-				return "Error: function not implemented on Linux platform yet. sorry :(\n";
-			}
-
-			case windowsCannotCreateWindows:
-			{
-				return "Error: failed to create window \n";
-			}
-
-			case windowsFunctionNotImplemented:
-			{
-				return "Error: function not implemented on Windows platform yet. sorry ;(\n";
-			}
-
-			default:
-			{
-				return "Error: unspecified Error \n";
-			}
-			}
-		}
-		errorCategory_t(){};
-
-		const static errorCategory_t& get()
-		{
-			const static errorCategory_t category;
-			return category;
-
-		}
-	};
 
 	std::vector< std::unique_ptr<window_t> >				windowList;
 
@@ -900,10 +935,10 @@ private:
 
 		if (window->contextCreated)
 		{
-			return make_error_code(success);
+			return TinyWindow::error_t::success;
 		}
 
-		return make_error_code(invalidContext);
+		return TinyWindow::error_t::invalidContext;
 #elif defined(TW_LINUX)
 		if (!window->context)
 		{
@@ -928,16 +963,16 @@ private:
 
 				window->contextCreated = true;
 				InitializeAtoms();
-				return make_error_code(success);
+				return success;
 			}
-			return make_error_code(linuxCannotConnectXServer);
+			return linuxCannotConnectXServer;
 		}
 
 		else
 		{
-			return make_error_code(existingContext);
+			return existingContext;
 		}
-		return make_error_code(existingContext);
+		return existingContext;
 #endif
 	}
 
@@ -1204,7 +1239,7 @@ private:
 
 		default:
 		{
-			return make_error_code(invalidWindowStyle);
+			return TinyWindow::error_t::invalidWindowStyle;
 		}
 		}
 
@@ -1253,11 +1288,11 @@ private:
 
 		default:
 		{
-			return make_error_code(invalidWindowStyle);
+			return TinyWindow::error_t::invalidWindowStyle;
 		}
 		}
 #endif
-		return make_error_code(success);
+		return TinyWindow::error_t::success;
 	}
 
 	void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
@@ -1521,11 +1556,6 @@ private:
 		window->windowHandle = 0;
 		window->context = 0;
 #endif
-	}
-
-	static std::error_code make_error_code(error_t eCode)
-	{
-		return std::error_code(static_cast<int>(eCode), errorCategory_t::get());
 	}
 	
 #if defined(TW_WINDOWS)
@@ -2512,7 +2542,7 @@ private:
 
 		if (!currentDisplay)
 		{
-			return make_error_code(linuxCannotConnectXServer);
+			return linuxCannotConnectXServer;
 		}
 
 		//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window)); 
@@ -2521,7 +2551,7 @@ private:
 
 		if (!window->visualInfo)
 		{
-			return make_error_code(linuxInvalidVisualinfo);
+			return linuxInvalidVisualinfo;
 		}
 
 		window->setAttributes.colormap = XCreateColormap(currentDisplay,
@@ -2543,7 +2573,7 @@ private:
 
 		if(!window->windowHandle)
 		{
-			return make_error_code(linuxCannotCreateWindow);
+			return linuxCannotCreateWindow;
 			exit(0);
 		}
 
@@ -2554,7 +2584,7 @@ private:
 		XSetWMProtocols(currentDisplay, window->windowHandle, &AtomClose, true);	
 
 		Platform_InitializeGL(window);
-		return make_error_code(success);
+		return success;
 	}
 
 	void Linux_ShutdownWindow(window_t* window)
@@ -3435,7 +3465,7 @@ private:
 	std::error_code Linux_SetWindowIcon(void) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :(
-		return make_error_code(linuxFunctionNotImplemented);
+		return linuxFunctionNotImplemented;
 	}
 
 	GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
