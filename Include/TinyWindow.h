@@ -377,8 +377,13 @@ namespace std
 namespace TinyWindow
 {
 
-struct window_t
+class windowManager;
+
+class window_t
 {
+	friend class windowManager;
+
+public:
 
 	const char*						name;													/**< Name of the window */
 	unsigned int					iD;														/**< ID of the Window. (where it belongs in the window manager) */
@@ -421,7 +426,7 @@ struct window_t
 	HWND							windowHandle;											/**< A handle to A window */
 	HINSTANCE						instanceHandle;
 
-#else
+#elif defined(TW_LINUX)
 
 	Window							windowHandle;											/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
 	GLXContext						context;												/**< The handle to the GLX rendering context */
@@ -431,6 +436,11 @@ struct window_t
 	unsigned int					decorators;												/**< Enabled window decorators */
 
 #endif
+
+private:
+	windowManager*					manager;
+public:
+
 
 	window_t(const char* name = nullptr, unsigned int iD = 0,
 		unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
@@ -473,6 +483,288 @@ struct window_t
 		context = 0;
 #endif 
 	}
+
+	/**
+	* Set the Size/Resolution of the given window
+	*/
+	void SetWindowResolution(TinyWindow::uiVec2 resolution)
+	{
+		this->resolution.width = resolution.width;
+		this->resolution.height = resolution.height;
+
+		Platform_SetWindowResolution();
+	}
+	/**
+	* Set the Size/Resolution of the given window
+	*/
+	void SetWindowResolution(unsigned int width, unsigned int height)
+	{
+		this->resolution.width = width;
+		this->resolution.height = height;
+
+		Platform_SetWindowResolution();
+	}
+
+	/**
+	* Set the Position of the given window relative to screen co-ordinates
+	*/
+	void SetWindowPosition(TinyWindow::uiVec2 windowPosition)
+	{
+		this->position.x = windowPosition.x;
+		this->position.y = windowPosition.y;
+
+		Platform_SetWindowPosition(windowPosition.x, windowPosition.y);
+	}
+	/**
+	* Set the Position of the given window relative to screen co-ordinates
+	*/
+	void SetWindowPosition(unsigned int x, unsigned int y)
+	{
+		this->position.x = x;
+		this->position.y = y;
+
+		Platform_SetWindowPosition(x, y);
+	}
+
+	/**
+	* Set the mouse Position of the given window's co-ordinates
+	*/
+	void SetMousePositionInWindow(TinyWindow::uiVec2 mousePosition)
+	{
+		this->mousePosition.x = mousePosition.x;
+		this->mousePosition.y = mousePosition.y;
+
+		Platform_SetMousePositionInWindow(mousePosition.x, mousePosition.y);
+	}
+	/**
+	* Set the mouse Position of the given window's co-ordinates
+	*/
+	void SetMousePositionInWindow(unsigned int x, unsigned int y)
+	{
+		this->mousePosition.x = x;
+		this->mousePosition.y = y;
+
+		Platform_SetMousePositionInWindow(x, y);
+	}
+
+	/**
+	* Swap the draw buffers of the given window
+	*/
+	inline void SwapWindowBuffers(void)
+	{
+#if defined(TW_WINDOWS)
+		SwapBuffers(deviceContextHandle);
+#elif defined(TW_LINUX)
+		glXSwapBuffers(manager->currentDisplay, windowHandle);
+#endif
+	}
+
+	/**
+	* Make the given window be the current OpenGL Context to be drawn to
+	*/
+	void MakeWindowCurrentContext(void)
+	{
+#if defined(TW_WINDOWS)
+		wglMakeCurrent(deviceContextHandle,
+			glRenderingContextHandle);
+#elif defined(TW_LINUX)
+		glXMakeCurrent(manager->currentDisplay, windowHandle,
+			context);
+#endif
+	}
+
+	/**
+	* Toggle the minimization state of the given window
+	*/
+	std::error_code MinimizeWindow(bool newState)
+	{
+		if (newState)
+		{
+			currentState = state_t::minimized;
+
+#if defined(TW_WINDOWS)
+			ShowWindow(windowHandle, SW_MINIMIZE);
+#elif defined(TW_LINUX)
+			XIconifyWindow(manager->currentDisplay,
+				windowHandle, 0);
+#endif
+		}
+
+		else
+		{
+			currentState = state_t::normal;
+#if defined(TW_WINDOWS)
+			ShowWindow(windowHandle, SW_RESTORE);
+#elif defined(TW_LINUX)
+			XMapWindow(manager->currentDisplay, windowHandle);
+#endif
+		}
+	}
+
+	/**
+	* Toggle the maximization state of the current window
+	*/
+	std::error_code MaximizeWindow(bool newState)
+	{
+		if (newState)
+		{
+			currentState = state_t::maximized;
+#if defined(TW_WINDOWS)
+			ShowWindow(windowHandle, SW_MAXIMIZE);
+#elif defined(TW_LINUX)
+			XEvent currentEvent;
+			memset(&currentEvent, 0, sizeof(currentEvent));
+
+			currentEvent.xany.type = ClientMessage;
+			currentEvent.xclient.message_type = AtomState;
+			currentEvent.xclient.format = 32;
+			currentEvent.xclient.window = windowHandle;
+			currentEvent.xclient.data.l[0] = (currentState == state_t::maximized);
+			currentEvent.xclient.data.l[1] = AtomMaxVert;
+			currentEvent.xclient.data.l[2] = AtomMaxHorz;
+
+			XSendEvent(manager->currentDisplay,
+				XDefaultRootWindow(manager->currentDisplay),
+				0, SubstructureNotifyMask, &currentEvent);
+#endif
+		}
+
+		else
+		{
+			currentState = state_t::normal;
+#if defined(TW_WINDOWS)
+			ShowWindow(windowHandle, SW_RESTORE);
+#elif defined(TW_LINUX)
+			XEvent currentEvent;
+			memset(&currentEvent, 0, sizeof(currentEvent));
+
+			currentEvent.xany.type = ClientMessage;
+			currentEvent.xclient.message_type = AtomState;
+			currentEvent.xclient.format = 32;
+			currentEvent.xclient.window = windowHandle;
+			currentEvent.xclient.data.l[0] = (currentState == state_t::maximized);
+			currentEvent.xclient.data.l[1] = AtomMaxVert;
+			currentEvent.xclient.data.l[2] = AtomMaxHorz;
+
+			XSendEvent(manager->currentDisplay,
+				XDefaultRootWindow(manager->currentDisplay),
+				0, SubstructureNotifyMask, &currentEvent);
+#endif
+		}
+	}
+
+	/**
+	* Set the window title bar	by name
+	*/
+	std::error_code SetWindowTitleBar(const char* newTitle)
+	{
+		if (newTitle != nullptr)
+		{
+#if defined(TW_WINDOWS)
+				SetWindowText(windowHandle, newTitle);
+#elif defined(TW_LINUX)
+				XStoreName(manager->currentDisplay, windowHandle, newTitle);
+#endif
+				return TinyWindow::error_t::success;
+		}
+		return TinyWindow::error_t::invalidTitlebar;
+	}
+
+	/**
+	* Set the window icon by name (currently not functional)
+	*/
+	std::error_code SetWindowIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
+	{
+		return TinyWindow::error_t::functionNotImplemented;
+	}
+
+	/**
+	* Set the window to be in focus by name
+	*/
+	void FocusWindow(bool newState)
+	{
+		if (newState)
+		{
+#if defined(TW_WINDOWS)
+			SetFocus(windowHandle);
+#elif defined(TW_LINUX)
+			XMapWindow(manager->currentDisplay, windowHandle);
+#endif
+		}
+
+		else
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			SetFocus(nullptr);
+#elif defined(TW_LINUX)
+			XUnmapWindow(manager->currentDisplay, windowHandle);
+#endif
+		}
+	}
+
+	/**
+	* Restore the window by name
+	*/
+	void RestoreWindow(void)
+	{
+#if defined(TW_WINDOWS)
+		ShowWindow(windowHandle, SW_RESTORE);
+#elif defined(TW_LINUX)
+		XMapWindow(manager->currentDisplay, windowHandle);
+#endif
+	}
+
+private:
+
+	void Platform_SetWindowResolution()
+	{
+#if defined(TW_WINDOWS)
+		SetWindowPos(windowHandle, HWND_TOP,
+			position.x, position.y,
+			resolution.x, resolution.y,
+			SWP_SHOWWINDOW | SWP_NOMOVE);
+#elif defined(TW_LINUX)
+		XResizeWindow(currentDisplay,
+			windowHandle, resolution.x, resolution.y);
+#endif
+	}
+
+	void Platform_SetWindowPosition(unsigned int x, unsigned int y)
+	{
+#if defined(TW_WINDOWS)
+		SetWindowPos(windowHandle, HWND_TOP, x, y,
+			resolution.x, resolution.y,
+			SWP_SHOWWINDOW | SWP_NOSIZE);
+#elif defined(TW_LINUX)
+		XWindowChanges windowChanges;
+
+		windowChanges.x = x;
+		windowChanges.y = y;
+
+		XConfigureWindow(
+			manager->currentDisplay,
+			window->windowHandle, CWX | CWY, &windowChanges);
+#endif
+	}
+
+	void Platform_SetMousePositionInWindow(unsigned int x, unsigned int y)
+	{
+#if defined(TW_WINDOWS)
+		POINT mousePoint;
+		mousePoint.x = x;
+		mousePoint.y = y;
+		ScreenToClient(windowHandle, &mousePoint);
+		SetCursorPos(mousePoint.x, mousePoint.y);
+#elif defined(TW_LINUX)
+		XWarpPointer(
+			currentState->currentDisplay,
+			windowHandle, windowHandle,
+			position.x, position.y,
+			resolution.width, resolution.height,
+			x, y);
+#endif
+	}
+
 };
 
 class windowManager
@@ -526,7 +818,7 @@ public:
 	/**
 	 * Use this to shutdown the window manager when your program is finished
 	 */
-	 void ShutDown(void) 
+	void ShutDown(void) 
 	{
 #if defined(__linux__)
 		Linux_Shutdown();
@@ -549,6 +841,7 @@ public:
 			newWindow->depthBits = depthBits;
 			newWindow->stencilBits = stencilBits;
 			newWindow->iD = GetNumWindows();
+			newWindow->manager = this;
 
 			windowList.push_back(std::move(newWindow));
 			Platform_InitializeWindow(windowList.back().get());
@@ -604,335 +897,6 @@ public:
 		uiVec2 resolution;
 		Platform_GetScreenResolution(resolution);
 		return resolution;
-	}
-
-	/**
-	 * Set the Size/Resolution of the given window
-	 */
-	std::error_code SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution)
-	{
-		if (window != nullptr)
-		{
-			window->resolution.width = resolution.width;
-			window->resolution.height = resolution.height;
-
-			Platform_SetWindowResolution(window);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	/**
-	 * Set the Size/Resolution of the given window
-	 */
-	std::error_code SetWindowResolution(window_t* window, unsigned int width, unsigned int height)
-	{
-		if (window != nullptr)
-		{
-			window->resolution.width = width;
-			window->resolution.height = height;
-
-			Platform_SetWindowResolution(window);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Set the Position of the given window relative to screen co-ordinates
-	 */
-	std::error_code SetWindowPosition(window_t* window, TinyWindow::uiVec2 windowPosition)
-	{
-		if (window != nullptr)
-		{
-			window->position.x = windowPosition.x;
-			window->position.y = windowPosition.y;
-
-			Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	/**
-	* Set the Position of the given window relative to screen co-ordinates
-	*/
-	std::error_code SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
-	{
-		if (window != nullptr)
-		{
-			window->position.x = x;
-			window->position.y = y;
-
-			Platform_SetWindowPosition(window, x, y);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Set the mouse Position of the given window's co-ordinates
-	 */
-	std::error_code SetMousePositionInWindow(window_t* window, TinyWindow::uiVec2 mousePosition)
-	{
-		if (window != nullptr)
-		{
-			window->mousePosition.x = mousePosition.x;
-			window->mousePosition.y = mousePosition.y;
-
-			Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	/**
-	* Set the mouse Position of the given window's co-ordinates
-	*/
-	std::error_code SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
-	{
-		if (window != nullptr)
-		{
-			window->mousePosition.x = x;
-			window->mousePosition.y = y;
-
-			Platform_SetMousePositionInWindow(window, x, y);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Swap the draw buffers of the given window
-	 */
-	inline std::error_code SwapWindowBuffers(window_t* window)
-	{
-		if (window != nullptr)
-		{
-#if defined(TW_WINDOWS)
-			SwapBuffers(window->deviceContextHandle);
-#elif defined(TW_LINUX)
-			glXSwapBuffers(currentDisplay, window->windowHandle);
-#endif
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Make the given window be the current OpenGL Context to be drawn to
-	 */
-	std::error_code MakeWindowCurrentContext(window_t* window)
-	{
-		if (window != nullptr)
-		{
-#if defined(TW_WINDOWS)
-			wglMakeCurrent(window->deviceContextHandle,
-				window->glRenderingContextHandle);
-#elif defined(TW_LINUX)
-			glXMakeCurrent(currentDisplay, window->windowHandle,
-				window->context);
-#endif
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Toggle the given window's full screen mode
-	 */
-	std::error_code SetFullScreen(window_t* window, bool newState)
-	{
-		if (window != nullptr)
-		{
-			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
-
-#if defined(TW_WINDOWS)
-			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
-
-			MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
-				windowManager::GetScreenResolution().height, true);
-#elif defined(TW_LINUX)
-			XEvent currentEvent;
-			memset(&currentEvent, 0, sizeof(currentEvent));
-
-			currentEvent.xany.type = ClientMessage;
-			currentEvent.xclient.message_type = AtomState;
-			currentEvent.xclient.format = 32;
-			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
-			currentEvent.xclient.data.l[1] = AtomFullScreen;
-
-			XSendEvent(currentDisplay,
-				XDefaultRootWindow(currentDisplay),
-				0, SubstructureNotifyMask, &currentEvent);
-#endif
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Toggle the minimization state of the given window
-	 */
-	std::error_code MinimizeWindow(window_t* window, bool newState)
-	{
-		if (window != nullptr)
-		{
-			if (newState)
-			{
-				window->currentState = state_t::minimized;
-
-#if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_MINIMIZE);
-#elif defined(TW_LINUX)
-				XIconifyWindow(currentDisplay,
-					window->windowHandle, 0);
-#endif
-			}
-
-			else
-			{
-				window->currentState = state_t::normal;
-#if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(TW_LINUX)
-				XMapWindow(currentDisplay, window->windowHandle);
-#endif
-			}
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	
-	/**
-	 * Toggle the maximization state of the current window
-	 */
-	std::error_code MaximizeWindow(window_t* window, bool newState)
-	{
-		if (window != nullptr)
-		{
-			if (newState)
-			{
-				window->currentState = state_t::maximized;
-#if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_MAXIMIZE);
-#elif defined(TW_LINUX)
-				XEvent currentEvent;
-				memset(&currentEvent, 0, sizeof(currentEvent));
-
-				currentEvent.xany.type = ClientMessage;
-				currentEvent.xclient.message_type = AtomState;
-				currentEvent.xclient.format = 32;
-				currentEvent.xclient.window = window->windowHandle;
-				currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
-				currentEvent.xclient.data.l[1] = AtomMaxVert;
-				currentEvent.xclient.data.l[2] = AtomMaxHorz;
-
-				XSendEvent(currentDisplay,
-					XDefaultRootWindow(currentDisplay),
-					0, SubstructureNotifyMask, &currentEvent);
-#endif
-			}
-
-			else
-			{
-				window->currentState = state_t::normal;
-#if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(TW_LINUX)
-				XEvent currentEvent;
-				memset(&currentEvent, 0, sizeof(currentEvent));
-
-				currentEvent.xany.type = ClientMessage;
-				currentEvent.xclient.message_type = AtomState;
-				currentEvent.xclient.format = 32;
-				currentEvent.xclient.window = window->windowHandle;
-				currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
-				currentEvent.xclient.data.l[1] = AtomMaxVert;
-				currentEvent.xclient.data.l[2] = AtomMaxHorz;
-
-				XSendEvent(currentDisplay,
-					XDefaultRootWindow(currentDisplay),
-					0, SubstructureNotifyMask, &currentEvent);
-#endif
-			}
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Set the window title bar	by name
-	 */
-	std::error_code SetWindowTitleBar(window_t* window, const char* newTitle)
-	{
-		if (newTitle != nullptr)
-		{
-			if (window != nullptr)
-			{
-#if defined(TW_WINDOWS)
-				SetWindowText(window->windowHandle, newTitle);
-#elif defined(TW_LINUX)
-				XStoreName(currentDisplay, window->windowHandle, newTitle);
-#endif
-				return TinyWindow::error_t::success;
-			}
-			return TinyWindow::error_t::windowInvalid;
-		}
-		return TinyWindow::error_t::invalidTitlebar;
-	}
-
-	/**
-	* Set the window icon by name (currently not functional)
-	*/
-	std::error_code SetWindowIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
-	{
-		return TinyWindow::error_t::functionNotImplemented;
-	}
-
-	/**
-	* Set the window to be in focus by name
-	*/
-	std::error_code FocusWindow(window_t* window, bool newState)
-	{
-		if (window != nullptr)
-		{
-			if (newState)
-			{
-#if defined(TW_WINDOWS)
-				SetFocus(window->windowHandle);
-#elif defined(TW_LINUX)
-				XMapWindow(currentDisplay, window->windowHandle);
-#endif
-			}
-
-			else
-			{
-#if defined(_WIN32) || defined(_WIN64)
-				SetFocus(nullptr);
-#elif defined(TW_LINUX)
-				XUnmapWindow(currentDisplay, window->windowHandle);
-#endif
-			}
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Restore the window by name
-	 */
-	std::error_code RestoreWindow(window_t* window)
-	{
-		if (window != nullptr)
-		{
-#if defined(TW_WINDOWS)
-			ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(TW_LINUX)
-			XMapWindow(currentDisplay, window->windowHandle);
-#endif
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
 	}
 
 	/**
@@ -1317,6 +1281,23 @@ private:
 	TinyWindow::uiVec2										screenResolution;
 	TinyWindow::uiVec2										screenMousePosition;
 
+	void Platform_GetScreenResolution(uiVec2 resolution)
+	{
+#if defined(TW_WINDOWS)
+		RECT screen;
+		HWND desktop = GetDesktopWindow();
+		GetWindowRect(desktop, &screen);
+		resolution.width = screen.right;
+		resolution.height = screen.bottom;
+#elif defined(TW_LINUX)
+		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+		resolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+
+		screenResolution.x = resolution.width;
+		screenResolution.y = resolution.height;
+#endif
+	}
+
 	void Platform_InitializeWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
@@ -1392,72 +1373,6 @@ private:
 #endif
 	}
 
-	void Platform_GetScreenResolution(uiVec2 resolution)
-	{
-#if defined(TW_WINDOWS)
-		RECT screen;
-		HWND desktop = GetDesktopWindow();
-		GetWindowRect(desktop, &screen);
-		resolution.width = screen.right;
-		resolution.height = screen.bottom;
-#elif defined(TW_LINUX)
-		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-		resolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-
-		screenResolution.x = resolution.width;
-		screenResolution.y = resolution.height;
-#endif
-	}
-
-	void Platform_SetWindowResolution(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		SetWindowPos(window->windowHandle, HWND_TOP,
-			window->position.x, window->position.y,
-			window->resolution.x, window->resolution.y,
-			SWP_SHOWWINDOW | SWP_NOMOVE);
-#elif defined(TW_LINUX)
-		XResizeWindow(currentDisplay,
-			window->windowHandle, window->resolution.x, window->resolution.y);
-#endif
-	}
-
-	void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
-	{
-#if defined(TW_WINDOWS)
-		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
-			window->resolution.x, window->resolution.y,
-			SWP_SHOWWINDOW | SWP_NOSIZE);
-#elif defined(TW_LINUX)
-		XWindowChanges windowChanges;
-
-		windowChanges.x = x;
-		windowChanges.y = y;
-
-		XConfigureWindow(
-			currentDisplay,
-			window->windowHandle, CWX | CWY, &windowChanges);
-#endif
-	}
-
-	void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
-	{
-#if defined(TW_WINDOWS)
-		POINT mousePoint;
-		mousePoint.x = x;
-		mousePoint.y = y;
-		ScreenToClient(window->windowHandle, &mousePoint);
-		SetCursorPos(mousePoint.x, mousePoint.y);
-#elif defined(TW_LINUX)
-		XWarpPointer(
-			currentDisplay,
-			window->windowHandle, window->windowHandle,
-			window->position.x, window->position.y,
-			window->resolution.width, window->resolution.height,
-			x, y);
-#endif
-	}
-
 	void ShutdownWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
@@ -1500,6 +1415,36 @@ private:
 		XDestroyWindow(currentDisplay, window->windowHandle);
 		window->windowHandle = 0;
 		window->context = 0;
+#endif
+	}
+
+	/**
+	* Toggle the given window's full screen mode
+	*/
+	void SetFullScreen(bool newState, window_t* window)
+	{
+		window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
+
+#if defined(TW_WINDOWS)
+		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+		MoveWindow(window->windowHandle, 0, 0, GetScreenResolution().width,
+			GetScreenResolution().height, true);
+#elif defined(TW_LINUX)
+		XEvent currentEvent;
+		memset(&currentEvent, 0, sizeof(currentEvent));
+
+		currentEvent.xany.type = ClientMessage;
+		currentEvent.xclient.message_type = AtomState;
+		currentEvent.xclient.format = 32;
+		currentEvent.xclient.window = windowHandle;
+		currentEvent.xclient.data.l[0] = currentState == state_t::fullscreen;
+		currentEvent.xclient.data.l[1] = AtomFullScreen;
+
+		XSendEvent(manager->currentDisplay,
+			XDefaultRootWindow(manager->currentDisplay),
+			0, SubstructureNotifyMask, currentEvent);
 #endif
 	}
 	
