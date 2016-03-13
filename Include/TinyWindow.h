@@ -1366,16 +1366,16 @@ private:
 
 				window->contextCreated = true;
 				InitializeAtoms();
-				return success;
+				return TinyWindow::error_t::success;
 			}
-			return linuxCannotConnectXServer;
+			return TinyWindow::error_t::linuxCannotConnectXServer;
 		}
 
 		else
 		{
-			return existingContext;
+			return TinyWindow::error_t::existingContext;
 		}
-		return existingContext;
+		return TinyWindow::error_t::existingContext;
 #endif
 	}
 
@@ -2487,7 +2487,7 @@ private:
 
 		if (!currentDisplay)
 		{
-			return linuxCannotConnectXServer;
+			return TinyWindow::error_t::linuxCannotConnectXServer;
 		}
 
 		//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window)); 
@@ -2496,7 +2496,7 @@ private:
 
 		if (!window->visualInfo)
 		{
-			return linuxInvalidVisualinfo;
+			return TinyWindow::error_t::linuxInvalidVisualinfo;
 		}
 
 		window->setAttributes.colormap = XCreateColormap(currentDisplay,
@@ -2518,7 +2518,7 @@ private:
 
 		if(!window->windowHandle)
 		{
-			return linuxCannotCreateWindow;
+			return TinyWindow::error_t::linuxCannotCreateWindow;
 			exit(0);
 		}
 
@@ -2529,7 +2529,7 @@ private:
 		XSetWMProtocols(currentDisplay, window->windowHandle, &AtomClose, true);	
 
 		Platform_InitializeGL(window);
-		return success;
+		return TinyWindow::error_t::success;
 	}
 
 	void Linux_ShutdownWindow(window_t* window)
@@ -3410,7 +3410,7 @@ private:
 	std::error_code Linux_SetWindowIcon(void) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 	{
 		//sorry :(
-		return linuxFunctionNotImplemented;
+		return TinyWindow::error_t::linuxFunctionNotImplemented;
 	}
 
 	GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
