@@ -23,7 +23,7 @@ int main()
 		manager->PollForEvents();// or WaitForEvents
 		
 		//manager->MakeWindowCurrentContext(window);
-		window->SwapWindowBuffers();
+		manager->SwapWindowBuffers(window);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
