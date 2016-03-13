@@ -75,143 +75,143 @@ namespace TinyWindow
 
 	enum class keyState_t
 	{
-		bad = -1,						/**< If get key state fails (could not name it ERROR) */
-		up,								/**< The key is currently up */
-		down,							/**< The key is currently down */
+		bad,									/**< If get key state fails (could not name it ERROR) */
+		up,										/**< The key is currently up */
+		down,									/**< The key is currently down */
 	};
 
 	enum key_t
 	{
-		bad = -1,						/**< The key pressed is considered invalid */
-		first = 256 + 1,				/**< The first key that is not a char */
-		F1, 							/**< The F1 key */
-		F2,								/**< The F2 key */
-		F3,								/**< The F3 key */
-		F4,								/**< The F4 key */
-		F5,								/**< The F5 key */
-		F6,								/**< The F6 key */
-		F7,								/**< The F7 key */
-		F8,								/**< The F8 key */
-		F9,								/**< The F9 key */
-		F10,							/**< The F10 key */
-		F11,							/**< The F11 key */
-		F12,							/**< The F12 key */
-		capsLock,						/**< The CapsLock key */
-		leftShift,						/**< The left Shift key */
-		rightShift,						/**< The right Shift key */
-		leftControl,					/**< The left Control key */
-		rightControl,					/**< The right Control key */
-		leftWindow,						/**< The left Window key */
-		rightWindow,					/**< The right Window key */
-		leftAlt,						/**< The left Alternate key */
-		rightAlt,						/**< The right Alternate key */
-		enter,							/**< The Enter/Return key */
-		printScreen,					/**< The PrintScreen key */
-		scrollLock,						/**< The ScrollLock key */
-		numLock,						/**< The NumLock key */
-		pause,							/**< The pause/break key */
-		insert,							/**< The insert key */
-		home,							/**< The Home key */
-		end,							/**< The End key */
-		pageUp,							/**< The PageUp key */
-		pageDown,						/**< The PageDown key */
-		arrowDown,						/**< The ArrowDown key */
-		arrowUp,						/**< The ArrowUp key */
-		arrowLeft,						/**< The ArrowLeft key */
-		arrowRight,						/**< The ArrowRight key */
-		keypadDivide,					/**< The KeyPad Divide key */
-		keypadMultiply,					/**< The Keypad Multiply key */
-		keypadSubtract,					/**< The Keypad Subtract key */
-		keypadAdd,						/**< The Keypad Add key */
-		keypadEnter,					/**< The Keypad Enter key */
-		keypadPeriod,					/**< The Keypad Period/Decimal key */
-		keypad0,						/**< The Keypad 0 key */
-		keypad1,						/**< The Keypad 1 key */
-		keypad2,						/**< The Keypad 2 key */
-		keypad3,						/**< The Keypad 3 key */
-		keypad4,						/**< The Keypad 4 key */
-		keypad5,						/**< The Keypad 5 key */
-		keypad6,						/**< The Keypad 6 key */
-		keypad7,						/**< The Keypad 7 key */
-		keypad8,						/**< The keypad 8 key */
-		keypad9,						/**< The Keypad 9 key */
-		backspace,						/**< The Backspace key */
-		tab,							/**< The Tab key */
-		del,							/**< The Delete key */
-		escape,							/**< The Escape key */
-		last = escape,					/**< The last key to be supported */
+		bad = -1,								/**< The key pressed is considered invalid */
+		first = 256 + 1,						/**< The first key that is not a char */
+		F1, 									/**< The F1 key */
+		F2,										/**< The F2 key */
+		F3,										/**< The F3 key */
+		F4,										/**< The F4 key */
+		F5,										/**< The F5 key */
+		F6,										/**< The F6 key */
+		F7,										/**< The F7 key */
+		F8,										/**< The F8 key */
+		F9,										/**< The F9 key */
+		F10,									/**< The F10 key */
+		F11,									/**< The F11 key */
+		F12,									/**< The F12 key */
+		capsLock,								/**< The CapsLock key */
+		leftShift,								/**< The left Shift key */
+		rightShift,								/**< The right Shift key */
+		leftControl,							/**< The left Control key */
+		rightControl,							/**< The right Control key */
+		leftWindow,								/**< The left Window key */
+		rightWindow,							/**< The right Window key */
+		leftAlt,								/**< The left Alternate key */
+		rightAlt,								/**< The right Alternate key */
+		enter,									/**< The Enter/Return key */
+		printScreen,							/**< The PrintScreen key */
+		scrollLock,								/**< The ScrollLock key */
+		numLock,								/**< The NumLock key */
+		pause,									/**< The pause/break key */
+		insert,									/**< The insert key */
+		home,									/**< The Home key */
+		end,									/**< The End key */
+		pageUp,									/**< The PageUp key */
+		pageDown,								/**< The PageDown key */
+		arrowDown,								/**< The ArrowDown key */
+		arrowUp,								/**< The ArrowUp key */
+		arrowLeft,								/**< The ArrowLeft key */
+		arrowRight,								/**< The ArrowRight key */
+		keypadDivide,							/**< The KeyPad Divide key */
+		keypadMultiply,							/**< The Keypad Multiply key */
+		keypadSubtract,							/**< The Keypad Subtract key */
+		keypadAdd,								/**< The Keypad Add key */
+		keypadEnter,							/**< The Keypad Enter key */
+		keypadPeriod,							/**< The Keypad Period/Decimal key */
+		keypad0,								/**< The Keypad 0 key */
+		keypad1,								/**< The Keypad 1 key */
+		keypad2,								/**< The Keypad 2 key */
+		keypad3,								/**< The Keypad 3 key */
+		keypad4,								/**< The Keypad 4 key */
+		keypad5,								/**< The Keypad 5 key */
+		keypad6,								/**< The Keypad 6 key */
+		keypad7,								/**< The Keypad 7 key */
+		keypad8,								/**< The keypad 8 key */
+		keypad9,								/**< The Keypad 9 key */
+		backspace,								/**< The Backspace key */
+		tab,									/**< The Tab key */
+		del,									/**< The Delete key */
+		escape,									/**< The Escape key */
+		last = escape,							/**< The last key to be supported */
 	};
 
 	enum class buttonState_t
 	{
-		up,								/**< The mouse button is currently up */
-		down							/**< The mouse button is currently down */
+		up,										/**< The mouse button is currently up */
+		down									/**< The mouse button is currently down */
 	};
 
 	enum class mouseButton_t
 	{
-		left,							/**< The left mouse button */
-		right,							/**< The right mouse button */
-		middle,							/**< The middle mouse button / ScrollWheel */
-		last,							/**< The last mouse button to be supported */
+		left,									/**< The left mouse button */
+		right,									/**< The right mouse button */
+		middle,									/**< The middle mouse button / ScrollWheel */
+		last,									/**< The last mouse button to be supported */
 	};
 
 	enum class mouseScroll_t
 	{
-		down,							/**< The mouse wheel up */
-		up								/**< The mouse wheel down */
+		down,									/**< The mouse wheel up */
+		up										/**< The mouse wheel down */
 	};
 
 	enum class style_t
 	{
-		bare,							/**< The window has no decorators but the window border and title bar */
-		normal,							/**< The default window style for the respective platform */
-		popup,							/**< The window has no decorators */
+		bare,									/**< The window has no decorators but the window border and title bar */
+		normal,									/**< The default window style for the respective platform */
+		popup,									/**< The window has no decorators */
 	};
 
 	enum class state_t
 	{
-		normal,							/**< The window is in its default state */
-		maximized,						/**< The window is currently maximized */
-		minimized,						/**< The window is currently minimized */
-		fullscreen,						/**< The window is currently full screen */
+		normal,									/**< The window is in its default state */
+		maximized,								/**< The window is currently maximized */
+		minimized,								/**< The window is currently minimized */
+		fullscreen,								/**< The window is currently full screen */
 	};
 
 	enum decorator_t
 	{
-		titleBar = 0x01,				/**< The title bar decoration of the window */
-		icon = 0x02,					/**< The icon decoration of the window */
-		border = 0x04,					/**< The border decoration of the window */
-		minimizeButton = 0x08,			/**< The minimize button decoration of the window */
-		maximizeButton = 0x010,			/**< The maximize button decoration pf the window */
-		closeButton = 0x20,				/**< The close button decoration of the window */
-		sizeableBorder = 0x40,			/**< The sizable border decoration of the window */
+		titleBar = 0x01,						/**< The title bar decoration of the window */
+		icon = 0x02,							/**< The icon decoration of the window */
+		border = 0x04,							/**< The border decoration of the window */
+		minimizeButton = 0x08,					/**< The minimize button decoration of the window */
+		maximizeButton = 0x010,					/**< The maximize button decoration pf the window */
+		closeButton = 0x20,						/**< The close button decoration of the window */
+		sizeableBorder = 0x40,					/**< The sizable border decoration of the window */
 	};
 
 	enum class error_t : int
 	{
-		success = 0,						/**< If a function call was successful*/
-		invalidWindowName,					/**< If an invalid window name was given */
-		invalidIconPath,					/**< If an invalid icon path was given */
-		invalidWindowIndex,					/**< If an invalid window index was given */
-		invalidWindowState,					/**< If an invalid window state was given */
-		invalidResolution,					/**< If an invalid window resolution was given */
-		invalidContext,						/**< If the OpenGL context for the window is invalid */
-		existingContext,					/**< If the window already has an OpenGL context */
-		notInitialized,						/**< If the window is being used without being initialized */
-		alreadyInitialized,					/**< If the window was already initialized */
-		invalidTitlebar,					/**< If the Title-bar text given was invalid */
-		invalidCallback,					/**< If the given event callback was invalid */
-		windowInvalid,						/**< If the window given was invalid */
-		invalidWindowStyle,					/**< If the window style gives is invalid */
-		functionNotImplemented,				/**< If the function has not yet been implemented in the current version of the API */
-		linuxCannotConnectXServer,			/**< Linux: if cannot connect to an X11 server */
-		linuxInvalidVisualinfo,				/**< Linux: if visual information given was invalid */
-		linuxCannotCreateWindow,			/**< Linux: when X11 fails to create a new window */
-		linuxFunctionNotImplemented,		/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
-		windowsCannotCreateWindows,			/**< Windows: when Win32 cannot create a window */
-		windowsCannotInitialize,			/**< Windows: when Win32 cannot initialize */
-		windowsFunctionNotImplemented,		/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
+		success,								/**< If a function call was successful*/
+		invalidWindowName,						/**< If an invalid window name was given */
+		invalidIconPath,						/**< If an invalid icon path was given */
+		invalidWindowIndex,						/**< If an invalid window index was given */
+		invalidWindowState,						/**< If an invalid window state was given */
+		invalidResolution,						/**< If an invalid window resolution was given */
+		invalidContext,							/**< If the OpenGL context for the window is invalid */
+		existingContext,						/**< If the window already has an OpenGL context */
+		notInitialized,							/**< If the window is being used without being initialized */
+		alreadyInitialized,						/**< If the window was already initialized */
+		invalidTitlebar,						/**< If the Title-bar text given was invalid */
+		invalidCallback,						/**< If the given event callback was invalid */
+		windowInvalid,							/**< If the window given was invalid */
+		invalidWindowStyle,						/**< If the window style gives is invalid */
+		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
+		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
+		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
+		linuxCannotCreateWindow,				/**< Linux: when X11 fails to create a new window */
+		linuxFunctionNotImplemented,			/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
+		windowsCannotCreateWindows,				/**< Windows: when Win32 cannot create a window */
+		windowsCannotInitialize,				/**< Windows: when Win32 cannot initialize */
+		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
 	typedef std::function<void(unsigned int, keyState_t)>										keyEvent_t;
@@ -368,7 +368,7 @@ namespace TinyWindow
 		return std::error_code(static_cast<int>(eCode), errorCategory_t::get());
 	}
 };
-//uggh I hate this hack
+//ugh I hate this hack
 namespace std
 {
 	template<> struct is_error_code_enum<TinyWindow::error_t> : std::true_type {};
@@ -379,6 +379,7 @@ namespace TinyWindow
 
 struct window_t
 {
+
 	const char*						name;													/**< Name of the window */
 	unsigned int					iD;														/**< ID of the Window. (where it belongs in the window manager) */
 	int								colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
@@ -412,21 +413,23 @@ struct window_t
 
 #if defined(TW_WINDOWS)
 
-	HDC							deviceContextHandle;			/**< A handle to a device context */
-	HGLRC						glRenderingContextHandle;		/**< A handle to an OpenGL rendering context*/
-	HPALETTE					paletteHandle;					/**< A handle to a Win32 palette*/
-	PIXELFORMATDESCRIPTOR		pixelFormatDescriptor;			/**< Describes the pixel format of a drawing surface*/
-	WNDCLASS					windowClass;					/**< Contains the window class attributes */
-	HWND						windowHandle;					/**< A handle to A window */
-	HINSTANCE					instanceHandle;
+	HDC								deviceContextHandle;									/**< A handle to a device context */
+	HGLRC							glRenderingContextHandle;								/**< A handle to an OpenGL rendering context*/
+	HPALETTE						paletteHandle;											/**< A handle to a Win32 palette*/
+	PIXELFORMATDESCRIPTOR			pixelFormatDescriptor;									/**< Describes the pixel format of a drawing surface*/
+	WNDCLASS						windowClass;											/**< Contains the window class attributes */
+	HWND							windowHandle;											/**< A handle to A window */
+	HINSTANCE						instanceHandle;
 
 #else
-	Window						windowHandle;					/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
-	GLXContext					context;						/**< The handle to the GLX rendering context */
-	XVisualInfo*				visualInfo;						/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
-	int*						attributes;						/**< Attributes of the window. RGB, depth, stencil, etc */
-	XSetWindowAttributes		setAttributes;					/**< The attributes to be set for the window */
-	unsigned int				decorators;						/**< Enabled window decorators */
+
+	Window							windowHandle;											/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
+	GLXContext						context;												/**< The handle to the GLX rendering context */
+	XVisualInfo*					visualInfo;												/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
+	int*							attributes;												/**< Attributes of the window. RGB, depth, stencil, etc */
+	XSetWindowAttributes			setAttributes;											/**< The attributes to be set for the window */
+	unsigned int					decorators;												/**< Enabled window decorators */
+
 #endif
 
 	window_t(const char* name = nullptr, unsigned int iD = 0,
@@ -625,8 +628,8 @@ public:
 	{
 		if (window != nullptr)
 		{
-			window->resolution.x = width;
-			window->resolution.y = height;
+			window->resolution.width = width;
+			window->resolution.height = height;
 
 			Platform_SetWindowResolution(window);
 			return TinyWindow::error_t::success;
@@ -703,7 +706,11 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_SwapBuffers(window);
+#if defined(TW_WINDOWS)
+			SwapBuffers(window->deviceContextHandle);
+#elif defined(TW_LINUX)
+			glXSwapBuffers(currentDisplay, window->windowHandle);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -716,7 +723,13 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_MakeCurrentContext(window);
+#if defined(TW_WINDOWS)
+			wglMakeCurrent(window->deviceContextHandle,
+				window->glRenderingContextHandle);
+#elif defined(TW_LINUX)
+			glXMakeCurrent(currentDisplay, window->windowHandle,
+				window->context);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -731,7 +744,27 @@ public:
 		{
 			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
-			Platform_SetFullScreen(window);
+#if defined(TW_WINDOWS)
+			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+			MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
+				windowManager::GetScreenResolution().height, true);
+#elif defined(TW_LINUX)
+			XEvent currentEvent;
+			memset(&currentEvent, 0, sizeof(currentEvent));
+
+			currentEvent.xany.type = ClientMessage;
+			currentEvent.xclient.message_type = AtomState;
+			currentEvent.xclient.format = 32;
+			currentEvent.xclient.window = window->windowHandle;
+			currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
+			currentEvent.xclient.data.l[1] = AtomFullScreen;
+
+			XSendEvent(currentDisplay,
+				XDefaultRootWindow(currentDisplay),
+				0, SubstructureNotifyMask, &currentEvent);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -744,7 +777,27 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_MinimizeWindow(window, newState);
+			if (newState)
+			{
+				window->currentState = state_t::minimized;
+
+#if defined(TW_WINDOWS)
+				ShowWindow(window->windowHandle, SW_MINIMIZE);
+#elif defined(TW_LINUX)
+				XIconifyWindow(currentDisplay,
+					window->windowHandle, 0);
+#endif
+			}
+
+			else
+			{
+				window->currentState = state_t::normal;
+#if defined(TW_WINDOWS)
+				ShowWindow(window->windowHandle, SW_RESTORE);
+#elif defined(TW_LINUX)
+				XMapWindow(currentDisplay, window->windowHandle);
+#endif
+			}
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -757,7 +810,51 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_MaximizeWindow(window, newState);
+			if (newState)
+			{
+				window->currentState = state_t::maximized;
+#if defined(TW_WINDOWS)
+				ShowWindow(window->windowHandle, SW_MAXIMIZE);
+#elif defined(TW_LINUX)
+				XEvent currentEvent;
+				memset(&currentEvent, 0, sizeof(currentEvent));
+
+				currentEvent.xany.type = ClientMessage;
+				currentEvent.xclient.message_type = AtomState;
+				currentEvent.xclient.format = 32;
+				currentEvent.xclient.window = window->windowHandle;
+				currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
+				currentEvent.xclient.data.l[1] = AtomMaxVert;
+				currentEvent.xclient.data.l[2] = AtomMaxHorz;
+
+				XSendEvent(currentDisplay,
+					XDefaultRootWindow(currentDisplay),
+					0, SubstructureNotifyMask, &currentEvent);
+#endif
+			}
+
+			else
+			{
+				window->currentState = state_t::normal;
+#if defined(TW_WINDOWS)
+				ShowWindow(window->windowHandle, SW_RESTORE);
+#elif defined(TW_LINUX)
+				XEvent currentEvent;
+				memset(&currentEvent, 0, sizeof(currentEvent));
+
+				currentEvent.xany.type = ClientMessage;
+				currentEvent.xclient.message_type = AtomState;
+				currentEvent.xclient.format = 32;
+				currentEvent.xclient.window = window->windowHandle;
+				currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
+				currentEvent.xclient.data.l[1] = AtomMaxVert;
+				currentEvent.xclient.data.l[2] = AtomMaxHorz;
+
+				XSendEvent(currentDisplay,
+					XDefaultRootWindow(currentDisplay),
+					0, SubstructureNotifyMask, &currentEvent);
+#endif
+			}
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -772,7 +869,11 @@ public:
 		{
 			if (window != nullptr)
 			{
-				Platform_SetWindowTitleBar(window, newTitle);
+#if defined(TW_WINDOWS)
+				SetWindowText(window->windowHandle, newTitle);
+#elif defined(TW_LINUX)
+				XStoreName(currentDisplay, window->windowHandle, newTitle);
+#endif
 				return TinyWindow::error_t::success;
 			}
 			return TinyWindow::error_t::windowInvalid;
@@ -795,7 +896,23 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_FocusWindow(window, newState);
+			if (newState)
+			{
+#if defined(TW_WINDOWS)
+				SetFocus(window->windowHandle);
+#elif defined(TW_LINUX)
+				XMapWindow(currentDisplay, window->windowHandle);
+#endif
+			}
+
+			else
+			{
+#if defined(_WIN32) || defined(_WIN64)
+				SetFocus(nullptr);
+#elif defined(TW_LINUX)
+				XUnmapWindow(currentDisplay, window->windowHandle);
+#endif
+			}
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -808,7 +925,11 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_RestoreWindow(window);
+#if defined(TW_WINDOWS)
+			ShowWindow(window->windowHandle, SW_RESTORE);
+#elif defined(TW_LINUX)
+			XMapWindow(currentDisplay, window->windowHandle);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -831,7 +952,6 @@ public:
 		if (XEventsQueued(currentDisplay, QueuedAfterReading))
 		{
 			XNextEvent(currentDisplay, &currentEvent);
-
 			Linux_ProcessEvents(currentEvent);
 		}
 #endif
@@ -850,7 +970,6 @@ public:
 #elif defined(TW_LINUX)
 		//even if there aren't any events to process
 		XNextEvent(currentDisplay, &currentEvent);
-
 		Linux_ProcessEvents(currentEvent);
 #endif
 	}
@@ -875,7 +994,83 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_SetWindowStyle(window, windowStyle);
+#if defined(TW_WINDOWS)
+			switch (windowStyle)
+			{
+			case style_t::normal:
+			{
+				EnableWindowDecorators(window, titleBar | border |
+					closeButton | minimizeButton | maximizeButton);
+				break;
+			}
+
+			case style_t::popup:
+			{
+				EnableWindowDecorators(window, 0);
+				break;
+			}
+
+			case style_t::bare:
+			{
+				EnableWindowDecorators(window, titleBar | border);
+				break;
+			}
+
+			default:
+			{
+				return TinyWindow::error_t::invalidWindowStyle;
+			}
+			}
+
+#elif defined(TW_LINUX)
+			switch (windowStyle)
+			{
+			case style_t::normal:
+			{
+				window->decorators = (1L << 2);
+				window->currentWindowStyle = linuxMove | linuxClose |
+					linuxMaximize | linuxMinimize;
+				long Hints[5] = { hint_t::function | hint_t::decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+
+				XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
+					(unsigned char*)Hints, 5);
+
+				XMapWindow(currentDisplay, window->windowHandle);
+				break;
+			}
+
+			case style_t::bare:
+			{
+				window->decorators = (1L << 2);
+				window->currentWindowStyle = (1L << 2);
+				long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+
+				XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
+					(unsigned char*)Hints, 5);
+
+				XMapWindow(currentDisplay, window->windowHandle);
+				break;
+			}
+
+			case style_t::popup:
+			{
+				window->decorators = 0;
+				window->currentWindowStyle = (1L << 2);
+				long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+
+				XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
+					(unsigned char*)Hints, 5);
+
+				XMapWindow(currentDisplay, window->windowHandle);
+				break;
+			}
+
+			default:
+			{
+				return TinyWindow::error_t::invalidWindowStyle;
+			}
+			}
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -888,7 +1083,93 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_EnableWindowDecorators(window, decorators);
+#if defined(TW_WINDOWS)
+			window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
+
+			if (decorators & border)
+			{
+				window->currentWindowStyle |= WS_BORDER;
+			}
+
+			if (decorators & titleBar)
+			{
+				window->currentWindowStyle |= WS_CAPTION;
+			}
+
+			if (decorators & icon)
+			{
+				window->currentWindowStyle |= WS_ICONIC;
+			}
+
+			if (decorators & closeButton)
+			{
+				window->currentWindowStyle |= WS_SYSMENU;
+			}
+
+			if (decorators & minimizeButton)
+			{
+				window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
+			}
+
+			if (decorators & maximizeButton)
+			{
+				window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
+			}
+
+			if (decorators & sizeableBorder)
+			{
+				window->currentWindowStyle |= WS_SIZEBOX;
+			}
+
+			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+				window->currentWindowStyle);
+#elif defined(TW_LINUX)
+			if (decorators & closeButton)
+			{
+				window->currentWindowStyle |= linuxClose;
+				window->decorators = 1;
+			}
+
+			if (decorators & minimizeButton)
+			{
+				window->currentWindowStyle |= linuxMinimize;
+				window->decorators = 1;
+			}
+
+			if (decorators & maximizeButton)
+			{
+				window->currentWindowStyle |= linuxMaximize;
+				window->decorators = 1;
+			}
+
+			if (decorators & icon)
+			{
+				//Linux (at least cinnamon) does not have icons in the window. only in the task bar icon
+			}
+
+			//just need to set it to 1 to enable all decorators that include title bar 
+			if (decorators & titleBar)
+			{
+				window->decorators = 1;
+			}
+
+			if (decorators & border)
+			{
+				window->decorators = 1;
+			}
+
+			if (decorators & sizeableBorder)
+			{
+				window->decorators = 1;
+			}
+
+			long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+
+			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
+				PropModeReplace, (unsigned char*)hints, 5);
+
+			XMapWindow(currentDisplay, window->windowHandle);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -901,7 +1182,129 @@ public:
 	{
 		if (window != nullptr)
 		{
-			Platform_DisableWindowDecorators(window, decorators);
+#if defined(TW_WINDOWS)
+			if (decorators & border)
+			{
+				window->currentWindowStyle &= ~WS_BORDER;
+			}
+
+			if (decorators & titleBar)
+			{
+				window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
+			}
+
+			if (decorators & icon)
+			{
+				window->currentWindowStyle &= ~WS_ICONIC;
+			}
+
+			if (decorators & closeButton)
+			{
+				window->currentWindowStyle &= ~WS_SYSMENU;
+			}
+
+			if (decorators & minimizeButton)
+			{
+				window->currentWindowStyle &= ~WS_MINIMIZEBOX;
+			}
+
+			if (decorators & maximizeButton)
+			{
+				window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
+			}
+
+			if (decorators & sizeableBorder)
+			{
+				window->currentWindowStyle &= ~WS_SIZEBOX;
+			}
+
+			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+				window->currentWindowStyle | WS_VISIBLE);
+#elif defined(TW_LINUX)
+			if (decorators & closeButton)
+			{
+				//I hate doing this but it is necessary to keep functionality going.
+				bool minimizeEnabled = false;
+				bool maximizeEnabled = false;
+
+				if (decorators & maximizeButton)
+				{
+					maximizeEnabled = true;
+				}
+
+				if (decorators & minimizeButton)
+				{
+					minimizeEnabled = true;
+				}
+
+				window->currentWindowStyle &= ~linuxClose;
+
+				if (maximizeEnabled)
+				{
+					window->currentWindowStyle |= linuxMaximize;
+				}
+
+				if (minimizeEnabled)
+				{
+					window->currentWindowStyle |= linuxMinimize;
+				}
+
+				window->decorators = 1;
+			}
+
+			if (decorators & minimizeButton)
+			{
+				window->currentWindowStyle &= ~linuxMinimize;
+				window->decorators = 1;
+			}
+
+			if (decorators & maximizeButton)
+			{
+				bool minimizeEnabled = false;
+
+				if (decorators & minimizeButton)
+				{
+					minimizeEnabled = true;
+				}
+
+				window->currentWindowStyle &= ~linuxMaximize;
+
+				if (minimizeEnabled)
+				{
+					window->currentWindowStyle |= linuxMinimize;
+				}
+
+				window->decorators = 1;
+			}
+
+			if (decorators & icon)
+			{
+				//Linux (at least cinnamon) does not have icons in the window. only in the taskb ar icon
+			}
+
+			//just need to set it to 1 to enable all decorators that include title bar 
+			if (decorators & titleBar)
+			{
+				window->decorators = linuxBorder;
+			}
+
+			if (decorators & border)
+			{
+				window->decorators = 0;
+			}
+
+			if (decorators & sizeableBorder)
+			{
+				window->decorators = 0;
+			}
+
+			long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+
+			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
+				PropModeReplace, (unsigned char*)hints, 5);
+
+			XMapWindow(currentDisplay, window->windowHandle);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -1052,464 +1455,6 @@ private:
 			window->position.x, window->position.y,
 			window->resolution.width, window->resolution.height,
 			x, y);
-#endif
-	}
-
-	inline void Platform_SwapBuffers(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		SwapBuffers(window->deviceContextHandle);
-#elif defined(TW_LINUX)
-		glXSwapBuffers(currentDisplay, window->windowHandle);
-#endif
-	}
-
-	void Platform_MakeCurrentContext(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		wglMakeCurrent(window->deviceContextHandle,
-			window->glRenderingContextHandle);
-#elif defined(TW_LINUX)
-		glXMakeCurrent(currentDisplay, window->windowHandle,
-			window->context);
-#endif
-	}
-
-	void Platform_SetFullScreen(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-			WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
-
-		MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
-			windowManager::GetScreenResolution().height, true);
-#elif defined(TW_LINUX)
-		XEvent currentEvent;
-		memset(&currentEvent, 0, sizeof(currentEvent));
-
-		currentEvent.xany.type = ClientMessage;
-		currentEvent.xclient.message_type = AtomState;
-		currentEvent.xclient.format = 32;
-		currentEvent.xclient.window = window->windowHandle;
-		currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
-		currentEvent.xclient.data.l[1] = AtomFullScreen;
-
-		XSendEvent(currentDisplay,
-			XDefaultRootWindow(currentDisplay),
-			0, SubstructureNotifyMask, &currentEvent);
-#endif
-	}
-
-	void Platform_MinimizeWindow(window_t* window, bool newState)
-	{
-		if (newState)
-		{
-			window->currentState = state_t::minimized;
-
-#if defined(TW_WINDOWS)
-			ShowWindow(window->windowHandle, SW_MINIMIZE);
-#elif defined(TW_LINUX)
-			XIconifyWindow(currentDisplay,
-				window->windowHandle, 0);
-#endif
-		}
-
-		else
-		{
-			window->currentState = state_t::normal;
-#if defined(TW_WINDOWS)
-			ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(TW_LINUX)
-			XMapWindow(currentDisplay, window->windowHandle);
-#endif
-		}
-	}
-
-	void Platform_MaximizeWindow(window_t* window, bool newState)
-	{
-		if (newState)
-		{
-			window->currentState = state_t::maximized;
-#if defined(TW_WINDOWS)
-			ShowWindow(window->windowHandle, SW_MAXIMIZE);
-#elif defined(TW_LINUX)
-			XEvent currentEvent;
-			memset(&currentEvent, 0, sizeof(currentEvent));
-
-			currentEvent.xany.type = ClientMessage;
-			currentEvent.xclient.message_type = AtomState;
-			currentEvent.xclient.format = 32;
-			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
-			currentEvent.xclient.data.l[1] = AtomMaxVert;
-			currentEvent.xclient.data.l[2] = AtomMaxHorz;
-
-			XSendEvent(currentDisplay,
-				XDefaultRootWindow(currentDisplay),
-				0, SubstructureNotifyMask, &currentEvent);
-#endif
-		}
-
-		else
-		{
-			window->currentState = state_t::normal;
-#if defined(TW_WINDOWS)
-			ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(TW_LINUX)
-			XEvent currentEvent;
-			memset(&currentEvent, 0, sizeof(currentEvent));
-
-			currentEvent.xany.type = ClientMessage;
-			currentEvent.xclient.message_type = AtomState;
-			currentEvent.xclient.format = 32;
-			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
-			currentEvent.xclient.data.l[1] = AtomMaxVert;
-			currentEvent.xclient.data.l[2] = AtomMaxHorz;
-
-			XSendEvent(currentDisplay,
-				XDefaultRootWindow(currentDisplay),
-				0, SubstructureNotifyMask, &currentEvent);
-#endif
-		}
-	}
-
-	void Platform_SetWindowTitleBar(window_t* window, const char* newTitle)
-	{
-#if defined(TW_WINDOWS)
-		SetWindowText(window->windowHandle, newTitle);
-#elif defined(TW_LINUX)
-		XStoreName(currentDisplay, window->windowHandle, newTitle);
-#endif
-	}
-
-	void Platform_FocusWindow(window_t* window, bool newState)
-	{
-		if (newState)
-		{
-#if defined(TW_WINDOWS)
-			SetFocus(window->windowHandle);
-#elif defined(TW_LINUX)
-			XMapWindow(currentDisplay, window->windowHandle);
-#endif
-		}
-
-		else
-		{
-#if defined(_WIN32) || defined(_WIN64)
-			SetFocus(nullptr);
-#elif defined(TW_LINUX)
-			XUnmapWindow(currentDisplay, window->windowHandle);
-#endif
-		}
-	}
-
-	void Platform_RestoreWindow(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		ShowWindow(window->windowHandle, SW_RESTORE);
-#elif defined(TW_LINUX)
-		XMapWindow(currentDisplay, window->windowHandle);
-#endif
-	}
-
-	std::error_code Platform_SetWindowStyle(window_t* window, style_t windowStyle)
-	{
-#if defined(TW_WINDOWS)
-		switch (windowStyle)
-		{
-		case style_t::normal:
-		{
-			EnableWindowDecorators(window, titleBar | border |
-				closeButton | minimizeButton | maximizeButton);
-			break;
-		}
-
-		case style_t::popup:
-		{
-			EnableWindowDecorators(window, 0);
-			break;
-		}
-
-		case style_t::bare:
-		{
-			EnableWindowDecorators(window, titleBar | border);
-			break;
-		}
-
-		default:
-		{
-			return TinyWindow::error_t::invalidWindowStyle;
-		}
-		}
-
-#elif defined(TW_LINUX)
-		switch (windowStyle)
-		{
-			case style_t::normal:
-		{
-			window->decorators = (1L << 2);
-			window->currentWindowStyle = linuxMove | linuxClose |
-				linuxMaximize | linuxMinimize;
-			long Hints[5] = {hint_t::function |hint_t::decorator, window->currentWindowStyle, window->decorators, 0, 0};
-
-			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
-				(unsigned char*)Hints, 5);
-
-			XMapWindow(currentDisplay, window->windowHandle);
-			break;
-		}
-
-			case style_t::bare:
-		{
-			window->decorators = (1L << 2);
-			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
-
-			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
-				(unsigned char*)Hints, 5);
-
-			XMapWindow(currentDisplay, window->windowHandle);
-			break;
-		}
-
-			case style_t::popup:
-		{
-			window->decorators = 0;
-			window->currentWindowStyle = (1L << 2);
-			long Hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
-
-			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
-				(unsigned char*)Hints, 5);
-
-			XMapWindow(currentDisplay, window->windowHandle);
-			break;
-		}
-
-		default:
-		{
-			return TinyWindow::error_t::invalidWindowStyle;
-		}
-		}
-#endif
-		return TinyWindow::error_t::success;
-	}
-
-	void Platform_EnableWindowDecorators(window_t* window, unsigned int decorators)
-	{
-#if defined(TW_WINDOWS)
-		window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
-
-		if (decorators & border)
-		{
-			window->currentWindowStyle |= WS_BORDER;
-		}
-
-		if (decorators & titleBar)
-		{
-			window->currentWindowStyle |= WS_CAPTION;
-		}
-
-		if (decorators & icon)
-		{
-			window->currentWindowStyle |= WS_ICONIC;
-		}
-
-		if (decorators & closeButton)
-		{
-			window->currentWindowStyle |= WS_SYSMENU;
-		}
-
-		if (decorators & minimizeButton)
-		{
-			window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
-		}
-
-		if (decorators & maximizeButton)
-		{
-			window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
-		}
-
-		if (decorators & sizeableBorder)
-		{
-			window->currentWindowStyle |= WS_SIZEBOX;
-		}
-
-		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-			window->currentWindowStyle);
-#elif defined(TW_LINUX)
-		if (decorators & closeButton)
-		{
-			window->currentWindowStyle |= linuxClose;
-			window->decorators = 1;
-		}
-
-		if (decorators & minimizeButton)
-		{
-			window->currentWindowStyle |= linuxMinimize;
-			window->decorators = 1;
-		}
-
-		if (decorators & maximizeButton)
-		{
-			window->currentWindowStyle |= linuxMaximize;
-			window->decorators = 1;
-		}
-
-		if (decorators & icon)
-		{
-			//Linux (at least cinnamon) does not have icons in the window. only in the task bar icon
-		}
-
-		//just need to set it to 1 to enable all decorators that include title bar 
-		if (decorators & titleBar)
-		{
-			window->decorators = 1;
-		}
-
-		if (decorators & border)
-		{
-			window->decorators = 1;
-		}
-
-		if (decorators & sizeableBorder)
-		{
-			window->decorators = 1;
-		}
-
-		long hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
-
-		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
-			PropModeReplace, (unsigned char*)hints, 5);
-
-		XMapWindow(currentDisplay, window->windowHandle);
-#endif
-	}
-
-	void Platform_DisableWindowDecorators(window_t* window, unsigned int decorators)
-	{
-#if defined(TW_WINDOWS)
-		if (decorators & border)
-		{
-			window->currentWindowStyle &= ~WS_BORDER;
-		}
-
-		if (decorators & titleBar)
-		{
-			window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
-		}
-
-		if (decorators & icon)
-		{
-			window->currentWindowStyle &= ~WS_ICONIC;
-		}
-
-		if (decorators & closeButton)
-		{
-			window->currentWindowStyle &= ~WS_SYSMENU;
-		}
-
-		if (decorators & minimizeButton)
-		{
-			window->currentWindowStyle &= ~WS_MINIMIZEBOX;
-		}
-
-		if (decorators & maximizeButton)
-		{
-			window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
-		}
-
-		if (decorators & sizeableBorder)
-		{
-			window->currentWindowStyle &= ~WS_SIZEBOX;
-		}
-
-		SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-			window->currentWindowStyle | WS_VISIBLE);
-#elif defined(TW_LINUX)
-		if (decorators & closeButton)
-		{
-			//I hate doing this but it is necessary to keep functionality going.
-			bool minimizeEnabled = false;
-			bool maximizeEnabled = false;
-
-			if (decorators & maximizeButton)
-			{
-				maximizeEnabled = true;
-			}
-
-			if (decorators & minimizeButton)
-			{
-				minimizeEnabled = true;
-			}
-
-			window->currentWindowStyle &= ~linuxClose;
-
-			if (maximizeEnabled)
-			{
-				window->currentWindowStyle |= linuxMaximize;
-			}
-
-			if (minimizeEnabled)
-			{
-				window->currentWindowStyle |= linuxMinimize;
-			}
-
-			window->decorators = 1;
-		}
-
-		if (decorators & minimizeButton)
-		{
-			window->currentWindowStyle &= ~linuxMinimize;
-			window->decorators = 1;
-		}
-
-		if (decorators & maximizeButton)
-		{
-			bool minimizeEnabled = false;
-
-			if (decorators & minimizeButton)
-			{
-				minimizeEnabled = true;
-			}
-
-			window->currentWindowStyle &= ~linuxMaximize;
-
-			if (minimizeEnabled)
-			{
-				window->currentWindowStyle |= linuxMinimize;
-			}
-
-			window->decorators = 1;
-		}
-
-		if (decorators & icon)
-		{
-			//Linux (at least cinnamon) does not have icons in the window. only in the taskb ar icon
-		}
-
-		//just need to set it to 1 to enable all decorators that include title bar 
-		if (decorators & titleBar)
-		{
-			window->decorators = linuxBorder;
-		}
-
-		if (decorators & border)
-		{
-			window->decorators = 0;
-		}
-
-		if (decorators & sizeableBorder)
-		{
-			window->decorators = 0;
-		}
-
-		long hints[5] = {function | decorator, window->currentWindowStyle, window->decorators, 0, 0};
-
-		XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
-			PropModeReplace, (unsigned char*)hints, 5);
-
-		XMapWindow(currentDisplay, window->windowHandle);
 #endif
 	}
 
