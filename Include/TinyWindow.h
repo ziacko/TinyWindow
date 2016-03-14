@@ -187,7 +187,7 @@ namespace TinyWindow
 		sizeableBorder = 0x40,					/**< The sizable border decoration of the window */
 	};
 
-	enum class error_t : int
+	enum class error_t
 	{
 		success,								/**< If a function call was successful*/
 		invalidWindowName,						/**< If an invalid window name was given */
@@ -241,132 +241,132 @@ namespace TinyWindow
 			error_t err = (error_t)errorValue;
 			switch (err)
 			{
-			case error_t::invalidWindowName:
-			{
-				return "Error: invalid window name \n";
-			}
+				case error_t::invalidWindowName:
+				{
+					return "Error: invalid window name \n";
+				}
 
-			case error_t::invalidIconPath:
-			{
-				return "Error: invalid icon path \n";
-			}
+				case error_t::invalidIconPath:
+				{
+					return "Error: invalid icon path \n";
+				}
 
-			case error_t::invalidWindowIndex:
-			{
-				return "Error: invalid window index \n";
-			}
+				case error_t::invalidWindowIndex:
+				{
+					return "Error: invalid window index \n";
+				}
 
-			case error_t::invalidWindowState:
-			{
-				return "Error: invalid window state \n";
-			}
+				case error_t::invalidWindowState:
+				{
+					return "Error: invalid window state \n";
+				}
 
-			case error_t::invalidResolution:
-			{
-				return "Error: invalid resolution \n";
-			}
+				case error_t::invalidResolution:
+				{
+					return "Error: invalid resolution \n";
+				}
 
-			case error_t::invalidContext:
-			{
-				return "Error: Failed to create OpenGL context \n";
-			}
+				case error_t::invalidContext:
+				{
+					return "Error: Failed to create OpenGL context \n";
+				}
 
-			case error_t::existingContext:
-			{
-				return "Error: context already created \n";
-			}
+				case error_t::existingContext:
+				{
+					return "Error: context already created \n";
+				}
 
-			case error_t::notInitialized:
-			{
-				return "Error: Window manager not initialized \n";
-			}
+				case error_t::notInitialized:
+				{
+					return "Error: Window manager not initialized \n";
+				}
 
-			case error_t::alreadyInitialized:
-			{
-				return "Error: window has already been initialized \n";
-			}
+				case error_t::alreadyInitialized:
+				{
+					return "Error: window has already been initialized \n";
+				}
 
-			case error_t::invalidTitlebar:
-			{
-				return "Error: invalid title bar name (cannot be null or nullptr) \n";
-			}
+				case error_t::invalidTitlebar:
+				{
+					return "Error: invalid title bar name (cannot be null or nullptr) \n";
+				}
 
-			case error_t::invalidCallback:
-			{
-				return "Error: invalid event callback given \n";
-			}
+				case error_t::invalidCallback:
+				{
+					return "Error: invalid event callback given \n";
+				}
 
-			case error_t::windowInvalid:
-			{
-				return "Error: window was not found \n";
-			}
+				case error_t::windowInvalid:
+				{
+					return "Error: window was not found \n";
+				}
 
-			case error_t::invalidWindowStyle:
-			{
-				return "Error: invalid window style given \n";
-			}
+				case error_t::invalidWindowStyle:
+				{
+					return "Error: invalid window style given \n";
+				}
 
-			case error_t::functionNotImplemented:
-			{
-				return "Error: I'm sorry but this function has not been implemented yet :(\n";
-			}
+				case error_t::functionNotImplemented:
+				{
+					return "Error: I'm sorry but this function has not been implemented yet :(\n";
+				}
 
-			case error_t::linuxCannotConnectXServer:
-			{
-				return "Error: cannot connect to X server \n";
-			}
+				case error_t::linuxCannotConnectXServer:
+				{
+					return "Error: cannot connect to X server \n";
+				}
 
-			case error_t::linuxInvalidVisualinfo:
-			{
-				return "Error: Invalid visual information given \n";
-			}
+				case error_t::linuxInvalidVisualinfo:
+				{
+					return "Error: Invalid visual information given \n";
+				}
 
-			case error_t::linuxCannotCreateWindow:
-			{
-				return "Error: failed to create window \n";
-			}
+				case error_t::linuxCannotCreateWindow:
+				{
+					return "Error: failed to create window \n";
+				}
 
-			case error_t::linuxFunctionNotImplemented:
-			{
-				return "Error: function not implemented on Linux platform yet. sorry :(\n";
-			}
+				case error_t::linuxFunctionNotImplemented:
+				{
+					return "Error: function not implemented on Linux platform yet. sorry :(\n";
+				}
 
-			case error_t::windowsCannotCreateWindows:
-			{
-				return "Error: failed to create window \n";
-			}
+				case error_t::windowsCannotCreateWindows:
+				{
+					return "Error: failed to create window \n";
+				}
 
-			case error_t::windowsFunctionNotImplemented:
-			{
-				return "Error: function not implemented on Windows platform yet. sorry ;(\n";
-			}
+				case error_t::windowsFunctionNotImplemented:
+				{
+					return "Error: function not implemented on Windows platform yet. sorry ;(\n";
+				}
 
-			case error_t::success:
-			{
-				return "function call was successful \n";
-			}
+				case error_t::success:
+				{
+					return "function call was successful \n";
+				}
 
-			default:
-			{
-				return "Error: unspecified Error \n";
-			}
+				default:
+				{
+					return "Error: unspecified Error \n";
+				}
 			}
 		}
+		
 		errorCategory_t() {};
 
 		const static errorCategory_t& get()
 		{
-			const static errorCategory_t category;
-			return category;
-
+			return errorCategory_t();
 		}
 	};
 
-	std::error_code make_error_code(error_t eCode)
+	std::error_code make_error_code(error_t errorCode)
 	{
-		return std::error_code(static_cast<int>(eCode), errorCategory_t::get());
+		return std::error_code(static_cast<int>(errorCode), errorCategory_t::get());
 	}
 };
+
 //ugh I hate this hack
 namespace std
 {
@@ -420,7 +420,7 @@ struct window_t
 	HWND							windowHandle;											/**< A handle to A window */
 	HINSTANCE						instanceHandle;
 
-#else
+#elif defined(TW_LINUX)
 
 	Window							windowHandle;											/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
 	GLXContext						context;												/**< The handle to the GLX rendering context */
@@ -3374,6 +3374,7 @@ private:
 
 #endif
 };
+
 }
 
 #endif
