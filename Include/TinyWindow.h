@@ -37,7 +37,6 @@
 
 namespace TinyWindow
 {
-
 	const int defaultWindowWidth = 1280;
 	const int defaultWindowHeight = 720;
 
@@ -214,16 +213,16 @@ namespace TinyWindow
 		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
-	typedef std::function<void(unsigned int, keyState_t)>										keyEvent_t;
-	typedef std::function<void(mouseButton_t, buttonState_t)>									mouseButtonEvent_t;
-	typedef std::function<void(mouseScroll_t)>													mouseWheelEvent_t;
+	typedef std::function<void(unsigned int key, keyState_t keyState)>							keyEvent_t;
+	typedef std::function<void(mouseButton_t mouseButton, buttonState_t buttonState)>			mouseButtonEvent_t;
+	typedef std::function<void(mouseScroll_t mouseScrollDirection)>								mouseWheelEvent_t;
 	typedef std::function<void(void)>															destroyedEvent_t;
 	typedef std::function<void(void)>															maximizedEvent_t;
 	typedef std::function<void(void)>															minimizedEvent_t;
-	typedef std::function<void(bool)>															focusEvent_t;
-	typedef std::function<void(unsigned int, unsigned int)>										movedEvent_t;
-	typedef std::function<void(unsigned int, unsigned int)>										resizeEvent_t;
-	typedef std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)>			mouseMoveEvent_t;
+	typedef std::function<void(bool isFocused)>													focusEvent_t;
+	typedef std::function<void(uiVec2 windowPosition)>											movedEvent_t;
+	typedef std::function<void(uiVec2 windowResolution)>										resizeEvent_t;
+	typedef std::function<void(uiVec2 windowMousePosition, uiVec2 screenMousePosition)>			mouseMoveEvent_t;
 
 	class errorCategory_t : public std::error_category
 	{
@@ -537,14 +536,13 @@ public:
 	/**
 	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	window_t* AddWindow(const char* windowName, unsigned int width = defaultWindowWidth, unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8)
+	window_t* AddWindow(const char* windowName, uiVec2 resolution = uiVec2(defaultWindowWidth, defaultWindowHeight), unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8)
 	{
 		if (windowName != nullptr)
 		{
 			std::unique_ptr<window_t> newWindow(new window_t);
 			newWindow->name = windowName;
-			newWindow->resolution.width = width;
-			newWindow->resolution.height = height;
+			newWindow->resolution = resolution;
 			newWindow->colorBits = colourBits;
 			newWindow->depthBits = depthBits;
 			newWindow->stencilBits = stencilBits;
@@ -583,17 +581,15 @@ public:
 		screenMousePosition.x = mousePosition.x;
 		screenMousePosition.y = mousePosition.y;
 
-		Platform_SetMousePositionInScreen();
-	}
-	/**
-	* Set the position of the mouse cursor relative to screen co-ordinates
-	*/
-	void SetMousePositionInScreen(unsigned int x, unsigned int y)
-	{
-		screenMousePosition.x = x;
-		screenMousePosition.y = y;
-
-		Platform_SetMousePositionInScreen();
+#if defined(TW_WINDOWS)
+		SetCursorPos(screenMousePosition.y, screenMousePosition.y);
+#elif defined(TW_LINUX)
+		XWarpPointer(currentDisplay, None,
+			XDefaultRootWindow(currentDisplay), 0, 0,
+			screenResolution.x,
+			screenResolution.y,
+			screenMousePosition.x, screenMousePosition.y);
+#endif
 	}
 
 	/**
@@ -601,9 +597,17 @@ public:
 	*/
 	TinyWindow::uiVec2 GetScreenResolution(void)
 	{
-		uiVec2 resolution;
-		Platform_GetScreenResolution(resolution);
-		return resolution;
+#if defined(TW_WINDOWS)
+		RECT screen;
+		HWND desktop = GetDesktopWindow();
+		GetWindowRect(desktop, &screen);
+		screenResolution.width = screen.right;
+		screenResolution.height = screen.bottom;
+#elif defined(TW_LINUX)
+		screenResolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+		screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+#endif
+		return screenResolution;
 	}
 
 	/**
@@ -613,25 +617,16 @@ public:
 	{
 		if (window != nullptr)
 		{
-			window->resolution.width = resolution.width;
-			window->resolution.height = resolution.height;
-
-			Platform_SetWindowResolution(window);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	/**
-	 * Set the Size/Resolution of the given window
-	 */
-	std::error_code SetWindowResolution(window_t* window, unsigned int width, unsigned int height)
-	{
-		if (window != nullptr)
-		{
-			window->resolution.width = width;
-			window->resolution.height = height;
-
-			Platform_SetWindowResolution(window);
+			window->resolution = resolution;
+#if defined(TW_WINDOWS)
+			SetWindowPos(window->windowHandle, HWND_TOP,
+				window->position.x, window->position.y,
+				window->resolution.x, window->resolution.y,
+				SWP_SHOWWINDOW | SWP_NOMOVE);
+#elif defined(TW_LINUX)
+			XResizeWindow(currentDisplay,
+				window->windowHandle, window->resolution.x, window->resolution.y);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -647,22 +642,20 @@ public:
 			window->position.x = windowPosition.x;
 			window->position.y = windowPosition.y;
 
-			Platform_SetWindowPosition(window, windowPosition.x, windowPosition.y);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	/**
-	* Set the Position of the given window relative to screen co-ordinates
-	*/
-	std::error_code SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
-	{
-		if (window != nullptr)
-		{
-			window->position.x = x;
-			window->position.y = y;
+#if defined(TW_WINDOWS)
+			SetWindowPos(window->windowHandle, HWND_TOP, window->position.x, window->position.y,
+				window->resolution.x, window->resolution.y,
+				SWP_SHOWWINDOW | SWP_NOSIZE);
+#elif defined(TW_LINUX)
+			XWindowChanges windowChanges;
 
-			Platform_SetWindowPosition(window, x, y);
+			windowChanges.x = window->position.x;
+			windowChanges.y = window->position.y;
+
+			XConfigureWindow(
+				currentDisplay,
+				window->windowHandle, CWX | CWY, &windowChanges);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -678,22 +671,20 @@ public:
 			window->mousePosition.x = mousePosition.x;
 			window->mousePosition.y = mousePosition.y;
 
-			Platform_SetMousePositionInWindow(window, mousePosition.x, mousePosition.y);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	/**
-	* Set the mouse Position of the given window's co-ordinates
-	*/
-	std::error_code SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
-	{
-		if (window != nullptr)
-		{
-			window->mousePosition.x = x;
-			window->mousePosition.y = y;
-
-			Platform_SetMousePositionInWindow(window, x, y);
+#if defined(TW_WINDOWS)
+			POINT mousePoint;
+			mousePoint.x = window->mousePosition.x;
+			mousePoint.y = window->mousePosition.y;
+			ScreenToClient(window->windowHandle, &mousePoint);
+			SetCursorPos(mousePoint.x, mousePoint.y);
+#elif defined(TW_LINUX)
+			XWarpPointer(
+				currentDisplay,
+				window->windowHandle, window->windowHandle,
+				window->position.x, window->position.y,
+				window->resolution.width, window->resolution.height,
+				window->mousePosition.x, window->mousePosition.y);
+#endif
 			return TinyWindow::error_t::success;
 		}
 		return TinyWindow::error_t::windowInvalid;
@@ -1379,85 +1370,6 @@ private:
 #endif
 	}
 
-	void Platform_SetMousePositionInScreen()
-	{
-#if defined(TW_WINDOWS)
-		SetCursorPos(screenMousePosition.y, screenMousePosition.y);
-#elif defined(TW_LINUX)
-		XWarpPointer(currentDisplay, None,
-			XDefaultRootWindow(currentDisplay), 0, 0,
-			screenResolution.x,
-			screenResolution.y,
-			screenMousePosition.x, screenMousePosition.y);
-#endif
-	}
-
-	void Platform_GetScreenResolution(uiVec2 resolution)
-	{
-#if defined(TW_WINDOWS)
-		RECT screen;
-		HWND desktop = GetDesktopWindow();
-		GetWindowRect(desktop, &screen);
-		resolution.width = screen.right;
-		resolution.height = screen.bottom;
-#elif defined(TW_LINUX)
-		resolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-		resolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-
-		screenResolution.x = resolution.width;
-		screenResolution.y = resolution.height;
-#endif
-	}
-
-	void Platform_SetWindowResolution(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		SetWindowPos(window->windowHandle, HWND_TOP,
-			window->position.x, window->position.y,
-			window->resolution.x, window->resolution.y,
-			SWP_SHOWWINDOW | SWP_NOMOVE);
-#elif defined(TW_LINUX)
-		XResizeWindow(currentDisplay,
-			window->windowHandle, window->resolution.x, window->resolution.y);
-#endif
-	}
-
-	void Platform_SetWindowPosition(window_t* window, unsigned int x, unsigned int y)
-	{
-#if defined(TW_WINDOWS)
-		SetWindowPos(window->windowHandle, HWND_TOP, x, y,
-			window->resolution.x, window->resolution.y,
-			SWP_SHOWWINDOW | SWP_NOSIZE);
-#elif defined(TW_LINUX)
-		XWindowChanges windowChanges;
-
-		windowChanges.x = x;
-		windowChanges.y = y;
-
-		XConfigureWindow(
-			currentDisplay,
-			window->windowHandle, CWX | CWY, &windowChanges);
-#endif
-	}
-
-	void Platform_SetMousePositionInWindow(window_t* window, unsigned int x, unsigned int y)
-	{
-#if defined(TW_WINDOWS)
-		POINT mousePoint;
-		mousePoint.x = x;
-		mousePoint.y = y;
-		ScreenToClient(window->windowHandle, &mousePoint);
-		SetCursorPos(mousePoint.x, mousePoint.y);
-#elif defined(TW_LINUX)
-		XWarpPointer(
-			currentDisplay,
-			window->windowHandle, window->windowHandle,
-			window->position.x, window->position.y,
-			window->resolution.width, window->resolution.height,
-			x, y);
-#endif
-	}
-
 	void ShutdownWindow(window_t* window)
 	{
 #if defined(TW_WINDOWS)
@@ -1559,7 +1471,7 @@ private:
 
 				if (window->movedEvent != nullptr)
 				{
-					window->movedEvent(window->position.x, window->position.y);
+					window->movedEvent(window->position);
 				}
 
 				break;
@@ -1572,7 +1484,7 @@ private:
 
 				if (window->movedEvent != nullptr)
 				{
-					window->movedEvent(window->position.x, window->position.y);
+					window->movedEvent(window->position);
 				}
 				break;
 			}
@@ -1607,8 +1519,7 @@ private:
 				{
 					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent(window->resolution.width,
-							window->resolution.height);
+						window->resizeEvent(window->resolution);
 					}
 					break;
 				}
@@ -1623,8 +1534,7 @@ private:
 
 				if (window->resizeEvent != nullptr)
 				{
-					window->resizeEvent(window->resolution.width,
-						window->resolution.height);
+					window->resizeEvent(window->resolution);
 				}
 				break;
 			}
@@ -1826,8 +1736,7 @@ private:
 
 				if (window->mouseMoveEvent != nullptr)
 				{
-					window->mouseMoveEvent(window->mousePosition.x,
-						window->mousePosition.y, point.x, point.y);
+					window->mouseMoveEvent(window->mousePosition, uiVec2(point.x, point.y));
 				}
 				break;
 			}
