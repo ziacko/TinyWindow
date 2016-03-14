@@ -536,7 +536,8 @@ public:
 	/**
 	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 	 */
-	window_t* AddWindow(const char* windowName, uiVec2 resolution = uiVec2(defaultWindowWidth, defaultWindowHeight), unsigned int height = defaultWindowHeight, int colourBits = 8, int depthBits = 8, int stencilBits = 8)
+	window_t* AddWindow(const char* windowName, uiVec2 resolution = uiVec2(defaultWindowWidth, defaultWindowHeight), 
+			int colourBits = 8, int depthBits = 8, int stencilBits = 8)
 	{
 		if (windowName != nullptr)
 		{
@@ -2723,9 +2724,9 @@ private:
 
 				if (window->mouseMoveEvent != nullptr)
 				{
-					window->mouseMoveEvent(currentEvent.xmotion.x,
-						currentEvent.xmotion.y, currentEvent.xmotion.x_root,
-						currentEvent.xmotion.y_root);
+					window->mouseMoveEvent(uiVec2(currentEvent.xmotion.x,
+						currentEvent.xmotion.y), uiVec2(currentEvent.xmotion.x_root,
+						currentEvent.xmotion.y_root));
 				}
 				break;
 			}
@@ -2767,8 +2768,8 @@ private:
 
 				if (window->resizeEvent != nullptr)
 				{
-					window->resizeEvent(currentEvent.xresizerequest.width,
-						currentEvent.xresizerequest.height);
+					window->resizeEvent(uiVec2(currentEvent.xresizerequest.width,
+						currentEvent.xresizerequest.height));
 				}
 
 				break;
@@ -2786,7 +2787,7 @@ private:
 				{
 					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent(currentEvent.xconfigure.width, currentEvent.xconfigure.height);
+						window->resizeEvent(uiVec2(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
 					}
 
 					window->resolution.width = currentEvent.xconfigure.width;
@@ -2799,7 +2800,7 @@ private:
 				{
 					if (window->movedEvent != nullptr)
 					{
-						window->movedEvent(currentEvent.xconfigure.x, currentEvent.xconfigure.y);
+						window->movedEvent(uiVec2(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
 					}
 
 					window->position.x = currentEvent.xconfigure.x;
