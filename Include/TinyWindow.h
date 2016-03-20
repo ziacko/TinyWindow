@@ -438,6 +438,80 @@ namespace TinyWindow
 		XSetWindowAttributes			setAttributes;											/**< The attributes to be set for the window */
 		unsigned int					decorators;												/**< Enabled window decorators */
 		Display*						currentDisplay;											/**< Handle to the X11 window */
+/* these atoms are needed to change window states via the extended window manager*/
+		Atom							AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
+		Atom							AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
+		Atom							AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
+		Atom							AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
+		Atom							AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
+		Atom							AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
+		Atom							AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
+		Atom							AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
+		Atom							AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
+		Atom							AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
+		Atom							AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
+		Atom							AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
+
+		Atom							AtomWindowType;					/**< Atom for the type of window */
+		Atom							AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
+		Atom							AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
+		Atom							AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
+
+		Atom							AtomAllowedActions;				/**< Atom for allowed window actions */
+		Atom							AtomActionResize;				/**< Atom for allowing the window to be resized */
+		Atom							AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
+		Atom							AtomActionShade;				/**< Atom for allowing the window to be shaded */
+		Atom							AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
+		Atom							AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
+		Atom							AtomActionClose;				/**< Atom for allowing the window to be closed */
+
+		Atom							AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
+	
+		enum decorator_t
+		{
+			linuxBorder = 1L << 1,
+			linuxMove = 1L << 2,
+			linuxMinimize = 1L << 3,
+			linuxMaximize = 1L << 4,
+			linuxClose = 1L << 5,
+		};
+
+		enum hint_t
+		{
+			function = 1,
+			decorator,
+		};
+
+		void InitializeAtoms()
+		{
+			AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
+			AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
+			AtomMaxHorz = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
+			AtomMaxVert = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", false);
+			AtomClose = XInternAtom(currentDisplay, "WM_DELETE_WINDOW", false);
+			AtomHidden = XInternAtom(currentDisplay, "_NET_WM_STATE_HIDDEN", false);
+			AtomActive = XInternAtom(currentDisplay, "_NET_ACTIVE_WINDOW", false);
+			AtomDemandsAttention = XInternAtom(currentDisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", false);
+			AtomFocused = XInternAtom(currentDisplay, "_NET_WM_STATE_FOCUSED", false);
+			AtomCardinal = XInternAtom(currentDisplay, "CARDINAL", false);
+			AtomIcon = XInternAtom(currentDisplay, "_NET_WM_ICON", false);
+			AtomHints = XInternAtom(currentDisplay, "_MOTIF_WM_HINTS", true);
+
+			AtomWindowType = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE", false);
+			AtomWindowTypeDesktop = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", false);
+			AtomWindowTypeSplash = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", false);
+			AtomWindowTypeNormal = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", false);
+
+			AtomAllowedActions = XInternAtom(currentDisplay, "_NET_WM_ALLOWED_ACTIONS", false);
+			AtomActionResize = XInternAtom(currentDisplay, "WM_ACTION_RESIZE", false);
+			AtomActionMinimize = XInternAtom(currentDisplay, "_WM_ACTION_MINIMIZE", false);
+			AtomActionShade = XInternAtom(currentDisplay, "WM_ACTION_SHADE", false);
+			AtomActionMaximizeHorz = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_HORZ", false);
+			AtomActionMaximizeVert = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_VERT", false);
+			AtomActionClose = XInternAtom(currentDisplay, "_WM_ACTION_CLOSE", false);
+
+			AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
+		}
 
 #endif
 
@@ -662,6 +736,37 @@ namespace TinyWindow
 		}
 
 		/**
+		* Toggle the given window's full screen mode
+		*/
+		std::error_code SetFullScreen(bool newState)
+		{
+			currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
+
+#if defined(TW_WINDOWS)
+			SetWindowLongPtr(windowHandle, GWL_STYLE,
+				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+			MoveWindow(windowHandle, 0, 0, windowManager::GetScreenResolution().width,
+				windowManager::GetScreenResolution().height, true);
+#elif defined(TW_LINUX)
+			XEvent currentEvent;
+			memset(&currentEvent, 0, sizeof(currentEvent));
+
+			currentEvent.xany.type = ClientMessage;
+			currentEvent.xclient.message_type = AtomState;
+			currentEvent.xclient.format = 32;
+			currentEvent.xclient.window = windowHandle;
+			currentEvent.xclient.data.l[0] = currentState == state_t::fullscreen;
+			currentEvent.xclient.data.l[1] = AtomFullScreen;
+
+			XSendEvent(currentDisplay,
+				XDefaultRootWindow(currentDisplay),
+				0, SubstructureNotifyMask, &currentEvent);
+#endif
+			return TinyWindow::error_t::success;
+		}
+
+		/**
 		* Set the window title bar	by name
 		*/
 		std::error_code SetTitleBar(const char* newTitle)
@@ -719,7 +824,7 @@ namespace TinyWindow
 #if defined(TW_WINDOWS)
 			ShowWindow(windowHandle, SW_RESTORE);
 #elif defined(TW_LINUX)
-			XMapWindow(currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, windowHandle);
 #endif
 			return TinyWindow::error_t::success;
 		}
@@ -1212,41 +1317,6 @@ namespace TinyWindow
 		}
 
 		/**
-		* Toggle the given window's full screen mode
-		*/
-		std::error_code SetFullScreen(tWindow* window, bool newState)
-		{
-			if (window != nullptr)
-			{
-				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
-
-#if defined(TW_WINDOWS)
-				SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-					WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
-
-				MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
-					windowManager::GetScreenResolution().height, true);
-#elif defined(TW_LINUX)
-				XEvent currentEvent;
-				memset(&currentEvent, 0, sizeof(currentEvent));
-
-				currentEvent.xany.type = ClientMessage;
-				currentEvent.xclient.message_type = AtomState;
-				currentEvent.xclient.format = 32;
-				currentEvent.xclient.window = window->windowHandle;
-				currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
-				currentEvent.xclient.data.l[1] = AtomFullScreen;
-
-				XSendEvent(currentDisplay,
-					XDefaultRootWindow(currentDisplay),
-					0, SubstructureNotifyMask, &currentEvent);
-#endif
-				return TinyWindow::error_t::success;
-			}
-			return TinyWindow::error_t::windowInvalid;
-		}
-
-		/**
 		* Remove window from the manager by name
 		*/
 		std::error_code RemoveWindow(tWindow* window)
@@ -1312,7 +1382,7 @@ namespace TinyWindow
 					window->position.y = l_Attributes.y;
 
 					window->contextCreated = true;
-					InitializeAtoms();
+					window->InitializeAtoms();
 					return TinyWindow::error_t::success;
 				}
 				return TinyWindow::error_t::linuxCannotConnectXServer;
@@ -1353,7 +1423,7 @@ namespace TinyWindow
 	#elif defined(TW_LINUX)
 			if (window->currentState == state_t::fullscreen)
 			{
-				RestoreWindow(window);
+				window->Restore();
 			}
 
 			glXDestroyContext(currentDisplay, window->context);
@@ -2151,52 +2221,9 @@ namespace TinyWindow
 
 #elif defined(TW_LINUX)
 
-		enum decorator_t
-		{
-			linuxBorder = 1L << 1,
-			linuxMove = 1L << 2,
-			linuxMinimize = 1L << 3,
-			linuxMaximize = 1L << 4,
-			linuxClose = 1L << 5,
-		};
-
-		enum hint_t
-		{
-			function = 1,
-			decorator,
-		};
-
 		Display*			currentDisplay;
 		XEvent				currentEvent;
-		/* these atoms are needed to change window states via the extended window manager*/
-		Atom				AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
-		Atom				AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
-		Atom				AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
-		Atom				AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
-		Atom				AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
-		Atom				AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
-		Atom				AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
-		Atom				AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
-		Atom				AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
-		Atom				AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
-		Atom				AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
-		Atom				AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
-
-		Atom				AtomWindowType;					/**< Atom for the type of window */
-		Atom				AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
-		Atom				AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
-		Atom				AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
-
-		Atom				AtomAllowedActions;				/**< Atom for allowed window actions */
-		Atom				AtomActionResize;				/**< Atom for allowing the window to be resized */
-		Atom				AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
-		Atom				AtomActionShade;				/**< Atom for allowing the window to be shaded */
-		Atom				AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
-		Atom				AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
-		Atom				AtomActionClose;				/**< Atom for allowing the window to be closed */
-
-		Atom				AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
-	
+			
 		tWindow* GetWindowByHandle(Window windowHandle)
 		{
 			for(unsigned int iter = 0; iter < windowList.size(); iter++)
@@ -2299,38 +2326,7 @@ namespace TinyWindow
 				}
 			}
 		}
-
-		void InitializeAtoms()
-		{
-			AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
-			AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
-			AtomMaxHorz = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
-			AtomMaxVert = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", false);
-			AtomClose = XInternAtom(currentDisplay, "WM_DELETE_WINDOW", false);
-			AtomHidden = XInternAtom(currentDisplay, "_NET_WM_STATE_HIDDEN", false);
-			AtomActive = XInternAtom(currentDisplay, "_NET_ACTIVE_WINDOW", false);
-			AtomDemandsAttention = XInternAtom(currentDisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", false);
-			AtomFocused = XInternAtom(currentDisplay, "_NET_WM_STATE_FOCUSED", false);
-			AtomCardinal = XInternAtom(currentDisplay, "CARDINAL", false);
-			AtomIcon = XInternAtom(currentDisplay, "_NET_WM_ICON", false);
-			AtomHints = XInternAtom(currentDisplay, "_MOTIF_WM_HINTS", true);
-
-			AtomWindowType = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE", false);
-			AtomWindowTypeDesktop = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", false);
-			AtomWindowTypeSplash = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", false);
-			AtomWindowTypeNormal = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", false);
-
-			AtomAllowedActions = XInternAtom(currentDisplay, "_NET_WM_ALLOWED_ACTIONS", false);
-			AtomActionResize = XInternAtom(currentDisplay, "WM_ACTION_RESIZE", false);
-			AtomActionMinimize = XInternAtom(currentDisplay, "_WM_ACTION_MINIMIZE", false);
-			AtomActionShade = XInternAtom(currentDisplay, "WM_ACTION_SHADE", false);
-			AtomActionMaximizeHorz = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_HORZ", false);
-			AtomActionMaximizeVert = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_VERT", false);
-			AtomActionClose = XInternAtom(currentDisplay, "_WM_ACTION_CLOSE", false);
-
-			AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
-		}
-
+	
 		std::error_code Linux_InitializeWindow(tWindow* window)
 		{
 			window->attributes = new int[ 5]{
@@ -2341,7 +2337,7 @@ namespace TinyWindow
 				None};
 
 			window->decorators = 1;
-			window->currentWindowStyle |= linuxClose | linuxMaximize | linuxMinimize | linuxMove;
+			window->currentWindowStyle |= window->linuxClose | window->linuxMaximize | window->linuxMinimize | window->linuxMove;
 
 			if (!currentDisplay)
 			{
@@ -2384,10 +2380,11 @@ namespace TinyWindow
 			XStoreName(currentDisplay, window->windowHandle,
 				window->name);
 
-			XSetWMProtocols(currentDisplay, window->windowHandle, &AtomClose, true);	
+			XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);	
 
-			Platform_InitializeGL(window);
 			window->currentDisplay = currentDisplay;
+			Platform_InitializeGL(window);
+			
 			return TinyWindow::error_t::success;
 		}
 
@@ -2772,7 +2769,7 @@ namespace TinyWindow
 					unsigned char* properties = nullptr;
 
 					XGetWindowProperty(currentDisplay, currentEvent.xproperty.window,
-						AtomState,
+						window->AtomState,
 						0, LONG_MAX, false, AnyPropertyType,
 						&type, &format, &numItems, &bytesAfter,
 						& properties);
@@ -2784,7 +2781,7 @@ namespace TinyWindow
 						{
 							Atom currentProperty = ((long*)(properties))[ currentItem];
 
-							if (currentProperty == AtomHidden)
+							if (currentProperty == window->AtomHidden)
 							{
 								//window was minimized
 								if (window->minimizedEvent != nullptr)
@@ -2794,8 +2791,8 @@ namespace TinyWindow
 								}
 							}
 
-							if (currentProperty == AtomMaxVert ||
-								currentProperty == AtomMaxVert)
+							if (currentProperty == window->AtomMaxVert ||
+								currentProperty == window->AtomMaxVert)
 							{
 								//window was maximized
 								if (window->maximizedEvent != nullptr)
@@ -2805,12 +2802,12 @@ namespace TinyWindow
 								}
 							}
 
-							if (currentProperty == AtomFocused)
+							if (currentProperty == window->AtomFocused)
 							{
 								//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
 							}
 
-							if (currentProperty == AtomDemandsAttention)
+							if (currentProperty == window->AtomDemandsAttention)
 							{
 								//the window demands user attention
 							}
@@ -2836,7 +2833,7 @@ namespace TinyWindow
 						//printf("%s\n", l_AtomName);
 					}
 
-					if ((Atom)currentEvent.xclient.data.l[ 0] == AtomClose)
+					if ((Atom)currentEvent.xclient.data.l[0] == window->AtomClose)
 					{
 						window->shouldClose = true;
 						if(window->destroyedEvent != nullptr)
@@ -2847,7 +2844,7 @@ namespace TinyWindow
 					}
 
 					//check if full screen
-					if ((Atom)currentEvent.xclient.data.l[ 1] == AtomFullScreen)
+					if ((Atom)currentEvent.xclient.data.l[1] == window->AtomFullScreen)
 					{
 						break;
 					}
