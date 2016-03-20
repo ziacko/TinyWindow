@@ -357,7 +357,8 @@ namespace TinyWindow
 
 		const static errorCategory_t& get()
 		{
-			return errorCategory_t();
+			const static errorCategory_t category;
+			return category;
 		}
 	};
 
@@ -376,437 +377,247 @@ namespace std
 namespace TinyWindow
 {
 
-struct window_t
-{
+	//class windowManager;
 
-	const char*						name;													/**< Name of the window */
-	unsigned int					iD;														/**< ID of the Window. (where it belongs in the window manager) */
-	int								colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
-	int								depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
-	int								stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
-	keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
-	buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
-	TinyWindow::uiVec2				resolution;												/**< Resolution/Size of the window stored in an array */
-	TinyWindow::uiVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
-	TinyWindow::uiVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
-	bool							shouldClose;											/**< Whether the Window should be closing */
-	bool							inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
+	class tWindow
+	{
 
-	bool							initialized;											/**< Whether the window has been successfully initialized */
-	bool							contextCreated;											/**< Whether the OpenGL context has been successfully created */
-	bool							isCurrentContext;										/**< Whether the window is the current window being drawn to */
+		friend class windowManager;
 
-	state_t							currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-	unsigned int					currentWindowStyle;										/**< The current style of the window */
+	public:
 
-	keyEvent_t						keyEvent;												/**< This is the callback to be used when a key has been pressed */
-	mouseButtonEvent_t				mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
-	mouseWheelEvent_t				mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
-	destroyedEvent_t				destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
-	maximizedEvent_t				maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
-	minimizedEvent_t				minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
-	focusEvent_t					focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
-	movedEvent_t					movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
-	resizeEvent_t					resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
-	mouseMoveEvent_t				mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
+		const char*						name;													/**< Name of the window */
+		unsigned int					iD;														/**< ID of the Window. (where it belongs in the window manager) */
+		int								colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
+		int								depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
+		int								stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
+		keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
+		buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
+		TinyWindow::uiVec2				resolution;												/**< Resolution/Size of the window stored in an array */
+		TinyWindow::uiVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
+		TinyWindow::uiVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
+		bool							shouldClose;											/**< Whether the Window should be closing */
+		bool							inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
+
+		bool							initialized;											/**< Whether the window has been successfully initialized */
+		bool							contextCreated;											/**< Whether the OpenGL context has been successfully created */
+		bool							isCurrentContext;										/**< Whether the window is the current window being drawn to */
+
+		state_t							currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
+		unsigned int					currentWindowStyle;										/**< The current style of the window */
+
+		keyEvent_t						keyEvent;												/**< This is the callback to be used when a key has been pressed */
+		mouseButtonEvent_t				mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
+		mouseWheelEvent_t				mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
+		destroyedEvent_t				destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
+		maximizedEvent_t				maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
+		minimizedEvent_t				minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
+		focusEvent_t					focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
+		movedEvent_t					movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
+		resizeEvent_t					resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
+		mouseMoveEvent_t				mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
+
+	private:
 
 #if defined(TW_WINDOWS)
 
-	HDC								deviceContextHandle;									/**< A handle to a device context */
-	HGLRC							glRenderingContextHandle;								/**< A handle to an OpenGL rendering context*/
-	HPALETTE						paletteHandle;											/**< A handle to a Win32 palette*/
-	PIXELFORMATDESCRIPTOR			pixelFormatDescriptor;									/**< Describes the pixel format of a drawing surface*/
-	WNDCLASS						windowClass;											/**< Contains the window class attributes */
-	HWND							windowHandle;											/**< A handle to A window */
-	HINSTANCE						instanceHandle;
+		HDC								deviceContextHandle;									/**< A handle to a device context */
+		HGLRC							glRenderingContextHandle;								/**< A handle to an OpenGL rendering context*/
+		HPALETTE						paletteHandle;											/**< A handle to a Win32 palette*/
+		PIXELFORMATDESCRIPTOR			pixelFormatDescriptor;									/**< Describes the pixel format of a drawing surface*/
+		WNDCLASS						windowClass;											/**< Contains the window class attributes */
+		HWND							windowHandle;											/**< A handle to A window */
+		HINSTANCE						instanceHandle;
 
 #elif defined(TW_LINUX)
 
-	Window							windowHandle;											/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
-	GLXContext						context;												/**< The handle to the GLX rendering context */
-	XVisualInfo*					visualInfo;												/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
-	int*							attributes;												/**< Attributes of the window. RGB, depth, stencil, etc */
-	XSetWindowAttributes			setAttributes;											/**< The attributes to be set for the window */
-	unsigned int					decorators;												/**< Enabled window decorators */
+		Window							windowHandle;											/**< The X11 handle to the window. I wish they didn't name the type 'Window' */
+		GLXContext						context;												/**< The handle to the GLX rendering context */
+		XVisualInfo*					visualInfo;												/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
+		int*							attributes;												/**< Attributes of the window. RGB, depth, stencil, etc */
+		XSetWindowAttributes			setAttributes;											/**< The attributes to be set for the window */
+		unsigned int					decorators;												/**< Enabled window decorators */
+		Display*						currentDisplay;											/**< Handle to the X11 window */
 
 #endif
 
-	window_t(const char* name = nullptr, unsigned int iD = 0,
-		unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-		bool shouldClose = false, state_t currentState = state_t::normal,
-		keyEvent_t keyEvent = nullptr,
-		mouseButtonEvent_t mouseButtonEvent = nullptr, 
-		mouseWheelEvent_t mouseWheelEvent = nullptr,
-		destroyedEvent_t destroyedEvent = nullptr,
-		maximizedEvent_t maximizedEvent = nullptr, 
-		minimizedEvent_t minimizedEvent = nullptr,
-		focusEvent_t focusEvent = nullptr,
-		movedEvent_t movedEvent = nullptr, 
-		resizeEvent_t resizeEvent = nullptr,
-		mouseMoveEvent_t mouseMoveEvent = nullptr)
-	{
-		this->name = name;
-		this->iD = iD;
-		this->colorBits = colorBits;
-		this->depthBits = depthBits;
-		this->stencilBits = stencilBits;
-		this->shouldClose = shouldClose;
-		this->currentState = currentState;
+	public:
 
-		this->keyEvent = keyEvent;
-		this->mouseButtonEvent = mouseButtonEvent;
-		this->mouseWheelEvent = mouseWheelEvent;
-		this->destroyedEvent = destroyedEvent;
-		this->maximizedEvent = maximizedEvent;
-		this->minimizedEvent = minimizedEvent;
-		this->focusEvent = focusEvent;
-		this->movedEvent = movedEvent;
-		this->resizeEvent = resizeEvent;
-		this->mouseMoveEvent = mouseMoveEvent;
-
-		initialized = false;
-		contextCreated = false;
-		currentWindowStyle = (unsigned int)style_t::normal;
-
-#if defined(__linux__)
-		context = 0;
-#endif 
-	}
-};
-
-class windowManager
-{
-	enum error_t : int;
-
-public:
-
-	windowManager(void)
-	{
-#if defined(TW_WINDOWS)
-		CreateTerminal(); //feel free to comment this out
-		RECT desktop;
-
-		HWND desktopHandle = GetDesktopWindow();
-
-		if (desktopHandle)
+		tWindow(const char* name = nullptr, unsigned int iD = 0,
+			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
+			bool shouldClose = false, state_t currentState = state_t::normal,
+			keyEvent_t keyEvent = nullptr,
+			mouseButtonEvent_t mouseButtonEvent = nullptr, 
+			mouseWheelEvent_t mouseWheelEvent = nullptr,
+			destroyedEvent_t destroyedEvent = nullptr,
+			maximizedEvent_t maximizedEvent = nullptr, 
+			minimizedEvent_t minimizedEvent = nullptr,
+			focusEvent_t focusEvent = nullptr,
+			movedEvent_t movedEvent = nullptr, 
+			resizeEvent_t resizeEvent = nullptr,
+			mouseMoveEvent_t mouseMoveEvent = nullptr)
 		{
-			GetWindowRect(desktopHandle, &desktop);
+			this->name = name;
+			this->iD = iD;
+			this->colorBits = colorBits;
+			this->depthBits = depthBits;
+			this->stencilBits = stencilBits;
+			this->shouldClose = shouldClose;
+			this->currentState = currentState;
 
-			screenResolution.x = desktop.right;
-			screenResolution.y = desktop.bottom;
-			return;
-		}
-#elif defined(TW_LINUX)
-		currentDisplay = XOpenDisplay(0);
+			this->keyEvent = keyEvent;
+			this->mouseButtonEvent = mouseButtonEvent;
+			this->mouseWheelEvent = mouseWheelEvent;
+			this->destroyedEvent = destroyedEvent;
+			this->maximizedEvent = maximizedEvent;
+			this->minimizedEvent = minimizedEvent;
+			this->focusEvent = focusEvent;
+			this->movedEvent = movedEvent;
+			this->resizeEvent = resizeEvent;
+			this->mouseMoveEvent = mouseMoveEvent;
 
-		if (!currentDisplay)
-		{
-			return;
+			initialized = false;
+			contextCreated = false;
+			currentWindowStyle = (unsigned int)style_t::normal;
+
+	#if defined(__linux__)
+			context = 0;
+	#endif 
 		}
 
-		screenResolution.x = WidthOfScreen(
-			XScreenOfDisplay(currentDisplay,
-				DefaultScreen(currentDisplay)));
-
-		screenResolution.y = HeightOfScreen(
-			XScreenOfDisplay(currentDisplay,
-				DefaultScreen(currentDisplay)));
-#endif
-	}
-
-	/**
-	 * Shutdown and delete all windows in the manager
-	 */
-	~windowManager(void)
-	{
-		ShutDown();
-	}
-
-	/**
-	 * Use this to shutdown the window manager when your program is finished
-	 */
-	 void ShutDown(void) 
-	{
-#if defined(__linux__)
-		Linux_Shutdown();
-#endif
-		windowList.clear();
-	}
-
-	/**
-	 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
-	 */
-	window_t* AddWindow(const char* windowName, uiVec2 resolution = uiVec2(defaultWindowWidth, defaultWindowHeight), 
-			int colourBits = 8, int depthBits = 8, int stencilBits = 8)
-	{
-		if (windowName != nullptr)
+		/**
+		* Set the Size/Resolution of the given window
+		*/
+		std::error_code SetResolution(TinyWindow::uiVec2 resolution)
 		{
-			std::unique_ptr<window_t> newWindow(new window_t);
-			newWindow->name = windowName;
-			newWindow->resolution = resolution;
-			newWindow->colorBits = colourBits;
-			newWindow->depthBits = depthBits;
-			newWindow->stencilBits = stencilBits;
-			newWindow->iD = GetNumWindows();
-
-			windowList.push_back(std::move(newWindow));
-			Platform_InitializeWindow(windowList.back().get());
-
-			return windowList.back().get();
-		}
-		//PrintErrorMessage(std::error_code(invalidWindowName));
-		return nullptr;
-	}
-
-	/**
-	 * Return the total amount of windows the manager has
-	 */
-	int GetNumWindows(void)
-	{
-		return windowList.size();
-	}
-
-	/**
-	* Return the mouse position in screen co-ordinates
-	*/
-	TinyWindow::uiVec2 GetMousePositionInScreen(void)
-	{
-		return screenMousePosition;
-	}
-
-	/**
-	 * Set the position of the mouse cursor relative to screen co-ordinates
-	 */
-	void SetMousePositionInScreen(TinyWindow::uiVec2 mousePosition)
-	{
-		screenMousePosition.x = mousePosition.x;
-		screenMousePosition.y = mousePosition.y;
-
+			this->resolution = resolution;
 #if defined(TW_WINDOWS)
-		SetCursorPos(screenMousePosition.y, screenMousePosition.y);
-#elif defined(TW_LINUX)
-		XWarpPointer(currentDisplay, None,
-			XDefaultRootWindow(currentDisplay), 0, 0,
-			screenResolution.x,
-			screenResolution.y,
-			screenMousePosition.x, screenMousePosition.y);
-#endif
-	}
-
-	/**
-	* Return the Resolution of the current screen
-	*/
-	TinyWindow::uiVec2 GetScreenResolution(void)
-	{
-#if defined(TW_WINDOWS)
-		RECT screen;
-		HWND desktop = GetDesktopWindow();
-		GetWindowRect(desktop, &screen);
-		screenResolution.width = screen.right;
-		screenResolution.height = screen.bottom;
-#elif defined(TW_LINUX)
-		screenResolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-		screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-#endif
-		return screenResolution;
-	}
-
-	/**
-	 * Set the Size/Resolution of the given window
-	 */
-	std::error_code SetWindowResolution(window_t* window, TinyWindow::uiVec2 resolution)
-	{
-		if (window != nullptr)
-		{
-			window->resolution = resolution;
-#if defined(TW_WINDOWS)
-			SetWindowPos(window->windowHandle, HWND_TOP,
-				window->position.x, window->position.y,
-				window->resolution.x, window->resolution.y,
+			SetWindowPos(windowHandle, HWND_TOP,
+				position.x, position.y,
+				resolution.x, resolution.y,
 				SWP_SHOWWINDOW | SWP_NOMOVE);
 #elif defined(TW_LINUX)
 			XResizeWindow(currentDisplay,
-				window->windowHandle, window->resolution.x, window->resolution.y);
+				windowHandle, resolution.x, resolution.y);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Set the Position of the given window relative to screen co-ordinates
-	 */
-	std::error_code SetWindowPosition(window_t* window, TinyWindow::uiVec2 windowPosition)
-	{
-		if (window != nullptr)
+		/**
+		* Set the Position of the given window relative to screen co-ordinates
+		*/
+		std::error_code SetPosition(TinyWindow::uiVec2 position)
 		{
-			window->position.x = windowPosition.x;
-			window->position.y = windowPosition.y;
+			this->position = position;
 
 #if defined(TW_WINDOWS)
-			SetWindowPos(window->windowHandle, HWND_TOP, window->position.x, window->position.y,
-				window->resolution.x, window->resolution.y,
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
+				resolution.x, resolution.y,
 				SWP_SHOWWINDOW | SWP_NOSIZE);
 #elif defined(TW_LINUX)
 			XWindowChanges windowChanges;
 
-			windowChanges.x = window->position.x;
-			windowChanges.y = window->position.y;
+			windowChanges.x = position.x;
+			windowChanges.y = position.y;
 
 			XConfigureWindow(
 				currentDisplay,
-				window->windowHandle, CWX | CWY, &windowChanges);
+				windowHandle, CWX | CWY, &windowChanges);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Set the mouse Position of the given window's co-ordinates
-	 */
-	std::error_code SetMousePositionInWindow(window_t* window, TinyWindow::uiVec2 mousePosition)
-	{
-		if (window != nullptr)
+		/**
+		* Set the mouse Position of the given window's co-ordinates
+		*/
+		std::error_code SetMousePosition(TinyWindow::uiVec2 mousePosition)
 		{
-			window->mousePosition.x = mousePosition.x;
-			window->mousePosition.y = mousePosition.y;
-
+			this->mousePosition.x = mousePosition.x;
+			this->mousePosition.y = mousePosition.y;
 #if defined(TW_WINDOWS)
 			POINT mousePoint;
-			mousePoint.x = window->mousePosition.x;
-			mousePoint.y = window->mousePosition.y;
-			ScreenToClient(window->windowHandle, &mousePoint);
+			mousePoint.x = mousePosition.x;
+			mousePoint.y = mousePosition.y;
+			ScreenToClient(windowHandle, &mousePoint);
 			SetCursorPos(mousePoint.x, mousePoint.y);
 #elif defined(TW_LINUX)
 			XWarpPointer(
 				currentDisplay,
-				window->windowHandle, window->windowHandle,
-				window->position.x, window->position.y,
-				window->resolution.width, window->resolution.height,
-				window->mousePosition.x, window->mousePosition.y);
+				windowHandle, windowHandle,
+				position.x, position.y,
+				resolution.width, resolution.height,
+				mousePosition.x, mousePosition.y);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Swap the draw buffers of the given window
-	 */
-	inline std::error_code SwapWindowBuffers(window_t* window)
-	{
-		if (window != nullptr)
+		/**
+		* Swap the draw buffers of the given window
+		*/
+		inline std::error_code SwapDrawBuffers(void)
 		{
 #if defined(TW_WINDOWS)
-			SwapBuffers(window->deviceContextHandle);
+			SwapBuffers(deviceContextHandle);
 #elif defined(TW_LINUX)
-			glXSwapBuffers(currentDisplay, window->windowHandle);
+			glXSwapBuffers(currentDisplay, windowHandle);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Make the given window be the current OpenGL Context to be drawn to
-	 */
-	std::error_code MakeWindowCurrentContext(window_t* window)
-	{
-		if (window != nullptr)
+		/**
+		* Make the given window be the current OpenGL Context to be drawn to
+		*/
+		std::error_code MakeCurrentContext(void)
 		{
 #if defined(TW_WINDOWS)
-			wglMakeCurrent(window->deviceContextHandle,
-				window->glRenderingContextHandle);
+			wglMakeCurrent(deviceContextHandle,
+				glRenderingContextHandle);
 #elif defined(TW_LINUX)
-			glXMakeCurrent(currentDisplay, window->windowHandle,
-				window->context);
+			glXMakeCurrent(currentDisplay, windowHandle,
+				context);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Toggle the given window's full screen mode
-	 */
-	std::error_code SetFullScreen(window_t* window, bool newState)
-	{
-		if (window != nullptr)
-		{
-			window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
-
-#if defined(TW_WINDOWS)
-			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
-
-			MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
-				windowManager::GetScreenResolution().height, true);
-#elif defined(TW_LINUX)
-			XEvent currentEvent;
-			memset(&currentEvent, 0, sizeof(currentEvent));
-
-			currentEvent.xany.type = ClientMessage;
-			currentEvent.xclient.message_type = AtomState;
-			currentEvent.xclient.format = 32;
-			currentEvent.xclient.window = window->windowHandle;
-			currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
-			currentEvent.xclient.data.l[1] = AtomFullScreen;
-
-			XSendEvent(currentDisplay,
-				XDefaultRootWindow(currentDisplay),
-				0, SubstructureNotifyMask, &currentEvent);
-#endif
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	 * Toggle the minimization state of the given window
-	 */
-	std::error_code MinimizeWindow(window_t* window, bool newState)
-	{
-		if (window != nullptr)
+		/**
+		* Toggle the minimization state of the given window
+		*/
+		std::error_code Minimize(bool newState)
 		{
 			if (newState)
 			{
-				window->currentState = state_t::minimized;
+				currentState = state_t::minimized;
 
 #if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_MINIMIZE);
+				ShowWindow(windowHandle, SW_MINIMIZE);
 #elif defined(TW_LINUX)
 				XIconifyWindow(currentDisplay,
-					window->windowHandle, 0);
+					windowHandle, 0);
 #endif
 			}
 
 			else
 			{
-				window->currentState = state_t::normal;
+				currentState = state_t::normal;
 #if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_RESTORE);
+				ShowWindow(windowHandle, SW_RESTORE);
 #elif defined(TW_LINUX)
-				XMapWindow(currentDisplay, window->windowHandle);
+				XMapWindow(currentDisplay, windowHandle);
 #endif
 			}
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-	
-	/**
-	 * Toggle the maximization state of the current window
-	 */
-	std::error_code MaximizeWindow(window_t* window, bool newState)
-	{
-		if (window != nullptr)
+
+		/**
+		* Toggle the maximization state of the current window
+		*/
+		std::error_code Maximize(bool newState)
 		{
 			if (newState)
 			{
-				window->currentState = state_t::maximized;
+				currentState = state_t::maximized;
 #if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_MAXIMIZE);
+				ShowWindow(windowHandle, SW_MAXIMIZE);
 #elif defined(TW_LINUX)
 				XEvent currentEvent;
 				memset(&currentEvent, 0, sizeof(currentEvent));
@@ -814,8 +625,8 @@ public:
 				currentEvent.xany.type = ClientMessage;
 				currentEvent.xclient.message_type = AtomState;
 				currentEvent.xclient.format = 32;
-				currentEvent.xclient.window = window->windowHandle;
-				currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
+				currentEvent.xclient.window = windowHandle;
+				currentEvent.xclient.data.l[0] = (currentState == state_t::maximized);
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
@@ -827,9 +638,9 @@ public:
 
 			else
 			{
-				window->currentState = state_t::normal;
+				currentState = state_t::normal;
 #if defined(TW_WINDOWS)
-				ShowWindow(window->windowHandle, SW_RESTORE);
+				ShowWindow(windowHandle, SW_RESTORE);
 #elif defined(TW_LINUX)
 				XEvent currentEvent;
 				memset(&currentEvent, 0, sizeof(currentEvent));
@@ -837,8 +648,8 @@ public:
 				currentEvent.xany.type = ClientMessage;
 				currentEvent.xclient.message_type = AtomState;
 				currentEvent.xclient.format = 32;
-				currentEvent.xclient.window = window->windowHandle;
-				currentEvent.xclient.data.l[0] = (window->currentState == state_t::maximized);
+				currentEvent.xclient.window = windowHandle;
+				currentEvent.xclient.data.l[0] = (currentState == state_t::maximized);
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
@@ -849,51 +660,43 @@ public:
 			}
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Set the window title bar	by name
-	 */
-	std::error_code SetWindowTitleBar(window_t* window, const char* newTitle)
-	{
-		if (newTitle != nullptr)
+		/**
+		* Set the window title bar	by name
+		*/
+		std::error_code SetTitleBar(const char* newTitle)
 		{
-			if (window != nullptr)
+			if (newTitle != nullptr)
 			{
 #if defined(TW_WINDOWS)
-				SetWindowText(window->windowHandle, newTitle);
+				SetWindowText(windowHandle, newTitle);
 #elif defined(TW_LINUX)
-				XStoreName(currentDisplay, window->windowHandle, newTitle);
+				XStoreName(currentDisplay, windowHandle, newTitle);
 #endif
 				return TinyWindow::error_t::success;
 			}
-			return TinyWindow::error_t::windowInvalid;
+			return TinyWindow::error_t::invalidTitlebar;
 		}
-		return TinyWindow::error_t::invalidTitlebar;
-	}
 
-	/**
-	* Set the window icon by name (currently not functional)
-	*/
-	std::error_code SetWindowIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
-	{
-		return TinyWindow::error_t::functionNotImplemented;
-	}
+		/**
+		* Set the window icon by name (currently not functional)
+		*/
+		std::error_code SetIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
+		{
+			return TinyWindow::error_t::functionNotImplemented;
+		}
 
-	/**
-	* Set the window to be in focus by name
-	*/
-	std::error_code FocusWindow(window_t* window, bool newState)
-	{
-		if (window != nullptr)
+		/**
+		* Set the window to be in focus by name
+		*/
+		std::error_code Focus(bool newState)
 		{
 			if (newState)
 			{
 #if defined(TW_WINDOWS)
-				SetFocus(window->windowHandle);
+				SetFocus(windowHandle);
 #elif defined(TW_LINUX)
-				XMapWindow(currentDisplay, window->windowHandle);
+				XMapWindow(currentDisplay, windowHandle);
 #endif
 			}
 
@@ -902,109 +705,49 @@ public:
 #if defined(_WIN32) || defined(_WIN64)
 				SetFocus(nullptr);
 #elif defined(TW_LINUX)
-				XUnmapWindow(currentDisplay, window->windowHandle);
+				XUnmapWindow(currentDisplay, windowHandle);
 #endif
 			}
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	 * Restore the window by name
-	 */
-	std::error_code RestoreWindow(window_t* window)
-	{
-		if (window != nullptr)
+		/**
+		* Restore the window by name
+		*/
+		std::error_code Restore(void)
 		{
 #if defined(TW_WINDOWS)
-			ShowWindow(window->windowHandle, SW_RESTORE);
+			ShowWindow(windowHandle, SW_RESTORE);
 #elif defined(TW_LINUX)
 			XMapWindow(currentDisplay, window->windowHandle);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	* Ask the window manager to poll for events
-	*/
-	inline void PollForEvents(void)
-	{
-#if defined(TW_WINDOWS)
-		//only process events if there are any to process
-		if (PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
-		{
-			TranslateMessage(&winMessage);
-			DispatchMessage(&winMessage);
-		}
-#elif defined(TW_LINUX)
-		//if there are any events to process
-		if (XEventsQueued(currentDisplay, QueuedAfterReading))
-		{
-			XNextEvent(currentDisplay, &currentEvent);
-			Linux_ProcessEvents(currentEvent);
-		}
-#endif
-	}
-
-	/**
-	* Ask the window manager to wait for events
-	*/
-	inline void WaitForEvents(void)
-	{
-#if defined(TW_WINDOWS)
-		//process even if there aren't any to process
-		GetMessage(&winMessage, 0, 0, 0);
-		TranslateMessage(&winMessage);
-		DispatchMessage(&winMessage);
-#elif defined(TW_LINUX)
-		//even if there aren't any events to process
-		XNextEvent(currentDisplay, &currentEvent);
-		Linux_ProcessEvents(currentEvent);
-#endif
-	}
-
-	/**
-	* Remove window from the manager by name
-	*/
-	std::error_code RemoveWindow(window_t* window) 
-	{
-		if (window != nullptr)
-		{
-			ShutdownWindow(window);
-			return TinyWindow::error_t::success;
-		}
-		return TinyWindow::error_t::windowInvalid;
-	}
-
-	/**
-	* Set the window style preset by name
-	*/
-	std::error_code SetWindowStyle(window_t* window, style_t windowStyle)
-	{
-		if (window != nullptr)
+		/**
+		* Set the window style preset by name
+		*/
+		std::error_code SetStyle(style_t windowStyle)
 		{
 #if defined(TW_WINDOWS)
 			switch (windowStyle)
 			{
 			case style_t::normal:
 			{
-				EnableWindowDecorators(window, titleBar | border |
+				EnableDecorators(titleBar | border |
 					closeButton | minimizeButton | maximizeButton);
 				break;
 			}
 
 			case style_t::popup:
 			{
-				EnableWindowDecorators(window, 0);
+				EnableDecorators(0);
 				break;
 			}
 
 			case style_t::bare:
 			{
-				EnableWindowDecorators(window, titleBar | border);
+				EnableDecorators(titleBar | border);
 				break;
 			}
 
@@ -1019,41 +762,41 @@ public:
 			{
 			case style_t::normal:
 			{
-				window->decorators = (1L << 2);
-				window->currentWindowStyle = linuxMove | linuxClose |
+				decorators = (1L << 2);
+				currentWindowStyle = linuxMove | linuxClose |
 					linuxMaximize | linuxMinimize;
-				long Hints[5] = { hint_t::function | hint_t::decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+				long Hints[5] = { hint_t::function | hint_t::decorator, currentWindowStyle, decorators, 0, 0 };
 
-				XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
+				XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 					(unsigned char*)Hints, 5);
 
-				XMapWindow(currentDisplay, window->windowHandle);
+				XMapWindow(currentDisplay, windowHandle);
 				break;
 			}
 
 			case style_t::bare:
 			{
-				window->decorators = (1L << 2);
-				window->currentWindowStyle = (1L << 2);
-				long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+				decorators = (1L << 2);
+				currentWindowStyle = (1L << 2);
+				long Hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
 
-				XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
+				XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 					(unsigned char*)Hints, 5);
 
-				XMapWindow(currentDisplay, window->windowHandle);
+				XMapWindow(currentDisplay, windowHandle);
 				break;
 			}
 
 			case style_t::popup:
 			{
-				window->decorators = 0;
-				window->currentWindowStyle = (1L << 2);
-				long Hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+				decorators = 0;
+				currentWindowStyle = (1L << 2);
+				long Hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
 
-				XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
+				XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 					(unsigned char*)Hints, 5);
 
-				XMapWindow(currentDisplay, window->windowHandle);
+				XMapWindow(currentDisplay, windowHandle);
 				break;
 			}
 
@@ -1065,73 +808,69 @@ public:
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	* Enable window decorators by name
-	*/
-	std::error_code EnableWindowDecorators(window_t* window, unsigned int decorators)
-	{
-		if (window != nullptr)
+		/**
+		* Enable window decorators by name
+		*/
+		std::error_code EnableDecorators(unsigned int decorators)
 		{
 #if defined(TW_WINDOWS)
-			window->currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
+			currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
 
 			if (decorators & border)
 			{
-				window->currentWindowStyle |= WS_BORDER;
+				currentWindowStyle |= WS_BORDER;
 			}
 
 			if (decorators & titleBar)
 			{
-				window->currentWindowStyle |= WS_CAPTION;
+				currentWindowStyle |= WS_CAPTION;
 			}
 
 			if (decorators & icon)
 			{
-				window->currentWindowStyle |= WS_ICONIC;
+				currentWindowStyle |= WS_ICONIC;
 			}
 
 			if (decorators & closeButton)
 			{
-				window->currentWindowStyle |= WS_SYSMENU;
+				currentWindowStyle |= WS_SYSMENU;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				window->currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
+				currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
 			}
 
 			if (decorators & maximizeButton)
 			{
-				window->currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
+				currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
 			}
 
 			if (decorators & sizeableBorder)
 			{
-				window->currentWindowStyle |= WS_SIZEBOX;
+				currentWindowStyle |= WS_SIZEBOX;
 			}
 
-			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-				window->currentWindowStyle);
+			SetWindowLongPtr(windowHandle, GWL_STYLE,
+				currentWindowStyle);
 #elif defined(TW_LINUX)
 			if (decorators & closeButton)
 			{
-				window->currentWindowStyle |= linuxClose;
-				window->decorators = 1;
+				currentWindowStyle |= linuxClose;
+				decorators = 1;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				window->currentWindowStyle |= linuxMinimize;
-				window->decorators = 1;
+				currentWindowStyle |= linuxMinimize;
+				decorators = 1;
 			}
 
 			if (decorators & maximizeButton)
 			{
-				window->currentWindowStyle |= linuxMaximize;
-				window->decorators = 1;
+				currentWindowStyle |= linuxMaximize;
+				decorators = 1;
 			}
 
 			if (decorators & icon)
@@ -1142,76 +881,72 @@ public:
 			//just need to set it to 1 to enable all decorators that include title bar 
 			if (decorators & titleBar)
 			{
-				window->decorators = 1;
+				decorators = 1;
 			}
 
 			if (decorators & border)
 			{
-				window->decorators = 1;
+				decorators = 1;
 			}
 
 			if (decorators & sizeableBorder)
 			{
-				window->decorators = 1;
+				decorators = 1;
 			}
 
-			long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
 
-			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
+			XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32,
 				PropModeReplace, (unsigned char*)hints, 5);
 
-			XMapWindow(currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, windowHandle);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
 
-	/**
-	* Disable windows decorators by name
-	*/
-	std::error_code DisableWindowDecorators(window_t* window, unsigned int decorators)
-	{
-		if (window != nullptr)
+		/**
+		* Disable windows decorators by name
+		*/
+		std::error_code DisableDecorators(unsigned int decorators)
 		{
 #if defined(TW_WINDOWS)
 			if (decorators & border)
 			{
-				window->currentWindowStyle &= ~WS_BORDER;
+				currentWindowStyle &= ~WS_BORDER;
 			}
 
 			if (decorators & titleBar)
 			{
-				window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
+				currentWindowStyle &= ~WS_MAXIMIZEBOX;
 			}
 
 			if (decorators & icon)
 			{
-				window->currentWindowStyle &= ~WS_ICONIC;
+				currentWindowStyle &= ~WS_ICONIC;
 			}
 
 			if (decorators & closeButton)
 			{
-				window->currentWindowStyle &= ~WS_SYSMENU;
+				currentWindowStyle &= ~WS_SYSMENU;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				window->currentWindowStyle &= ~WS_MINIMIZEBOX;
+				currentWindowStyle &= ~WS_MINIMIZEBOX;
 			}
 
 			if (decorators & maximizeButton)
 			{
-				window->currentWindowStyle &= ~WS_MAXIMIZEBOX;
+				currentWindowStyle &= ~WS_MAXIMIZEBOX;
 			}
 
 			if (decorators & sizeableBorder)
 			{
-				window->currentWindowStyle &= ~WS_SIZEBOX;
+				currentWindowStyle &= ~WS_SIZEBOX;
 			}
 
-			SetWindowLongPtr(window->windowHandle, GWL_STYLE,
-				window->currentWindowStyle | WS_VISIBLE);
+			SetWindowLongPtr(windowHandle, GWL_STYLE,
+				currentWindowStyle | WS_VISIBLE);
 #elif defined(TW_LINUX)
 			if (decorators & closeButton)
 			{
@@ -1229,25 +964,25 @@ public:
 					minimizeEnabled = true;
 				}
 
-				window->currentWindowStyle &= ~linuxClose;
+				currentWindowStyle &= ~linuxClose;
 
 				if (maximizeEnabled)
 				{
-					window->currentWindowStyle |= linuxMaximize;
+					currentWindowStyle |= linuxMaximize;
 				}
 
 				if (minimizeEnabled)
 				{
-					window->currentWindowStyle |= linuxMinimize;
+					currentWindowStyle |= linuxMinimize;
 				}
 
-				window->decorators = 1;
+				decorators = 1;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				window->currentWindowStyle &= ~linuxMinimize;
-				window->decorators = 1;
+				currentWindowStyle &= ~linuxMinimize;
+				decorators = 1;
 			}
 
 			if (decorators & maximizeButton)
@@ -1259,14 +994,14 @@ public:
 					minimizeEnabled = true;
 				}
 
-				window->currentWindowStyle &= ~linuxMaximize;
+				currentWindowStyle &= ~linuxMaximize;
 
 				if (minimizeEnabled)
 				{
-					window->currentWindowStyle |= linuxMinimize;
+					currentWindowStyle |= linuxMinimize;
 				}
 
-				window->decorators = 1;
+				decorators = 1;
 			}
 
 			if (decorators & icon)
@@ -1277,1312 +1012,687 @@ public:
 			//just need to set it to 1 to enable all decorators that include title bar 
 			if (decorators & titleBar)
 			{
-				window->decorators = linuxBorder;
+				decorators = linuxBorder;
 			}
 
 			if (decorators & border)
 			{
-				window->decorators = 0;
+				decorators = 0;
 			}
 
 			if (decorators & sizeableBorder)
 			{
-				window->decorators = 0;
+				decorators = 0;
 			}
 
-			long hints[5] = { function | decorator, window->currentWindowStyle, window->decorators, 0, 0 };
+			long hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
 
-			XChangeProperty(currentDisplay, window->windowHandle, AtomHints, XA_ATOM, 32,
+			XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32,
 				PropModeReplace, (unsigned char*)hints, 5);
 
-			XMapWindow(currentDisplay, window->windowHandle);
+			XMapWindow(currentDisplay, windowHandle);
 #endif
 			return TinyWindow::error_t::success;
 		}
-		return TinyWindow::error_t::windowInvalid;
-	}
+	};
 
-private:
-
-	std::vector< std::unique_ptr<window_t> >				windowList;
-
-	TinyWindow::uiVec2										screenResolution;
-	TinyWindow::uiVec2										screenMousePosition;
-
-	void Platform_InitializeWindow(window_t* window)
+	class windowManager
 	{
-#if defined(TW_WINDOWS)
-		Windows_InitializeWindow(window);
-#elif defined(TW_LINUX)
-		Linux_InitializeWindow(window);
-#endif
-	}
 
-	std::error_code Platform_InitializeGL(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		window->deviceContextHandle = GetDC(window->windowHandle);
-		InitializePixelFormat(window);
-		window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
-		wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
+	public:
 
-		window->contextCreated = (window->glRenderingContextHandle != nullptr);
-
-		if (window->contextCreated)
+		windowManager(void)
 		{
-			return TinyWindow::error_t::success;
-		}
+	#if defined(TW_WINDOWS)
+			CreateTerminal(); //feel free to comment this out
+			RECT desktop;
 
-		return TinyWindow::error_t::invalidContext;
-#elif defined(TW_LINUX)
-		if (!window->context)
-		{
-			window->context = glXCreateContext(
-				currentDisplay,
-				window->visualInfo,
-				0,
-				true);
+			HWND desktopHandle = GetDesktopWindow();
 
-			if (window->context)
+			if (desktopHandle)
 			{
-				glXMakeCurrent(currentDisplay,
-					window->windowHandle,
-					window->context);
+				GetWindowRect(desktopHandle, &desktop);
 
-				XWindowAttributes l_Attributes;
+				screenResolution.x = desktop.right;
+				screenResolution.y = desktop.bottom;
+				return;
+			}
+	#elif defined(TW_LINUX)
+			currentDisplay = XOpenDisplay(0);
 
-				XGetWindowAttributes(currentDisplay,
-					window->windowHandle, &l_Attributes);
-				window->position.x = l_Attributes.x;
-				window->position.y = l_Attributes.y;
+			if (!currentDisplay)
+			{
+				return;
+			}
 
-				window->contextCreated = true;
-				InitializeAtoms();
+			screenResolution.x = WidthOfScreen(
+				XScreenOfDisplay(currentDisplay,
+					DefaultScreen(currentDisplay)));
+
+			screenResolution.y = HeightOfScreen(
+				XScreenOfDisplay(currentDisplay,
+					DefaultScreen(currentDisplay)));
+	#endif
+		}
+
+		/**
+		 * Shutdown and delete all windows in the manager
+		 */
+		~windowManager(void)
+		{
+			ShutDown();
+		}
+
+		/**
+		 * Use this to shutdown the window manager when your program is finished
+		 */
+		 void ShutDown(void) 
+		{
+	#if defined(__linux__)
+			Linux_Shutdown();
+	#endif
+			windowList.clear();
+		}
+
+		/**
+		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
+		 */
+		tWindow* AddWindow(const char* windowName, uiVec2 resolution = uiVec2(defaultWindowWidth, defaultWindowHeight), 
+				int colourBits = 8, int depthBits = 8, int stencilBits = 8)
+		{
+			if (windowName != nullptr)
+			{
+				std::unique_ptr<tWindow> newWindow(new tWindow);
+				newWindow->name = windowName;
+				newWindow->resolution = resolution;
+				newWindow->colorBits = colourBits;
+				newWindow->depthBits = depthBits;
+				newWindow->stencilBits = stencilBits;
+				newWindow->iD = GetNumWindows();
+
+				windowList.push_back(std::move(newWindow));
+				Platform_InitializeWindow(windowList.back().get());
+
+				return windowList.back().get();
+			}
+			//PrintErrorMessage(std::error_code(invalidWindowName));
+			return nullptr;
+		}
+
+		/**
+		 * Return the total amount of windows the manager has
+		 */
+		int GetNumWindows(void)
+		{
+			return windowList.size();
+		}
+
+		/**
+		* Return the mouse position in screen co-ordinates
+		*/
+		TinyWindow::uiVec2 GetMousePositionInScreen(void)
+		{
+			return screenMousePosition;
+		}
+
+		/**
+		 * Set the position of the mouse cursor relative to screen co-ordinates
+		 */
+		void SetMousePositionInScreen(TinyWindow::uiVec2 mousePosition)
+		{
+			screenMousePosition.x = mousePosition.x;
+			screenMousePosition.y = mousePosition.y;
+
+	#if defined(TW_WINDOWS)
+			SetCursorPos(screenMousePosition.y, screenMousePosition.y);
+	#elif defined(TW_LINUX)
+			XWarpPointer(currentDisplay, None,
+				XDefaultRootWindow(currentDisplay), 0, 0,
+				screenResolution.x,
+				screenResolution.y,
+				screenMousePosition.x, screenMousePosition.y);
+	#endif
+		}
+
+		/**
+		* Return the Resolution of the current screen
+		*/
+		TinyWindow::uiVec2 GetScreenResolution(void)
+		{
+	#if defined(TW_WINDOWS)
+			RECT screen;
+			HWND desktop = GetDesktopWindow();
+			GetWindowRect(desktop, &screen);
+			screenResolution.width = screen.right;
+			screenResolution.height = screen.bottom;
+	#elif defined(TW_LINUX)
+			screenResolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+			screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
+	#endif
+			return screenResolution;
+		}
+
+		/**
+		* Ask the window manager to poll for events
+		*/
+		inline void PollForEvents(void)
+		{
+	#if defined(TW_WINDOWS)
+			//only process events if there are any to process
+			if (PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&winMessage);
+				DispatchMessage(&winMessage);
+			}
+	#elif defined(TW_LINUX)
+			//if there are any events to process
+			if (XEventsQueued(currentDisplay, QueuedAfterReading))
+			{
+				XNextEvent(currentDisplay, &currentEvent);
+				Linux_ProcessEvents(currentEvent);
+			}
+	#endif
+		}
+
+		/**
+		* Ask the window manager to wait for events
+		*/
+		inline void WaitForEvents(void)
+		{
+	#if defined(TW_WINDOWS)
+			//process even if there aren't any to process
+			GetMessage(&winMessage, 0, 0, 0);
+			TranslateMessage(&winMessage);
+			DispatchMessage(&winMessage);
+	#elif defined(TW_LINUX)
+			//even if there aren't any events to process
+			XNextEvent(currentDisplay, &currentEvent);
+			Linux_ProcessEvents(currentEvent);
+	#endif
+		}
+
+		/**
+		* Toggle the given window's full screen mode
+		*/
+		std::error_code SetFullScreen(tWindow* window, bool newState)
+		{
+			if (window != nullptr)
+			{
+				window->currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
+
+#if defined(TW_WINDOWS)
+				SetWindowLongPtr(window->windowHandle, GWL_STYLE,
+					WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+
+				MoveWindow(window->windowHandle, 0, 0, windowManager::GetScreenResolution().width,
+					windowManager::GetScreenResolution().height, true);
+#elif defined(TW_LINUX)
+				XEvent currentEvent;
+				memset(&currentEvent, 0, sizeof(currentEvent));
+
+				currentEvent.xany.type = ClientMessage;
+				currentEvent.xclient.message_type = AtomState;
+				currentEvent.xclient.format = 32;
+				currentEvent.xclient.window = window->windowHandle;
+				currentEvent.xclient.data.l[0] = window->currentState == state_t::fullscreen;
+				currentEvent.xclient.data.l[1] = AtomFullScreen;
+
+				XSendEvent(currentDisplay,
+					XDefaultRootWindow(currentDisplay),
+					0, SubstructureNotifyMask, &currentEvent);
+#endif
 				return TinyWindow::error_t::success;
 			}
-			return TinyWindow::error_t::linuxCannotConnectXServer;
+			return TinyWindow::error_t::windowInvalid;
 		}
 
-		else
+		/**
+		* Remove window from the manager by name
+		*/
+		std::error_code RemoveWindow(tWindow* window)
 		{
-			return TinyWindow::error_t::existingContext;
+			if (window != nullptr)
+			{
+				ShutdownWindow(window);
+				return TinyWindow::error_t::success;
+			}
+			return TinyWindow::error_t::windowInvalid;
 		}
-		return TinyWindow::error_t::existingContext;
-#endif
-	}
 
-	void ShutdownWindow(window_t* window)
-	{
-#if defined(TW_WINDOWS)
-		if (window->glRenderingContextHandle)
+	private:
+
+		std::vector<std::unique_ptr<tWindow>>					windowList;
+
+		TinyWindow::uiVec2										screenResolution;
+		TinyWindow::uiVec2										screenMousePosition;
+
+		void Platform_InitializeWindow(tWindow* window)
 		{
-			wglMakeCurrent(nullptr, nullptr);
-			wglDeleteContext(window->glRenderingContextHandle);
+	#if defined(TW_WINDOWS)
+			Windows_InitializeWindow(window);
+	#elif defined(TW_LINUX)
+			Linux_InitializeWindow(window);
+	#endif
 		}
 
-		if (window->paletteHandle)
+		std::error_code Platform_InitializeGL(tWindow* window)
 		{
-			DeleteObject(window->paletteHandle);
+	#if defined(TW_WINDOWS)
+			window->deviceContextHandle = GetDC(window->windowHandle);
+			InitializePixelFormat(window);
+			window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
+			wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
+
+			window->contextCreated = (window->glRenderingContextHandle != nullptr);
+
+			if (window->contextCreated)
+			{
+				return TinyWindow::error_t::success;
+			}
+
+			return TinyWindow::error_t::invalidContext;
+	#elif defined(TW_LINUX)
+				window->context = glXCreateContext(
+					currentDisplay,
+					window->visualInfo,
+					0,
+					true);
+
+				if (window->context)
+				{
+					glXMakeCurrent(currentDisplay,
+						window->windowHandle,
+						window->context);
+
+					XWindowAttributes l_Attributes;
+
+					XGetWindowAttributes(currentDisplay,
+						window->windowHandle, &l_Attributes);
+					window->position.x = l_Attributes.x;
+					window->position.y = l_Attributes.y;
+
+					window->contextCreated = true;
+					InitializeAtoms();
+					return TinyWindow::error_t::success;
+				}
+				return TinyWindow::error_t::linuxCannotConnectXServer;
+	#endif
 		}
-		ReleaseDC(window->windowHandle, window->deviceContextHandle);
-		UnregisterClass(window->name, window->instanceHandle);
 
-		FreeModule(window->instanceHandle);
-
-		window->deviceContextHandle = nullptr;
-		window->windowHandle = nullptr;
-		window->glRenderingContextHandle = nullptr;
-
-		if (windowList.size() > 1)
+		void ShutdownWindow(tWindow* window)
 		{
-			windowList.erase(windowList.begin() + window->iD);
-		}
+	#if defined(TW_WINDOWS)
+			if (window->glRenderingContextHandle)
+			{
+				wglMakeCurrent(nullptr, nullptr);
+				wglDeleteContext(window->glRenderingContextHandle);
+			}
 
-		else
-		{
-			windowList.erase(windowList.begin());
-		}
-#elif defined(TW_LINUX)
-		if (window->currentState == state_t::fullscreen)
-		{
-			RestoreWindow(window);
-		}
+			if (window->paletteHandle)
+			{
+				DeleteObject(window->paletteHandle);
+			}
+			ReleaseDC(window->windowHandle, window->deviceContextHandle);
+			UnregisterClass(window->name, window->instanceHandle);
 
-		glXDestroyContext(currentDisplay, window->context);
-		XUnmapWindow(currentDisplay, window->windowHandle);
-		XDestroyWindow(currentDisplay, window->windowHandle);
-		window->windowHandle = 0;
-		window->context = 0;
-#endif
-	}
+			FreeModule(window->instanceHandle);
+
+			window->deviceContextHandle = nullptr;
+			window->windowHandle = nullptr;
+			window->glRenderingContextHandle = nullptr;
+
+			if (windowList.size() > 1)
+			{
+				windowList.erase(windowList.begin() + window->iD);
+			}
+
+			else
+			{
+				windowList.erase(windowList.begin());
+			}
+	#elif defined(TW_LINUX)
+			if (window->currentState == state_t::fullscreen)
+			{
+				RestoreWindow(window);
+			}
+
+			glXDestroyContext(currentDisplay, window->context);
+			XUnmapWindow(currentDisplay, window->windowHandle);
+			XDestroyWindow(currentDisplay, window->windowHandle);
+			window->windowHandle = 0;
+			window->context = 0;
+	#endif
+		}
 	
 #if defined(TW_WINDOWS)
 
-	enum keyLong_t
-	{
-		leftControlDown = 29,
-		rightControlDown = 285,
-		leftShiftDown = 42,
-		rightShiftDown = 54,
-		leftAltDown = 8248,
-		rightAltDown = 8504,
-
-		leftControlUp = 49181,
-		rightControlUp = 49437,
-		leftShiftUp = 49194,
-		rightShiftUp = 49206,
-		leftAltUp = 49208,
-		rightAltUp = 49464,
-	};
-
-	MSG		winMessage;
-	HDC		deviceContextHandle;
-
-	//the window procedure for all windows. This is used mainly to handle window events
-	static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
-	{
-		windowManager* manager = (windowManager*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
-		window_t* window = nullptr;
-		if (manager != nullptr)
+		enum keyLong_t
 		{
-			window = manager->GetWindowByHandle(windowHandle);
-		}
+			leftControlDown = 29,
+			rightControlDown = 285,
+			leftShiftDown = 42,
+			rightShiftDown = 54,
+			leftAltDown = 8248,
+			rightAltDown = 8504,
+
+			leftControlUp = 49181,
+			rightControlUp = 49437,
+			leftShiftUp = 49194,
+			rightShiftUp = 49206,
+			leftAltUp = 49208,
+			rightAltUp = 49464,
+		};
+
+		MSG		winMessage;
+		HDC		deviceContextHandle;
+
+		//the window procedure for all windows. This is used mainly to handle window events
+		static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
+		{
+			windowManager* manager = (windowManager*)GetWindowLongPtr(windowHandle, GWLP_USERDATA);
+			tWindow* window = nullptr;
+			if (manager != nullptr)
+			{
+				window = manager->GetWindowByHandle(windowHandle);
+			}
 		
-			switch (winMessage)
-			{
-			case WM_DESTROY:
-			{
-				if (manager != nullptr)
+				switch (winMessage)
 				{
-					window->shouldClose = true;
-
-					if (window->destroyedEvent != nullptr)
+				case WM_DESTROY:
+				{
+					if (manager != nullptr)
 					{
-						window->destroyedEvent();
+						window->shouldClose = true;
+
+						if (window->destroyedEvent != nullptr)
+						{
+							window->destroyedEvent();
+						}
+
+						manager->ShutdownWindow(window);
 					}
-
-					manager->ShutdownWindow(window);
+					break;
 				}
-				break;
-			}
-			case WM_MOVE:
-			{
-				window->position.x = LOWORD(longParam);
-				window->position.y = HIWORD(longParam);
-
-				if (window->movedEvent != nullptr)
+				case WM_MOVE:
 				{
-					window->movedEvent(window->position);
-				}
+					window->position.x = LOWORD(longParam);
+					window->position.y = HIWORD(longParam);
 
-				break;
-			}
-
-			case WM_MOVING:
-			{
-				window->position.x = LOWORD(longParam);
-				window->position.y = HIWORD(longParam);
-
-				if (window->movedEvent != nullptr)
-				{
-					window->movedEvent(window->position);
-				}
-				break;
-			}
-
-			case WM_SIZE:
-			{
-				window->resolution.width = (unsigned int)LOWORD(longParam);
-				window->resolution.height = (unsigned int)HIWORD(longParam);
-
-				switch (wordParam)
-				{
-				case SIZE_MAXIMIZED:
-				{
-					if (window->maximizedEvent != nullptr)
+					if (window->movedEvent != nullptr)
 					{
-						window->maximizedEvent();
+						window->movedEvent(window->position);
 					}
 
 					break;
 				}
 
-				case SIZE_MINIMIZED:
+				case WM_MOVING:
 				{
-					if (window->minimizedEvent != nullptr)
+					window->position.x = LOWORD(longParam);
+					window->position.y = HIWORD(longParam);
+
+					if (window->movedEvent != nullptr)
 					{
-						window->minimizedEvent();
+						window->movedEvent(window->position);
 					}
 					break;
 				}
 
-				default:
+				case WM_SIZE:
 				{
+					window->resolution.width = (unsigned int)LOWORD(longParam);
+					window->resolution.height = (unsigned int)HIWORD(longParam);
+
+					switch (wordParam)
+					{
+					case SIZE_MAXIMIZED:
+					{
+						if (window->maximizedEvent != nullptr)
+						{
+							window->maximizedEvent();
+						}
+
+						break;
+					}
+
+					case SIZE_MINIMIZED:
+					{
+						if (window->minimizedEvent != nullptr)
+						{
+							window->minimizedEvent();
+						}
+						break;
+					}
+
+					default:
+					{
+						if (window->resizeEvent != nullptr)
+						{
+							window->resizeEvent(window->resolution);
+						}
+						break;
+					}
+					}
+					break;
+				}
+
+				case WM_SIZING:
+				{
+					window->resolution.width = (unsigned int)LOWORD(longParam);
+					window->resolution.height = (unsigned int)HIWORD(longParam);
+
 					if (window->resizeEvent != nullptr)
 					{
 						window->resizeEvent(window->resolution);
 					}
 					break;
 				}
-				}
-				break;
-			}
 
-			case WM_SIZING:
-			{
-				window->resolution.width = (unsigned int)LOWORD(longParam);
-				window->resolution.height = (unsigned int)HIWORD(longParam);
-
-				if (window->resizeEvent != nullptr)
+				case WM_KEYDOWN:
 				{
-					window->resizeEvent(window->resolution);
-				}
-				break;
-			}
+					unsigned int translatedKey = 0;
 
-			case WM_KEYDOWN:
-			{
-				unsigned int translatedKey = 0;
-
-				switch (HIWORD(longParam))
-				{
-				case leftControlDown:
-				{
-					window->keys[leftControl] = keyState_t::down;
-					translatedKey = leftControl;
-					break;
-				}
-
-				case rightControlDown:
-				{
-					window->keys[rightControl] = keyState_t::down;
-					translatedKey = rightControl;
-					break;
-				}
-
-				case leftShiftDown:
-				{
-					window->keys[leftShift] = keyState_t::down;
-					translatedKey = leftShift;
-					break;
-				}
-
-				case rightShiftDown:
-				{
-					window->keys[rightShift] = keyState_t::down;
-					translatedKey = rightShift;
-					break;
-				}
-
-				default:
-				{
-					translatedKey = Windows_TranslateKey(wordParam);
-					window->keys[translatedKey] = keyState_t::down;
-					break;
-				}
-				}
-
-				if (window->keyEvent != nullptr)
-				{
-					window->keyEvent(translatedKey, keyState_t::down);
-				}
-				break;
-			}
-
-			case WM_KEYUP:
-			{
-				unsigned int translatedKey = 0;
-
-				switch (HIWORD(longParam))
-				{
-				case leftControlUp:
-				{
-					window->keys[leftControl] = keyState_t::up;
-					translatedKey = leftControl;
-					break;
-				}
-
-				case rightControlUp:
-				{
-					window->keys[rightControl] = keyState_t::up;
-					translatedKey = rightControl;
-					break;
-				}
-
-				case leftShiftUp:
-				{
-					window->keys[leftShift] = keyState_t::up;
-					translatedKey = leftShift;
-					break;
-				}
-
-				case rightShiftUp:
-				{
-					window->keys[rightShift] = keyState_t::up;
-					translatedKey = rightShift;
-					break;
-				}
-
-				default:
-				{
-					translatedKey = Windows_TranslateKey(wordParam);
-					window->keys[translatedKey] = keyState_t::up;
-					break;
-				}
-				}
-
-				if (window->keyEvent != nullptr)
-				{
-					window->keyEvent(translatedKey, keyState_t::up);
-				}
-				break;
-			}
-
-			case WM_SYSKEYDOWN:
-			{
-				unsigned int translatedKey = 0;
-				switch (HIWORD(longParam))
-				{
-				case leftAltDown:
-				{
-					window->keys[leftAlt] = keyState_t::down;
-					translatedKey = leftAlt;
-					break;
-				}
-
-
-				case rightAltDown:
-				{
-					window->keys[rightAlt] = keyState_t::down;
-					translatedKey = rightAlt;
-				}
-
-				default:
-				{
-					break;
-				}
-				}
-
-				if (window->keyEvent != nullptr)
-				{
-					window->keyEvent(translatedKey, keyState_t::down);
-				}
-
-				break;
-			}
-
-			case WM_SYSKEYUP:
-			{
-				unsigned int translatedKey = 0;
-				switch (HIWORD(longParam))
-				{
-				case leftAltUp:
-				{
-					window->keys[leftAlt] = keyState_t::up;
-					translatedKey = leftAlt;
-					break;
-				}
-
-
-				case rightAltUp:
-				{
-					window->keys[rightAlt] = keyState_t::up;
-					translatedKey = rightAlt;
-					break;
-				}
-
-				default:
-				{
-					break;
-				}
-				}
-
-				if (window->keyEvent != nullptr)
-				{
-					window->keyEvent(translatedKey, keyState_t::up);
-				}
-				break;
-			}
-
-			//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
-			/*case WM_CHAR:
-			{
-				int keyDown = longParam & 0x31;
-				if (keyDown == 1)
-				{
-					window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
-				}
-
-				else if (keyDown == 0)
-				{
-					window->keys[wordParam] = tinyWindowKeyState_t::UP;
-				}
-
-				if (window->keyEvent != nullptr)
-				{
-					window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
-				}
-			}*/
-
-			case WM_MOUSEMOVE:
-			{
-				window->mousePosition.x = (unsigned int)LOWORD(longParam);
-				window->mousePosition.y = (unsigned int)HIWORD(longParam);
-
-				POINT point;
-				point.x = (LONG)window->mousePosition.x;
-				point.y = (LONG)window->mousePosition.y;
-
-				ClientToScreen(windowHandle, &point);
-
-				if (window->mouseMoveEvent != nullptr)
-				{
-					window->mouseMoveEvent(window->mousePosition, uiVec2(point.x, point.y));
-				}
-				break;
-			}
-
-			case WM_LBUTTONDOWN:
-			{
-				window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
-
-				if (window->mouseButtonEvent != nullptr)
-				{
-					window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
-				}
-				break;
-			}
-
-			case WM_LBUTTONUP:
-			{
-				window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
-
-				if (window->mouseButtonEvent != nullptr)
-				{
-					window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
-				}
-				break;
-			}
-
-			case WM_RBUTTONDOWN:
-			{
-				window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
-
-				if (window->mouseButtonEvent != nullptr)
-				{
-					window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
-				}
-				break;
-			}
-
-			case WM_RBUTTONUP:
-			{
-				window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
-
-				if (window->mouseButtonEvent != nullptr)
-				{
-					window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
-				}
-				break;
-			}
-
-			case WM_MBUTTONDOWN:
-			{
-				window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
-
-				if (window->mouseButtonEvent != nullptr)
-				{
-					window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
-				}
-				break;
-			}
-
-			case WM_MBUTTONUP:
-			{
-				window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::up;
-
-				if (window->mouseButtonEvent != nullptr)
-				{
-					window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
-				}
-				break;
-			}
-
-			case WM_MOUSEWHEEL:
-			{
-				if ((wordParam % WHEEL_DELTA) > 0)
-				{
-					if (window->mouseWheelEvent != nullptr)
+					switch (HIWORD(longParam))
 					{
-						window->mouseWheelEvent(mouseScroll_t::down);
-					}
-				}
-
-				else
-				{
-					if (window->mouseWheelEvent != nullptr)
+					case leftControlDown:
 					{
-						window->mouseWheelEvent(mouseScroll_t::up);
+						window->keys[leftControl] = keyState_t::down;
+						translatedKey = leftControl;
+						break;
 					}
 
-				}
-				break;
-			}
-
-			default:
-			{
-				//windowList[getWindow]
-				return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
-			}
-			}
-			return 0;
-
-	}
-
-	//get the window that is associated with this Win32 window handle
-	window_t* GetWindowByHandle(HWND windowHandle)
-	{
-		for (unsigned int iter = 0; iter < windowList.size(); iter++)
-		{
-			if (windowList[iter]->windowHandle == windowHandle)
-			{
-				return windowList[iter].get();
-			}
-		}
-		return nullptr;
-	}
-
-	//initialize the given window using Win32
-	void Windows_InitializeWindow(window_t* window,
-		UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
-		int clearScreenExtra = 0,
-		int windowExtra = 0,
-		HINSTANCE winInstance = GetModuleHandle(0),
-		HICON icon = LoadIcon(0, IDI_APPLICATION),
-		HCURSOR cursor = LoadCursor(0, IDC_ARROW),
-		HBRUSH brush = (HBRUSH)BLACK_BRUSH)
-	{
-		window->instanceHandle = winInstance;
-		window->windowClass.style = style;
-		window->windowClass.lpfnWndProc = windowManager::WindowProcedure;
-		window->windowClass.cbClsExtra = clearScreenExtra;
-		window->windowClass.cbWndExtra = windowExtra;
-		window->windowClass.hInstance = window->instanceHandle;
-		window->windowClass.hIcon = icon;
-		window->windowClass.hCursor = cursor;
-		window->windowClass.hbrBackground = brush;
-		window->windowClass.lpszMenuName = window->name;
-		window->windowClass.lpszClassName = window->name;
-		RegisterClass(&window->windowClass);
-
-		window->windowHandle =
-			CreateWindow(window->name, window->name, WS_OVERLAPPEDWINDOW, 0,
-			0, window->resolution.width,
-			window->resolution.height,
-			0, 0, 0, 0);
-
-		SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (long)this);
-
-		Platform_InitializeGL(window);
-
-		ShowWindow(window->windowHandle, true);
-		UpdateWindow(window->windowHandle);
-	}
-
-	//initialize the pixel format for the selected window
-	void InitializePixelFormat(window_t* window)
-	{
-		window->pixelFormatDescriptor = {
-			sizeof(PIXELFORMATDESCRIPTOR), /* size */
-			1, /* version */
-			PFD_SUPPORT_OPENGL |
-			PFD_DRAW_TO_WINDOW |
-			PFD_DOUBLEBUFFER, /* support double-buffering */
-			PFD_TYPE_RGBA, /* color type */
-			(BYTE)window->colorBits, 0, /* preferred color depth */
-			0, 0,
-			0, 0,
-			0, 0,
-			0, /* color bits (ignored) */ /* no alpha buffer */ /* alpha bits (ignored) */
-			0, /* no accumulation buffer */
-			0, 0, 0, 0, /* accum bits (ignored) */
-			(BYTE)window->depthBits, /* depth buffer */
-			(BYTE)window->stencilBits, /* no stencil buffer */
-			0, /* no auxiliary buffers */
-			PFD_MAIN_PLANE, /* main layer */
-			0, /* reserved */
-			0, 0, 0, /* no layer, visible, damage masks */
-		};
-
-		int LocalPixelFormat = ChoosePixelFormat(window->deviceContextHandle,
-			&window->pixelFormatDescriptor);
-
-		if (LocalPixelFormat)
-		{
-			SetPixelFormat(window->deviceContextHandle, LocalPixelFormat,
-				&window->pixelFormatDescriptor);
-			return;
-		}
-		return;
-	}
-	
-	void Windows_Shutown(void)
-	{
-
-	}
-
-	void CreateTerminal(void)
-	{
-		int conHandle;
-		long stdHandle;
-		FILE* fp;
-
-		// allocate a console for this app
-		AllocConsole();
-
-		// redirect unbuffered STDOUT to the console
-		stdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
-		conHandle = _open_osfhandle(stdHandle, _O_TEXT);
-		fp = _fdopen(conHandle, "w");
-		*stdout = *fp;
-
-		setvbuf(stdout, nullptr, _IONBF, 0);
-	}
-
-	static unsigned int Windows_TranslateKey(WPARAM wordParam)
-	{
-		switch (wordParam)
-		{
-			case VK_ESCAPE:
-			{
-				return escape;
-			}
-
-			case VK_F1:
-			{
-				return F1;
-			}
-
-			case VK_F2:
-			{
-				return F2;
-			}
-
-			case VK_F3:
-			{
-				return F3;
-			}
-
-			case VK_F4:
-			{
-				return F4;
-			}
-
-			case VK_F5:
-			{
-				return F5;
-			}
-
-			case VK_F6:
-			{
-				return F6;
-			}
-
-			case VK_F7:
-			{
-				return F7;
-			}
-
-			case VK_F8:
-			{
-				return F8;
-			}
-
-			case VK_F9:
-			{
-				return F9;
-			}
-
-			case VK_F10:
-			{
-				return F10;
-			}
-
-			case VK_F11:
-			{
-				return F11;
-			}
-
-			case VK_F12:
-			{
-				return F12;
-			}
-
-			case VK_BACK:
-			{
-				return backspace;
-			}
-
-			case VK_TAB:
-			{
-				return tab;
-			}
-
-			case VK_CAPITAL:
-			{
-				return capsLock;
-			}
-
-			case VK_RETURN:
-			{
-				return enter;
-			}
-
-			case VK_PRINT:
-			{
-				return printScreen;
-			}
-
-			case VK_SCROLL:
-			{
-				return scrollLock;
-			}
-
-			case VK_PAUSE:
-			{
-				return pause;
-			}
-
-			case VK_INSERT:
-			{
-				return insert;
-			}
-
-			case VK_HOME:
-			{
-				return home;
-			}
-
-			case VK_DELETE:
-			{
-				return del;
-			}
-
-			case VK_END:
-			{
-				return end;
-			}
-
-			case VK_PRIOR:
-			{
-				return pageUp;
-			}
-
-			case VK_NEXT:
-			{
-				return pageDown;
-			}
-
-			case VK_DOWN:
-			{
-				return arrowDown;
-			}
-
-			case VK_UP:
-			{
-				return arrowUp;
-			}
-
-			case VK_LEFT:
-			{
-				return arrowLeft;
-			}
-
-			case VK_RIGHT:
-			{
-				return arrowRight;
-			}
-
-			case VK_DIVIDE:
-			{
-				return keypadDivide;
-			}
-
-			case VK_MULTIPLY:
-			{
-				return keypadMultiply;
-			}
-
-			case VK_SUBTRACT:
-			{
-				return keypadDivide;
-			}
-
-			case VK_ADD:
-			{
-				return keypadAdd;
-			}
-
-			case VK_DECIMAL:
-			{
-				return keypadPeriod;
-			}
-
-			case VK_NUMPAD0:
-			{
-				return keypad0;
-			}
-
-			case VK_NUMPAD1:
-			{
-				return keypad1;
-			}
-
-			case VK_NUMPAD2:
-			{
-				return keypad2;
-			}
-
-			case VK_NUMPAD3:
-			{
-				return keypad3;
-			}
-
-			case VK_NUMPAD4:
-			{
-				return keypad4;
-			}
-
-			case VK_NUMPAD5:
-			{
-				return keypad5;
-			}
-
-			case VK_NUMPAD6:
-			{
-				return keypad6;
-			}
-
-			case VK_NUMPAD7:
-			{
-				return keypad7;
-			}
-
-			case VK_NUMPAD8:
-			{
-				return keypad8;
-			}
-
-			case VK_NUMPAD9:
-			{
-				return keypad9;
-			}
-
-			case VK_LWIN:
-			{
-				return leftWindow;
-			}
-
-			case VK_RWIN:
-			{
-				return rightWindow;
-			}
-
-			default:
-			{
-				return wordParam;
-			}
-		}
-	}
-
-	static void Windows_SetWindowIcon(window_t* window, const char* icon, unsigned int width, unsigned int height)
-	{
-		SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
-			(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
-	}
-
-#elif defined(TW_LINUX)
-
-	enum decorator_t
-	{
-		linuxBorder = 1L << 1,
-		linuxMove = 1L << 2,
-		linuxMinimize = 1L << 3,
-		linuxMaximize = 1L << 4,
-		linuxClose = 1L << 5,
-	};
-
-	enum hint_t
-	{
-		function = 1,
-		decorator,
-	};
-
-	Display*			currentDisplay;
-	XEvent				currentEvent;
-	/* these atoms are needed to change window states via the extended window manager*/
-	Atom				AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
-	Atom				AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
-	Atom				AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
-	Atom				AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
-	Atom				AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
-	Atom				AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
-	Atom				AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
-	Atom				AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
-	Atom				AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
-	Atom				AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
-	Atom				AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
-	Atom				AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
-
-	Atom				AtomWindowType;					/**< Atom for the type of window */
-	Atom				AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
-	Atom				AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
-	Atom				AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
-
-	Atom				AtomAllowedActions;				/**< Atom for allowed window actions */
-	Atom				AtomActionResize;				/**< Atom for allowing the window to be resized */
-	Atom				AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
-	Atom				AtomActionShade;				/**< Atom for allowing the window to be shaded */
-	Atom				AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
-	Atom				AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
-	Atom				AtomActionClose;				/**< Atom for allowing the window to be closed */
-
-	Atom				AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
-	
-	window_t* GetWindowByHandle(Window windowHandle)
-	{
-		for(unsigned int iter = 0; iter < windowList.size(); iter++)
-		{
-			if (windowList[iter]->windowHandle == windowHandle)
-			{
-				return windowList[iter].get();
-			}
-		}
-		return nullptr;
-	}
-
-	window_t* GetWindowByEvent(XEvent currentEvent)
-	{
-		switch(currentEvent.type)
-		{
-			case Expose:
-			{
-				return GetWindowByHandle(currentEvent.xexpose.window);
-			}	
-
-			case DestroyNotify:
-			{
-				return GetWindowByHandle(currentEvent.xdestroywindow.window);
-			}
-
-			case CreateNotify:
-			{
-				return GetWindowByHandle(currentEvent.xcreatewindow.window);
-			}	
-
-			case KeyPress:
-			{
-				return GetWindowByHandle(currentEvent.xkey.window);
-			}
-
-			case KeyRelease:
-			{
-				return GetWindowByHandle(currentEvent.xkey.window);
-			}
-
-			case ButtonPress:
-			{
-				return GetWindowByHandle(currentEvent.xbutton.window);
-			}
-
-			case ButtonRelease:
-			{
-				return GetWindowByHandle(currentEvent.xbutton.window);
-			}
-
-			case MotionNotify:
-			{
-				return GetWindowByHandle(currentEvent.xmotion.window);
-			}	
-
-			case FocusIn:
-			{
-				return GetWindowByHandle(currentEvent.xfocus.window);
-			}
-
-			case FocusOut:
-			{
-				return GetWindowByHandle(currentEvent.xfocus.window);
-			}
-
-			case ResizeRequest:
-			{
-				return GetWindowByHandle(currentEvent.xresizerequest.window);
-			}
-
-			case ConfigureNotify:
-			{
-				return GetWindowByHandle(currentEvent.xconfigure.window);
-			}
-
-			case PropertyNotify:
-			{
-				return GetWindowByHandle(currentEvent.xproperty.window);
-			}
-
-			case GravityNotify:
-			{
-				return GetWindowByHandle(currentEvent.xgravity.window);
-			}
-
-			case ClientMessage:
-			{
-				return GetWindowByHandle(currentEvent.xclient.window);
-			}
-
-			case VisibilityNotify:
-			{
-				return GetWindowByHandle(currentEvent.xvisibility.window);
-			}	
-
-			default:
-			{
-				return nullptr;
-			}
-		}
-	}
-
-	void InitializeAtoms()
-	{
-		AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
-		AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
-		AtomMaxHorz = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
-		AtomMaxVert = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", false);
-		AtomClose = XInternAtom(currentDisplay, "WM_DELETE_WINDOW", false);
-		AtomHidden = XInternAtom(currentDisplay, "_NET_WM_STATE_HIDDEN", false);
-		AtomActive = XInternAtom(currentDisplay, "_NET_ACTIVE_WINDOW", false);
-		AtomDemandsAttention = XInternAtom(currentDisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", false);
-		AtomFocused = XInternAtom(currentDisplay, "_NET_WM_STATE_FOCUSED", false);
-		AtomCardinal = XInternAtom(currentDisplay, "CARDINAL", false);
-		AtomIcon = XInternAtom(currentDisplay, "_NET_WM_ICON", false);
-		AtomHints = XInternAtom(currentDisplay, "_MOTIF_WM_HINTS", true);
-
-		AtomWindowType = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE", false);
-		AtomWindowTypeDesktop = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", false);
-		AtomWindowTypeSplash = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", false);
-		AtomWindowTypeNormal = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", false);
-
-		AtomAllowedActions = XInternAtom(currentDisplay, "_NET_WM_ALLOWED_ACTIONS", false);
-		AtomActionResize = XInternAtom(currentDisplay, "WM_ACTION_RESIZE", false);
-		AtomActionMinimize = XInternAtom(currentDisplay, "_WM_ACTION_MINIMIZE", false);
-		AtomActionShade = XInternAtom(currentDisplay, "WM_ACTION_SHADE", false);
-		AtomActionMaximizeHorz = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_HORZ", false);
-		AtomActionMaximizeVert = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_VERT", false);
-		AtomActionClose = XInternAtom(currentDisplay, "_WM_ACTION_CLOSE", false);
-
-		AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
-	}
-
-	std::error_code Linux_InitializeWindow(window_t* window)
-	{
-		window->attributes = new int[ 5]{
-			GLX_RGBA,
-			GLX_DOUBLEBUFFER, 
-			GLX_DEPTH_SIZE, 
-			window->depthBits, 
-			None};
-
-		window->decorators = 1;
-		window->currentWindowStyle |= linuxClose | linuxMaximize | linuxMinimize | linuxMove;
-
-		if (!currentDisplay)
-		{
-			return TinyWindow::error_t::linuxCannotConnectXServer;
-		}
-
-		//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window)); 
-
-		window->visualInfo = glXChooseVisual(currentDisplay, 0, window->attributes);
-
-		if (!window->visualInfo)
-		{
-			return TinyWindow::error_t::linuxInvalidVisualinfo;
-		}
-
-		window->setAttributes.colormap = XCreateColormap(currentDisplay,
-			DefaultRootWindow(currentDisplay),
-			window->visualInfo->visual, AllocNone);
-
-		window->setAttributes.event_mask = ExposureMask | KeyPressMask 
-			| KeyReleaseMask | MotionNotify | ButtonPressMask | ButtonReleaseMask
-			| FocusIn | FocusOut | Button1MotionMask | Button2MotionMask | Button3MotionMask | 
-			Button4MotionMask | Button5MotionMask | PointerMotionMask | FocusChangeMask
-			| VisibilityChangeMask | PropertyChangeMask | SubstructureNotifyMask;
-		
-		window->windowHandle = XCreateWindow(currentDisplay,
-			XDefaultRootWindow(currentDisplay), 0, 0,
-			window->resolution.width, window->resolution.height,
-			0, window->visualInfo->depth, InputOutput,
-			window->visualInfo->visual, CWColormap | CWEventMask,
-			&window->setAttributes);
-
-		if(!window->windowHandle)
-		{
-			return TinyWindow::error_t::linuxCannotCreateWindow;
-			exit(0);
-		}
-
-		XMapWindow(currentDisplay, window->windowHandle);
-		XStoreName(currentDisplay, window->windowHandle,
-			window->name);
-
-		XSetWMProtocols(currentDisplay, window->windowHandle, &AtomClose, true);	
-
-		Platform_InitializeGL(window);
-		return TinyWindow::error_t::success;
-	}
-
-	void Linux_ShutdownWindow(window_t* window)
-	{
-		XDestroyWindow(currentDisplay, window->windowHandle);	
-	}
-
-	void Linux_Shutdown(void)
-	{
-		for(unsigned int iter = 0; iter < windowList.size(); iter++)
-		{
-			Linux_ShutdownWindow(windowList[iter].get());
-		}
-
-		XCloseDisplay(currentDisplay);
-	}
-
-	void Linux_ProcessEvents(XEvent currentEvent)
-	{
-		window_t* window = GetWindowByEvent(currentEvent);
-
-		switch (currentEvent.type)	
-		{
-			case Expose:
-			{
-				break;
-			}
-
-			case DestroyNotify:
-			{
-				printf("shutting down \n");
-				if (window->destroyedEvent != nullptr)
-				{
-					window->destroyedEvent();
-				}
-				ShutdownWindow(window);
-
-				break;
-			}
-
-			/*case CreateNotify:
-			{
-			printf("Window was created\n");
-			l_Window->InitializeGL();
-
-			if(IsValid(l_Window->m_OnCreated))
-			{
-			l_Window->m_OnCreated();
-			}
-
-			break;
-			} */
-
-			case KeyPress:
-			{
-				unsigned int functionKeysym = XkbKeycodeToKeysym(
-					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
-
-				if (functionKeysym <= 255)
-				{
-					window->keys[ functionKeysym] = keyState_t::down;
-					if (window->keyEvent != nullptr)
+					case rightControlDown:
 					{
-						window->keyEvent(functionKeysym, keyState_t::down);
-					}
-				}
-
-				else
-				{
-					window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::down;
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
-					}
-				}
-
-				break;
-			}
-
-			case KeyRelease:
-			{
-				bool isRetriggered = false;
-				if (XEventsQueued(currentDisplay, QueuedAfterReading))
-				{
-					XEvent nextEvent;
-					XPeekEvent(currentDisplay, &nextEvent);
-
-					if (nextEvent.type == KeyPress &&
-						nextEvent.xkey.time == currentEvent.xkey.time &&
-						nextEvent.xkey.keycode == currentEvent.xkey.keycode)
-					{
-						unsigned int functionKeysym = XkbKeycodeToKeysym(
-							currentDisplay, currentEvent.xkey.keycode, 0, 
-							currentEvent.xkey.state & ShiftMask ? 1 : 0);
-
-						XNextEvent(currentDisplay, &currentEvent);
-						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
-						isRetriggered = true;
-					}
-				}
-
-				if (!isRetriggered)
-				{
-					unsigned int functionKeysym = XkbKeycodeToKeysym(
-					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
-
-					if (functionKeysym <= 255)
-					{
-						window->keys[ functionKeysym] = keyState_t::up;
-
-						if (window->keyEvent != nullptr)
-						{
-							window->keyEvent(functionKeysym, keyState_t::up);
-						}
+						window->keys[rightControl] = keyState_t::down;
+						translatedKey = rightControl;
+						break;
 					}
 
-					else
+					case leftShiftDown:
 					{
-						window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::up;
+						window->keys[leftShift] = keyState_t::down;
+						translatedKey = leftShift;
+						break;
+					}
 
-						if (window->keyEvent != nullptr)
-						{
-							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
-						}
+					case rightShiftDown:
+					{
+						window->keys[rightShift] = keyState_t::down;
+						translatedKey = rightShift;
+						break;
+					}
+
+					default:
+					{
+						translatedKey = Windows_TranslateKey(wordParam);
+						window->keys[translatedKey] = keyState_t::down;
+						break;
+					}
 					}
 
 					if (window->keyEvent != nullptr)
 					{
-						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
+						window->keyEvent(translatedKey, keyState_t::down);
 					}
+					break;
 				}
 
-				break;
-			}
+				case WM_KEYUP:
+				{
+					unsigned int translatedKey = 0;
 
-			case ButtonPress:
-			{
-				switch (currentEvent.xbutton.button)
+					switch (HIWORD(longParam))
+					{
+					case leftControlUp:
+					{
+						window->keys[leftControl] = keyState_t::up;
+						translatedKey = leftControl;
+						break;
+					}
+
+					case rightControlUp:
+					{
+						window->keys[rightControl] = keyState_t::up;
+						translatedKey = rightControl;
+						break;
+					}
+
+					case leftShiftUp:
+					{
+						window->keys[leftShift] = keyState_t::up;
+						translatedKey = leftShift;
+						break;
+					}
+
+					case rightShiftUp:
+					{
+						window->keys[rightShift] = keyState_t::up;
+						translatedKey = rightShift;
+						break;
+					}
+
+					default:
+					{
+						translatedKey = Windows_TranslateKey(wordParam);
+						window->keys[translatedKey] = keyState_t::up;
+						break;
+					}
+					}
+
+					if (window->keyEvent != nullptr)
+					{
+						window->keyEvent(translatedKey, keyState_t::up);
+					}
+					break;
+				}
+
+				case WM_SYSKEYDOWN:
 				{
-				case 1:
+					unsigned int translatedKey = 0;
+					switch (HIWORD(longParam))
+					{
+					case leftAltDown:
+					{
+						window->keys[leftAlt] = keyState_t::down;
+						translatedKey = leftAlt;
+						break;
+					}
+
+
+					case rightAltDown:
+					{
+						window->keys[rightAlt] = keyState_t::down;
+						translatedKey = rightAlt;
+					}
+
+					default:
+					{
+						break;
+					}
+					}
+
+					if (window->keyEvent != nullptr)
+					{
+						window->keyEvent(translatedKey, keyState_t::down);
+					}
+
+					break;
+				}
+
+				case WM_SYSKEYUP:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::down;
+					unsigned int translatedKey = 0;
+					switch (HIWORD(longParam))
+					{
+					case leftAltUp:
+					{
+						window->keys[leftAlt] = keyState_t::up;
+						translatedKey = leftAlt;
+						break;
+					}
+
+
+					case rightAltUp:
+					{
+						window->keys[rightAlt] = keyState_t::up;
+						translatedKey = rightAlt;
+						break;
+					}
+
+					default:
+					{
+						break;
+					}
+					}
+
+					if (window->keyEvent != nullptr)
+					{
+						window->keyEvent(translatedKey, keyState_t::up);
+					}
+					break;
+				}
+
+				//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
+				/*case WM_CHAR:
+				{
+					int keyDown = longParam & 0x31;
+					if (keyDown == 1)
+					{
+						window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
+					}
+
+					else if (keyDown == 0)
+					{
+						window->keys[wordParam] = tinyWindowKeyState_t::UP;
+					}
+
+					if (window->keyEvent != nullptr)
+					{
+						window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
+					}
+				}*/
+
+				case WM_MOUSEMOVE:
+				{
+					window->mousePosition.x = (unsigned int)LOWORD(longParam);
+					window->mousePosition.y = (unsigned int)HIWORD(longParam);
+
+					POINT point;
+					point.x = (LONG)window->mousePosition.x;
+					point.y = (LONG)window->mousePosition.y;
+
+					ClientToScreen(windowHandle, &point);
+
+					if (window->mouseMoveEvent != nullptr)
+					{
+						window->mouseMoveEvent(window->mousePosition, uiVec2(point.x, point.y));
+					}
+					break;
+				}
+
+				case WM_LBUTTONDOWN:
+				{
+					window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
 
 					if (window->mouseButtonEvent != nullptr)
 					{
@@ -2591,68 +1701,9 @@ private:
 					break;
 				}
 
-				case 2:
+				case WM_LBUTTONUP:
 				{
-					window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::down;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
-					}
-					break;
-				}
-
-				case 3:
-				{
-					window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::down;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
-					}
-					break;
-				}
-
-				case 4:
-				{
-					window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
-
-					if (window->mouseWheelEvent != nullptr)
-					{
-						window->mouseWheelEvent(mouseScroll_t::down);
-					}
-					break;
-				}
-
-				case 5:
-				{
-					window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
-
-					if (window->mouseWheelEvent != nullptr)
-					{
-						window->mouseWheelEvent(mouseScroll_t::down);
-					}
-					break;
-				}
-
-				default:
-				{
-					//need to add more mouse buttons 
-					break;
-				}
-				}
-
-				break;
-			}
-
-			case ButtonRelease:
-			{
-				switch (currentEvent.xbutton.button)
-				{
-				case 1:
-				{
-					//the left mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::up;
+					window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
 
 					if (window->mouseButtonEvent != nullptr)
 					{
@@ -2661,22 +1712,20 @@ private:
 					break;
 				}
 
-				case 2:
+				case WM_RBUTTONDOWN:
 				{
-					//the middle mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::up;
+					window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
 
 					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
 					}
 					break;
 				}
 
-				case 3:
+				case WM_RBUTTONUP:
 				{
-					//the right mouse button was released
-					window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::up;
+					window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
 
 					if (window->mouseButtonEvent != nullptr)
 					{
@@ -2685,696 +1734,1595 @@ private:
 					break;
 				}
 
-				case 4:
+				case WM_MBUTTONDOWN:
 				{
-					//the mouse wheel was scrolled up
-					window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
+					window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
+
+					if (window->mouseButtonEvent != nullptr)
+					{
+						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
+					}
 					break;
 				}
 
-				case 5:
+				case WM_MBUTTONUP:
 				{
-					//the mouse wheel was scrolled down
-					window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
+					window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::up;
+
+					if (window->mouseButtonEvent != nullptr)
+					{
+						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+					}
+					break;
+				}
+
+				case WM_MOUSEWHEEL:
+				{
+					if ((wordParam % WHEEL_DELTA) > 0)
+					{
+						if (window->mouseWheelEvent != nullptr)
+						{
+							window->mouseWheelEvent(mouseScroll_t::down);
+						}
+					}
+
+					else
+					{
+						if (window->mouseWheelEvent != nullptr)
+						{
+							window->mouseWheelEvent(mouseScroll_t::up);
+						}
+
+					}
 					break;
 				}
 
 				default:
 				{
-					//need to add more mouse buttons
+					//windowList[getWindow]
+					return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
+				}
+				}
+				return 0;
+
+		}
+
+		//get the window that is associated with this Win32 window handle
+		tWindow* GetWindowByHandle(HWND windowHandle)
+		{
+			for (unsigned int iter = 0; iter < windowList.size(); iter++)
+			{
+				if (windowList[iter]->windowHandle == windowHandle)
+				{
+					return windowList[iter].get();
+				}
+			}
+			return nullptr;
+		}
+
+		//initialize the given window using Win32
+		void Windows_InitializeWindow(tWindow* window,
+			UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
+			int clearScreenExtra = 0,
+			int windowExtra = 0,
+			HINSTANCE winInstance = GetModuleHandle(0),
+			HICON icon = LoadIcon(0, IDI_APPLICATION),
+			HCURSOR cursor = LoadCursor(0, IDC_ARROW),
+			HBRUSH brush = (HBRUSH)BLACK_BRUSH)
+		{
+			window->instanceHandle = winInstance;
+			window->windowClass.style = style;
+			window->windowClass.lpfnWndProc = windowManager::WindowProcedure;
+			window->windowClass.cbClsExtra = clearScreenExtra;
+			window->windowClass.cbWndExtra = windowExtra;
+			window->windowClass.hInstance = window->instanceHandle;
+			window->windowClass.hIcon = icon;
+			window->windowClass.hCursor = cursor;
+			window->windowClass.hbrBackground = brush;
+			window->windowClass.lpszMenuName = window->name;
+			window->windowClass.lpszClassName = window->name;
+			RegisterClass(&window->windowClass);
+
+			window->windowHandle =
+				CreateWindow(window->name, window->name, WS_OVERLAPPEDWINDOW, 0,
+				0, window->resolution.width,
+				window->resolution.height,
+				0, 0, 0, 0);
+
+			SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (long)this);
+
+			Platform_InitializeGL(window);
+
+			ShowWindow(window->windowHandle, true);
+			UpdateWindow(window->windowHandle);
+		}
+
+		//initialize the pixel format for the selected window
+		void InitializePixelFormat(tWindow* window)
+		{
+			window->pixelFormatDescriptor = {
+				sizeof(PIXELFORMATDESCRIPTOR), /* size */
+				1, /* version */
+				PFD_SUPPORT_OPENGL |
+				PFD_DRAW_TO_WINDOW |
+				PFD_DOUBLEBUFFER, /* support double-buffering */
+				PFD_TYPE_RGBA, /* color type */
+				(BYTE)window->colorBits, 0, /* preferred color depth */
+				0, 0,
+				0, 0,
+				0, 0,
+				0, /* color bits (ignored) */ /* no alpha buffer */ /* alpha bits (ignored) */
+				0, /* no accumulation buffer */
+				0, 0, 0, 0, /* accum bits (ignored) */
+				(BYTE)window->depthBits, /* depth buffer */
+				(BYTE)window->stencilBits, /* no stencil buffer */
+				0, /* no auxiliary buffers */
+				PFD_MAIN_PLANE, /* main layer */
+				0, /* reserved */
+				0, 0, 0, /* no layer, visible, damage masks */
+			};
+
+			int LocalPixelFormat = ChoosePixelFormat(window->deviceContextHandle,
+				&window->pixelFormatDescriptor);
+
+			if (LocalPixelFormat)
+			{
+				SetPixelFormat(window->deviceContextHandle, LocalPixelFormat,
+					&window->pixelFormatDescriptor);
+				return;
+			}
+			return;
+		}
+	
+		void Windows_Shutown(void)
+		{
+
+		}
+
+		void CreateTerminal(void)
+		{
+			int conHandle;
+			long stdHandle;
+			FILE* fp;
+
+			// allocate a console for this app
+			AllocConsole();
+
+			// redirect unbuffered STDOUT to the console
+			stdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+			conHandle = _open_osfhandle(stdHandle, _O_TEXT);
+			fp = _fdopen(conHandle, "w");
+			*stdout = *fp;
+
+			setvbuf(stdout, nullptr, _IONBF, 0);
+		}
+
+		static unsigned int Windows_TranslateKey(WPARAM wordParam)
+		{
+			switch (wordParam)
+			{
+				case VK_ESCAPE:
+				{
+					return escape;
+				}
+
+				case VK_F1:
+				{
+					return F1;
+				}
+
+				case VK_F2:
+				{
+					return F2;
+				}
+
+				case VK_F3:
+				{
+					return F3;
+				}
+
+				case VK_F4:
+				{
+					return F4;
+				}
+
+				case VK_F5:
+				{
+					return F5;
+				}
+
+				case VK_F6:
+				{
+					return F6;
+				}
+
+				case VK_F7:
+				{
+					return F7;
+				}
+
+				case VK_F8:
+				{
+					return F8;
+				}
+
+				case VK_F9:
+				{
+					return F9;
+				}
+
+				case VK_F10:
+				{
+					return F10;
+				}
+
+				case VK_F11:
+				{
+					return F11;
+				}
+
+				case VK_F12:
+				{
+					return F12;
+				}
+
+				case VK_BACK:
+				{
+					return backspace;
+				}
+
+				case VK_TAB:
+				{
+					return tab;
+				}
+
+				case VK_CAPITAL:
+				{
+					return capsLock;
+				}
+
+				case VK_RETURN:
+				{
+					return enter;
+				}
+
+				case VK_PRINT:
+				{
+					return printScreen;
+				}
+
+				case VK_SCROLL:
+				{
+					return scrollLock;
+				}
+
+				case VK_PAUSE:
+				{
+					return pause;
+				}
+
+				case VK_INSERT:
+				{
+					return insert;
+				}
+
+				case VK_HOME:
+				{
+					return home;
+				}
+
+				case VK_DELETE:
+				{
+					return del;
+				}
+
+				case VK_END:
+				{
+					return end;
+				}
+
+				case VK_PRIOR:
+				{
+					return pageUp;
+				}
+
+				case VK_NEXT:
+				{
+					return pageDown;
+				}
+
+				case VK_DOWN:
+				{
+					return arrowDown;
+				}
+
+				case VK_UP:
+				{
+					return arrowUp;
+				}
+
+				case VK_LEFT:
+				{
+					return arrowLeft;
+				}
+
+				case VK_RIGHT:
+				{
+					return arrowRight;
+				}
+
+				case VK_DIVIDE:
+				{
+					return keypadDivide;
+				}
+
+				case VK_MULTIPLY:
+				{
+					return keypadMultiply;
+				}
+
+				case VK_SUBTRACT:
+				{
+					return keypadDivide;
+				}
+
+				case VK_ADD:
+				{
+					return keypadAdd;
+				}
+
+				case VK_DECIMAL:
+				{
+					return keypadPeriod;
+				}
+
+				case VK_NUMPAD0:
+				{
+					return keypad0;
+				}
+
+				case VK_NUMPAD1:
+				{
+					return keypad1;
+				}
+
+				case VK_NUMPAD2:
+				{
+					return keypad2;
+				}
+
+				case VK_NUMPAD3:
+				{
+					return keypad3;
+				}
+
+				case VK_NUMPAD4:
+				{
+					return keypad4;
+				}
+
+				case VK_NUMPAD5:
+				{
+					return keypad5;
+				}
+
+				case VK_NUMPAD6:
+				{
+					return keypad6;
+				}
+
+				case VK_NUMPAD7:
+				{
+					return keypad7;
+				}
+
+				case VK_NUMPAD8:
+				{
+					return keypad8;
+				}
+
+				case VK_NUMPAD9:
+				{
+					return keypad9;
+				}
+
+				case VK_LWIN:
+				{
+					return leftWindow;
+				}
+
+				case VK_RWIN:
+				{
+					return rightWindow;
+				}
+
+				default:
+				{
+					return wordParam;
+				}
+			}
+		}
+
+		static void Windows_SetWindowIcon(tWindow* window, const char* icon, unsigned int width, unsigned int height)
+		{
+			SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
+				(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
+		}
+
+#elif defined(TW_LINUX)
+
+		enum decorator_t
+		{
+			linuxBorder = 1L << 1,
+			linuxMove = 1L << 2,
+			linuxMinimize = 1L << 3,
+			linuxMaximize = 1L << 4,
+			linuxClose = 1L << 5,
+		};
+
+		enum hint_t
+		{
+			function = 1,
+			decorator,
+		};
+
+		Display*			currentDisplay;
+		XEvent				currentEvent;
+		/* these atoms are needed to change window states via the extended window manager*/
+		Atom				AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
+		Atom				AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
+		Atom				AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
+		Atom				AtomMaxHorz;					/**< Atom for the maximized horizontally state of the window */		// _NET_WM_STATE_MAXIMIZED_HORZ
+		Atom				AtomMaxVert;					/**< Atom for the maximized vertically state of the window */		// _NET_WM_STATE_MAXIMIZED_VERT
+		Atom				AtomClose;						/**< Atom for closing the window */									// _NET_WM_CLOSE_WINDOW
+		Atom				AtomActive;						/**< Atom for the active window */									// _NET_ACTIVE_WINDOW
+		Atom				AtomDemandsAttention;			/**< Atom for when the window demands attention */					// _NET_WM_STATE_DEMANDS_ATTENTION
+		Atom				AtomFocused;					/**< Atom for the focused state of the window */					// _NET_WM_STATE_FOCUSED
+		Atom				AtomCardinal;					/**< Atom for cardinal coordinates */								// _NET_WM_CARDINAL
+		Atom				AtomIcon;						/**< Atom for the icon of the window */								// _NET_WM_ICON
+		Atom				AtomHints;						/**< Atom for the window decorations */								// _NET_WM_HINTS
+
+		Atom				AtomWindowType;					/**< Atom for the type of window */
+		Atom				AtomWindowTypeDesktop;			/**< Atom for the desktop window type */							//_NET_WM_WINDOW_TYPE_SPLASH
+		Atom				AtomWindowTypeSplash;			/**< Atom for the splash screen window type */
+		Atom				AtomWindowTypeNormal;			/**< Atom for the normal splash screen window type */
+
+		Atom				AtomAllowedActions;				/**< Atom for allowed window actions */
+		Atom				AtomActionResize;				/**< Atom for allowing the window to be resized */
+		Atom				AtomActionMinimize;				/**< Atom for allowing the window to be minimized */
+		Atom				AtomActionShade;				/**< Atom for allowing the window to be shaded */
+		Atom				AtomActionMaximizeHorz;			/**< Atom for allowing the window to be maximized horizontally */
+		Atom				AtomActionMaximizeVert;			/**< Atom for allowing the window to be maximized vertically */
+		Atom				AtomActionClose;				/**< Atom for allowing the window to be closed */
+
+		Atom				AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
+	
+		tWindow* GetWindowByHandle(Window windowHandle)
+		{
+			for(unsigned int iter = 0; iter < windowList.size(); iter++)
+			{
+				if (windowList[iter]->windowHandle == windowHandle)
+				{
+					return windowList[iter].get();
+				}
+			}
+			return nullptr;
+		}
+
+		tWindow* GetWindowByEvent(XEvent currentEvent)
+		{
+			switch(currentEvent.type)
+			{
+				case Expose:
+				{
+					return GetWindowByHandle(currentEvent.xexpose.window);
+				}	
+
+				case DestroyNotify:
+				{
+					return GetWindowByHandle(currentEvent.xdestroywindow.window);
+				}
+
+				case CreateNotify:
+				{
+					return GetWindowByHandle(currentEvent.xcreatewindow.window);
+				}	
+
+				case KeyPress:
+				{
+					return GetWindowByHandle(currentEvent.xkey.window);
+				}
+
+				case KeyRelease:
+				{
+					return GetWindowByHandle(currentEvent.xkey.window);
+				}
+
+				case ButtonPress:
+				{
+					return GetWindowByHandle(currentEvent.xbutton.window);
+				}
+
+				case ButtonRelease:
+				{
+					return GetWindowByHandle(currentEvent.xbutton.window);
+				}
+
+				case MotionNotify:
+				{
+					return GetWindowByHandle(currentEvent.xmotion.window);
+				}	
+
+				case FocusIn:
+				{
+					return GetWindowByHandle(currentEvent.xfocus.window);
+				}
+
+				case FocusOut:
+				{
+					return GetWindowByHandle(currentEvent.xfocus.window);
+				}
+
+				case ResizeRequest:
+				{
+					return GetWindowByHandle(currentEvent.xresizerequest.window);
+				}
+
+				case ConfigureNotify:
+				{
+					return GetWindowByHandle(currentEvent.xconfigure.window);
+				}
+
+				case PropertyNotify:
+				{
+					return GetWindowByHandle(currentEvent.xproperty.window);
+				}
+
+				case GravityNotify:
+				{
+					return GetWindowByHandle(currentEvent.xgravity.window);
+				}
+
+				case ClientMessage:
+				{
+					return GetWindowByHandle(currentEvent.xclient.window);
+				}
+
+				case VisibilityNotify:
+				{
+					return GetWindowByHandle(currentEvent.xvisibility.window);
+				}	
+
+				default:
+				{
+					return nullptr;
+				}
+			}
+		}
+
+		void InitializeAtoms()
+		{
+			AtomState = XInternAtom(currentDisplay, "_NET_WM_STATE", false);
+			AtomFullScreen = XInternAtom(currentDisplay, "_NET_WM_STATE_FULLSCREEN", false);
+			AtomMaxHorz = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_HORZ", false);
+			AtomMaxVert = XInternAtom(currentDisplay, "_NET_WM_STATE_MAXIMIZED_VERT", false);
+			AtomClose = XInternAtom(currentDisplay, "WM_DELETE_WINDOW", false);
+			AtomHidden = XInternAtom(currentDisplay, "_NET_WM_STATE_HIDDEN", false);
+			AtomActive = XInternAtom(currentDisplay, "_NET_ACTIVE_WINDOW", false);
+			AtomDemandsAttention = XInternAtom(currentDisplay, "_NET_WM_STATE_DEMANDS_ATTENTION", false);
+			AtomFocused = XInternAtom(currentDisplay, "_NET_WM_STATE_FOCUSED", false);
+			AtomCardinal = XInternAtom(currentDisplay, "CARDINAL", false);
+			AtomIcon = XInternAtom(currentDisplay, "_NET_WM_ICON", false);
+			AtomHints = XInternAtom(currentDisplay, "_MOTIF_WM_HINTS", true);
+
+			AtomWindowType = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE", false);
+			AtomWindowTypeDesktop = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_UTILITY", false);
+			AtomWindowTypeSplash = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_SPLASH", false);
+			AtomWindowTypeNormal = XInternAtom(currentDisplay, "_NET_WM_WINDOW_TYPE_NORMAL", false);
+
+			AtomAllowedActions = XInternAtom(currentDisplay, "_NET_WM_ALLOWED_ACTIONS", false);
+			AtomActionResize = XInternAtom(currentDisplay, "WM_ACTION_RESIZE", false);
+			AtomActionMinimize = XInternAtom(currentDisplay, "_WM_ACTION_MINIMIZE", false);
+			AtomActionShade = XInternAtom(currentDisplay, "WM_ACTION_SHADE", false);
+			AtomActionMaximizeHorz = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_HORZ", false);
+			AtomActionMaximizeVert = XInternAtom(currentDisplay, "_WM_ACTION_MAXIMIZE_VERT", false);
+			AtomActionClose = XInternAtom(currentDisplay, "_WM_ACTION_CLOSE", false);
+
+			AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
+		}
+
+		std::error_code Linux_InitializeWindow(tWindow* window)
+		{
+			window->attributes = new int[ 5]{
+				GLX_RGBA,
+				GLX_DOUBLEBUFFER, 
+				GLX_DEPTH_SIZE, 
+				window->depthBits, 
+				None};
+
+			window->decorators = 1;
+			window->currentWindowStyle |= linuxClose | linuxMaximize | linuxMinimize | linuxMove;
+
+			if (!currentDisplay)
+			{
+				return TinyWindow::error_t::linuxCannotConnectXServer;
+			}
+
+			//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window)); 
+
+			window->visualInfo = glXChooseVisual(currentDisplay, 0, window->attributes);
+
+			if (!window->visualInfo)
+			{
+				return TinyWindow::error_t::linuxInvalidVisualinfo;
+			}
+
+			window->setAttributes.colormap = XCreateColormap(currentDisplay,
+				DefaultRootWindow(currentDisplay),
+				window->visualInfo->visual, AllocNone);
+
+			window->setAttributes.event_mask = ExposureMask | KeyPressMask 
+				| KeyReleaseMask | MotionNotify | ButtonPressMask | ButtonReleaseMask
+				| FocusIn | FocusOut | Button1MotionMask | Button2MotionMask | Button3MotionMask | 
+				Button4MotionMask | Button5MotionMask | PointerMotionMask | FocusChangeMask
+				| VisibilityChangeMask | PropertyChangeMask | SubstructureNotifyMask;
+		
+			window->windowHandle = XCreateWindow(currentDisplay,
+				XDefaultRootWindow(currentDisplay), 0, 0,
+				window->resolution.width, window->resolution.height,
+				0, window->visualInfo->depth, InputOutput,
+				window->visualInfo->visual, CWColormap | CWEventMask,
+				&window->setAttributes);
+
+			if(!window->windowHandle)
+			{
+				return TinyWindow::error_t::linuxCannotCreateWindow;
+				exit(0);
+			}
+
+			XMapWindow(currentDisplay, window->windowHandle);
+			XStoreName(currentDisplay, window->windowHandle,
+				window->name);
+
+			XSetWMProtocols(currentDisplay, window->windowHandle, &AtomClose, true);	
+
+			Platform_InitializeGL(window);
+			window->currentDisplay = currentDisplay;
+			return TinyWindow::error_t::success;
+		}
+
+		void Linux_ShutdownWindow(tWindow* window)
+		{
+			XDestroyWindow(currentDisplay, window->windowHandle);	
+		}
+
+		void Linux_Shutdown(void)
+		{
+			for(unsigned int iter = 0; iter < windowList.size(); iter++)
+			{
+				Linux_ShutdownWindow(windowList[iter].get());
+			}
+
+			XCloseDisplay(currentDisplay);
+		}
+
+		void Linux_ProcessEvents(XEvent currentEvent)
+		{
+			tWindow* window = GetWindowByEvent(currentEvent);
+
+			switch (currentEvent.type)	
+			{
+				case Expose:
+				{
 					break;
 				}
-				}
-				break;
-			}
 
-			//when the mouse/pointer device is moved
-			case MotionNotify:
-			{
-				//set the windows mouse position to match the event
-				window->mousePosition.x =
-					currentEvent.xmotion.x;
-
-				window->mousePosition.y =
-					currentEvent.xmotion.y;
-
-				///set the screen mouse position to match the event
-				screenMousePosition.x = currentEvent.xmotion.x_root;
-				screenMousePosition.y = currentEvent.xmotion.y_root;
-
-				if (window->mouseMoveEvent != nullptr)
+				case DestroyNotify:
 				{
-					window->mouseMoveEvent(uiVec2(currentEvent.xmotion.x,
-						currentEvent.xmotion.y), uiVec2(currentEvent.xmotion.x_root,
-						currentEvent.xmotion.y_root));
+					printf("shutting down \n");
+					if (window->destroyedEvent != nullptr)
+					{
+						window->destroyedEvent();
+					}
+					ShutdownWindow(window);
+
+					break;
 				}
-				break;
-			}
 
-			//when the window goes out of focus
-			case FocusOut:
-			{
-				window->inFocus = false;
-				if (window->focusEvent != nullptr)
+				/*case CreateNotify:
 				{
-					window->focusEvent(
-						window->inFocus);
-				}
-				break;
-			}
+				printf("Window was created\n");
+				l_Window->InitializeGL();
 
-			//when the window is back in focus (use to call restore callback?)
-			case FocusIn:
-			{
-				window->inFocus = true;
-
-				if (window->focusEvent != nullptr)
+				if(IsValid(l_Window->m_OnCreated))
 				{
-					window->focusEvent(window->inFocus);
-				}
-				break;
-			}
-
-			//when a request to resize the window is made either by 
-			//dragging out the window or programmatically
-			case ResizeRequest:
-			{
-				window->resolution.width = currentEvent.xresizerequest.width;
-				window->resolution.height = currentEvent.xresizerequest.height;
-
-				glViewport(0, 0,
-					window->resolution.width,
-					window->resolution.height);
-
-				if (window->resizeEvent != nullptr)
-				{
-					window->resizeEvent(uiVec2(currentEvent.xresizerequest.width,
-						currentEvent.xresizerequest.height));
+				l_Window->m_OnCreated();
 				}
 
 				break;
-			}
+				} */
 
-			//when a request to configure the window is made
-			case ConfigureNotify:
-			{
-				glViewport(0, 0, currentEvent.xconfigure.width,
-					currentEvent.xconfigure.height);
-
-				//check if window was resized
-				if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
-					|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
+				case KeyPress:
 				{
+					unsigned int functionKeysym = XkbKeycodeToKeysym(
+						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
+
+					if (functionKeysym <= 255)
+					{
+						window->keys[ functionKeysym] = keyState_t::down;
+						if (window->keyEvent != nullptr)
+						{
+							window->keyEvent(functionKeysym, keyState_t::down);
+						}
+					}
+
+					else
+					{
+						window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::down;
+
+						if (window->keyEvent != nullptr)
+						{
+							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
+						}
+					}
+
+					break;
+				}
+
+				case KeyRelease:
+				{
+					bool isRetriggered = false;
+					if (XEventsQueued(currentDisplay, QueuedAfterReading))
+					{
+						XEvent nextEvent;
+						XPeekEvent(currentDisplay, &nextEvent);
+
+						if (nextEvent.type == KeyPress &&
+							nextEvent.xkey.time == currentEvent.xkey.time &&
+							nextEvent.xkey.keycode == currentEvent.xkey.keycode)
+						{
+							unsigned int functionKeysym = XkbKeycodeToKeysym(
+								currentDisplay, currentEvent.xkey.keycode, 0, 
+								currentEvent.xkey.state & ShiftMask ? 1 : 0);
+
+							XNextEvent(currentDisplay, &currentEvent);
+							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
+							isRetriggered = true;
+						}
+					}
+
+					if (!isRetriggered)
+					{
+						unsigned int functionKeysym = XkbKeycodeToKeysym(
+						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
+
+						if (functionKeysym <= 255)
+						{
+							window->keys[ functionKeysym] = keyState_t::up;
+
+							if (window->keyEvent != nullptr)
+							{
+								window->keyEvent(functionKeysym, keyState_t::up);
+							}
+						}
+
+						else
+						{
+							window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::up;
+
+							if (window->keyEvent != nullptr)
+							{
+								window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
+							}
+						}
+
+						if (window->keyEvent != nullptr)
+						{
+							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
+						}
+					}
+
+					break;
+				}
+
+				case ButtonPress:
+				{
+					switch (currentEvent.xbutton.button)
+					{
+					case 1:
+					{
+						window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::down;
+
+						if (window->mouseButtonEvent != nullptr)
+						{
+							window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
+						}
+						break;
+					}
+
+					case 2:
+					{
+						window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::down;
+
+						if (window->mouseButtonEvent != nullptr)
+						{
+							window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
+						}
+						break;
+					}
+
+					case 3:
+					{
+						window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::down;
+
+						if (window->mouseButtonEvent != nullptr)
+						{
+							window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
+						}
+						break;
+					}
+
+					case 4:
+					{
+						window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
+
+						if (window->mouseWheelEvent != nullptr)
+						{
+							window->mouseWheelEvent(mouseScroll_t::down);
+						}
+						break;
+					}
+
+					case 5:
+					{
+						window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
+
+						if (window->mouseWheelEvent != nullptr)
+						{
+							window->mouseWheelEvent(mouseScroll_t::down);
+						}
+						break;
+					}
+
+					default:
+					{
+						//need to add more mouse buttons 
+						break;
+					}
+					}
+
+					break;
+				}
+
+				case ButtonRelease:
+				{
+					switch (currentEvent.xbutton.button)
+					{
+					case 1:
+					{
+						//the left mouse button was released
+						window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::up;
+
+						if (window->mouseButtonEvent != nullptr)
+						{
+							window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
+						}
+						break;
+					}
+
+					case 2:
+					{
+						//the middle mouse button was released
+						window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::up;
+
+						if (window->mouseButtonEvent != nullptr)
+						{
+							window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+						}
+						break;
+					}
+
+					case 3:
+					{
+						//the right mouse button was released
+						window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::up;
+
+						if (window->mouseButtonEvent != nullptr)
+						{
+							window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
+						}
+						break;
+					}
+
+					case 4:
+					{
+						//the mouse wheel was scrolled up
+						window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
+						break;
+					}
+
+					case 5:
+					{
+						//the mouse wheel was scrolled down
+						window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
+						break;
+					}
+
+					default:
+					{
+						//need to add more mouse buttons
+						break;
+					}
+					}
+					break;
+				}
+
+				//when the mouse/pointer device is moved
+				case MotionNotify:
+				{
+					//set the windows mouse position to match the event
+					window->mousePosition.x =
+						currentEvent.xmotion.x;
+
+					window->mousePosition.y =
+						currentEvent.xmotion.y;
+
+					///set the screen mouse position to match the event
+					screenMousePosition.x = currentEvent.xmotion.x_root;
+					screenMousePosition.y = currentEvent.xmotion.y_root;
+
+					if (window->mouseMoveEvent != nullptr)
+					{
+						window->mouseMoveEvent(uiVec2(currentEvent.xmotion.x,
+							currentEvent.xmotion.y), uiVec2(currentEvent.xmotion.x_root,
+							currentEvent.xmotion.y_root));
+					}
+					break;
+				}
+
+				//when the window goes out of focus
+				case FocusOut:
+				{
+					window->inFocus = false;
+					if (window->focusEvent != nullptr)
+					{
+						window->focusEvent(
+							window->inFocus);
+					}
+					break;
+				}
+
+				//when the window is back in focus (use to call restore callback?)
+				case FocusIn:
+				{
+					window->inFocus = true;
+
+					if (window->focusEvent != nullptr)
+					{
+						window->focusEvent(window->inFocus);
+					}
+					break;
+				}
+
+				//when a request to resize the window is made either by 
+				//dragging out the window or programmatically
+				case ResizeRequest:
+				{
+					window->resolution.width = currentEvent.xresizerequest.width;
+					window->resolution.height = currentEvent.xresizerequest.height;
+
+					glViewport(0, 0,
+						window->resolution.width,
+						window->resolution.height);
+
 					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent(uiVec2(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
+						window->resizeEvent(uiVec2(currentEvent.xresizerequest.width,
+							currentEvent.xresizerequest.height));
 					}
 
-					window->resolution.width = currentEvent.xconfigure.width;
-					window->resolution.height = currentEvent.xconfigure.height;
+					break;
 				}
 
-				//check if window was moved
-				if ((unsigned int)currentEvent.xconfigure.x != window->position.x
-					|| (unsigned int)currentEvent.xconfigure.y != window->position.y)
+				//when a request to configure the window is made
+				case ConfigureNotify:
 				{
-					if (window->movedEvent != nullptr)
+					glViewport(0, 0, currentEvent.xconfigure.width,
+						currentEvent.xconfigure.height);
+
+					//check if window was resized
+					if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
+						|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
 					{
-						window->movedEvent(uiVec2(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+						if (window->resizeEvent != nullptr)
+						{
+							window->resizeEvent(uiVec2(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
+						}
+
+						window->resolution.width = currentEvent.xconfigure.width;
+						window->resolution.height = currentEvent.xconfigure.height;
 					}
 
-					window->position.x = currentEvent.xconfigure.x;
-					window->position.y = currentEvent.xconfigure.y;
+					//check if window was moved
+					if ((unsigned int)currentEvent.xconfigure.x != window->position.x
+						|| (unsigned int)currentEvent.xconfigure.y != window->position.y)
+					{
+						if (window->movedEvent != nullptr)
+						{
+							window->movedEvent(uiVec2(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+						}
+
+						window->position.x = currentEvent.xconfigure.x;
+						window->position.y = currentEvent.xconfigure.y;
+					}
+					break;
 				}
-				break;
+
+				case PropertyNotify:
+				{
+					//this is needed in order to read from the windows WM_STATE Atomic
+					//to determine if the property notify event was caused by a client
+					//iconify event(minimizing the window), a maximise event, a focus 
+					//event and an attention demand event. NOTE these should only be 
+					//for eventts that are not triggered programatically 
+
+					Atom type;
+					int format;
+					ulong numItems, bytesAfter;
+					unsigned char* properties = nullptr;
+
+					XGetWindowProperty(currentDisplay, currentEvent.xproperty.window,
+						AtomState,
+						0, LONG_MAX, false, AnyPropertyType,
+						&type, &format, &numItems, &bytesAfter,
+						& properties);
+
+					if (properties && (format == 32))
+					{
+						//go through each property and match it to an existing Atomic state
+						for (unsigned int currentItem = 0; currentItem < numItems; currentItem++)
+						{
+							Atom currentProperty = ((long*)(properties))[ currentItem];
+
+							if (currentProperty == AtomHidden)
+							{
+								//window was minimized
+								if (window->minimizedEvent != nullptr)
+								{
+									//if the minimized callback for the window was set							
+									window->minimizedEvent();
+								}
+							}
+
+							if (currentProperty == AtomMaxVert ||
+								currentProperty == AtomMaxVert)
+							{
+								//window was maximized
+								if (window->maximizedEvent != nullptr)
+								{
+									//if the maximized callback for the window was set
+									window->maximizedEvent();
+								}
+							}
+
+							if (currentProperty == AtomFocused)
+							{
+								//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
+							}
+
+							if (currentProperty == AtomDemandsAttention)
+							{
+								//the window demands user attention
+							}
+						}
+					}
+
+					break;
+				}
+
+				case GravityNotify:
+				{
+					//this is only supposed to pop up when the parent of this window(if any) has something happen
+					//to it so that this window can react to said event as well.
+					break;
+				}
+
+				//check for events that were created by the TinyWindow manager
+				case ClientMessage:
+				{
+					const char* atomName = XGetAtomName(currentDisplay, currentEvent.xclient.message_type);
+					if (atomName != nullptr)
+					{
+						//printf("%s\n", l_AtomName);
+					}
+
+					if ((Atom)currentEvent.xclient.data.l[ 0] == AtomClose)
+					{
+						window->shouldClose = true;
+						if(window->destroyedEvent != nullptr)
+						{
+							window->destroyedEvent();
+						}
+						break;	
+					}
+
+					//check if full screen
+					if ((Atom)currentEvent.xclient.data.l[ 1] == AtomFullScreen)
+					{
+						break;
+					}
+					break;
+	
+				}
+
+				default:
+				{
+					return;
+				}
+			}
+		}
+
+		//debugging. used to determine what type of event was generated
+		static const char* Linux_GetEventType(XEvent currentEvent)
+		{
+			switch (currentEvent.type)
+			{
+			case MotionNotify:
+			{
+				return "Motion Notify Event\n";
+			}
+
+			case ButtonPress:
+			{
+				return "Button Press Event\n";
+			}
+
+			case ButtonRelease:
+			{
+				return "Button Release Event\n";
+			}
+
+			case ColormapNotify:
+			{
+				return "Color Map Notify event \n";
+			}
+
+			case EnterNotify:
+			{
+				return "Enter Notify Event\n";
+			}
+
+			case LeaveNotify:
+			{
+				return "Leave Notify Event\n";
+			}
+
+			case Expose:
+			{
+				return "Expose Event\n";
+			}
+
+			case GraphicsExpose:
+			{
+				return "Graphics expose event\n";
+			}
+
+			case NoExpose:
+			{
+				return "No Expose Event\n";
+			}
+
+			case FocusIn:
+			{
+				return "Focus In Event\n";
+			}
+
+			case FocusOut:
+			{
+				return "Focus Out Event\n";
+			}
+
+			case KeymapNotify:
+			{
+				return "Key Map Notify Event\n";
+			}
+
+			case KeyPress:
+			{
+				return "Key Press Event\n";
+			}
+
+			case KeyRelease:
+			{
+				return "Key Release Event\n";
 			}
 
 			case PropertyNotify:
 			{
-				//this is needed in order to read from the windows WM_STATE Atomic
-				//to determine if the property notify event was caused by a client
-				//iconify event(minimizing the window), a maximise event, a focus 
-				//event and an attention demand event. NOTE these should only be 
-				//for eventts that are not triggered programatically 
+				return "Property Notify Event\n";
+			}
 
-				Atom type;
-				int format;
-				ulong numItems, bytesAfter;
-				unsigned char* properties = nullptr;
+			case ResizeRequest:
+			{
+				return "Resize Property Event\n";
+			}
 
-				XGetWindowProperty(currentDisplay, currentEvent.xproperty.window,
-					AtomState,
-					0, LONG_MAX, false, AnyPropertyType,
-					&type, &format, &numItems, &bytesAfter,
-					& properties);
+			case CirculateNotify:
+			{
+				return "Circulate Notify Event\n";
+			}
 
-				if (properties && (format == 32))
-				{
-					//go through each property and match it to an existing Atomic state
-					for (unsigned int currentItem = 0; currentItem < numItems; currentItem++)
-					{
-						Atom currentProperty = ((long*)(properties))[ currentItem];
+			case ConfigureNotify:
+			{
+				return "configure Notify Event\n";
+			}
 
-						if (currentProperty == AtomHidden)
-						{
-							//window was minimized
-							if (window->minimizedEvent != nullptr)
-							{
-								//if the minimized callback for the window was set							
-								window->minimizedEvent();
-							}
-						}
-
-						if (currentProperty == AtomMaxVert ||
-							currentProperty == AtomMaxVert)
-						{
-							//window was maximized
-							if (window->maximizedEvent != nullptr)
-							{
-								//if the maximized callback for the window was set
-								window->maximizedEvent();
-							}
-						}
-
-						if (currentProperty == AtomFocused)
-						{
-							//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
-						}
-
-						if (currentProperty == AtomDemandsAttention)
-						{
-							//the window demands user attention
-						}
-					}
-				}
-
-				break;
+			case DestroyNotify:
+			{
+				return "Destroy Notify Request\n";
 			}
 
 			case GravityNotify:
 			{
-				//this is only supposed to pop up when the parent of this window(if any) has something happen
-				//to it so that this window can react to said event as well.
-				break;
+				return "Gravity Notify Event \n";
 			}
 
-			//check for events that were created by the TinyWindow manager
+			case MapNotify:
+			{
+				return "Map Notify Event\n";
+			}
+
+			case ReparentNotify:
+			{
+				return "Reparent Notify Event\n";
+			}
+
+			case UnmapNotify:
+			{
+				return "Unmap notify event\n";
+			}
+
+			case MapRequest:
+			{
+				return "Map request event\n";
+			}
+
 			case ClientMessage:
 			{
-				const char* atomName = XGetAtomName(currentDisplay, currentEvent.xclient.message_type);
-				if (atomName != nullptr)
-				{
-					//printf("%s\n", l_AtomName);
-				}
+				return "Client Message Event\n";
+			}
 
-				if ((Atom)currentEvent.xclient.data.l[ 0] == AtomClose)
-				{
-					window->shouldClose = true;
-					if(window->destroyedEvent != nullptr)
-					{
-						window->destroyedEvent();
-					}
-					break;	
-				}
+			case MappingNotify:
+			{
+				return "Mapping notify event\n";
+			}
 
-				//check if full screen
-				if ((Atom)currentEvent.xclient.data.l[ 1] == AtomFullScreen)
-				{
-					break;
-				}
-				break;
-	
+			case SelectionClear:
+			{
+				return "Selection Clear event\n";
+			}
+
+			case SelectionNotify:
+			{
+				return "Selection Notify Event\n";
+			}
+
+			case SelectionRequest:
+			{
+				return "Selection Request event\n";
+			}
+
+			case VisibilityNotify:
+			{
+				return "Visibility Notify Event\n";
 			}
 
 			default:
 			{
-				return;
+				return 0;
+			}
 			}
 		}
-	}
 
-	//debugging. used to determine what type of event was generated
-	static const char* Linux_GetEventType(XEvent currentEvent)
-	{
-		switch (currentEvent.type)
+		//translate keys from X keys to TinyWindow Keys
+		static unsigned int Linux_TranslateKey(unsigned int keySymbol)
 		{
-		case MotionNotify:
-		{
-			return "Motion Notify Event\n";
-		}
-
-		case ButtonPress:
-		{
-			return "Button Press Event\n";
-		}
-
-		case ButtonRelease:
-		{
-			return "Button Release Event\n";
-		}
-
-		case ColormapNotify:
-		{
-			return "Color Map Notify event \n";
-		}
-
-		case EnterNotify:
-		{
-			return "Enter Notify Event\n";
-		}
-
-		case LeaveNotify:
-		{
-			return "Leave Notify Event\n";
-		}
-
-		case Expose:
-		{
-			return "Expose Event\n";
-		}
-
-		case GraphicsExpose:
-		{
-			return "Graphics expose event\n";
-		}
-
-		case NoExpose:
-		{
-			return "No Expose Event\n";
-		}
-
-		case FocusIn:
-		{
-			return "Focus In Event\n";
-		}
-
-		case FocusOut:
-		{
-			return "Focus Out Event\n";
-		}
-
-		case KeymapNotify:
-		{
-			return "Key Map Notify Event\n";
-		}
-
-		case KeyPress:
-		{
-			return "Key Press Event\n";
-		}
-
-		case KeyRelease:
-		{
-			return "Key Release Event\n";
-		}
-
-		case PropertyNotify:
-		{
-			return "Property Notify Event\n";
-		}
-
-		case ResizeRequest:
-		{
-			return "Resize Property Event\n";
-		}
-
-		case CirculateNotify:
-		{
-			return "Circulate Notify Event\n";
-		}
-
-		case ConfigureNotify:
-		{
-			return "configure Notify Event\n";
-		}
-
-		case DestroyNotify:
-		{
-			return "Destroy Notify Request\n";
-		}
-
-		case GravityNotify:
-		{
-			return "Gravity Notify Event \n";
-		}
-
-		case MapNotify:
-		{
-			return "Map Notify Event\n";
-		}
-
-		case ReparentNotify:
-		{
-			return "Reparent Notify Event\n";
-		}
-
-		case UnmapNotify:
-		{
-			return "Unmap notify event\n";
-		}
-
-		case MapRequest:
-		{
-			return "Map request event\n";
-		}
-
-		case ClientMessage:
-		{
-			return "Client Message Event\n";
-		}
-
-		case MappingNotify:
-		{
-			return "Mapping notify event\n";
-		}
-
-		case SelectionClear:
-		{
-			return "Selection Clear event\n";
-		}
-
-		case SelectionNotify:
-		{
-			return "Selection Notify Event\n";
-		}
-
-		case SelectionRequest:
-		{
-			return "Selection Request event\n";
-		}
-
-		case VisibilityNotify:
-		{
-			return "Visibility Notify Event\n";
-		}
-
-		default:
-		{
-			return 0;
-		}
-		}
-	}
-
-	//translate keys from X keys to TinyWindow Keys
-	static unsigned int Linux_TranslateKey(unsigned int keySymbol)
-	{
-		switch (keySymbol)
-		{
-		case XK_Escape:
-		{
-			return escape;
-		}
-
-		case XK_Home:
-		{
-			return home;
-		}
-
-		case XK_Left:
-		{
-			return arrowLeft;
-		}
-
-		case XK_Right:
-		{
-			return arrowRight;
-		}
-
-		case XK_Up:
-		{
-			return arrowUp;
-		}
-
-		case XK_Down:
-		{
-			return arrowDown;
-		}
-
-		case XK_Page_Up:
-		{
-			return pageUp;
-		}
-
-		case XK_Page_Down:
-		{
-			return pageDown;
-		}
-
-		case XK_End:
-		{
-			return end;
-		}
-
-		case XK_Print:
-		{
-			return printScreen;
-		}
-
-		case XK_Insert:
-		{
-			return insert;
-		}
-
-		case XK_Num_Lock:
-		{
-			return numLock;
-		}
-
-		case XK_KP_Multiply:
-		{
-			return keypadMultiply;
-		}
-
-		case XK_KP_Add:
-		{
-			return keypadAdd;
-		}
-
-		case XK_KP_Subtract:
-		{
-			return keypadSubtract;
-		}
-
-		case XK_KP_Decimal:
-		{
-			return keypadPeriod;
-		}
-
-		case XK_KP_Divide:
-		{
-			return keypadDivide;
-		}
-
-		case XK_KP_0:
-		{
-			return keypad0;
-		}
-
-		case XK_KP_1:
-		{
-			return keypad1;
-		}
-
-		case XK_KP_2:
-		{
-			return keypad2;
-		}
-
-		case XK_KP_3:
-		{
-			return keypad3;
-		}
-
-		case XK_KP_4:
-		{
-			return keypad4;
-		}
-
-		case XK_KP_5:
-		{
-			return keypad5;
-		}
-
-		case XK_KP_6:
-		{
-			return keypad6;
-		}
-
-		case XK_KP_7:
-		{
-			return keypad7;
-		}
-
-		case XK_KP_8:
-		{
-			return keypad8;
-		}
-
-		case XK_KP_9:
-		{
-			return keypad9;
-		}
-
-		case XK_F1:
-		{
-			return F1;
-		}
-
-		case XK_F2:
-		{
-			return F2;
-		}
-
-		case XK_F3:
-		{
-			return F3;
-		}
-
-		case XK_F4:
-		{
-			return F4;
-		}
-
-		case XK_F5:
-		{
-			return F5;
-		}
-
-		case XK_F6:
-		{
-			return F6;
-		}
-
-		case XK_F7:
-		{
-			return F7;
-		}
-
-		case XK_F8:
-		{
-			return F8;
-		}
-
-		case XK_F9:
-		{
-			return F9;
-		}
-
-		case XK_F10:
-		{
-			return F10;
-		}
-
-		case XK_F11:
-		{
-			return F11;
-		}
-
-		case XK_F12:
-		{
-			return F12;
-		}
-
-		case XK_Shift_L:
-		{
-			return leftShift;
-		}
-
-		case XK_Shift_R:
-		{
-			return rightShift;
-		}
-
-		case XK_Control_R:
-		{
-			return rightControl;
-		}
-
-		case XK_Control_L:
-		{
-			return leftControl;
-		}
-
-		case XK_Caps_Lock:
-		{
-			return capsLock;
-		}
-
-		case XK_Alt_L:
-		{
-			return leftAlt;
-		}
-
-		case XK_Alt_R:
-		{
-			return rightAlt;
-		}
-
-		default:
-		{
-			return 0;
-		}
-		}
-	}
-
-	std::error_code Linux_SetWindowIcon(void) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
-	{
-		//sorry :(
-		return TinyWindow::error_t::linuxFunctionNotImplemented;
-	}
-
-	GLXFBConfig GetBestFrameBufferConfig(window_t* givenWindow)
-	{
-		const int visualAttributes[ ] =
-		{
-			GLX_X_RENDERABLE, true,
-			GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
-			GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
-			GLX_RED_SIZE, givenWindow->colorBits,
-			GLX_GREEN_SIZE, givenWindow->colorBits,
-			GLX_BLUE_SIZE, givenWindow->colorBits,
-			GLX_ALPHA_SIZE, givenWindow->colorBits,
-			GLX_DEPTH_SIZE, givenWindow->depthBits,
-			GLX_STENCIL_SIZE, givenWindow->stencilBits,
-			GLX_DOUBLEBUFFER, true,
-			None
-		};
-
-		int frameBufferCount;
-		unsigned int bestBufferConfig;//, bestNumSamples = 0;
-		GLXFBConfig* configs = glXChooseFBConfig(currentDisplay, 0, visualAttributes, &frameBufferCount);
-
-		for (int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++)
-		{
-			XVisualInfo* visualInfo = glXGetVisualFromFBConfig(currentDisplay, configs[currentConfig]);
-
-			if (visualInfo)
+			switch (keySymbol)
 			{
-				//printf("%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size);
-				int samples, sampleBuffer;
-				glXGetFBConfigAttrib(currentDisplay, configs[ currentConfig], GLX_SAMPLE_BUFFERS, &sampleBuffer);
-				glXGetFBConfigAttrib(currentDisplay, configs[currentConfig], GLX_SAMPLES, &samples);
-
-				if (sampleBuffer && samples > -1)
-				{
-					bestBufferConfig = currentConfig;
-					//bestNumSamples = samples;
-				}
+			case XK_Escape:
+			{
+				return escape;
 			}
 
-			XFree(visualInfo);
+			case XK_Home:
+			{
+				return home;
+			}
+
+			case XK_Left:
+			{
+				return arrowLeft;
+			}
+
+			case XK_Right:
+			{
+				return arrowRight;
+			}
+
+			case XK_Up:
+			{
+				return arrowUp;
+			}
+
+			case XK_Down:
+			{
+				return arrowDown;
+			}
+
+			case XK_Page_Up:
+			{
+				return pageUp;
+			}
+
+			case XK_Page_Down:
+			{
+				return pageDown;
+			}
+
+			case XK_End:
+			{
+				return end;
+			}
+
+			case XK_Print:
+			{
+				return printScreen;
+			}
+
+			case XK_Insert:
+			{
+				return insert;
+			}
+
+			case XK_Num_Lock:
+			{
+				return numLock;
+			}
+
+			case XK_KP_Multiply:
+			{
+				return keypadMultiply;
+			}
+
+			case XK_KP_Add:
+			{
+				return keypadAdd;
+			}
+
+			case XK_KP_Subtract:
+			{
+				return keypadSubtract;
+			}
+
+			case XK_KP_Decimal:
+			{
+				return keypadPeriod;
+			}
+
+			case XK_KP_Divide:
+			{
+				return keypadDivide;
+			}
+
+			case XK_KP_0:
+			{
+				return keypad0;
+			}
+
+			case XK_KP_1:
+			{
+				return keypad1;
+			}
+
+			case XK_KP_2:
+			{
+				return keypad2;
+			}
+
+			case XK_KP_3:
+			{
+				return keypad3;
+			}
+
+			case XK_KP_4:
+			{
+				return keypad4;
+			}
+
+			case XK_KP_5:
+			{
+				return keypad5;
+			}
+
+			case XK_KP_6:
+			{
+				return keypad6;
+			}
+
+			case XK_KP_7:
+			{
+				return keypad7;
+			}
+
+			case XK_KP_8:
+			{
+				return keypad8;
+			}
+
+			case XK_KP_9:
+			{
+				return keypad9;
+			}
+
+			case XK_F1:
+			{
+				return F1;
+			}
+
+			case XK_F2:
+			{
+				return F2;
+			}
+
+			case XK_F3:
+			{
+				return F3;
+			}
+
+			case XK_F4:
+			{
+				return F4;
+			}
+
+			case XK_F5:
+			{
+				return F5;
+			}
+
+			case XK_F6:
+			{
+				return F6;
+			}
+
+			case XK_F7:
+			{
+				return F7;
+			}
+
+			case XK_F8:
+			{
+				return F8;
+			}
+
+			case XK_F9:
+			{
+				return F9;
+			}
+
+			case XK_F10:
+			{
+				return F10;
+			}
+
+			case XK_F11:
+			{
+				return F11;
+			}
+
+			case XK_F12:
+			{
+				return F12;
+			}
+
+			case XK_Shift_L:
+			{
+				return leftShift;
+			}
+
+			case XK_Shift_R:
+			{
+				return rightShift;
+			}
+
+			case XK_Control_R:
+			{
+				return rightControl;
+			}
+
+			case XK_Control_L:
+			{
+				return leftControl;
+			}
+
+			case XK_Caps_Lock:
+			{
+				return capsLock;
+			}
+
+			case XK_Alt_L:
+			{
+				return leftAlt;
+			}
+
+			case XK_Alt_R:
+			{
+				return rightAlt;
+			}
+
+			default:
+			{
+				return 0;
+			}
+			}
 		}
 
-		GLXFBConfig BestConfig = configs[ bestBufferConfig];
+		std::error_code Linux_SetWindowIcon(void) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
+		{
+			//sorry :(
+			return TinyWindow::error_t::linuxFunctionNotImplemented;
+		}
 
-		XFree(configs);
+		GLXFBConfig GetBestFrameBufferConfig(tWindow* window)
+		{
+			const int visualAttributes[ ] =
+			{
+				GLX_X_RENDERABLE, true,
+				GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
+				GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+				GLX_RED_SIZE, window->colorBits,
+				GLX_GREEN_SIZE, window->colorBits,
+				GLX_BLUE_SIZE, window->colorBits,
+				GLX_ALPHA_SIZE, window->colorBits,
+				GLX_DEPTH_SIZE, window->depthBits,
+				GLX_STENCIL_SIZE, window->stencilBits,
+				GLX_DOUBLEBUFFER, true,
+				None
+			};
 
-		return BestConfig;
-	}
+			int frameBufferCount;
+			unsigned int bestBufferConfig;//, bestNumSamples = 0;
+			GLXFBConfig* configs = glXChooseFBConfig(currentDisplay, 0, visualAttributes, &frameBufferCount);
+
+			for (int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++)
+			{
+				XVisualInfo* visualInfo = glXGetVisualFromFBConfig(currentDisplay, configs[currentConfig]);
+
+				if (visualInfo)
+				{
+					//printf("%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size);
+					int samples, sampleBuffer;
+					glXGetFBConfigAttrib(currentDisplay, configs[ currentConfig], GLX_SAMPLE_BUFFERS, &sampleBuffer);
+					glXGetFBConfigAttrib(currentDisplay, configs[currentConfig], GLX_SAMPLES, &samples);
+
+					if (sampleBuffer && samples > -1)
+					{
+						bestBufferConfig = currentConfig;
+						//bestNumSamples = samples;
+					}
+				}
+
+				XFree(visualInfo);
+			}
+
+			GLXFBConfig BestConfig = configs[ bestBufferConfig];
+
+			XFree(configs);
+
+			return BestConfig;
+		}
 
 #endif
-};
-
+	};
 }
 
 #endif
