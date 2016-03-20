@@ -12,7 +12,7 @@ void handleKeyPresses(unsigned int key, keyState_t keyState)
 int main()
 {
 	windowManager* manager = new windowManager();
-	window_t* window = nullptr;
+	tWindow* window = nullptr;
 
 	window = manager->AddWindow("Example");
 	window->keyEvent = handleKeyPresses;
@@ -23,7 +23,7 @@ int main()
 		manager->PollForEvents();// or WaitForEvents
 		
 		//manager->MakeWindowCurrentContext(window);
-		manager->SwapWindowBuffers(window);
+		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
