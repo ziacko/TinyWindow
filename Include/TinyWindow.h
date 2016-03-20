@@ -382,6 +382,8 @@ namespace TinyWindow
 	class tWindow
 	{
 
+		friend class windowManager;
+
 	public:
 
 		const char*						name;													/**< Name of the window */
@@ -1036,7 +1038,7 @@ namespace TinyWindow
 
 	class windowManager
 	{
-		//friend class tWindow;
+
 	public:
 
 		windowManager(void)
