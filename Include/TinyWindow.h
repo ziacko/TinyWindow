@@ -438,6 +438,7 @@ namespace TinyWindow
 		XSetWindowAttributes			setAttributes;											/**< The attributes to be set for the window */
 		unsigned int					decorators;												/**< Enabled window decorators */
 		Display*						currentDisplay;											/**< Handle to the X11 window */
+
 /* these atoms are needed to change window states via the extended window manager*/
 		Atom							AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
 		Atom							AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
@@ -743,12 +744,16 @@ namespace TinyWindow
 			currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
 #if defined(TW_WINDOWS)
+
 			SetWindowLongPtr(windowHandle, GWL_STYLE,
 				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
 
-			MoveWindow(windowHandle, 0, 0, windowManager::GetScreenResolution().width,
-				windowManager::GetScreenResolution().height, true);
+			RECT desktop;
+			GetWindowRect(windowHandle, &desktop);
+			MoveWindow(windowHandle, 0, 0, desktop.right, desktop.bottom, true);
+
 #elif defined(TW_LINUX)
+
 			XEvent currentEvent;
 			memset(&currentEvent, 0, sizeof(currentEvent));
 
