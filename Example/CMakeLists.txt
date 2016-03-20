@@ -35,7 +35,7 @@ if (WIN32)
 endif(WIN32)
 
 set (VERSION_MAJOR 0)
-set (VERSION_MINOR 3)
+set (VERSION_MINOR 4)
 
 set (TINYWINDOW_INCLUDE_DIR "../Include")
 set (EXAMPLE_INCLUDE_DIR "./Include")
