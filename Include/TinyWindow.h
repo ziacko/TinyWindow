@@ -2228,7 +2228,7 @@ namespace TinyWindow
 
 		Display*			currentDisplay;
 		XEvent				currentEvent;
-			
+
 		tWindow* GetWindowByHandle(Window windowHandle)
 		{
 			for(unsigned int iter = 0; iter < windowList.size(); iter++)
