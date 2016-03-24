@@ -72,6 +72,33 @@ namespace TinyWindow
 		}
 	};
 
+	struct iVec2
+	{
+		iVec2()
+		{
+			this->x = 0;
+			this->y = 0;
+		}
+
+		iVec2(int x, int y)
+		{
+			this->x = x;
+			this->y = y;
+		}
+
+		union
+		{
+			int x;
+			int width;
+		};
+
+		union
+		{
+			int y;
+			int height;
+		};
+	};
+
 	enum class keyState_t
 	{
 		bad,									/**< If get key state fails (could not name it ERROR) */
@@ -161,13 +188,6 @@ namespace TinyWindow
 		up										/**< The mouse wheel down */
 	};
 
-	enum class style_t
-	{
-		bare,									/**< The window has no decorators but the window border and title bar */
-		normal,									/**< The default window style for the respective platform */
-		popup,									/**< The window has no decorators */
-	};
-
 	enum class state_t
 	{
 		normal,									/**< The window is in its default state */
@@ -185,6 +205,13 @@ namespace TinyWindow
 		maximizeButton = 0x010,					/**< The maximize button decoration pf the window */
 		closeButton = 0x20,						/**< The close button decoration of the window */
 		sizeableBorder = 0x40,					/**< The sizable border decoration of the window */
+	};
+
+	enum class style_t
+	{
+		bare,									/**< The window has no decorators but the window border and title bar */
+		normal,									/**< The default window style for the respective platform */
+		popup,									/**< The window has no decorators */
 	};
 
 	enum class error_t
@@ -220,9 +247,9 @@ namespace TinyWindow
 	typedef std::function<void(void)>															maximizedEvent_t;
 	typedef std::function<void(void)>															minimizedEvent_t;
 	typedef std::function<void(bool isFocused)>													focusEvent_t;
-	typedef std::function<void(uiVec2 windowPosition)>											movedEvent_t;
+	typedef std::function<void(iVec2 windowPosition)>											movedEvent_t;
 	typedef std::function<void(uiVec2 windowResolution)>										resizeEvent_t;
-	typedef std::function<void(uiVec2 windowMousePosition, uiVec2 screenMousePosition)>			mouseMoveEvent_t;
+	typedef std::function<void(iVec2 windowMousePosition, iVec2 screenMousePosition)>			mouseMoveEvent_t;
 
 	class errorCategory_t : public std::error_category
 	{
@@ -394,8 +421,8 @@ namespace TinyWindow
 		keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
 		buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
 		TinyWindow::uiVec2				resolution;												/**< Resolution/Size of the window stored in an array */
-		TinyWindow::uiVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
-		TinyWindow::uiVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
+		TinyWindow::iVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
+		TinyWindow::iVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
 		bool							shouldClose;											/**< Whether the Window should be closing */
 		bool							inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
 
@@ -404,7 +431,7 @@ namespace TinyWindow
 		bool							isCurrentContext;										/**< Whether the window is the current window being drawn to */
 
 		state_t							currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-		unsigned int					currentWindowStyle;										/**< The current style of the window */
+		unsigned int					currentStyle;											/**< The current style of the window */
 
 		keyEvent_t						keyEvent;												/**< This is the callback to be used when a key has been pressed */
 		mouseButtonEvent_t				mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
@@ -436,7 +463,7 @@ namespace TinyWindow
 		XVisualInfo*					visualInfo;												/**< The handle to the Visual Information. similar purpose to PixelformatDesriptor */
 		int*							attributes;												/**< Attributes of the window. RGB, depth, stencil, etc */
 		XSetWindowAttributes			setAttributes;											/**< The attributes to be set for the window */
-		unsigned int					decorators;												/**< Enabled window decorators */
+		unsigned int					linuxDecorators;										/**< Enabled window decorators */
 		Display*						currentDisplay;											/**< Handle to the X11 window */
 
 /* these atoms are needed to change window states via the extended window manager*/
@@ -553,7 +580,7 @@ namespace TinyWindow
 
 			initialized = false;
 			contextCreated = false;
-			currentWindowStyle = (unsigned int)style_t::normal;
+			currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
 
 	#if defined(__linux__)
 			context = 0;
@@ -570,7 +597,7 @@ namespace TinyWindow
 			SetWindowPos(windowHandle, HWND_TOP,
 				position.x, position.y,
 				resolution.x, resolution.y,
-				SWP_SHOWWINDOW | SWP_NOMOVE);
+				SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 #elif defined(TW_LINUX)
 			XResizeWindow(currentDisplay,
 				windowHandle, resolution.x, resolution.y);
@@ -581,14 +608,14 @@ namespace TinyWindow
 		/**
 		* Set the Position of the given window relative to screen co-ordinates
 		*/
-		std::error_code SetPosition(TinyWindow::uiVec2 position)
+		std::error_code SetPosition(TinyWindow::iVec2 position)
 		{
 			this->position = position;
 
 #if defined(TW_WINDOWS)
 			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
 				resolution.x, resolution.y,
-				SWP_SHOWWINDOW | SWP_NOSIZE);
+				SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 #elif defined(TW_LINUX)
 			XWindowChanges windowChanges;
 
@@ -613,7 +640,7 @@ namespace TinyWindow
 			POINT mousePoint;
 			mousePoint.x = mousePosition.x;
 			mousePoint.y = mousePosition.y;
-			ScreenToClient(windowHandle, &mousePoint);
+			ClientToScreen(windowHandle, &mousePoint);
 			SetCursorPos(mousePoint.x, mousePoint.y);
 #elif defined(TW_LINUX)
 			XWarpPointer(
@@ -845,7 +872,7 @@ namespace TinyWindow
 			case style_t::normal:
 			{
 				EnableDecorators(titleBar | border |
-					closeButton | minimizeButton | maximizeButton);
+					closeButton | minimizeButton | maximizeButton | sizeableBorder);
 				break;
 			}
 
@@ -872,10 +899,10 @@ namespace TinyWindow
 			{
 			case style_t::normal:
 			{
-				decorators = (1L << 2);
-				currentWindowStyle = linuxMove | linuxClose |
+				linuxDecorators = (1L << 2);
+				currentStyle = linuxMove | linuxClose |
 					linuxMaximize | linuxMinimize;
-				long Hints[5] = { hint_t::function | hint_t::decorator, currentWindowStyle, decorators, 0, 0 };
+				long Hints[5] = { hint_t::function | hint_t::decorator, currentStyle, linuxDecorators, 0, 0 };
 
 				XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 					(unsigned char*)Hints, 5);
@@ -886,9 +913,9 @@ namespace TinyWindow
 
 			case style_t::bare:
 			{
-				decorators = (1L << 2);
-				currentWindowStyle = (1L << 2);
-				long Hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
+				linuxDecorators = (1L << 2);
+				currentStyle = (1L << 2);
+				long Hints[5] = { function | decorator, currentStyle, linuxDecorators, 0, 0 };
 
 				XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 					(unsigned char*)Hints, 5);
@@ -899,9 +926,9 @@ namespace TinyWindow
 
 			case style_t::popup:
 			{
-				decorators = 0;
-				currentWindowStyle = (1L << 2);
-				long Hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
+				linuxDecorators = 0;
+				currentStyle = (1L << 2);
+				long Hints[5] = { function | decorator, currentStyle, linuxDecorators, 0, 0 };
 
 				XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32, PropModeReplace,
 					(unsigned char*)Hints, 5);
@@ -922,64 +949,68 @@ namespace TinyWindow
 		/**
 		* Enable window decorators by name
 		*/
-		std::error_code EnableDecorators(unsigned int decorators)
+		void EnableDecorators(unsigned int decorators)
 		{
 #if defined(TW_WINDOWS)
-			currentWindowStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
+
+			currentStyle = WS_VISIBLE | WS_CLIPSIBLINGS;
 
 			if (decorators & border)
 			{
-				currentWindowStyle |= WS_BORDER;
+				currentStyle |= WS_BORDER;
 			}
 
 			if (decorators & titleBar)
 			{
-				currentWindowStyle |= WS_CAPTION;
+				currentStyle |= WS_CAPTION;
 			}
 
 			if (decorators & icon)
 			{
-				currentWindowStyle |= WS_ICONIC;
+				currentStyle |= WS_ICONIC;
 			}
 
 			if (decorators & closeButton)
 			{
-				currentWindowStyle |= WS_SYSMENU;
+				currentStyle |= WS_SYSMENU;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				currentWindowStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
+				currentStyle |= WS_MINIMIZEBOX | WS_SYSMENU;
 			}
 
 			if (decorators & maximizeButton)
 			{
-				currentWindowStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
+				currentStyle |= WS_MAXIMIZEBOX | WS_SYSMENU;
 			}
 
 			if (decorators & sizeableBorder)
 			{
-				currentWindowStyle |= WS_SIZEBOX;
+				currentStyle |= WS_SIZEBOX;
 			}
 
-			SetWindowLongPtr(windowHandle, GWL_STYLE,
-				currentWindowStyle);
+			SetWindowLongPtr(windowHandle, GWL_STYLE, currentStyle);
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y, 
+				resolution.width, resolution.height, SWP_FRAMECHANGED);
+
 #elif defined(TW_LINUX)
+
 			if (decorators & closeButton)
 			{
-				currentWindowStyle |= linuxClose;
+				currentStyle |= linuxClose;
 				decorators = 1;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				currentWindowStyle |= linuxMinimize;
+				currentStyle |= linuxMinimize;
 				decorators = 1;
 			}
 
 			if (decorators & maximizeButton)
 			{
-				currentWindowStyle |= linuxMaximize;
+				currentStyle |= linuxMaximize;
 				decorators = 1;
 			}
 
@@ -1004,14 +1035,14 @@ namespace TinyWindow
 				decorators = 1;
 			}
 
-			long hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
+			long hints[5] = { function | decorator, currentStyle, decorators, 0, 0 };
 
 			XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32,
 				PropModeReplace, (unsigned char*)hints, 5);
 
 			XMapWindow(currentDisplay, windowHandle);
 #endif
-			return TinyWindow::error_t::success;
+			//return TinyWindow::error_t::success;
 		}
 
 		/**
@@ -1022,41 +1053,44 @@ namespace TinyWindow
 #if defined(TW_WINDOWS)
 			if (decorators & border)
 			{
-				currentWindowStyle &= ~WS_BORDER;
+				currentStyle &= ~WS_BORDER;
 			}
 
 			if (decorators & titleBar)
 			{
-				currentWindowStyle &= ~WS_MAXIMIZEBOX;
+				currentStyle &= ~WS_CAPTION;
 			}
 
 			if (decorators & icon)
 			{
-				currentWindowStyle &= ~WS_ICONIC;
+				currentStyle &= ~WS_ICONIC;
 			}
 
 			if (decorators & closeButton)
 			{
-				currentWindowStyle &= ~WS_SYSMENU;
+				currentStyle &= ~WS_SYSMENU;
 			}
 
 			if (decorators & minimizeButton)
 			{
-				currentWindowStyle &= ~WS_MINIMIZEBOX;
+				currentStyle &= ~WS_MINIMIZEBOX;
 			}
 
 			if (decorators & maximizeButton)
 			{
-				currentWindowStyle &= ~WS_MAXIMIZEBOX;
+				currentStyle &= ~WS_MAXIMIZEBOX;
 			}
 
 			if (decorators & sizeableBorder)
 			{
-				currentWindowStyle &= ~WS_SIZEBOX;
+				currentStyle &= ~WS_SIZEBOX;
 			}
 
 			SetWindowLongPtr(windowHandle, GWL_STYLE,
-				currentWindowStyle | WS_VISIBLE);
+				currentStyle | WS_VISIBLE);
+
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
+				resolution.width, resolution.height, SWP_FRAMECHANGED);
 #elif defined(TW_LINUX)
 			if (decorators & closeButton)
 			{
@@ -1074,16 +1108,16 @@ namespace TinyWindow
 					minimizeEnabled = true;
 				}
 
-				currentWindowStyle &= ~linuxClose;
+				currentStyle &= ~linuxClose;
 
 				if (maximizeEnabled)
 				{
-					currentWindowStyle |= linuxMaximize;
+					currentStyle |= linuxMaximize;
 				}
 
 				if (minimizeEnabled)
 				{
-					currentWindowStyle |= linuxMinimize;
+					currentStyle |= linuxMinimize;
 				}
 
 				decorators = 1;
@@ -1091,7 +1125,7 @@ namespace TinyWindow
 
 			if (decorators & minimizeButton)
 			{
-				currentWindowStyle &= ~linuxMinimize;
+				currentStyle &= ~linuxMinimize;
 				decorators = 1;
 			}
 
@@ -1104,11 +1138,11 @@ namespace TinyWindow
 					minimizeEnabled = true;
 				}
 
-				currentWindowStyle &= ~linuxMaximize;
+				currentStyle &= ~linuxMaximize;
 
 				if (minimizeEnabled)
 				{
-					currentWindowStyle |= linuxMinimize;
+					currentStyle |= linuxMinimize;
 				}
 
 				decorators = 1;
@@ -1135,7 +1169,7 @@ namespace TinyWindow
 				decorators = 0;
 			}
 
-			long hints[5] = { function | decorator, currentWindowStyle, decorators, 0, 0 };
+			long hints[5] = { function | decorator, currentStyle, decorators, 0, 0 };
 
 			XChangeProperty(currentDisplay, windowHandle, AtomHints, XA_ATOM, 32,
 				PropModeReplace, (unsigned char*)hints, 5);
@@ -1234,13 +1268,13 @@ namespace TinyWindow
 		 */
 		int GetNumWindows(void)
 		{
-			return windowList.size();
+			return (int)windowList.size();
 		}
 
 		/**
 		* Return the mouse position in screen co-ordinates
 		*/
-		TinyWindow::uiVec2 GetMousePositionInScreen(void)
+		TinyWindow::iVec2 GetMousePositionInScreen(void)
 		{
 			return screenMousePosition;
 		}
@@ -1339,7 +1373,7 @@ namespace TinyWindow
 		std::vector<std::unique_ptr<tWindow>>					windowList;
 
 		TinyWindow::uiVec2										screenResolution;
-		TinyWindow::uiVec2										screenMousePosition;
+		TinyWindow::iVec2										screenMousePosition;
 
 		void Platform_InitializeWindow(tWindow* window)
 		{
@@ -1749,8 +1783,8 @@ namespace TinyWindow
 
 				case WM_MOUSEMOVE:
 				{
-					window->mousePosition.x = (unsigned int)LOWORD(longParam);
-					window->mousePosition.y = (unsigned int)HIWORD(longParam);
+					window->mousePosition.x = (int)LOWORD(longParam);
+					window->mousePosition.y = (int)HIWORD(longParam);
 
 					POINT point;
 					point.x = (LONG)window->mousePosition.x;
@@ -1760,7 +1794,7 @@ namespace TinyWindow
 
 					if (window->mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent(window->mousePosition, uiVec2(point.x, point.y));
+						window->mouseMoveEvent(window->mousePosition, iVec2(point.x, point.y));
 					}
 					break;
 				}
@@ -1852,6 +1886,19 @@ namespace TinyWindow
 					break;
 				}
 
+				case WM_QUIT:
+				{
+					window->shouldClose = true;
+
+					if (window->destroyedEvent != nullptr)
+					{
+						window->destroyedEvent();
+					}
+
+					manager->ShutdownWindow(window);
+					break;
+				}
+
 				default:
 				{
 					//windowList[getWindow]
@@ -1877,13 +1924,13 @@ namespace TinyWindow
 
 		//initialize the given window using Win32
 		void Windows_InitializeWindow(tWindow* window,
-			UINT style = CS_OWNDC | CS_HREDRAW | CS_DROPSHADOW,
+			UINT style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DROPSHADOW,
 			int clearScreenExtra = 0,
 			int windowExtra = 0,
 			HINSTANCE winInstance = GetModuleHandle(0),
 			HICON icon = LoadIcon(0, IDI_APPLICATION),
 			HCURSOR cursor = LoadCursor(0, IDC_ARROW),
-			HBRUSH brush = (HBRUSH)BLACK_BRUSH)
+			HBRUSH brush = (HBRUSH)GetStockObject(BLACK_BRUSH))
 		{
 			window->instanceHandle = winInstance;
 			window->windowClass.style = style;
@@ -1904,12 +1951,14 @@ namespace TinyWindow
 				window->resolution.height,
 				0, 0, 0, 0);
 
-			SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (long)this);
+			SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (LONG_PTR)this);
 
 			Platform_InitializeGL(window);
 
 			ShowWindow(window->windowHandle, true);
 			UpdateWindow(window->windowHandle);
+
+			window->SetStyle(style_t::normal);
 		}
 
 		//initialize the pixel format for the selected window
@@ -2213,7 +2262,7 @@ namespace TinyWindow
 
 				default:
 				{
-					return wordParam;
+					return (unsigned int)wordParam;
 				}
 			}
 		}
@@ -2341,8 +2390,8 @@ namespace TinyWindow
 				window->depthBits, 
 				None};
 
-			window->decorators = 1;
-			window->currentWindowStyle |= window->linuxClose | window->linuxMaximize | window->linuxMinimize | window->linuxMove;
+			window->linuxDecorators = 1;
+			window->currentStyle |= window->linuxClose | window->linuxMaximize | window->linuxMinimize | window->linuxMove;
 
 			if (!currentDisplay)
 			{
