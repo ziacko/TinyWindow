@@ -2724,8 +2724,8 @@ namespace TinyWindow
 
 					if (window->mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent(uiVec2(currentEvent.xmotion.x,
-							currentEvent.xmotion.y), uiVec2(currentEvent.xmotion.x_root,
+						window->mouseMoveEvent(iVec2(currentEvent.xmotion.x,
+							currentEvent.xmotion.y), iVec2(currentEvent.xmotion.x_root,
 							currentEvent.xmotion.y_root));
 					}
 					break;
@@ -2795,12 +2795,12 @@ namespace TinyWindow
 					}
 
 					//check if window was moved
-					if ((unsigned int)currentEvent.xconfigure.x != window->position.x
-						|| (unsigned int)currentEvent.xconfigure.y != window->position.y)
+					if (currentEvent.xconfigure.x != window->position.x
+						|| currentEvent.xconfigure.y != window->position.y)
 					{
 						if (window->movedEvent != nullptr)
 						{
-							window->movedEvent(uiVec2(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+							window->movedEvent(iVec2(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
 						}
 
 						window->position.x = currentEvent.xconfigure.x;
