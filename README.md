@@ -13,5 +13,15 @@ My name is Ziyad Barakat and I am a software engineer with over 3 years of progr
 
 I can be reached at ziyadbarakat@gmail.com
 
-using the library:
-For the best way to understand using the library, please look at the example folder that is included with the library that provides an example of how to create a window, maintain an event loop and create an event callback using the WindowManager and window class of the API. If you want to understand more there is also a folder filled with documentation of the current version of the library. 
+documentation:
+Documentation is generated using Doxygen:
+
+    cd Docs
+		doxygen Doxyfile
+
+You can then obtain a PDF of the documentation by running:
+
+    cd latex
+		make
+
+A file titled `refman.pdf` should be created in that directory.
