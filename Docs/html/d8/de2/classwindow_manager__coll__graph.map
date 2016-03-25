@@ -1,7 +1,0 @@
-<map id="windowManager" name="windowManager">
-<area shape="rect" id="node4" href="$d2/df7/structwindow_manager_1_1window__t.html" title="{windowManager::window_t\n|+ name\l+ iD\l+ colorBits\l+ depthBits\l+ stencilBits\l+ keys\l+ mouseButton\l+ resolution\l+ position\l+ mousePosition\land 47 more...\l|+ window_t()\l}" alt="" coords="5,145,180,369"/>
-<area shape="rect" id="node5" title="STL class. " alt="" coords="213,219,351,296"/>
-<area shape="rect" id="node7" title="STL class. " alt="" coords="340,393,453,471"/>
-<area shape="rect" id="node8" href="$da/d67/classwindow_manager_1_1tiny_window_error_category__t.html" title="{windowManager::tinyWindow\lErrorCategory_t\n||+ ~tinyWindowErrorCategory_t()\l+ name()\l+ default_error_condition()\l+ equivalent()\l+ message()\l+ tinyWindowErrorCategory_t()\l+ tinyWindowErrorCategory_t()\l}" alt="" coords="522,649,730,829"/>
-<area shape="rect" id="node9" title="STL class. " alt="" coords="573,502,703,579"/>
-</map>
