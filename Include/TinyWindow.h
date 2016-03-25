@@ -14,6 +14,7 @@
 #pragma comment (lib, "opengl32.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#define WIN32_LEAN_AND_MEAN
 #endif //_MSC_VER
 #endif	//_WIN32 || _WIN64
 
@@ -1232,6 +1233,7 @@ namespace TinyWindow
 		 */
 		 void ShutDown(void) 
 		{
+			PostQuitMessage(0);
 	#if defined(__linux__)
 			Linux_Shutdown();
 	#endif
@@ -1517,9 +1519,9 @@ namespace TinyWindow
 						{
 							window->destroyedEvent();
 						}
-
 						manager->ShutdownWindow(window);
 					}
+					
 					break;
 				}
 				case WM_MOVE:
@@ -1867,6 +1869,8 @@ namespace TinyWindow
 
 				case WM_MOUSEWHEEL:
 				{
+
+					printf("highWord: %i, LowWord: %i \n", HIWORD(wordParam), LOWORD(wordParam));
 					if ((wordParam % WHEEL_DELTA) > 0)
 					{
 						if (window->mouseWheelEvent != nullptr)
@@ -1888,14 +1892,7 @@ namespace TinyWindow
 
 				case WM_QUIT:
 				{
-					window->shouldClose = true;
-
-					if (window->destroyedEvent != nullptr)
-					{
-						window->destroyedEvent();
-					}
-
-					manager->ShutdownWindow(window);
+					printf("blarg \n");
 					break;
 				}
 
