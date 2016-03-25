@@ -5,17 +5,23 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #define TW_WINDOWS
-#include <Windows.h>
-#include <gl/GL.h>
-#include <io.h>
-#include <fcntl.h>
 #if defined(_MSC_VER)
 //this automatically loads the OpenGL library if you are using Visual studio. feel free to comment out
 #pragma comment (lib, "opengl32.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
-#define WIN32_LEAN_AND_MEAN
 #endif //_MSC_VER
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif //WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
+#define NOMINMAX 1
+#endif //NOMINMAX
+
+#include <Windows.h>
+#include <gl/GL.h>
+#include <io.h>
+#include <fcntl.h>
 #endif	//_WIN32 || _WIN64
 
 #if defined(__linux__)
