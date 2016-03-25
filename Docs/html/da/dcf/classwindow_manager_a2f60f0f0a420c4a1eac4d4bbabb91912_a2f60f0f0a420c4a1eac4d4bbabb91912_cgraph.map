@@ -1,7 +1,0 @@
-<map id="windowManager::SetWindowOnMinimizedByIndex" name="windowManager::SetWindowOnMinimizedByIndex">
-<area shape="rect" id="node2" href="$da/dcf/classwindow_manager_ada6fd1f3d9231153fb52e5c55c27b68c.html#ada6fd1f3d9231153fb52e5c55c27b68c" title="windowManager::DoesExist\lByIndex" alt="" coords="241,93,424,134"/>
-<area shape="rect" id="node3" href="$da/dcf/classwindow_manager_a699663c4d3deeb5ae9ac2e556aedcb9e.html#a699663c4d3deeb5ae9ac2e556aedcb9e" title="windowManager::GetInstance" alt="" coords="712,104,904,131"/>
-<area shape="rect" id="node5" href="$da/dcf/classwindow_manager_a454ebdea6882e0d28888d3d32c1e77ff.html#a454ebdea6882e0d28888d3d32c1e77ff" title="windowManager::IsInitialized" alt="" coords="475,155,661,182"/>
-<area shape="rect" id="node6" href="$da/dcf/classwindow_manager_a79d9a881fa34afd798a9d8f91a265498.html#a79d9a881fa34afd798a9d8f91a265498" title="windowManager::TinyWindow\l_PrintErrorMessage" alt="" coords="472,38,664,80"/>
-<area shape="rect" id="node4" href="$da/dcf/classwindow_manager_ae80acd0fedac8b6b9a5c19d54702e81e.html#ae80acd0fedac8b6b9a5c19d54702e81e" title="windowManager::windowManager" alt="" coords="952,104,1167,131"/>
-</map>
