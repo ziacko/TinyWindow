@@ -47,7 +47,41 @@ namespace TinyWindow
 	const int defaultWindowWidth = 1280;
 	const int defaultWindowHeight = 720;
 
-	struct uiVec2
+	template<typename type>
+	struct vec2_t
+	{
+		vec2_t()
+		{
+			this->x = 0;
+			this->y = 0;
+		}
+
+		vec2_t(type x, type y)
+		{
+			this->x = x;
+			this->y = y;
+		}
+
+		union
+		{
+			type x;
+			type width;
+		};
+
+		union
+		{
+			type y;
+			type height;
+
+		};
+
+		static vec2_t Zero()
+		{
+			return vec2_t<type>(0, 0);
+		}
+	};
+
+	/*struct uiVec2
 	{
 		uiVec2()
 		{
@@ -104,7 +138,7 @@ namespace TinyWindow
 			int y;
 			int height;
 		};
-	};
+	};*/
 
 	enum class keyState_t
 	{
@@ -247,16 +281,16 @@ namespace TinyWindow
 		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
-	typedef std::function<void(unsigned int key, keyState_t keyState)>							keyEvent_t;
-	typedef std::function<void(mouseButton_t mouseButton, buttonState_t buttonState)>			mouseButtonEvent_t;
-	typedef std::function<void(mouseScroll_t mouseScrollDirection)>								mouseWheelEvent_t;
-	typedef std::function<void(void)>															destroyedEvent_t;
-	typedef std::function<void(void)>															maximizedEvent_t;
-	typedef std::function<void(void)>															minimizedEvent_t;
-	typedef std::function<void(bool isFocused)>													focusEvent_t;
-	typedef std::function<void(iVec2 windowPosition)>											movedEvent_t;
-	typedef std::function<void(uiVec2 windowResolution)>										resizeEvent_t;
-	typedef std::function<void(iVec2 windowMousePosition, iVec2 screenMousePosition)>			mouseMoveEvent_t;
+	typedef std::function<void(unsigned int key, keyState_t keyState)>									keyEvent_t;
+	typedef std::function<void(mouseButton_t mouseButton, buttonState_t buttonState)>					mouseButtonEvent_t;
+	typedef std::function<void(mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
+	typedef std::function<void(void)>																	destroyedEvent_t;
+	typedef std::function<void(void)>																	maximizedEvent_t;
+	typedef std::function<void(void)>																	minimizedEvent_t;
+	typedef std::function<void(bool isFocused)>															focusEvent_t;
+	typedef std::function<void(vec2_t<int> windowPosition)>												movedEvent_t;
+	typedef std::function<void(vec2_t<unsigned int> windowResolution)>									resizeEvent_t;
+	typedef std::function<void(vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)>		mouseMoveEvent_t;
 
 	class errorCategory_t : public std::error_category
 	{
@@ -418,36 +452,36 @@ namespace TinyWindow
 
 	public:
 
-		const char*						name;													/**< Name of the window */
-		unsigned int					iD;														/**< ID of the Window. (where it belongs in the window manager) */
-		int								colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
-		int								depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
-		int								stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
-		keyState_t						keys[last];												/**< Record of keys that are either pressed or released in the respective window */
-		buttonState_t					mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
-		TinyWindow::uiVec2				resolution;												/**< Resolution/Size of the window stored in an array */
-		TinyWindow::iVec2				position;												/**< Position of the Window relative to the screen co-ordinates */
-		TinyWindow::iVec2				mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
-		bool							shouldClose;											/**< Whether the Window should be closing */
-		bool							inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
+		const char*								name;													/**< Name of the window */
+		unsigned int							iD;														/**< ID of the Window. (where it belongs in the window manager) */
+		int										colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
+		int										depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
+		int										stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
+		keyState_t								keys[last];												/**< Record of keys that are either pressed or released in the respective window */
+		buttonState_t							mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
+		TinyWindow::vec2_t<unsigned int>		resolution;												/**< Resolution/Size of the window stored in an array */
+		TinyWindow::vec2_t<int>					position;												/**< Position of the Window relative to the screen co-ordinates */
+		TinyWindow::vec2_t<int>					mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
+		bool									shouldClose;											/**< Whether the Window should be closing */
+		bool									inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
 
-		bool							initialized;											/**< Whether the window has been successfully initialized */
-		bool							contextCreated;											/**< Whether the OpenGL context has been successfully created */
-		bool							isCurrentContext;										/**< Whether the window is the current window being drawn to */
+		bool									initialized;											/**< Whether the window has been successfully initialized */
+		bool									contextCreated;											/**< Whether the OpenGL context has been successfully created */
+		bool									isCurrentContext;										/**< Whether the window is the current window being drawn to */
 
-		state_t							currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
-		unsigned int					currentStyle;											/**< The current style of the window */
+		state_t									currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
+		unsigned int							currentStyle;											/**< The current style of the window */
 
-		keyEvent_t						keyEvent;												/**< This is the callback to be used when a key has been pressed */
-		mouseButtonEvent_t				mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
-		mouseWheelEvent_t				mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
-		destroyedEvent_t				destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
-		maximizedEvent_t				maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
-		minimizedEvent_t				minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
-		focusEvent_t					focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
-		movedEvent_t					movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
-		resizeEvent_t					resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
-		mouseMoveEvent_t				mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
+		keyEvent_t								keyEvent;												/**< This is the callback to be used when a key has been pressed */
+		mouseButtonEvent_t						mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
+		mouseWheelEvent_t						mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
+		destroyedEvent_t						destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
+		maximizedEvent_t						maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
+		minimizedEvent_t						minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
+		focusEvent_t							focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
+		movedEvent_t							movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
+		resizeEvent_t							resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
+		mouseMoveEvent_t						mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
 
 	private:
 
@@ -595,7 +629,7 @@ namespace TinyWindow
 		/**
 		* Set the Size/Resolution of the given window
 		*/
-		std::error_code SetResolution(TinyWindow::uiVec2 resolution)
+		std::error_code SetResolution(TinyWindow::vec2_t<unsigned int> resolution)
 		{
 			this->resolution = resolution;
 #if defined(TW_WINDOWS)
@@ -613,7 +647,7 @@ namespace TinyWindow
 		/**
 		* Set the Position of the given window relative to screen co-ordinates
 		*/
-		std::error_code SetPosition(TinyWindow::iVec2 position)
+		std::error_code SetPosition(TinyWindow::vec2_t<int> position)
 		{
 			this->position = position;
 
@@ -637,7 +671,7 @@ namespace TinyWindow
 		/**
 		* Set the mouse Position of the given window's co-ordinates
 		*/
-		std::error_code SetMousePosition(TinyWindow::uiVec2 mousePosition)
+		std::error_code SetMousePosition(TinyWindow::vec2_t<unsigned int> mousePosition)
 		{
 			this->mousePosition.x = mousePosition.x;
 			this->mousePosition.y = mousePosition.y;
@@ -1247,7 +1281,7 @@ namespace TinyWindow
 		/**
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
-		tWindow* AddWindow(const char* windowName, uiVec2 resolution = uiVec2(defaultWindowWidth, defaultWindowHeight), 
+		tWindow* AddWindow(const char* windowName, vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
 				int colourBits = 8, int depthBits = 8, int stencilBits = 8)
 		{
 			if (windowName != nullptr)
@@ -1280,7 +1314,7 @@ namespace TinyWindow
 		/**
 		* Return the mouse position in screen co-ordinates
 		*/
-		TinyWindow::iVec2 GetMousePositionInScreen(void)
+		TinyWindow::vec2_t<int> GetMousePositionInScreen(void)
 		{
 			return screenMousePosition;
 		}
@@ -1288,7 +1322,7 @@ namespace TinyWindow
 		/**
 		 * Set the position of the mouse cursor relative to screen co-ordinates
 		 */
-		void SetMousePositionInScreen(TinyWindow::uiVec2 mousePosition)
+		void SetMousePositionInScreen(TinyWindow::vec2_t<int> mousePosition)
 		{
 			screenMousePosition.x = mousePosition.x;
 			screenMousePosition.y = mousePosition.y;
@@ -1307,7 +1341,7 @@ namespace TinyWindow
 		/**
 		* Return the Resolution of the current screen
 		*/
-		TinyWindow::uiVec2 GetScreenResolution(void)
+		TinyWindow::vec2_t<unsigned int> GetScreenResolution(void)
 		{
 	#if defined(TW_WINDOWS)
 			RECT screen;
@@ -1376,10 +1410,10 @@ namespace TinyWindow
 
 	private:
 
-		std::vector<std::unique_ptr<tWindow>>					windowList;
+		std::vector<std::unique_ptr<tWindow>>		windowList;
 
-		TinyWindow::uiVec2										screenResolution;
-		TinyWindow::iVec2										screenMousePosition;
+		TinyWindow::vec2_t<unsigned int>			screenResolution;
+		TinyWindow::vec2_t<int>						screenMousePosition;
 
 		void Platform_InitializeWindow(tWindow* window)
 		{
@@ -1800,7 +1834,7 @@ namespace TinyWindow
 
 					if (window->mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent(window->mousePosition, iVec2(point.x, point.y));
+						window->mouseMoveEvent(window->mousePosition, vec2_t<int>(point.x, point.y));
 					}
 					break;
 				}
@@ -2471,13 +2505,12 @@ namespace TinyWindow
 
 				case DestroyNotify:
 				{
-					printf("shutting down \n");
 					if (window->destroyedEvent != nullptr)
 					{
 						window->destroyedEvent();
 					}
-					ShutdownWindow(window);
 
+					ShutdownWindow(window);
 					break;
 				}
 
