@@ -11,10 +11,9 @@ void handleKeyPresses(unsigned int key, keyState_t keyState)
 
 int main()
 {
-	windowManager* manager = new windowManager();
-	tWindow* window = nullptr;
+	std::unique_ptr<windowManager> manager(new windowManager());
+	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
 
-	window = manager->AddWindow("Example");
 	window->keyEvent = handleKeyPresses;
 
 	while (!window->shouldClose)
@@ -27,6 +26,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	window.release();
 	manager->ShutDown();
 	return 0;
 }

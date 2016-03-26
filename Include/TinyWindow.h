@@ -411,8 +411,6 @@ namespace std
 namespace TinyWindow
 {
 
-	//class windowManager;
-
 	class tWindow
 	{
 
