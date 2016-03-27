@@ -2740,8 +2740,8 @@ namespace TinyWindow
 
 					if (window->mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent(iVec2(currentEvent.xmotion.x,
-							currentEvent.xmotion.y), iVec2(currentEvent.xmotion.x_root,
+						window->mouseMoveEvent( vec2_t<int>(currentEvent.xmotion.x,
+							currentEvent.xmotion.y), vec2_t<int>(currentEvent.xmotion.x_root,
 							currentEvent.xmotion.y_root));
 					}
 					break;
@@ -2784,7 +2784,7 @@ namespace TinyWindow
 
 					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent(uiVec2(currentEvent.xresizerequest.width,
+						window->resizeEvent(vec2_t<unsigned int>(currentEvent.xresizerequest.width,
 							currentEvent.xresizerequest.height));
 					}
 
@@ -2803,7 +2803,7 @@ namespace TinyWindow
 					{
 						if (window->resizeEvent != nullptr)
 						{
-							window->resizeEvent(uiVec2(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
+							window->resizeEvent(vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
 						}
 
 						window->resolution.width = currentEvent.xconfigure.width;
@@ -2816,7 +2816,7 @@ namespace TinyWindow
 					{
 						if (window->movedEvent != nullptr)
 						{
-							window->movedEvent(iVec2(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+							window->movedEvent(vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
 						}
 
 						window->position.x = currentEvent.xconfigure.x;
