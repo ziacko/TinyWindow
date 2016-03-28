@@ -1271,10 +1271,14 @@ namespace TinyWindow
 		 */
 		 void ShutDown(void) 
 		{
-			PostQuitMessage(0);
 	#if defined(__linux__)
 			Linux_Shutdown();
 	#endif
+
+			for (unsigned int iter = 0; iter < windowList.size(); iter++)
+			{
+				ShutdownWindow(windowList[iter].get());
+			}
 			windowList.clear();
 		}
 
@@ -1363,11 +1367,17 @@ namespace TinyWindow
 		{
 	#if defined(TW_WINDOWS)
 			//only process events if there are any to process
-			if (PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
+			while (PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
 			{
+				//the only place I can see this being needed if someone called PostQuitMessage manually
 				TranslateMessage(&winMessage);
 				DispatchMessage(&winMessage);
+				if (winMessage.message == WM_QUIT)
+				{
+					ShutDown();
+				}
 			}
+			
 	#elif defined(TW_LINUX)
 			//if there are any events to process
 			if (XEventsQueued(currentDisplay, QueuedAfterReading))
@@ -1388,6 +1398,11 @@ namespace TinyWindow
 			GetMessage(&winMessage, 0, 0, 0);
 			TranslateMessage(&winMessage);
 			DispatchMessage(&winMessage);
+			if (winMessage.message == WM_QUIT)
+			{
+				ShutDown();
+				return;
+			}
 	#elif defined(TW_LINUX)
 			//even if there aren't any events to process
 			XNextEvent(currentDisplay, &currentEvent);
@@ -1471,6 +1486,7 @@ namespace TinyWindow
 		void ShutdownWindow(tWindow* window)
 		{
 	#if defined(TW_WINDOWS)
+			window->shouldClose = true;
 			if (window->glRenderingContextHandle)
 			{
 				wglMakeCurrent(nullptr, nullptr);
@@ -1925,12 +1941,6 @@ namespace TinyWindow
 						}
 
 					}
-					break;
-				}
-
-				case WM_QUIT:
-				{
-					printf("blarg \n");
 					break;
 				}
 

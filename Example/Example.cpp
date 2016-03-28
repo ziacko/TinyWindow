@@ -3,9 +3,11 @@
 using namespace TinyWindow;
 void handleKeyPresses(unsigned int key, keyState_t keyState)
 {
-	if(keyState == keyState_t::down)
+	if(keyState == keyState_t::down && key == escape)
 	{
-		printf("%c \t", key);
+#if defined(TW_WINDOWS)
+		PostQuitMessage(0);
+#endif
 	}
 }
 
