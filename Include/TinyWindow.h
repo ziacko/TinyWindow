@@ -239,13 +239,13 @@ namespace TinyWindow
 
 	enum decorator_t
 	{
-		titleBar = 0x01,						/**< The title bar decoration of the window */
-		icon = 0x02,							/**< The icon decoration of the window */
-		border = 0x04,							/**< The border decoration of the window */
-		minimizeButton = 0x08,					/**< The minimize button decoration of the window */
-		maximizeButton = 0x010,					/**< The maximize button decoration pf the window */
-		closeButton = 0x20,						/**< The close button decoration of the window */
-		sizeableBorder = 0x40,					/**< The sizable border decoration of the window */
+		titleBar =			1L << 1,			/**< The title bar decoration of the window */
+		icon =				1L << 2,			/**< The icon decoration of the window */
+		border =			1L << 3,			/**< The border decoration of the window */
+		minimizeButton =	1L << 4,			/**< The minimize button decoration of the window */
+		maximizeButton =	1L << 5,			/**< The maximize button decoration pf the window */
+		closeButton =		1L << 6,			/**< The close button decoration of the window */
+		sizeableBorder =	1L << 7,			/**< The sizable border decoration of the window */
 	};
 
 	enum class style_t
