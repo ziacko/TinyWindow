@@ -84,3 +84,5 @@ Example/x64/Debug/Example.tlog/custombuild.write.1.tlog
 Example/x64/Debug/Example.tlog/link.command.1.tlog
 Example/x64/Debug/Example.tlog/link.read.1.tlog
 Example/x64/Debug/Example.tlog/link.write.1.tlog
+*.map
+*.idb
