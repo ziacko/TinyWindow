@@ -1,7 +1,7 @@
 #include "TinyWindow.h"
 
 using namespace TinyWindow;
-void handleKeyPresses(unsigned int key, keyState_t keyState)
+void HandleKeyPresses(unsigned int key, keyState_t keyState)
 {
 	if(keyState == keyState_t::down && key == escape)
 	{
@@ -11,12 +11,31 @@ void handleKeyPresses(unsigned int key, keyState_t keyState)
 	}
 }
 
+void HandleMouseWheel(mouseScroll_t mouseScrollDirection)
+{
+	switch (mouseScrollDirection)
+	{
+	case mouseScroll_t::down:
+	{
+		printf("mouse wheel down \n");
+		break;
+	}
+
+	case mouseScroll_t::up:
+	{
+		printf("mouse wheel up \n");
+		break;
+	}
+	}
+}
+
 int main()
 {
 	std::unique_ptr<windowManager> manager(new windowManager());
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
 
-	window->keyEvent = handleKeyPresses;
+	window->keyEvent = HandleKeyPresses;
+	window->mouseWheelEvent = HandleMouseWheel;
 
 	while (!window->shouldClose)
 	{

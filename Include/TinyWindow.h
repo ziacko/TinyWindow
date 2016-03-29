@@ -81,65 +81,6 @@ namespace TinyWindow
 		}
 	};
 
-	/*struct uiVec2
-	{
-		uiVec2()
-		{
-			this->x = 0;
-			this->y = 0;
-		}
-
-		uiVec2(unsigned int x, unsigned int y)
-		{
-			this->x = x;
-			this->y = y;
-		}
-
-		union
-		{
-			unsigned int x;
-			unsigned int width;
-		};
-
-		union
-		{
-			unsigned int y;
-			unsigned int height;
-		};
-
-		static uiVec2 Zero()
-		{
-			return uiVec2(0, 0);
-		}
-	};
-
-	struct iVec2
-	{
-		iVec2()
-		{
-			this->x = 0;
-			this->y = 0;
-		}
-
-		iVec2(int x, int y)
-		{
-			this->x = x;
-			this->y = y;
-		}
-
-		union
-		{
-			int x;
-			int width;
-		};
-
-		union
-		{
-			int y;
-			int height;
-		};
-	};*/
-
 	enum class keyState_t
 	{
 		bad,									/**< If get key state fails (could not name it ERROR) */
@@ -494,6 +435,7 @@ namespace TinyWindow
 		WNDCLASS						windowClass;											/**< Contains the window class attributes */
 		HWND							windowHandle;											/**< A handle to A window */
 		HINSTANCE						instanceHandle;
+		int								accumWheelDelta;										/**< holds the accumulated mouse wheel delta for this window */
 
 #elif defined(TW_LINUX)
 
@@ -1923,24 +1865,56 @@ namespace TinyWindow
 
 				case WM_MOUSEWHEEL:
 				{
-
-					printf("highWord: %i, LowWord: %i \n", HIWORD(wordParam), LOWORD(wordParam));
-					if ((wordParam % WHEEL_DELTA) > 0)
+					int delta = GET_WHEEL_DELTA_WPARAM(wordParam);
+					if (delta > 0)
 					{
-						if (window->mouseWheelEvent != nullptr)
+						//if was previously negative, revert to zero
+						if (window->accumWheelDelta < 0)
 						{
-							window->mouseWheelEvent(mouseScroll_t::down);
+							window->accumWheelDelta = 0;
+						}
+
+						else
+						{
+							window->accumWheelDelta += delta;
+						}
+
+						if (window->accumWheelDelta >= WHEEL_DELTA)
+						{
+							if (window->mouseWheelEvent != nullptr)
+							{
+								window->mouseWheelEvent(mouseScroll_t::down);
+							}
+							//reset accum
+							window->accumWheelDelta = 0;
 						}
 					}
 
 					else
 					{
-						if (window->mouseWheelEvent != nullptr)
+						//if was previously positive, revert to zero
+						if (window->accumWheelDelta > 0)
 						{
-							window->mouseWheelEvent(mouseScroll_t::up);
+							window->accumWheelDelta = 0;
 						}
 
+						else
+						{
+							window->accumWheelDelta += delta;
+						}
+
+						//if the delta is equal to or greater than delta
+						if (window->accumWheelDelta <= -WHEEL_DELTA)
+						{
+							if (window->mouseWheelEvent != nullptr)
+							{
+								window->mouseWheelEvent(mouseScroll_t::up);
+							}
+							//reset accum
+							window->accumWheelDelta = 0;
+						}
 					}
+
 					break;
 				}
 
@@ -1970,8 +1944,7 @@ namespace TinyWindow
 		//initialize the given window using Win32
 		void Windows_InitializeWindow(tWindow* window,
 			UINT style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DROPSHADOW,
-			int clearScreenExtra = 0,
-			int windowExtra = 0,
+			int clearScreenExtra = 0, int windowExtra = 0,
 			HINSTANCE winInstance = GetModuleHandle(0),
 			HICON icon = LoadIcon(0, IDI_APPLICATION),
 			HCURSOR cursor = LoadCursor(0, IDC_ARROW),
