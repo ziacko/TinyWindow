@@ -13,6 +13,8 @@ My name is Ziyad Barakat and I am a software engineer with over 3 years of progr
 
 I can be reached at ziyadbarakat@gmail.com
 
+for info on future updates you can see the project trello <a href="https://trello.com/b/haEI2FMZ/tinywindow">here</a>
+
 documentation:
 Documentation is generated using Doxygen:
 

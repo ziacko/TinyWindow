@@ -8,6 +8,8 @@
 #if defined(_MSC_VER)
 //this automatically loads the OpenGL library if you are using Visual studio. feel free to comment out
 #pragma comment (lib, "opengl32.lib")
+
+#pragma comment (lib, "winmm.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif //_MSC_VER
@@ -22,6 +24,7 @@
 #include <gl/GL.h>
 #include <io.h>
 #include <fcntl.h>
+#include <mmsystem.h>
 #endif	//_WIN32 || _WIN64
 
 #if defined(__linux__)
@@ -405,11 +408,9 @@ namespace TinyWindow
 		TinyWindow::vec2_t<int>					mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
 		bool									shouldClose;											/**< Whether the Window should be closing */
 		bool									inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
-
 		bool									initialized;											/**< Whether the window has been successfully initialized */
 		bool									contextCreated;											/**< Whether the OpenGL context has been successfully created */
 		bool									isCurrentContext;										/**< Whether the window is the current window being drawn to */
-
 		state_t									currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
 		unsigned int							currentStyle;											/**< The current style of the window */
 
@@ -434,7 +435,7 @@ namespace TinyWindow
 		PIXELFORMATDESCRIPTOR			pixelFormatDescriptor;									/**< Describes the pixel format of a drawing surface*/
 		WNDCLASS						windowClass;											/**< Contains the window class attributes */
 		HWND							windowHandle;											/**< A handle to A window */
-		HINSTANCE						instanceHandle;
+		HINSTANCE						instanceHandle;											/**< A handle to the window class instance */
 		int								accumWheelDelta;										/**< holds the accumulated mouse wheel delta for this window */
 
 #elif defined(TW_LINUX)
@@ -447,7 +448,7 @@ namespace TinyWindow
 		unsigned int					linuxDecorators;										/**< Enabled window decorators */
 		Display*						currentDisplay;											/**< Handle to the X11 window */
 
-/* these atoms are needed to change window states via the extended window manager*/
+																		/* these atoms are needed to change window states via the extended window manager*/
 		Atom							AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
 		Atom							AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
 		Atom							AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
@@ -930,7 +931,7 @@ namespace TinyWindow
 		/**
 		* Enable window decorators by name
 		*/
-		void EnableDecorators(unsigned int decorators)
+		std::error_code EnableDecorators(unsigned int decorators)
 		{
 #if defined(TW_WINDOWS)
 
@@ -1023,7 +1024,7 @@ namespace TinyWindow
 
 			XMapWindow(currentDisplay, windowHandle);
 #endif
-			//return TinyWindow::error_t::success;
+			return TinyWindow::error_t::success;
 		}
 
 		/**
@@ -1503,8 +1504,8 @@ namespace TinyWindow
 				window = manager->GetWindowByHandle(windowHandle);
 			}
 		
-				switch (winMessage)
-				{
+			switch (winMessage)
+			{
 				case WM_DESTROY:
 				{
 					if (manager != nullptr)
@@ -1517,9 +1518,9 @@ namespace TinyWindow
 						}
 						manager->ShutdownWindow(window);
 					}
-					
 					break;
 				}
+
 				case WM_MOVE:
 				{
 					window->position.x = LOWORD(longParam);
@@ -1552,33 +1553,33 @@ namespace TinyWindow
 
 					switch (wordParam)
 					{
-					case SIZE_MAXIMIZED:
-					{
-						if (window->maximizedEvent != nullptr)
+						case SIZE_MAXIMIZED:
 						{
-							window->maximizedEvent();
+							if (window->maximizedEvent != nullptr)
+							{
+								window->maximizedEvent();
+							}
+
+							break;
 						}
 
-						break;
-					}
-
-					case SIZE_MINIMIZED:
-					{
-						if (window->minimizedEvent != nullptr)
+						case SIZE_MINIMIZED:
 						{
-							window->minimizedEvent();
+							if (window->minimizedEvent != nullptr)
+							{
+								window->minimizedEvent();
+							}
+							break;
 						}
-						break;
-					}
 
-					default:
-					{
-						if (window->resizeEvent != nullptr)
+						default:
 						{
-							window->resizeEvent(window->resolution);
+							if (window->resizeEvent != nullptr)
+							{
+								window->resizeEvent(window->resolution);
+							}
+							break;
 						}
-						break;
-					}
 					}
 					break;
 				}
@@ -1601,40 +1602,40 @@ namespace TinyWindow
 
 					switch (HIWORD(longParam))
 					{
-					case leftControlDown:
-					{
-						window->keys[leftControl] = keyState_t::down;
-						translatedKey = leftControl;
-						break;
-					}
+						case leftControlDown:
+						{
+							window->keys[leftControl] = keyState_t::down;
+							translatedKey = leftControl;
+							break;
+						}
 
-					case rightControlDown:
-					{
-						window->keys[rightControl] = keyState_t::down;
-						translatedKey = rightControl;
-						break;
-					}
+						case rightControlDown:
+						{
+							window->keys[rightControl] = keyState_t::down;
+							translatedKey = rightControl;
+							break;
+						}
 
-					case leftShiftDown:
-					{
-						window->keys[leftShift] = keyState_t::down;
-						translatedKey = leftShift;
-						break;
-					}
+						case leftShiftDown:
+						{
+							window->keys[leftShift] = keyState_t::down;
+							translatedKey = leftShift;
+							break;
+						}
 
-					case rightShiftDown:
-					{
-						window->keys[rightShift] = keyState_t::down;
-						translatedKey = rightShift;
-						break;
-					}
+						case rightShiftDown:
+						{
+							window->keys[rightShift] = keyState_t::down;
+							translatedKey = rightShift;
+							break;
+						}
 
-					default:
-					{
-						translatedKey = Windows_TranslateKey(wordParam);
-						window->keys[translatedKey] = keyState_t::down;
-						break;
-					}
+						default:
+						{
+							translatedKey = Windows_TranslateKey(wordParam);
+							window->keys[translatedKey] = keyState_t::down;
+							break;
+						}
 					}
 
 					if (window->keyEvent != nullptr)
@@ -1650,40 +1651,40 @@ namespace TinyWindow
 
 					switch (HIWORD(longParam))
 					{
-					case leftControlUp:
-					{
-						window->keys[leftControl] = keyState_t::up;
-						translatedKey = leftControl;
-						break;
-					}
+						case leftControlUp:
+						{
+							window->keys[leftControl] = keyState_t::up;
+							translatedKey = leftControl;
+							break;
+						}
 
-					case rightControlUp:
-					{
-						window->keys[rightControl] = keyState_t::up;
-						translatedKey = rightControl;
-						break;
-					}
+						case rightControlUp:
+						{
+							window->keys[rightControl] = keyState_t::up;
+							translatedKey = rightControl;
+							break;
+						}
 
-					case leftShiftUp:
-					{
-						window->keys[leftShift] = keyState_t::up;
-						translatedKey = leftShift;
-						break;
-					}
+						case leftShiftUp:
+						{
+							window->keys[leftShift] = keyState_t::up;
+							translatedKey = leftShift;
+							break;
+						}
 
-					case rightShiftUp:
-					{
-						window->keys[rightShift] = keyState_t::up;
-						translatedKey = rightShift;
-						break;
-					}
+						case rightShiftUp:
+						{
+							window->keys[rightShift] = keyState_t::up;
+							translatedKey = rightShift;
+							break;
+						}
 
-					default:
-					{
-						translatedKey = Windows_TranslateKey(wordParam);
-						window->keys[translatedKey] = keyState_t::up;
-						break;
-					}
+						default:
+						{
+							translatedKey = Windows_TranslateKey(wordParam);
+							window->keys[translatedKey] = keyState_t::up;
+							break;
+						}
 					}
 
 					if (window->keyEvent != nullptr)
@@ -1698,24 +1699,23 @@ namespace TinyWindow
 					unsigned int translatedKey = 0;
 					switch (HIWORD(longParam))
 					{
-					case leftAltDown:
-					{
-						window->keys[leftAlt] = keyState_t::down;
-						translatedKey = leftAlt;
-						break;
-					}
+						case leftAltDown:
+						{
+							window->keys[leftAlt] = keyState_t::down;
+							translatedKey = leftAlt;
+							break;
+						}
 
+						case rightAltDown:
+						{
+							window->keys[rightAlt] = keyState_t::down;
+							translatedKey = rightAlt;
+						}
 
-					case rightAltDown:
-					{
-						window->keys[rightAlt] = keyState_t::down;
-						translatedKey = rightAlt;
-					}
-
-					default:
-					{
-						break;
-					}
+						default:
+						{
+							break;
+						}
 					}
 
 					if (window->keyEvent != nullptr)
@@ -1731,25 +1731,25 @@ namespace TinyWindow
 					unsigned int translatedKey = 0;
 					switch (HIWORD(longParam))
 					{
-					case leftAltUp:
-					{
-						window->keys[leftAlt] = keyState_t::up;
-						translatedKey = leftAlt;
-						break;
-					}
+						case leftAltUp:
+						{
+							window->keys[leftAlt] = keyState_t::up;
+							translatedKey = leftAlt;
+							break;
+						}
 
 
-					case rightAltUp:
-					{
-						window->keys[rightAlt] = keyState_t::up;
-						translatedKey = rightAlt;
-						break;
-					}
+						case rightAltUp:
+						{
+							window->keys[rightAlt] = keyState_t::up;
+							translatedKey = rightAlt;
+							break;
+						}
 
-					default:
-					{
-						break;
-					}
+						default:
+						{
+							break;
+						}
 					}
 
 					if (window->keyEvent != nullptr)
@@ -1923,9 +1923,8 @@ namespace TinyWindow
 					//windowList[getWindow]
 					return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
 				}
-				}
-				return 0;
-
+			}
+			return 0;
 		}
 
 		//get the window that is associated with this Win32 window handle
