@@ -38,11 +38,7 @@ PROJECT_NAME           = TinyWindow
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-<<<<<<< HEAD
 PROJECT_NUMBER         = 0.4.9
-=======
-PROJECT_NUMBER         = 0.49
->>>>>>> d660c7e... added WIN32_LEAN_AND_MEAN for faster compilation
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -62,11 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-<<<<<<< HEAD
-OUTPUT_DIRECTORY       = .
-=======
 OUTPUT_DIRECTORY       = ./
->>>>>>> d660c7e... added WIN32_LEAN_AND_MEAN for faster compilation
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -789,11 +781,7 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-<<<<<<< HEAD
 INPUT                  = ../Include
-=======
-INPUT                  = ../
->>>>>>> d660c7e... added WIN32_LEAN_AND_MEAN for faster compilation
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -2185,11 +2173,7 @@ PERL_PATH              = /usr/bin/perl
 # powerful graphs.
 # The default value is: YES.
 
-<<<<<<< HEAD
 CLASS_DIAGRAMS         = YES
-=======
-CLASS_DIAGRAMS         = NO
->>>>>>> d660c7e... added WIN32_LEAN_AND_MEAN for faster compilation
 
 # You can define message sequence charts within doxygen comments using the \msc
 # command. Doxygen will then run the mscgen tool (see:
@@ -2220,11 +2204,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # set to NO
 # The default value is: NO.
 
-<<<<<<< HEAD
-HAVE_DOT               = YES
-=======
 HAVE_DOT               = NO
->>>>>>> d660c7e... added WIN32_LEAN_AND_MEAN for faster compilation
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is allowed
 # to run in parallel. When set to 0 doxygen will base this on the number of
