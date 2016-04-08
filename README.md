@@ -12,6 +12,7 @@ The TinyWindow library was started being developed back in 2014 as a replacement
 My name is Ziyad Barakat and I am a software engineer with over 3 years of programming experience. my core languages are C, C++, C#, Javascript, HTML, CSS and GLSL.
 
 I can be reached at ziyadbarakat@gmail.com
+
 twitter:	@barakat_ziyad
 skype:		ziacko
 facebook:	https://www.facebook.com/ziyad.barakat.3
