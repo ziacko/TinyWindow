@@ -1,6 +1,8 @@
 TinyWindow
 ==========
 
+![alt tag](https://raw.githubusercontent.com/ziacko/tinywindow/master/TinyWindow Logo.png)
+
 a cross platform single header window management library
 
 The TinyWindow library is a cross-platform (Windows and Linux) open-source project. This project was primarily created to make games however, users are free to use the library for whatever they need. for example a user can have a window for the sole purpose of rendering a scene and have another with the purpose of showing live debugging information without the use of a third party tool.
