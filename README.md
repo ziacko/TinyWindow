@@ -15,12 +15,9 @@ My name is Ziyad Barakat and I am a software engineer with over 3 years of progr
 
 I can be reached at ziyadbarakat@gmail.com
 
-twitter:	@barakat_ziyad
-skype:		ziacko
-facebook:	https://www.facebook.com/ziyad.barakat.3
-steam:    	ziacko
-
 for info on future updates you can see the project trello <a href="https://trello.com/b/haEI2FMZ/tinywindow">here</a>
+
+feel free to check out the TinyWindow SubReddit <a href="https://www.reddit.com/r/TinyWindow/"> here </a>
 
 documentation:
 Documentation is generated using Doxygen:
