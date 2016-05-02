@@ -228,9 +228,9 @@ namespace TinyWindow
 	typedef std::function<void(unsigned int key, keyState_t keyState)>									keyEvent_t;
 	typedef std::function<void(mouseButton_t mouseButton, buttonState_t buttonState)>					mouseButtonEvent_t;
 	typedef std::function<void(mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
-	typedef std::function<void(void)>																	destroyedEvent_t;
-	typedef std::function<void(void)>																	maximizedEvent_t;
-	typedef std::function<void(void)>																	minimizedEvent_t;
+	typedef std::function<void()>																		destroyedEvent_t;
+	typedef std::function<void()>																		maximizedEvent_t;
+	typedef std::function<void()>																		minimizedEvent_t;
 	typedef std::function<void(bool isFocused)>															focusEvent_t;
 	typedef std::function<void(vec2_t<int> windowPosition)>												movedEvent_t;
 	typedef std::function<void(vec2_t<unsigned int> windowResolution)>									resizeEvent_t;
@@ -638,7 +638,7 @@ namespace TinyWindow
 		/**
 		* Swap the draw buffers of the given window
 		*/
-		inline std::error_code SwapDrawBuffers(void)
+		inline std::error_code SwapDrawBuffers()
 		{
 #if defined(TW_WINDOWS)
 			SwapBuffers(deviceContextHandle);
@@ -651,7 +651,7 @@ namespace TinyWindow
 		/**
 		* Make the given window be the current OpenGL Context to be drawn to
 		*/
-		std::error_code MakeCurrentContext(void)
+		std::error_code MakeCurrentContext()
 		{
 #if defined(TW_WINDOWS)
 			wglMakeCurrent(deviceContextHandle,
@@ -800,7 +800,7 @@ namespace TinyWindow
 		/**
 		* Set the window icon by name (currently not functional)
 		*/
-		std::error_code SetIcon(void)//const char* windowName, const char* icon, unsigned int width, unsigned int height)
+		std::error_code SetIcon()//const char* windowName, const char* icon, unsigned int width, unsigned int height)
 		{
 			return TinyWindow::error_t::functionNotImplemented;
 		}
@@ -833,7 +833,7 @@ namespace TinyWindow
 		/**
 		* Restore the window by name
 		*/
-		std::error_code Restore(void)
+		std::error_code Restore()
 		{
 #if defined(TW_WINDOWS)
 			ShowWindow(windowHandle, SW_RESTORE);
@@ -1167,7 +1167,7 @@ namespace TinyWindow
 
 	public:
 
-		windowManager(void)
+		windowManager()
 		{
 	#if defined(TW_WINDOWS)
 			CreateTerminal(); //feel free to comment this out
@@ -1204,7 +1204,7 @@ namespace TinyWindow
 		/**
 		 * Shutdown and delete all windows in the manager
 		 */
-		~windowManager(void)
+		~windowManager()
 		{
 			ShutDown();
 		}
@@ -1212,7 +1212,7 @@ namespace TinyWindow
 		/**
 		 * Use this to shutdown the window manager when your program is finished
 		 */
-		 void ShutDown(void) 
+		 void ShutDown() 
 		{
 	#if defined(__linux__)
 			Linux_Shutdown();
@@ -1253,7 +1253,7 @@ namespace TinyWindow
 		/**
 		 * Return the total amount of windows the manager has
 		 */
-		int GetNumWindows(void)
+		int GetNumWindows()
 		{
 			return (int)windowList.size();
 		}
@@ -1261,7 +1261,7 @@ namespace TinyWindow
 		/**
 		* Return the mouse position in screen co-ordinates
 		*/
-		TinyWindow::vec2_t<int> GetMousePositionInScreen(void)
+		TinyWindow::vec2_t<int> GetMousePositionInScreen()
 		{
 			return screenMousePosition;
 		}
@@ -1288,7 +1288,7 @@ namespace TinyWindow
 		/**
 		* Return the Resolution of the current screen
 		*/
-		TinyWindow::vec2_t<unsigned int> GetScreenResolution(void)
+		TinyWindow::vec2_t<unsigned int> GetScreenResolution()
 		{
 	#if defined(TW_WINDOWS)
 			RECT screen;
@@ -1306,7 +1306,7 @@ namespace TinyWindow
 		/**
 		* Ask the window manager to poll for events
 		*/
-		inline void PollForEvents(void)
+		inline void PollForEvents()
 		{
 	#if defined(TW_WINDOWS)
 			//only process events if there are any to process
@@ -1334,7 +1334,7 @@ namespace TinyWindow
 		/**
 		* Ask the window manager to wait for events
 		*/
-		inline void WaitForEvents(void)
+		inline void WaitForEvents()
 		{
 	#if defined(TW_WINDOWS)
 			//process even if there aren't any to process
@@ -2015,12 +2015,12 @@ namespace TinyWindow
 			return;
 		}
 	
-		void Windows_Shutown(void)
+		void Windows_Shutown()
 		{
 
 		}
 
-		void CreateTerminal(void)
+		void CreateTerminal()
 		{
 			int conHandle;
 			long stdHandle;
@@ -2464,7 +2464,7 @@ namespace TinyWindow
 			XDestroyWindow(currentDisplay, window->windowHandle);	
 		}
 
-		void Linux_Shutdown(void)
+		void Linux_Shutdown()
 		{
 			for(unsigned int iter = 0; iter < windowList.size(); iter++)
 			{
@@ -3333,7 +3333,7 @@ namespace TinyWindow
 			}
 		}
 
-		std::error_code Linux_SetWindowIcon(void) /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
+		std::error_code Linux_SetWindowIcon() /*std::unique_ptr<window_t> window, const char* icon, unsigned int width, unsigned int height */
 		{
 			//sorry :(
 			return TinyWindow::error_t::linuxFunctionNotImplemented;
