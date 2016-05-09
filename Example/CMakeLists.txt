@@ -60,5 +60,5 @@ link_libraries (${LIBS})
 SET ( SOURCE Example.cpp)
 SET ( HEADER_FILES ${TINYWINDOW_INCLUDE_DIR}/TinyWindow.h)
 
-add_executable(Example ${SOURCE} ${HEADER_FILES})
-set_property(TARGET Example PROPERTY OUTPUT_NAME "Example")
+add_executable(TinyWindow_Example ${SOURCE} ${HEADER_FILES})
+set_property(TARGET TinyWindow_Example PROPERTY OUTPUT_NAME "Example")
