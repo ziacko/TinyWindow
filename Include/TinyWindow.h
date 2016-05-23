@@ -1,4 +1,4 @@
-//created by Ziyad Barakat 2014 - 2015
+//created by Ziyad Barakat 2014 - 2016
 
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
@@ -388,10 +388,8 @@ namespace std
 
 namespace TinyWindow
 {
-
 	class tWindow
 	{
-
 		friend class windowManager;
 
 	public:
@@ -476,7 +474,7 @@ namespace TinyWindow
 		Atom							AtomActionClose;				/**< Atom for allowing the window to be closed */
 
 		Atom							AtomDesktopGeometry;			/**< Atom for Desktop Geometry */
-	
+
 		enum decorator_t
 		{
 			linuxBorder = 1L << 1,
@@ -531,13 +529,13 @@ namespace TinyWindow
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			bool shouldClose = false, state_t currentState = state_t::normal,
 			keyEvent_t keyEvent = nullptr,
-			mouseButtonEvent_t mouseButtonEvent = nullptr, 
+			mouseButtonEvent_t mouseButtonEvent = nullptr,
 			mouseWheelEvent_t mouseWheelEvent = nullptr,
 			destroyedEvent_t destroyedEvent = nullptr,
-			maximizedEvent_t maximizedEvent = nullptr, 
+			maximizedEvent_t maximizedEvent = nullptr,
 			minimizedEvent_t minimizedEvent = nullptr,
 			focusEvent_t focusEvent = nullptr,
-			movedEvent_t movedEvent = nullptr, 
+			movedEvent_t movedEvent = nullptr,
 			resizeEvent_t resizeEvent = nullptr,
 			mouseMoveEvent_t mouseMoveEvent = nullptr)
 		{
@@ -564,9 +562,9 @@ namespace TinyWindow
 			contextCreated = false;
 			currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
 
-	#if defined(__linux__)
+#if defined(__linux__)
 			context = 0;
-	#endif 
+#endif 
 		}
 
 		/**
@@ -973,7 +971,7 @@ namespace TinyWindow
 			}
 
 			SetWindowLongPtr(windowHandle, GWL_STYLE, currentStyle);
-			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y, 
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
 				resolution.width, resolution.height, SWP_FRAMECHANGED);
 
 #elif defined(TW_LINUX)
@@ -1160,6 +1158,46 @@ namespace TinyWindow
 #endif
 			return TinyWindow::error_t::success;
 		}
+
+		//if windows is defined then allow the user to only GET the necessary info
+#if defined(TW_WINDOWS)
+		HDC GetDeviceContextDeviceHandle()
+		{
+			return deviceContextHandle;
+		}
+
+		HGLRC GetGLRenderingContextHandle()
+		{
+			return glRenderingContextHandle;
+		}
+
+		HWND GetWindowHandle()
+		{
+			return windowHandle;
+		}
+
+		HINSTANCE GetWindowClassInstance()
+		{
+			return instanceHandle;
+		}
+#endif
+
+#if defined(TW_LINUX)
+		Window GetWindowHandle()
+		{
+			return windowHandle;
+		}
+
+		GLXContext GetGLXContext()
+		{
+			return context;
+		}
+
+		DisplayBurst* GetCurrentDisplay()
+		{
+			return currentDisplay;
+		}
+#endif
 	};
 
 	class windowManager
@@ -1947,7 +1985,7 @@ namespace TinyWindow
 			HINSTANCE winInstance = GetModuleHandle(0),
 			HICON icon = LoadIcon(0, IDI_APPLICATION),
 			HCURSOR cursor = LoadCursor(0, IDC_ARROW),
-			HBRUSH brush = (HBRUSH)GetStockObject(BLACK_BRUSH))
+			HBRUSH brush = (HBRUSH)GetStockObject(WHITE_BRUSH))
 		{
 			window->instanceHandle = winInstance;
 			window->windowClass.style = style;
@@ -1970,8 +2008,10 @@ namespace TinyWindow
 
 			SetWindowLongPtr(window->windowHandle, GWLP_USERDATA, (LONG_PTR)this);
 
+			//if TW_USE_VULKAN is defined then stop TinyWindow from creating an OpenGL context since it will conflict with a vulkan context
+#if !defined(TW_USE_VULKAN)
 			Platform_InitializeGL(window);
-
+#endif
 			ShowWindow(window->windowHandle, true);
 			UpdateWindow(window->windowHandle);
 
@@ -1984,7 +2024,6 @@ namespace TinyWindow
 			window->pixelFormatDescriptor = {
 				sizeof(PIXELFORMATDESCRIPTOR), /* size */
 				1, /* version */
-				PFD_SUPPORT_OPENGL |
 				PFD_DRAW_TO_WINDOW |
 				PFD_DOUBLEBUFFER, /* support double-buffering */
 				PFD_TYPE_RGBA, /* color type */
