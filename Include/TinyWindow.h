@@ -8,7 +8,7 @@
 #if defined(_MSC_VER)
 //this automatically loads the OpenGL library if you are using Visual studio. feel free to comment out
 #pragma comment (lib, "opengl32.lib")
-
+//for gamepad support
 #pragma comment (lib, "winmm.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
@@ -21,7 +21,11 @@
 #endif //NOMINMAX
 
 #include <Windows.h>
+#if !defined(TW_USE_VULKAN)
 #include <gl/GL.h>
+#else
+#include <vulkan.h>
+#endif
 #include <io.h>
 #include <fcntl.h>
 #include <mmsystem.h>
@@ -29,7 +33,11 @@
 
 #if defined(__linux__)
 #define TW_LINUX
+#if !defined(TW_USE_VULKAN)
 #include <GL/glx.h>
+#else
+#include <vulkan.h>
+#endif
 #include <X11/X.h>
 #include <X11/keysym.h>
 #include <X11/Xatom.h>
@@ -75,7 +83,6 @@ namespace TinyWindow
 		{
 			type y;
 			type height;
-
 		};
 
 		static vec2_t Zero()
@@ -425,6 +432,11 @@ namespace TinyWindow
 
 	private:
 
+#if defined(TW_USE_VULKAN)
+		VkInstance								vulkanInstanceHandle;
+		VkSurfaceKHR							vulkanSurfaceHandle;
+#endif
+
 #if defined(TW_WINDOWS)
 
 		HDC								deviceContextHandle;									/**< A handle to a device context */
@@ -520,7 +532,6 @@ namespace TinyWindow
 
 			AtomDesktopGeometry = XInternAtom(currentDisplay, "_NET_DESKTOP_GEOMETRY", false);
 		}
-
 #endif
 
 	public:
@@ -633,8 +644,21 @@ namespace TinyWindow
 			return TinyWindow::error_t::success;
 		}
 
+#if defined(TW_USE_VULKAN) //these are hidden if TW_USE_VULKAN is defined
+		//get reference to instance
+		inline VkInstance& GetVulkanInstance()
+		{
+			return vulkanInstanceHandle;
+		}
+
+		//get reference to surface
+		inline VkSurfaceKHR& GetVulkanSurface()
+		{
+			return vulkanSurfaceHandle;
+		}
+#else
 		/**
-		* Swap the draw buffers of the given window
+		* Swap the draw buffers of the given window.
 		*/
 		inline std::error_code SwapDrawBuffers()
 		{
@@ -660,7 +684,7 @@ namespace TinyWindow
 #endif
 			return TinyWindow::error_t::success;
 		}
-
+#endif
 		/**
 		* Toggle the minimization state of the given window
 		*/
@@ -1161,22 +1185,22 @@ namespace TinyWindow
 
 		//if windows is defined then allow the user to only GET the necessary info
 #if defined(TW_WINDOWS)
-		HDC GetDeviceContextDeviceHandle()
+		inline HDC GetDeviceContextDeviceHandle()
 		{
 			return deviceContextHandle;
 		}
 
-		HGLRC GetGLRenderingContextHandle()
+		inline HGLRC GetGLRenderingContextHandle()
 		{
 			return glRenderingContextHandle;
 		}
 
-		HWND GetWindowHandle()
+		inline HWND GetWindowHandle()
 		{
 			return windowHandle;
 		}
 
-		HINSTANCE GetWindowClassInstance()
+		inline HINSTANCE GetWindowClassInstance()
 		{
 			return instanceHandle;
 		}
@@ -1256,9 +1280,9 @@ namespace TinyWindow
 			Linux_Shutdown();
 	#endif
 
-			for (unsigned int iter = 0; iter < windowList.size(); iter++)
+			for (unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			{
-				ShutdownWindow(windowList[iter].get());
+				ShutdownWindow(windowList[windowIndex].get());
 			}
 			windowList.clear();
 		}
@@ -1968,11 +1992,11 @@ namespace TinyWindow
 		//get the window that is associated with this Win32 window handle
 		tWindow* GetWindowByHandle(HWND windowHandle)
 		{
-			for (unsigned int iter = 0; iter < windowList.size(); iter++)
+			for (unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			{
-				if (windowList[iter]->windowHandle == windowHandle)
+				if (windowList[windowIndex]->windowHandle == windowHandle)
 				{
-					return windowList[iter].get();
+					return windowList[windowIndex].get();
 				}
 			}
 			return nullptr;
@@ -2336,11 +2360,11 @@ namespace TinyWindow
 
 		tWindow* GetWindowByHandle(Window windowHandle)
 		{
-			for(unsigned int iter = 0; iter < windowList.size(); iter++)
+			for(unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			{
-				if (windowList[iter]->windowHandle == windowHandle)
+				if (windowList[windowIndex]->windowHandle == windowHandle)
 				{
-					return windowList[iter].get();
+					return windowList[windowIndex].get();
 				}
 			}
 			return nullptr;
@@ -2505,9 +2529,9 @@ namespace TinyWindow
 
 		void Linux_Shutdown()
 		{
-			for(unsigned int iter = 0; iter < windowList.size(); iter++)
+			for(unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			{
-				Linux_ShutdownWindow(windowList[iter].get());
+				Linux_ShutdownWindow(windowList[windowIndex].get());
 			}
 
 			XCloseDisplay(currentDisplay);
@@ -2886,9 +2910,9 @@ namespace TinyWindow
 					if (properties && (format == 32))
 					{
 						//go through each property and match it to an existing Atomic state
-						for (unsigned int currentItem = 0; currentItem < numItems; currentItem++)
+						for (unsigned int itemIndex = 0; itemIndex < numItems; itemIndex++)
 						{
-							Atom currentProperty = ((long*)(properties))[ currentItem];
+							Atom currentProperty = ((long*)(properties))[ itemIndex];
 
 							if (currentProperty == window->AtomHidden)
 							{
@@ -3399,20 +3423,20 @@ namespace TinyWindow
 			unsigned int bestBufferConfig;//, bestNumSamples = 0;
 			GLXFBConfig* configs = glXChooseFBConfig(currentDisplay, 0, visualAttributes, &frameBufferCount);
 
-			for (int currentConfig = 0; currentConfig < frameBufferCount; currentConfig++)
+			for (int configIndex = 0; configIndex < frameBufferCount; configIndex++)
 			{
-				XVisualInfo* visualInfo = glXGetVisualFromFBConfig(currentDisplay, configs[currentConfig]);
+				XVisualInfo* visualInfo = glXGetVisualFromFBConfig(currentDisplay, configs[configIndex]);
 
 				if (visualInfo)
 				{
 					//printf("%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size);
 					int samples, sampleBuffer;
-					glXGetFBConfigAttrib(currentDisplay, configs[ currentConfig], GLX_SAMPLE_BUFFERS, &sampleBuffer);
-					glXGetFBConfigAttrib(currentDisplay, configs[currentConfig], GLX_SAMPLES, &samples);
+					glXGetFBConfigAttrib(currentDisplay, configs[ configIndex], GLX_SAMPLE_BUFFERS, &sampleBuffer);
+					glXGetFBConfigAttrib(currentDisplay, configs[configIndex], GLX_SAMPLES, &samples);
 
 					if (sampleBuffer && samples > -1)
 					{
-						bestBufferConfig = currentConfig;
+						bestBufferConfig = configIndex;
 						//bestNumSamples = samples;
 					}
 				}
