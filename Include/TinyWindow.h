@@ -381,7 +381,7 @@ namespace TinyWindow
 		}
 	};
 
-	std::error_code make_error_code(error_t errorCode)
+	inline std::error_code make_error_code(error_t errorCode)
 	{
 		return std::error_code(static_cast<int>(errorCode), errorCategory_t::get());
 	}
