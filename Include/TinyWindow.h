@@ -156,6 +156,7 @@ namespace TinyWindow
 		backspace,								/**< The Backspace key */
 		tab,									/**< The Tab key */
 		del,									/**< The Delete key */
+		spacebar,								/**< The Spacebar key */
 		escape,									/**< The Escape key */
 		last = escape,							/**< The last key to be supported */
 	};
@@ -2110,6 +2111,11 @@ namespace TinyWindow
 					return escape;
 				}
 
+				case VK_SPACE:
+				{
+					return spacebar;
+				}
+			   
 				case VK_F1:
 				{
 					return F1;
@@ -3164,6 +3170,11 @@ namespace TinyWindow
 				return escape;
 			}
 
+			case XK_space:
+			{
+				return spacebar;
+			}
+			   
 			case XK_Home:
 			{
 				return home;
