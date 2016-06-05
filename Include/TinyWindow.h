@@ -1218,7 +1218,7 @@ namespace TinyWindow
 			return context;
 		}
 
-		DisplayBurst* GetCurrentDisplay()
+		Display* GetCurrentDisplay()
 		{
 			return currentDisplay;
 		}
@@ -2583,24 +2583,12 @@ namespace TinyWindow
 					unsigned int functionKeysym = XkbKeycodeToKeysym(
 						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-					if (functionKeysym <= 255)
-					{
-						window->keys[ functionKeysym] = keyState_t::down;
+						unsigned int translatedKey = Linux_TranslateKey(functionKeysym); 
+						window->keys[ translatedKey] = keyState_t::down;
 						if (window->keyEvent != nullptr)
 						{
-							window->keyEvent(functionKeysym, keyState_t::down);
+							window->keyEvent(translatedKey, keyState_t::down);
 						}
-					}
-
-					else
-					{
-						window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::down;
-
-						if (window->keyEvent != nullptr)
-						{
-							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
-						}
-					}
 
 					break;
 				}
@@ -2632,29 +2620,11 @@ namespace TinyWindow
 						unsigned int functionKeysym = XkbKeycodeToKeysym(
 						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-						if (functionKeysym <= 255)
-						{
-							window->keys[ functionKeysym] = keyState_t::up;
-
-							if (window->keyEvent != nullptr)
-							{
-								window->keyEvent(functionKeysym, keyState_t::up);
-							}
-						}
-
-						else
-						{
-							window->keys[ Linux_TranslateKey(functionKeysym)] = keyState_t::up;
-
-							if (window->keyEvent != nullptr)
-							{
-								window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
-							}
-						}
-
+						unsigned int translatedKey = Linux_TranslateKey(functionKeysym); 
+						window->keys[ translatedKey] = keyState_t::up;
 						if (window->keyEvent != nullptr)
 						{
-							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::up);
+							window->keyEvent(translatedKey, keyState_t::up);
 						}
 					}
 
@@ -3402,7 +3372,7 @@ namespace TinyWindow
 
 			default:
 			{
-				return 0;
+				return keySymbol;
 			}
 			}
 		}
