@@ -44,6 +44,8 @@
 #include <X11/XKBlib.h>
 #endif //__linux__
 
+#include <assert.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
@@ -403,7 +405,6 @@ namespace TinyWindow
 	public:
 
 		const char*								name;													/**< Name of the window */
-		unsigned int							iD;														/**< ID of the Window. (where it belongs in the window manager) */
 		int										colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
 		int										depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
 		int										stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
@@ -537,7 +538,7 @@ namespace TinyWindow
 
 	public:
 
-		tWindow(const char* name = nullptr, unsigned int iD = 0,
+		tWindow(const char* name = nullptr,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			bool shouldClose = false, state_t currentState = state_t::normal,
 			keyEvent_t keyEvent = nullptr,
@@ -552,7 +553,6 @@ namespace TinyWindow
 			mouseMoveEvent_t mouseMoveEvent = nullptr)
 		{
 			this->name = name;
-			this->iD = iD;
 			this->colorBits = colorBits;
 			this->depthBits = depthBits;
 			this->stencilBits = stencilBits;
@@ -1269,14 +1269,16 @@ namespace TinyWindow
 		 */
 		~windowManager()
 		{
+			assert(windowList.empty());
 			ShutDown();
 		}
 
 		/**
 		 * Use this to shutdown the window manager when your program is finished
 		 */
-		 void ShutDown() 
-		{
+		 void ShutDown()
+		 {
+			 assert(windowList.empty());
 	#if defined(__linux__)
 			Linux_Shutdown();
 	#endif
@@ -1302,7 +1304,6 @@ namespace TinyWindow
 				newWindow->colorBits = colourBits;
 				newWindow->depthBits = depthBits;
 				newWindow->stencilBits = stencilBits;
-				newWindow->iD = GetNumWindows();
 
 				windowList.push_back(std::move(newWindow));
 				Platform_InitializeWindow(windowList.back().get());
@@ -1512,14 +1513,13 @@ namespace TinyWindow
 			window->windowHandle = nullptr;
 			window->glRenderingContextHandle = nullptr;
 
-			if (windowList.size() > 1)
+			for (auto it = windowList.begin(); it != windowList.end(); ++it)
 			{
-				windowList.erase(windowList.begin() + window->iD);
-			}
-
-			else
-			{
-				windowList.erase(windowList.begin());
+				if (window == it->get())
+				{
+					windowList.erase(it);
+					break;
+				}
 			}
 	#elif defined(TW_LINUX)
 			if (window->currentState == state_t::fullscreen)
