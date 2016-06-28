@@ -403,7 +403,7 @@ namespace TinyWindow
 		friend class windowManager;
 
 	public:
-
+		windowManager&							manager;
 		const char*								name;													/**< Name of the window */
 		int										colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
 		int										depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
@@ -538,7 +538,9 @@ namespace TinyWindow
 
 	public:
 
-		tWindow(const char* name = nullptr,
+		tWindow(
+			windowManager& mmanager,
+			const char* name = nullptr,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			bool shouldClose = false, state_t currentState = state_t::normal,
 			keyEvent_t keyEvent = nullptr,
@@ -550,7 +552,8 @@ namespace TinyWindow
 			focusEvent_t focusEvent = nullptr,
 			movedEvent_t movedEvent = nullptr,
 			resizeEvent_t resizeEvent = nullptr,
-			mouseMoveEvent_t mouseMoveEvent = nullptr)
+			mouseMoveEvent_t mouseMoveEvent = nullptr) :
+			manager(mmanager)
 		{
 			this->name = name;
 			this->colorBits = colorBits;
@@ -1228,11 +1231,27 @@ namespace TinyWindow
 	class windowManager
 	{
 
+#if defined(TW_WINDOWS)
+		double		_queryPerformanceCounter_denominator;
+#endif
 	public:
 
 		windowManager()
 		{
 	#if defined(TW_WINDOWS)
+			{
+				unsigned __int64 frequency;
+				if (QueryPerformanceFrequency((LARGE_INTEGER*)&frequency))
+				{
+					_queryPerformanceCounter_denominator = 1.0 / (double)frequency;
+				}
+				else
+				{
+					printf("QueryPerformanceFrequency(): FAILED assuming 3.14f ... which will break things (obviously)\n");
+					_queryPerformanceCounter_denominator = 3.14;
+				}
+			}
+
 			CreateTerminal(); //feel free to comment this out
 			RECT desktop;
 
@@ -1298,7 +1317,7 @@ namespace TinyWindow
 		{
 			if (windowName != nullptr)
 			{
-				std::unique_ptr<tWindow> newWindow(new tWindow);
+				std::unique_ptr<tWindow> newWindow(new tWindow(*this));
 				newWindow->name = windowName;
 				newWindow->resolution = resolution;
 				newWindow->colorBits = colourBits;
@@ -1365,6 +1384,24 @@ namespace TinyWindow
 			screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
 	#endif
 			return screenResolution;
+		}
+
+		/**
+		 * Reads some counter from somewhere that goes up at a sane rate
+		 */
+		double GetTime(void) const
+		{
+		#if defined(TW_WINDOWS)
+			unsigned __int64 time;
+			if (QueryPerformanceCounter((LARGE_INTEGER*)&time))
+				return static_cast<double>(time) * _queryPerformanceCounter_denominator;
+			
+			printf("QueryPerformanceCounter() FAILED ; using 19.83 which isn't ideal\n");
+			return 19.83;
+
+		#elif defined(TW_LINUX)
+			#err DO it up bro
+		#endif
 		}
 
 		/**
