@@ -1,9 +1,9 @@
 #include "TinyWindow.h"
 
 using namespace TinyWindow;
-void HandleKeyPresses(unsigned int key, keyState_t keyState)
+void HandleKeyPresses(TinyWindow::key_t key, keyState_t keyState)
 {
-	if(keyState == keyState_t::down && key == spacebar)
+	if(keyState == keyState_t::down && key == TinyWindow::key_t::spacebar)
 	{
 		printf("spacebar has been pressed \n");
 	}
@@ -29,11 +29,13 @@ void HandleMouseWheel(mouseScroll_t mouseScrollDirection)
 
 int main()
 {
-	std::unique_ptr<windowManager> manager(new windowManager());
-	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
+	std::unique_ptr<windowManager> manager = TinyWindow::windowManager::New<std::unique_ptr<TinyWindow::windowManager>>();
+
+	std::unique_ptr<tWindow> window = manager->AddWindow("Example");
 
 	window->keyEvent = HandleKeyPresses;
 	window->mouseWheelEvent = HandleMouseWheel;
+
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
 	{
@@ -44,6 +46,5 @@ int main()
 	}
 
 	window.release();
-	manager->ShutDown();
 	return 0;
 }
