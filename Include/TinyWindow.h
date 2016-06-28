@@ -100,7 +100,7 @@ namespace TinyWindow
 		down,									/**< The key is currently down */
 	};
 
-	enum key_t
+	enum class key_t
 	{
 		bad = -1,								/**< The key pressed is considered invalid */
 		first = 256 + 1,						/**< The first key that is not a char */
@@ -235,7 +235,7 @@ namespace TinyWindow
 		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
-	typedef std::function<void(unsigned int key, keyState_t keyState)>									keyEvent_t;
+	typedef std::function<void(key_t key, keyState_t keyState)>											keyEvent_t;
 	typedef std::function<void(mouseButton_t mouseButton, buttonState_t buttonState)>					mouseButtonEvent_t;
 	typedef std::function<void(mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
 	typedef std::function<void()>																		destroyedEvent_t;
@@ -374,7 +374,7 @@ namespace TinyWindow
 				}
 			}
 		}
-		
+
 		errorCategory_t() {};
 
 		const static errorCategory_t& get()
@@ -404,11 +404,12 @@ namespace TinyWindow
 
 	public:
 
+		windowManager&							manager;
 		const char*								name;													/**< Name of the window */
 		int										colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
 		int										depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
 		int										stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
-		keyState_t								keys[last];												/**< Record of keys that are either pressed or released in the respective window */
+		keyState_t								keys[(unsigned int)key_t::last];						/**< Record of keys that are either pressed or released in the respective window */
 		buttonState_t							mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
 		TinyWindow::vec2_t<unsigned int>		resolution;												/**< Resolution/Size of the window stored in an array */
 		TinyWindow::vec2_t<int>					position;												/**< Position of the Window relative to the screen co-ordinates */
@@ -538,46 +539,13 @@ namespace TinyWindow
 
 	public:
 
-		tWindow(const char* name = nullptr,
-			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-			bool shouldClose = false, state_t currentState = state_t::normal,
-			keyEvent_t keyEvent = nullptr,
-			mouseButtonEvent_t mouseButtonEvent = nullptr,
-			mouseWheelEvent_t mouseWheelEvent = nullptr,
-			destroyedEvent_t destroyedEvent = nullptr,
-			maximizedEvent_t maximizedEvent = nullptr,
-			minimizedEvent_t minimizedEvent = nullptr,
-			focusEvent_t focusEvent = nullptr,
-			movedEvent_t movedEvent = nullptr,
-			resizeEvent_t resizeEvent = nullptr,
-			mouseMoveEvent_t mouseMoveEvent = nullptr)
-		{
-			this->name = name;
-			this->colorBits = colorBits;
-			this->depthBits = depthBits;
-			this->stencilBits = stencilBits;
-			this->shouldClose = shouldClose;
-			this->currentState = currentState;
-
-			this->keyEvent = keyEvent;
-			this->mouseButtonEvent = mouseButtonEvent;
-			this->mouseWheelEvent = mouseWheelEvent;
-			this->destroyedEvent = destroyedEvent;
-			this->maximizedEvent = maximizedEvent;
-			this->minimizedEvent = minimizedEvent;
-			this->focusEvent = focusEvent;
-			this->movedEvent = movedEvent;
-			this->resizeEvent = resizeEvent;
-			this->mouseMoveEvent = mouseMoveEvent;
-
-			initialized = false;
-			contextCreated = false;
-			currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
-
-#if defined(__linux__)
-			context = 0;
-#endif 
-		}
+		tWindow(
+			windowManager& mmanager,
+			const char* name,
+			vec2_t<unsigned int>& resolution,
+			unsigned int colorBits,
+			unsigned int depthBits,
+			unsigned int stencilBits);
 
 		/**
 		* Set the Size/Resolution of the given window
@@ -661,29 +629,27 @@ namespace TinyWindow
 		/**
 		* Swap the draw buffers of the given window.
 		*/
-		inline std::error_code SwapDrawBuffers()
+		inline void SwapDrawBuffers()
 		{
 #if defined(TW_WINDOWS)
 			SwapBuffers(deviceContextHandle);
 #elif defined(TW_LINUX)
 			glXSwapBuffers(currentDisplay, windowHandle);
 #endif
-			return TinyWindow::error_t::success;
+			// since there's no way that this can fail. there's nothing to return
 		}
 
 		/**
 		* Make the given window be the current OpenGL Context to be drawn to
 		*/
-		std::error_code MakeCurrentContext()
+		void MakeCurrentContext()
 		{
 #if defined(TW_WINDOWS)
-			wglMakeCurrent(deviceContextHandle,
-				glRenderingContextHandle);
+			wglMakeCurrent(deviceContextHandle, glRenderingContextHandle);
 #elif defined(TW_LINUX)
-			glXMakeCurrent(currentDisplay, windowHandle,
-				context);
+			glXMakeCurrent(currentDisplay, windowHandle, context);
 #endif
-			return TinyWindow::error_t::success;
+			// since there's no way that this can fail. there's nothing to return
 		}
 #endif
 		/**
@@ -1024,7 +990,7 @@ namespace TinyWindow
 				//Linux (at least cinnamon) does not have icons in the window. only in the task bar icon
 			}
 
-			//just need to set it to 1 to enable all decorators that include title bar 
+			//just need to set it to 1 to enable all decorators that include title bar
 			if (decorators & titleBar)
 			{
 				decorators = 1;
@@ -1158,7 +1124,7 @@ namespace TinyWindow
 				//Linux (at least cinnamon) does not have icons in the window. only in the taskb ar icon
 			}
 
-			//just need to set it to 1 to enable all decorators that include title bar 
+			//just need to set it to 1 to enable all decorators that include title bar
 			if (decorators & titleBar)
 			{
 				decorators = linuxBorder;
@@ -1227,8 +1193,8 @@ namespace TinyWindow
 
 	class windowManager
 	{
+		friend class tWindow;
 
-	public:
 
 		windowManager()
 		{
@@ -1263,54 +1229,57 @@ namespace TinyWindow
 					DefaultScreen(currentDisplay)));
 	#endif
 		}
+	public:
+		windowManager(const windowManager&) = delete;
+		windowManager& operator=(const windowManager&) = delete;
 
 		/**
 		 * Shutdown and delete all windows in the manager
 		 */
 		~windowManager()
 		{
-			assert(windowList.empty());
-			ShutDown();
-		}
+			windowList.clear();
 
-		/**
-		 * Use this to shutdown the window manager when your program is finished
-		 */
-		 void ShutDown()
-		 {
-			 assert(windowList.empty());
+			// some clever clog might start creating windows in destructors "just in case"
+			assert(windowList.empty());
+
 	#if defined(__linux__)
 			Linux_Shutdown();
 	#endif
-
-			for (unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
-			{
-				ShutdownWindow(windowList[windowIndex].get());
-			}
-			windowList.clear();
 		}
 
 		/**
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
-		tWindow* AddWindow(const char* windowName, vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-				int colourBits = 8, int depthBits = 8, int stencilBits = 8)
-		{
-			if (windowName != nullptr)
+		std::unique_ptr<tWindow> AddWindow(
+				const char* windowName,
+				vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
+				int colourBits = 8,
+				int depthBits = 8,
+				int stencilBits = 8
+		) {
+			if (windowName == nullptr)
+				return nullptr;
+
+			auto ptr = new tWindow(
+				*this,
+				windowName,
+				resolution,
+				colourBits,
+				depthBits,
+				stencilBits
+			);
+
+			// ICK ; this could be better
+
+			if (windowList.back())
 			{
-				std::unique_ptr<tWindow> newWindow(new tWindow);
-				newWindow->name = windowName;
-				newWindow->resolution = resolution;
-				newWindow->colorBits = colourBits;
-				newWindow->depthBits = depthBits;
-				newWindow->stencilBits = stencilBits;
-
-				windowList.push_back(std::move(newWindow));
-				Platform_InitializeWindow(windowList.back().get());
-
-				return windowList.back().get();
+				return std::unique_ptr<tWindow>(ptr);
 			}
-			//PrintErrorMessage(std::error_code(invalidWindowName));
+
+			// if back is nullptr then the window didn't setup correctly and has already deleted
+			windowList.pop_back();
+
 			return nullptr;
 		}
 
@@ -1370,24 +1339,40 @@ namespace TinyWindow
 		/**
 		* Ask the window manager to poll for events
 		*/
-		inline void PollForEvents()
+		inline void PollForEvents(const bool wait = false)
 		{
 	#if defined(TW_WINDOWS)
 			//only process events if there are any to process
-			while (PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
+			MSG		winMessage;
+
+			if (wait)
+				GetMessage(&winMessage, 0, 0, 0);
+
+			while (wait || PeekMessage(&winMessage, 0, 0, 0, PM_REMOVE))
 			{
 				//the only place I can see this being needed if someone called PostQuitMessage manually
 				TranslateMessage(&winMessage);
 				DispatchMessage(&winMessage);
 				if (winMessage.message == WM_QUIT)
 				{
-					ShutDown();
+					// I want to "shutdown" but there's not a lot I can do to force the issue
+					// ... who else has our windows?
+					// ... do you have our windows?
+					// ... what can I do about that?
+					// ... I'll mark all windows as closed and hope for the best
+					for (auto& window : windowList)
+					{
+						window->shouldClose = true;
+					}
 				}
+
+				if (wait)
+					return;
 			}
-			
+
 	#elif defined(TW_LINUX)
-			//if there are any events to process
-			if (XEventsQueued(currentDisplay, QueuedAfterReading))
+			// if there are any events to process or we're waiting for an event
+			if (wait || XEventsQueued(currentDisplay, QueuedAfterReading))
 			{
 				XNextEvent(currentDisplay, &currentEvent);
 				Linux_ProcessEvents(currentEvent);
@@ -1400,23 +1385,10 @@ namespace TinyWindow
 		*/
 		inline void WaitForEvents()
 		{
-	#if defined(TW_WINDOWS)
-			//process even if there aren't any to process
-			GetMessage(&winMessage, 0, 0, 0);
-			TranslateMessage(&winMessage);
-			DispatchMessage(&winMessage);
-			if (winMessage.message == WM_QUIT)
-			{
-				ShutDown();
-				return;
-			}
-	#elif defined(TW_LINUX)
-			//even if there aren't any events to process
-			XNextEvent(currentDisplay, &currentEvent);
-			Linux_ProcessEvents(currentEvent);
-	#endif
+			PollForEvents(true);
 		}
 
+#if 0
 		/**
 		* Remove window from the manager by name
 		*/
@@ -1429,7 +1401,7 @@ namespace TinyWindow
 			}
 			return TinyWindow::error_t::windowInvalid;
 		}
-
+#endif
 	private:
 
 		std::vector<std::unique_ptr<tWindow>>		windowList;
@@ -1437,10 +1409,10 @@ namespace TinyWindow
 		TinyWindow::vec2_t<unsigned int>			screenResolution;
 		TinyWindow::vec2_t<int>						screenMousePosition;
 
-		void Platform_InitializeWindow(tWindow* window)
+		bool Platform_InitializeWindow(tWindow* window)
 		{
 	#if defined(TW_WINDOWS)
-			Windows_InitializeWindow(window);
+			return Windows_InitializeWindow(window);
 	#elif defined(TW_LINUX)
 			Linux_InitializeWindow(window);
 	#endif
@@ -1449,19 +1421,7 @@ namespace TinyWindow
 		std::error_code Platform_InitializeGL(tWindow* window)
 		{
 	#if defined(TW_WINDOWS)
-			window->deviceContextHandle = GetDC(window->windowHandle);
-			InitializePixelFormat(window);
-			window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
-			wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
-
-			window->contextCreated = (window->glRenderingContextHandle != nullptr);
-
-			if (window->contextCreated)
-			{
-				return TinyWindow::error_t::success;
-			}
-
-			return TinyWindow::error_t::invalidContext;
+			assert(false && "This was inlaid");
 	#elif defined(TW_LINUX)
 				window->context = glXCreateContext(
 					currentDisplay,
@@ -1534,7 +1494,7 @@ namespace TinyWindow
 			window->context = 0;
 	#endif
 		}
-	
+
 #if defined(TW_WINDOWS)
 
 		enum keyLong_t
@@ -1554,7 +1514,6 @@ namespace TinyWindow
 			rightAltUp = 49464,
 		};
 
-		MSG		winMessage;
 		HDC		deviceContextHandle;
 
 		//the window procedure for all windows. This is used mainly to handle window events
@@ -1566,7 +1525,7 @@ namespace TinyWindow
 			{
 				window = manager->GetWindowByHandle(windowHandle);
 			}
-		
+
 			switch (winMessage)
 			{
 				case WM_DESTROY:
@@ -1661,42 +1620,42 @@ namespace TinyWindow
 
 				case WM_KEYDOWN:
 				{
-					unsigned int translatedKey = 0;
+					key_t translatedKey;
 
 					switch (HIWORD(longParam))
 					{
 						case leftControlDown:
 						{
-							window->keys[leftControl] = keyState_t::down;
-							translatedKey = leftControl;
+							window->keys[(unsigned int)key_t::leftControl] = keyState_t::down;
+							translatedKey = key_t::leftControl;
 							break;
 						}
 
 						case rightControlDown:
 						{
-							window->keys[rightControl] = keyState_t::down;
-							translatedKey = rightControl;
+							window->keys[(unsigned int)key_t::rightControl] = keyState_t::down;
+							translatedKey = key_t::rightControl;
 							break;
 						}
 
 						case leftShiftDown:
 						{
-							window->keys[leftShift] = keyState_t::down;
-							translatedKey = leftShift;
+							window->keys[(unsigned int)key_t::leftShift] = keyState_t::down;
+							translatedKey = key_t::leftShift;
 							break;
 						}
 
 						case rightShiftDown:
 						{
-							window->keys[rightShift] = keyState_t::down;
-							translatedKey = rightShift;
+							window->keys[(unsigned int)key_t::rightShift] = keyState_t::down;
+							translatedKey = key_t::rightShift;
 							break;
 						}
 
 						default:
 						{
-							translatedKey = Windows_TranslateKey(wordParam);
-							window->keys[translatedKey] = keyState_t::down;
+							translatedKey = (key_t)Windows_TranslateKey(wordParam);
+							window->keys[(unsigned int)translatedKey] = keyState_t::down;
 							break;
 						}
 					}
@@ -1710,42 +1669,42 @@ namespace TinyWindow
 
 				case WM_KEYUP:
 				{
-					unsigned int translatedKey = 0;
+					TinyWindow::key_t translatedKey ;
 
 					switch (HIWORD(longParam))
 					{
 						case leftControlUp:
 						{
-							window->keys[leftControl] = keyState_t::up;
-							translatedKey = leftControl;
+							window->keys[(unsigned int)TinyWindow::key_t::leftControl] = keyState_t::up;
+							translatedKey = TinyWindow::key_t::leftControl;
 							break;
 						}
 
 						case rightControlUp:
 						{
-							window->keys[rightControl] = keyState_t::up;
-							translatedKey = rightControl;
+							window->keys[(unsigned int)TinyWindow::key_t::rightControl] = keyState_t::up;
+							translatedKey = TinyWindow::key_t::rightControl;
 							break;
 						}
 
 						case leftShiftUp:
 						{
-							window->keys[leftShift] = keyState_t::up;
-							translatedKey = leftShift;
+							window->keys[(unsigned int)TinyWindow::key_t::leftShift] = keyState_t::up;
+							translatedKey = TinyWindow::key_t::leftShift;
 							break;
 						}
 
 						case rightShiftUp:
 						{
-							window->keys[rightShift] = keyState_t::up;
-							translatedKey = rightShift;
+							window->keys[(unsigned int)TinyWindow::key_t::rightShift] = keyState_t::up;
+							translatedKey = TinyWindow::key_t::rightShift;
 							break;
 						}
 
 						default:
 						{
-							translatedKey = Windows_TranslateKey(wordParam);
-							window->keys[translatedKey] = keyState_t::up;
+							translatedKey = (TinyWindow::key_t)Windows_TranslateKey(wordParam);
+							window->keys[(unsigned int)translatedKey] = keyState_t::up;
 							break;
 						}
 					}
@@ -1759,25 +1718,25 @@ namespace TinyWindow
 
 				case WM_SYSKEYDOWN:
 				{
-					unsigned int translatedKey = 0;
+					TinyWindow::key_t translatedKey ;
 					switch (HIWORD(longParam))
 					{
 						case leftAltDown:
 						{
-							window->keys[leftAlt] = keyState_t::down;
-							translatedKey = leftAlt;
+							window->keys[(unsigned int)TinyWindow::key_t::leftAlt] = keyState_t::down;
+							translatedKey = TinyWindow::key_t::leftAlt;
 							break;
 						}
 
 						case rightAltDown:
 						{
-							window->keys[rightAlt] = keyState_t::down;
-							translatedKey = rightAlt;
+							window->keys[(unsigned int)TinyWindow::key_t::rightAlt] = keyState_t::down;
+							translatedKey = TinyWindow::key_t::rightAlt;
 						}
 
 						default:
 						{
-							break;
+							return 0;
 						}
 					}
 
@@ -1791,27 +1750,27 @@ namespace TinyWindow
 
 				case WM_SYSKEYUP:
 				{
-					unsigned int translatedKey = 0;
+					TinyWindow::key_t translatedKey;
 					switch (HIWORD(longParam))
 					{
 						case leftAltUp:
 						{
-							window->keys[leftAlt] = keyState_t::up;
-							translatedKey = leftAlt;
+							window->keys[(unsigned int)TinyWindow::key_t::leftAlt] = keyState_t::up;
+							translatedKey = TinyWindow::key_t::leftAlt;
 							break;
 						}
 
 
 						case rightAltUp:
 						{
-							window->keys[rightAlt] = keyState_t::up;
-							translatedKey = rightAlt;
+							window->keys[(unsigned int)TinyWindow::key_t::rightAlt] = keyState_t::up;
+							translatedKey = TinyWindow::key_t::rightAlt;
 							break;
 						}
 
 						default:
 						{
-							break;
+							return 0;
 						}
 					}
 
@@ -2004,7 +1963,7 @@ namespace TinyWindow
 		}
 
 		//initialize the given window using Win32
-		void Windows_InitializeWindow(tWindow* window,
+		bool Windows_InitializeWindow(tWindow* window,
 			UINT style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DROPSHADOW,
 			int clearScreenExtra = 0, int windowExtra = 0,
 			HINSTANCE winInstance = GetModuleHandle(0),
@@ -2035,12 +1994,26 @@ namespace TinyWindow
 
 			//if TW_USE_VULKAN is defined then stop TinyWindow from creating an OpenGL context since it will conflict with a vulkan context
 #if !defined(TW_USE_VULKAN)
-			Platform_InitializeGL(window);
+			{
+				window->deviceContextHandle = GetDC(window->windowHandle);
+				InitializePixelFormat(window);
+				window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
+				wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
+
+				window->contextCreated = (window->glRenderingContextHandle != nullptr);
+
+				if (!(window->contextCreated))
+				{
+					return false;
+				}
+			}
 #endif
 			ShowWindow(window->windowHandle, true);
 			UpdateWindow(window->windowHandle);
 
 			window->SetStyle(style_t::normal);
+
+			return true;
 		}
 
 		//initialize the pixel format for the selected window
@@ -2078,7 +2051,7 @@ namespace TinyWindow
 			}
 			return;
 		}
-	
+
 		void Windows_Shutown()
 		{
 
@@ -2102,260 +2075,260 @@ namespace TinyWindow
 			setvbuf(stdout, nullptr, _IONBF, 0);
 		}
 
-		static unsigned int Windows_TranslateKey(WPARAM wordParam)
+		static TinyWindow::key_t Windows_TranslateKey(WPARAM wordParam)
 		{
 			switch (wordParam)
 			{
 				case VK_ESCAPE:
 				{
-					return escape;
+					return TinyWindow::key_t::escape;
 				}
 
 				case VK_SPACE:
 				{
-					return spacebar;
+					return TinyWindow::key_t::spacebar;
 				}
-			   
+
 				case VK_F1:
 				{
-					return F1;
+					return TinyWindow::key_t::F1;
 				}
 
 				case VK_F2:
 				{
-					return F2;
+					return TinyWindow::key_t::F2;
 				}
 
 				case VK_F3:
 				{
-					return F3;
+					return TinyWindow::key_t::F3;
 				}
 
 				case VK_F4:
 				{
-					return F4;
+					return TinyWindow::key_t::F4;
 				}
 
 				case VK_F5:
 				{
-					return F5;
+					return TinyWindow::key_t::F5;
 				}
 
 				case VK_F6:
 				{
-					return F6;
+					return TinyWindow::key_t::F6;
 				}
 
 				case VK_F7:
 				{
-					return F7;
+					return TinyWindow::key_t::F7;
 				}
 
 				case VK_F8:
 				{
-					return F8;
+					return TinyWindow::key_t::F8;
 				}
 
 				case VK_F9:
 				{
-					return F9;
+					return TinyWindow::key_t::F9;
 				}
 
 				case VK_F10:
 				{
-					return F10;
+					return TinyWindow::key_t::F10;
 				}
 
 				case VK_F11:
 				{
-					return F11;
+					return TinyWindow::key_t::F11;
 				}
 
 				case VK_F12:
 				{
-					return F12;
+					return TinyWindow::key_t::F12;
 				}
 
 				case VK_BACK:
 				{
-					return backspace;
+					return TinyWindow::key_t::backspace;
 				}
 
 				case VK_TAB:
 				{
-					return tab;
+					return TinyWindow::key_t::tab;
 				}
 
 				case VK_CAPITAL:
 				{
-					return capsLock;
+					return TinyWindow::key_t::capsLock;
 				}
 
 				case VK_RETURN:
 				{
-					return enter;
+					return TinyWindow::key_t::enter;
 				}
 
 				case VK_PRINT:
 				{
-					return printScreen;
+					return TinyWindow::key_t::printScreen;
 				}
 
 				case VK_SCROLL:
 				{
-					return scrollLock;
+					return TinyWindow::key_t::scrollLock;
 				}
 
 				case VK_PAUSE:
 				{
-					return pause;
+					return TinyWindow::key_t::pause;
 				}
 
 				case VK_INSERT:
 				{
-					return insert;
+					return TinyWindow::key_t::insert;
 				}
 
 				case VK_HOME:
 				{
-					return home;
+					return TinyWindow::key_t::home;
 				}
 
 				case VK_DELETE:
 				{
-					return del;
+					return TinyWindow::key_t::del;
 				}
 
 				case VK_END:
 				{
-					return end;
+					return TinyWindow::key_t::end;
 				}
 
 				case VK_PRIOR:
 				{
-					return pageUp;
+					return TinyWindow::key_t::pageUp;
 				}
 
 				case VK_NEXT:
 				{
-					return pageDown;
+					return TinyWindow::key_t::pageDown;
 				}
 
 				case VK_DOWN:
 				{
-					return arrowDown;
+					return TinyWindow::key_t::arrowDown;
 				}
 
 				case VK_UP:
 				{
-					return arrowUp;
+					return TinyWindow::key_t::arrowUp;
 				}
 
 				case VK_LEFT:
 				{
-					return arrowLeft;
+					return TinyWindow::key_t::arrowLeft;
 				}
 
 				case VK_RIGHT:
 				{
-					return arrowRight;
+					return TinyWindow::key_t::arrowRight;
 				}
 
 				case VK_DIVIDE:
 				{
-					return keypadDivide;
+					return TinyWindow::key_t::keypadDivide;
 				}
 
 				case VK_MULTIPLY:
 				{
-					return keypadMultiply;
+					return TinyWindow::key_t::keypadMultiply;
 				}
 
 				case VK_SUBTRACT:
 				{
-					return keypadDivide;
+					return TinyWindow::key_t::keypadDivide;
 				}
 
 				case VK_ADD:
 				{
-					return keypadAdd;
+					return TinyWindow::key_t::keypadAdd;
 				}
 
 				case VK_DECIMAL:
 				{
-					return keypadPeriod;
+					return TinyWindow::key_t::keypadPeriod;
 				}
 
 				case VK_NUMPAD0:
 				{
-					return keypad0;
+					return TinyWindow::key_t::keypad0;
 				}
 
 				case VK_NUMPAD1:
 				{
-					return keypad1;
+					return TinyWindow::key_t::keypad1;
 				}
 
 				case VK_NUMPAD2:
 				{
-					return keypad2;
+					return TinyWindow::key_t::keypad2;
 				}
 
 				case VK_NUMPAD3:
 				{
-					return keypad3;
+					return TinyWindow::key_t::keypad3;
 				}
 
 				case VK_NUMPAD4:
 				{
-					return keypad4;
+					return TinyWindow::key_t::keypad4;
 				}
 
 				case VK_NUMPAD5:
 				{
-					return keypad5;
+					return TinyWindow::key_t::keypad5;
 				}
 
 				case VK_NUMPAD6:
 				{
-					return keypad6;
+					return TinyWindow::key_t::keypad6;
 				}
 
 				case VK_NUMPAD7:
 				{
-					return keypad7;
+					return TinyWindow::key_t::keypad7;
 				}
 
 				case VK_NUMPAD8:
 				{
-					return keypad8;
+					return TinyWindow::key_t::keypad8;
 				}
 
 				case VK_NUMPAD9:
 				{
-					return keypad9;
+					return TinyWindow::key_t::keypad9;
 				}
 
 				case VK_LWIN:
 				{
-					return leftWindow;
+					return TinyWindow::key_t::leftWindow;
 				}
 
 				case VK_RWIN:
 				{
-					return rightWindow;
+					return TinyWindow::key_t::rightWindow;
 				}
 
 				default:
 				{
-					return (unsigned int)wordParam;
+					return (TinyWindow::key_t)wordParam;
 				}
 			}
 		}
 
 		static void Windows_SetWindowIcon(tWindow* window, const char* icon, unsigned int width, unsigned int height)
 		{
-			SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG, 
+			SendMessage(window->windowHandle, (UINT)WM_SETICON, ICON_BIG,
 				(LPARAM)LoadImage(window->instanceHandle, icon, IMAGE_ICON, (int)width, (int)height, LR_LOADFROMFILE));
 		}
 
@@ -2383,7 +2356,7 @@ namespace TinyWindow
 				case Expose:
 				{
 					return GetWindowByHandle(currentEvent.xexpose.window);
-				}	
+				}
 
 				case DestroyNotify:
 				{
@@ -2393,7 +2366,7 @@ namespace TinyWindow
 				case CreateNotify:
 				{
 					return GetWindowByHandle(currentEvent.xcreatewindow.window);
-				}	
+				}
 
 				case KeyPress:
 				{
@@ -2418,7 +2391,7 @@ namespace TinyWindow
 				case MotionNotify:
 				{
 					return GetWindowByHandle(currentEvent.xmotion.window);
-				}	
+				}
 
 				case FocusIn:
 				{
@@ -2458,7 +2431,7 @@ namespace TinyWindow
 				case VisibilityNotify:
 				{
 					return GetWindowByHandle(currentEvent.xvisibility.window);
-				}	
+				}
 
 				default:
 				{
@@ -2466,14 +2439,14 @@ namespace TinyWindow
 				}
 			}
 		}
-	
+
 		std::error_code Linux_InitializeWindow(tWindow* window)
 		{
 			window->attributes = new int[ 5]{
 				GLX_RGBA,
-				GLX_DOUBLEBUFFER, 
-				GLX_DEPTH_SIZE, 
-				window->depthBits, 
+				GLX_DOUBLEBUFFER,
+				GLX_DEPTH_SIZE,
+				window->depthBits,
 				None};
 
 			window->linuxDecorators = 1;
@@ -2484,7 +2457,7 @@ namespace TinyWindow
 				return TinyWindow::error_t::linuxCannotConnectXServer;
 			}
 
-			//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window)); 
+			//window->VisualInfo = glXGetVisualFromFBConfig(GetDisplay(), GetBestFrameBufferConfig(window));
 
 			window->visualInfo = glXChooseVisual(currentDisplay, 0, window->attributes);
 
@@ -2497,12 +2470,12 @@ namespace TinyWindow
 				DefaultRootWindow(currentDisplay),
 				window->visualInfo->visual, AllocNone);
 
-			window->setAttributes.event_mask = ExposureMask | KeyPressMask 
+			window->setAttributes.event_mask = ExposureMask | KeyPressMask
 				| KeyReleaseMask | MotionNotify | ButtonPressMask | ButtonReleaseMask
-				| FocusIn | FocusOut | Button1MotionMask | Button2MotionMask | Button3MotionMask | 
+				| FocusIn | FocusOut | Button1MotionMask | Button2MotionMask | Button3MotionMask |
 				Button4MotionMask | Button5MotionMask | PointerMotionMask | FocusChangeMask
 				| VisibilityChangeMask | PropertyChangeMask | SubstructureNotifyMask;
-		
+
 			window->windowHandle = XCreateWindow(currentDisplay,
 				XDefaultRootWindow(currentDisplay), 0, 0,
 				window->resolution.width, window->resolution.height,
@@ -2520,17 +2493,17 @@ namespace TinyWindow
 			XStoreName(currentDisplay, window->windowHandle,
 				window->name);
 
-			XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);	
+			XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);
 
 			window->currentDisplay = currentDisplay;
 			Platform_InitializeGL(window);
-			
+
 			return TinyWindow::error_t::success;
 		}
 
 		void Linux_ShutdownWindow(tWindow* window)
 		{
-			XDestroyWindow(currentDisplay, window->windowHandle);	
+			XDestroyWindow(currentDisplay, window->windowHandle);
 		}
 
 		void Linux_Shutdown()
@@ -2547,7 +2520,7 @@ namespace TinyWindow
 		{
 			tWindow* window = GetWindowByEvent(currentEvent);
 
-			switch (currentEvent.type)	
+			switch (currentEvent.type)
 			{
 				case Expose:
 				{
@@ -2583,7 +2556,7 @@ namespace TinyWindow
 					unsigned int functionKeysym = XkbKeycodeToKeysym(
 						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-						unsigned int translatedKey = Linux_TranslateKey(functionKeysym); 
+						unsigned int translatedKey = Linux_TranslateKey(functionKeysym);
 						window->keys[ translatedKey] = keyState_t::down;
 						if (window->keyEvent != nullptr)
 						{
@@ -2606,7 +2579,7 @@ namespace TinyWindow
 							nextEvent.xkey.keycode == currentEvent.xkey.keycode)
 						{
 							unsigned int functionKeysym = XkbKeycodeToKeysym(
-								currentDisplay, currentEvent.xkey.keycode, 0, 
+								currentDisplay, currentEvent.xkey.keycode, 0,
 								currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
 							XNextEvent(currentDisplay, &currentEvent);
@@ -2620,7 +2593,7 @@ namespace TinyWindow
 						unsigned int functionKeysym = XkbKeycodeToKeysym(
 						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-						unsigned int translatedKey = Linux_TranslateKey(functionKeysym); 
+						unsigned int translatedKey = Linux_TranslateKey(functionKeysym);
 						window->keys[ translatedKey] = keyState_t::up;
 						if (window->keyEvent != nullptr)
 						{
@@ -2692,7 +2665,7 @@ namespace TinyWindow
 
 					default:
 					{
-						//need to add more mouse buttons 
+						//need to add more mouse buttons
 						break;
 					}
 					}
@@ -2810,7 +2783,7 @@ namespace TinyWindow
 					break;
 				}
 
-				//when a request to resize the window is made either by 
+				//when a request to resize the window is made either by
 				//dragging out the window or programmatically
 				case ResizeRequest:
 				{
@@ -2868,9 +2841,9 @@ namespace TinyWindow
 				{
 					//this is needed in order to read from the windows WM_STATE Atomic
 					//to determine if the property notify event was caused by a client
-					//iconify event(minimizing the window), a maximise event, a focus 
-					//event and an attention demand event. NOTE these should only be 
-					//for eventts that are not triggered programatically 
+					//iconify event(minimizing the window), a maximise event, a focus
+					//event and an attention demand event. NOTE these should only be
+					//for eventts that are not triggered programatically
 
 					Atom type;
 					int format;
@@ -2895,7 +2868,7 @@ namespace TinyWindow
 								//window was minimized
 								if (window->minimizedEvent != nullptr)
 								{
-									//if the minimized callback for the window was set							
+									//if the minimized callback for the window was set
 									window->minimizedEvent();
 								}
 							}
@@ -2949,7 +2922,7 @@ namespace TinyWindow
 						{
 							window->destroyedEvent();
 						}
-						break;	
+						break;
 					}
 
 					//check if full screen
@@ -2958,7 +2931,7 @@ namespace TinyWindow
 						break;
 					}
 					break;
-	
+
 				}
 
 				default:
@@ -3144,7 +3117,7 @@ namespace TinyWindow
 			{
 				return spacebar;
 			}
-			   
+
 			case XK_Home:
 			{
 				return home;
@@ -3431,9 +3404,60 @@ namespace TinyWindow
 
 			return BestConfig;
 		}
-
 #endif
+	public:
+		template<typename M>
+		static std::unique_ptr<TinyWindow::windowManager> New(void)
+		{
+			return std::unique_ptr<TinyWindow::windowManager>(new TinyWindow::windowManager());
+		}
 	};
+}
+
+inline
+TinyWindow::tWindow::tWindow
+	(
+		TinyWindow::windowManager& mmanager,
+		const char* name,
+		vec2_t<unsigned int>& resolution,
+		unsigned int colorBits,
+		unsigned int depthBits,
+		unsigned int stencilBits
+	) :
+	manager(mmanager)
+{
+	this->name = name;
+	this->resolution = resolution;
+	this->colorBits = colorBits;
+	this->depthBits = depthBits;
+	this->stencilBits = stencilBits;
+
+	this->shouldClose = false;
+	this->currentState = state_t::normal;
+
+	this->keyEvent = nullptr;
+	this->mouseButtonEvent = nullptr;
+	this->mouseWheelEvent = nullptr;
+	this->destroyedEvent = nullptr;
+	this->maximizedEvent = nullptr;
+	this->minimizedEvent = nullptr;
+	this->focusEvent = nullptr;
+	this->movedEvent = nullptr;
+	this->resizeEvent = nullptr;
+	this->mouseMoveEvent = nullptr;
+
+	initialized = false;
+	contextCreated = false;
+	currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
+
+#if defined(__linux__)
+	context = 0;
+#endif
+	manager.windowList.emplace_back(this);
+	if (!manager.Platform_InitializeWindow(this))
+	{
+		manager.windowList.back().release();
+	}
 }
 
 #endif
