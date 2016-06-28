@@ -1,15 +1,23 @@
 #include "TinyWindow.h"
 
 using namespace TinyWindow;
-void HandleKeyPresses(unsigned int key, keyState_t keyState)
+
+bool spacePressed = false;
+void HandleKeyPresses(tWindow* window, unsigned int key, keyState_t keyState)
 {
 	if(keyState == keyState_t::down && key == spacebar)
 	{
 		printf("spacebar has been pressed \n");
+		spacePressed = true;
+	}
+
+	else if (keyState == keyState_t::up && key == spacebar)
+	{
+		spacePressed = false;
 	}
 }
 
-void HandleMouseWheel(mouseScroll_t mouseScrollDirection)
+void HandleMouseWheel(tWindow* window, mouseScroll_t mouseScrollDirection)
 {
 	switch (mouseScrollDirection)
 	{
@@ -38,6 +46,11 @@ int main()
 	while (!window->shouldClose)
 	{
 		manager->PollForEvents();
+
+		if (spacePressed)
+		{
+			window->ToggleFullscreen(0);
+		}
 
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
