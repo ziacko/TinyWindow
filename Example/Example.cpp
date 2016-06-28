@@ -34,10 +34,21 @@ int main()
 
 	window->keyEvent = HandleKeyPresses;
 	window->mouseWheelEvent = HandleMouseWheel;
+
+	// done as a lambda so that we keep access to manager
+	window->mouseButtonEvent = [&](TinyWindow::mouseButton_t mouseButton, buttonState_t buttonState)
+	{
+		if (TinyWindow::mouseButton_t::left == mouseButton && TinyWindow::buttonState_t::down == buttonState)
+		{
+			printf("time %lf\n", manager->GetTime());
+		}
+	};
+
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
 	{
 		manager->PollForEvents();
+
 
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
