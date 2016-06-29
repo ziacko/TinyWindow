@@ -31,6 +31,7 @@ int main()
 {
 	std::unique_ptr<windowManager> manager = TinyWindow::windowManager::New();
 
+	
 	std::unique_ptr<tWindow> window = manager->AddWindow("Example");
 
 	window->keyEvent = HandleKeyPresses;
@@ -44,7 +45,7 @@ int main()
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+	
 
-	window.release();
 	return 0;
 }
