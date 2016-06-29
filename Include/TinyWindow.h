@@ -11,7 +11,11 @@
 //for gamepad support
 #pragma comment (lib, "winmm.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#	if _DEBUG
+#		pragma comment(linker, "/subsystem:CONSOLE /ENTRY:mainCRTStartup")
+#	else
+#		pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#	endif
 #endif //_MSC_VER
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -1199,7 +1203,6 @@ namespace TinyWindow
 		windowManager()
 		{
 	#if defined(TW_WINDOWS)
-			CreateTerminal(); //feel free to comment this out
 			RECT desktop;
 
 			HWND desktopHandle = GetDesktopWindow();
@@ -2055,24 +2058,6 @@ namespace TinyWindow
 		void Windows_Shutown()
 		{
 
-		}
-
-		void CreateTerminal()
-		{
-			int conHandle;
-			long stdHandle;
-			FILE* fp;
-
-			// allocate a console for this app
-			AllocConsole();
-
-			// redirect unbuffered STDOUT to the console
-			stdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
-			conHandle = _open_osfhandle(stdHandle, _O_TEXT);
-			fp = _fdopen(conHandle, "w");
-			*stdout = *fp;
-
-			setvbuf(stdout, nullptr, _IONBF, 0);
 		}
 
 		static TinyWindow::key_t Windows_TranslateKey(WPARAM wordParam)
