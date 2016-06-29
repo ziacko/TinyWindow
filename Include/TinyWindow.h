@@ -1,7 +1,6 @@
 //created by Ziyad Barakat 2014 - 2016
 
-#ifndef TINYWINDOW_H
-#define TINYWINDOW_H
+#pragma once
 
 #if defined(_WIN32) || defined(_WIN64)
 #define TW_WINDOWS
@@ -197,13 +196,13 @@ namespace TinyWindow
 
 	enum decorator_t
 	{
-		titleBar =			1L << 1,			/**< The title bar decoration of the window */
-		icon =				1L << 2,			/**< The icon decoration of the window */
-		border =			1L << 3,			/**< The border decoration of the window */
-		minimizeButton =	1L << 4,			/**< The minimize button decoration of the window */
-		maximizeButton =	1L << 5,			/**< The maximize button decoration pf the window */
-		closeButton =		1L << 6,			/**< The close button decoration of the window */
-		sizeableBorder =	1L << 7,			/**< The sizable border decoration of the window */
+		titleBar = 1L << 1,			/**< The title bar decoration of the window */
+		icon = 1L << 2,			/**< The icon decoration of the window */
+		border = 1L << 3,			/**< The border decoration of the window */
+		minimizeButton = 1L << 4,			/**< The minimize button decoration of the window */
+		maximizeButton = 1L << 5,			/**< The maximize button decoration pf the window */
+		closeButton = 1L << 6,			/**< The close button decoration of the window */
+		sizeableBorder = 1L << 7,			/**< The sizable border decoration of the window */
 	};
 
 	enum class style_t
@@ -267,115 +266,115 @@ namespace TinyWindow
 			error_t err = (error_t)errorValue;
 			switch (err)
 			{
-				case error_t::invalidWindowName:
-				{
-					return "Error: invalid window name \n";
-				}
+			case error_t::invalidWindowName:
+			{
+				return "Error: invalid window name \n";
+			}
 
-				case error_t::invalidIconPath:
-				{
-					return "Error: invalid icon path \n";
-				}
+			case error_t::invalidIconPath:
+			{
+				return "Error: invalid icon path \n";
+			}
 
-				case error_t::invalidWindowIndex:
-				{
-					return "Error: invalid window index \n";
-				}
+			case error_t::invalidWindowIndex:
+			{
+				return "Error: invalid window index \n";
+			}
 
-				case error_t::invalidWindowState:
-				{
-					return "Error: invalid window state \n";
-				}
+			case error_t::invalidWindowState:
+			{
+				return "Error: invalid window state \n";
+			}
 
-				case error_t::invalidResolution:
-				{
-					return "Error: invalid resolution \n";
-				}
+			case error_t::invalidResolution:
+			{
+				return "Error: invalid resolution \n";
+			}
 
-				case error_t::invalidContext:
-				{
-					return "Error: Failed to create OpenGL context \n";
-				}
+			case error_t::invalidContext:
+			{
+				return "Error: Failed to create OpenGL context \n";
+			}
 
-				case error_t::existingContext:
-				{
-					return "Error: context already created \n";
-				}
+			case error_t::existingContext:
+			{
+				return "Error: context already created \n";
+			}
 
-				case error_t::notInitialized:
-				{
-					return "Error: Window manager not initialized \n";
-				}
+			case error_t::notInitialized:
+			{
+				return "Error: Window manager not initialized \n";
+			}
 
-				case error_t::alreadyInitialized:
-				{
-					return "Error: window has already been initialized \n";
-				}
+			case error_t::alreadyInitialized:
+			{
+				return "Error: window has already been initialized \n";
+			}
 
-				case error_t::invalidTitlebar:
-				{
-					return "Error: invalid title bar name (cannot be null or nullptr) \n";
-				}
+			case error_t::invalidTitlebar:
+			{
+				return "Error: invalid title bar name (cannot be null or nullptr) \n";
+			}
 
-				case error_t::invalidCallback:
-				{
-					return "Error: invalid event callback given \n";
-				}
+			case error_t::invalidCallback:
+			{
+				return "Error: invalid event callback given \n";
+			}
 
-				case error_t::windowInvalid:
-				{
-					return "Error: window was not found \n";
-				}
+			case error_t::windowInvalid:
+			{
+				return "Error: window was not found \n";
+			}
 
-				case error_t::invalidWindowStyle:
-				{
-					return "Error: invalid window style given \n";
-				}
+			case error_t::invalidWindowStyle:
+			{
+				return "Error: invalid window style given \n";
+			}
 
-				case error_t::functionNotImplemented:
-				{
-					return "Error: I'm sorry but this function has not been implemented yet :(\n";
-				}
+			case error_t::functionNotImplemented:
+			{
+				return "Error: I'm sorry but this function has not been implemented yet :(\n";
+			}
 
-				case error_t::linuxCannotConnectXServer:
-				{
-					return "Error: cannot connect to X server \n";
-				}
+			case error_t::linuxCannotConnectXServer:
+			{
+				return "Error: cannot connect to X server \n";
+			}
 
-				case error_t::linuxInvalidVisualinfo:
-				{
-					return "Error: Invalid visual information given \n";
-				}
+			case error_t::linuxInvalidVisualinfo:
+			{
+				return "Error: Invalid visual information given \n";
+			}
 
-				case error_t::linuxCannotCreateWindow:
-				{
-					return "Error: failed to create window \n";
-				}
+			case error_t::linuxCannotCreateWindow:
+			{
+				return "Error: failed to create window \n";
+			}
 
-				case error_t::linuxFunctionNotImplemented:
-				{
-					return "Error: function not implemented on Linux platform yet. sorry :(\n";
-				}
+			case error_t::linuxFunctionNotImplemented:
+			{
+				return "Error: function not implemented on Linux platform yet. sorry :(\n";
+			}
 
-				case error_t::windowsCannotCreateWindows:
-				{
-					return "Error: failed to create window \n";
-				}
+			case error_t::windowsCannotCreateWindows:
+			{
+				return "Error: failed to create window \n";
+			}
 
-				case error_t::windowsFunctionNotImplemented:
-				{
-					return "Error: function not implemented on Windows platform yet. sorry ;(\n";
-				}
+			case error_t::windowsFunctionNotImplemented:
+			{
+				return "Error: function not implemented on Windows platform yet. sorry ;(\n";
+			}
 
-				case error_t::success:
-				{
-					return "function call was successful \n";
-				}
+			case error_t::success:
+			{
+				return "function call was successful \n";
+			}
 
-				default:
-				{
-					return "Error: unspecified Error \n";
-				}
+			default:
+			{
+				return "Error: unspecified Error \n";
+			}
 			}
 		}
 
@@ -397,7 +396,7 @@ namespace TinyWindow
 //ugh I hate this hack
 namespace std
 {
-	template<> struct is_error_code_enum<TinyWindow::error_t> : std::true_type {};
+	template<> struct is_error_code_enum<TinyWindow::error_t> : std::true_type{};
 };
 
 namespace TinyWindow
@@ -409,10 +408,13 @@ namespace TinyWindow
 	public:
 
 		windowManager&							manager;
-		const char*								name;													/**< Name of the window */
-		int										colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
-		int										depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
-		int										stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
+
+	private:
+		const std::string						name;													/**< Name of the window */
+	public:
+		const int								colorBits;												/**< Color format of the window. (defaults to 32 bit color) */
+		const int								depthBits;												/**< Size of the Depth buffer. (defaults to 8 bit depth) */
+		const int								stencilBits;											/**< Size of the stencil buffer, (defaults to 8 bit) */
 		keyState_t								keys[(unsigned int)key_t::last];						/**< Record of keys that are either pressed or released in the respective window */
 		buttonState_t							mouseButton[(unsigned int)mouseButton_t::last];			/**< Record of mouse buttons that are either presses or released */
 		TinyWindow::vec2_t<unsigned int>		resolution;												/**< Resolution/Size of the window stored in an array */
@@ -465,7 +467,7 @@ namespace TinyWindow
 		unsigned int					linuxDecorators;										/**< Enabled window decorators */
 		Display*						currentDisplay;											/**< Handle to the X11 window */
 
-																		/* these atoms are needed to change window states via the extended window manager*/
+		/* these atoms are needed to change window states via the extended window manager*/
 		Atom							AtomState;						/**< Atom for the state of the window */							// _NET_WM_STATE
 		Atom							AtomHidden;						/**< Atom for the current hidden state of the window */				// _NET_WM_STATE_HIDDEN
 		Atom							AtomFullScreen;					/**< Atom for the full screen state of the window */				// _NET_WM_STATE_FULLSCREEN
@@ -550,6 +552,8 @@ namespace TinyWindow
 			unsigned int colorBits,
 			unsigned int depthBits,
 			unsigned int stencilBits);
+
+		~tWindow(void);
 
 		/**
 		* Set the Size/Resolution of the given window
@@ -668,8 +672,7 @@ namespace TinyWindow
 #if defined(TW_WINDOWS)
 				ShowWindow(windowHandle, SW_MINIMIZE);
 #elif defined(TW_LINUX)
-				XIconifyWindow(currentDisplay,
-					windowHandle, 0);
+				XIconifyWindow(currentDisplay, windowHandle, 0);
 #endif
 			}
 
@@ -1061,11 +1064,9 @@ namespace TinyWindow
 				currentStyle &= ~WS_SIZEBOX;
 			}
 
-			SetWindowLongPtr(windowHandle, GWL_STYLE,
-				currentStyle | WS_VISIBLE);
+			SetWindowLongPtr(windowHandle, GWL_STYLE, currentStyle | WS_VISIBLE);
 
-			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
-				resolution.width, resolution.height, SWP_FRAMECHANGED);
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y, resolution.width, resolution.height, SWP_FRAMECHANGED);
 #elif defined(TW_LINUX)
 			if (decorators & closeButton)
 			{
@@ -1199,10 +1200,9 @@ namespace TinyWindow
 	{
 		friend class tWindow;
 
-
 		windowManager()
 		{
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			RECT desktop;
 
 			HWND desktopHandle = GetDesktopWindow();
@@ -1215,7 +1215,7 @@ namespace TinyWindow
 				screenResolution.y = desktop.bottom;
 				return;
 			}
-	#elif defined(TW_LINUX)
+#elif defined(TW_LINUX)
 			currentDisplay = XOpenDisplay(0);
 
 			if (!currentDisplay)
@@ -1225,12 +1225,12 @@ namespace TinyWindow
 
 			screenResolution.x = WidthOfScreen(
 				XScreenOfDisplay(currentDisplay,
-					DefaultScreen(currentDisplay)));
+				DefaultScreen(currentDisplay)));
 
 			screenResolution.y = HeightOfScreen(
 				XScreenOfDisplay(currentDisplay,
-					DefaultScreen(currentDisplay)));
-	#endif
+				DefaultScreen(currentDisplay)));
+#endif
 		}
 	public:
 		windowManager(const windowManager&) = delete;
@@ -1246,21 +1246,21 @@ namespace TinyWindow
 			// some clever clog might start creating windows in destructors "just in case"
 			assert(windowList.empty());
 
-	#if defined(__linux__)
+#if defined(__linux__)
 			Linux_Shutdown();
-	#endif
+#endif
 		}
 
 		/**
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
 		std::unique_ptr<tWindow> AddWindow(
-				const char* windowName,
-				vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-				int colourBits = 8,
-				int depthBits = 8,
-				int stencilBits = 8
-		) {
+			const char* windowName,
+			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
+			int colourBits = 8,
+			int depthBits = 8,
+			int stencilBits = 8
+			) {
 			if (windowName == nullptr)
 				return nullptr;
 
@@ -1271,7 +1271,7 @@ namespace TinyWindow
 				colourBits,
 				depthBits,
 				stencilBits
-			);
+				);
 
 			// ICK ; this could be better
 
@@ -1284,14 +1284,6 @@ namespace TinyWindow
 			windowList.pop_back();
 
 			return nullptr;
-		}
-
-		/**
-		 * Return the total amount of windows the manager has
-		 */
-		int GetNumWindows()
-		{
-			return (int)windowList.size();
 		}
 
 		/**
@@ -1310,15 +1302,15 @@ namespace TinyWindow
 			screenMousePosition.x = mousePosition.x;
 			screenMousePosition.y = mousePosition.y;
 
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			SetCursorPos(screenMousePosition.y, screenMousePosition.y);
-	#elif defined(TW_LINUX)
+#elif defined(TW_LINUX)
 			XWarpPointer(currentDisplay, None,
 				XDefaultRootWindow(currentDisplay), 0, 0,
 				screenResolution.x,
 				screenResolution.y,
 				screenMousePosition.x, screenMousePosition.y);
-	#endif
+#endif
 		}
 
 		/**
@@ -1326,16 +1318,16 @@ namespace TinyWindow
 		*/
 		TinyWindow::vec2_t<unsigned int> GetScreenResolution()
 		{
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			RECT screen;
 			HWND desktop = GetDesktopWindow();
 			GetWindowRect(desktop, &screen);
 			screenResolution.width = screen.right;
 			screenResolution.height = screen.bottom;
-	#elif defined(TW_LINUX)
+#elif defined(TW_LINUX)
 			screenResolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
 			screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-	#endif
+#endif
 			return screenResolution;
 		}
 
@@ -1344,7 +1336,7 @@ namespace TinyWindow
 		*/
 		inline void PollForEvents(const bool wait = false)
 		{
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			//only process events if there are any to process
 			MSG		winMessage;
 
@@ -1373,14 +1365,14 @@ namespace TinyWindow
 					return;
 			}
 
-	#elif defined(TW_LINUX)
+#elif defined(TW_LINUX)
 			// if there are any events to process or we're waiting for an event
 			if (wait || XEventsQueued(currentDisplay, QueuedAfterReading))
 			{
 				XNextEvent(currentDisplay, &currentEvent);
 				Linux_ProcessEvents(currentEvent);
 			}
-	#endif
+#endif
 		}
 
 		/**
@@ -1414,88 +1406,43 @@ namespace TinyWindow
 
 		bool Platform_InitializeWindow(tWindow* window)
 		{
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			return Windows_InitializeWindow(window);
-	#elif defined(TW_LINUX)
+#elif defined(TW_LINUX)
 			Linux_InitializeWindow(window);
-	#endif
+#endif
 		}
 
 		std::error_code Platform_InitializeGL(tWindow* window)
 		{
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			assert(false && "This was inlaid");
-	#elif defined(TW_LINUX)
-				window->context = glXCreateContext(
-					currentDisplay,
-					window->visualInfo,
-					0,
-					true);
+#elif defined(TW_LINUX)
+			window->context = glXCreateContext(
+				currentDisplay,
+				window->visualInfo,
+				0,
+				true);
 
-				if (window->context)
-				{
-					glXMakeCurrent(currentDisplay,
-						window->windowHandle,
-						window->context);
-
-					XWindowAttributes l_Attributes;
-
-					XGetWindowAttributes(currentDisplay,
-						window->windowHandle, &l_Attributes);
-					window->position.x = l_Attributes.x;
-					window->position.y = l_Attributes.y;
-
-					window->contextCreated = true;
-					window->InitializeAtoms();
-					return TinyWindow::error_t::success;
-				}
-				return TinyWindow::error_t::linuxCannotConnectXServer;
-	#endif
-		}
-
-		void ShutdownWindow(tWindow* window)
-		{
-	#if defined(TW_WINDOWS)
-			window->shouldClose = true;
-			if (window->glRenderingContextHandle)
+			if (window->context)
 			{
-				wglMakeCurrent(nullptr, nullptr);
-				wglDeleteContext(window->glRenderingContextHandle);
+				glXMakeCurrent(currentDisplay,
+					window->windowHandle,
+					window->context);
+
+				XWindowAttributes l_Attributes;
+
+				XGetWindowAttributes(currentDisplay,
+					window->windowHandle, &l_Attributes);
+				window->position.x = l_Attributes.x;
+				window->position.y = l_Attributes.y;
+
+				window->contextCreated = true;
+				window->InitializeAtoms();
+				return TinyWindow::error_t::success;
 			}
-
-			if (window->paletteHandle)
-			{
-				DeleteObject(window->paletteHandle);
-			}
-			ReleaseDC(window->windowHandle, window->deviceContextHandle);
-			UnregisterClass(window->name, window->instanceHandle);
-
-			FreeModule(window->instanceHandle);
-
-			window->deviceContextHandle = nullptr;
-			window->windowHandle = nullptr;
-			window->glRenderingContextHandle = nullptr;
-
-			for (auto it = windowList.begin(); it != windowList.end(); ++it)
-			{
-				if (window == it->get())
-				{
-					windowList.erase(it);
-					break;
-				}
-			}
-	#elif defined(TW_LINUX)
-			if (window->currentState == state_t::fullscreen)
-			{
-				window->Restore();
-			}
-
-			glXDestroyContext(currentDisplay, window->context);
-			XUnmapWindow(currentDisplay, window->windowHandle);
-			XDestroyWindow(currentDisplay, window->windowHandle);
-			window->windowHandle = 0;
-			window->context = 0;
-	#endif
+			return TinyWindow::error_t::linuxCannotConnectXServer;
+#endif
 		}
 
 #if defined(TW_WINDOWS)
@@ -1531,423 +1478,417 @@ namespace TinyWindow
 
 			switch (winMessage)
 			{
-				case WM_DESTROY:
+			case WM_DESTROY:
+			{
+				if (manager != nullptr)
 				{
-					if (manager != nullptr)
-					{
-						window->shouldClose = true;
+					window->shouldClose = true;
+				}
+				break;
+			}
 
-						if (window->destroyedEvent != nullptr)
-						{
-							window->destroyedEvent();
-						}
-						manager->ShutdownWindow(window);
+			case WM_MOVE:
+			{
+				window->position.x = LOWORD(longParam);
+				window->position.y = HIWORD(longParam);
+
+				if (window->movedEvent != nullptr)
+				{
+					window->movedEvent(window->position);
+				}
+
+				break;
+			}
+
+			case WM_MOVING:
+			{
+				window->position.x = LOWORD(longParam);
+				window->position.y = HIWORD(longParam);
+
+				if (window->movedEvent != nullptr)
+				{
+					window->movedEvent(window->position);
+				}
+				break;
+			}
+
+			case WM_SIZE:
+			{
+				window->resolution.width = (unsigned int)LOWORD(longParam);
+				window->resolution.height = (unsigned int)HIWORD(longParam);
+
+				switch (wordParam)
+				{
+				case SIZE_MAXIMIZED:
+				{
+					if (window->maximizedEvent != nullptr)
+					{
+						window->maximizedEvent();
+					}
+
+					break;
+				}
+
+				case SIZE_MINIMIZED:
+				{
+					if (window->minimizedEvent != nullptr)
+					{
+						window->minimizedEvent();
 					}
 					break;
 				}
 
-				case WM_MOVE:
+				default:
 				{
-					window->position.x = LOWORD(longParam);
-					window->position.y = HIWORD(longParam);
-
-					if (window->movedEvent != nullptr)
-					{
-						window->movedEvent(window->position);
-					}
-
-					break;
-				}
-
-				case WM_MOVING:
-				{
-					window->position.x = LOWORD(longParam);
-					window->position.y = HIWORD(longParam);
-
-					if (window->movedEvent != nullptr)
-					{
-						window->movedEvent(window->position);
-					}
-					break;
-				}
-
-				case WM_SIZE:
-				{
-					window->resolution.width = (unsigned int)LOWORD(longParam);
-					window->resolution.height = (unsigned int)HIWORD(longParam);
-
-					switch (wordParam)
-					{
-						case SIZE_MAXIMIZED:
-						{
-							if (window->maximizedEvent != nullptr)
-							{
-								window->maximizedEvent();
-							}
-
-							break;
-						}
-
-						case SIZE_MINIMIZED:
-						{
-							if (window->minimizedEvent != nullptr)
-							{
-								window->minimizedEvent();
-							}
-							break;
-						}
-
-						default:
-						{
-							if (window->resizeEvent != nullptr)
-							{
-								window->resizeEvent(window->resolution);
-							}
-							break;
-						}
-					}
-					break;
-				}
-
-				case WM_SIZING:
-				{
-					window->resolution.width = (unsigned int)LOWORD(longParam);
-					window->resolution.height = (unsigned int)HIWORD(longParam);
-
 					if (window->resizeEvent != nullptr)
 					{
 						window->resizeEvent(window->resolution);
 					}
 					break;
 				}
+				}
+				break;
+			}
 
-				case WM_KEYDOWN:
+			case WM_SIZING:
+			{
+				window->resolution.width = (unsigned int)LOWORD(longParam);
+				window->resolution.height = (unsigned int)HIWORD(longParam);
+
+				if (window->resizeEvent != nullptr)
 				{
-					key_t translatedKey;
+					window->resizeEvent(window->resolution);
+				}
+				break;
+			}
 
-					switch (HIWORD(longParam))
-					{
-						case leftControlDown:
-						{
-							window->keys[(unsigned int)key_t::leftControl] = keyState_t::down;
-							translatedKey = key_t::leftControl;
-							break;
-						}
+			case WM_KEYDOWN:
+			{
+				key_t translatedKey;
 
-						case rightControlDown:
-						{
-							window->keys[(unsigned int)key_t::rightControl] = keyState_t::down;
-							translatedKey = key_t::rightControl;
-							break;
-						}
-
-						case leftShiftDown:
-						{
-							window->keys[(unsigned int)key_t::leftShift] = keyState_t::down;
-							translatedKey = key_t::leftShift;
-							break;
-						}
-
-						case rightShiftDown:
-						{
-							window->keys[(unsigned int)key_t::rightShift] = keyState_t::down;
-							translatedKey = key_t::rightShift;
-							break;
-						}
-
-						default:
-						{
-							translatedKey = (key_t)Windows_TranslateKey(wordParam);
-							window->keys[(unsigned int)translatedKey] = keyState_t::down;
-							break;
-						}
-					}
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(translatedKey, keyState_t::down);
-					}
+				switch (HIWORD(longParam))
+				{
+				case leftControlDown:
+				{
+					window->keys[(unsigned int)key_t::leftControl] = keyState_t::down;
+					translatedKey = key_t::leftControl;
 					break;
 				}
 
-				case WM_KEYUP:
+				case rightControlDown:
 				{
-					TinyWindow::key_t translatedKey ;
-
-					switch (HIWORD(longParam))
-					{
-						case leftControlUp:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::leftControl] = keyState_t::up;
-							translatedKey = TinyWindow::key_t::leftControl;
-							break;
-						}
-
-						case rightControlUp:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::rightControl] = keyState_t::up;
-							translatedKey = TinyWindow::key_t::rightControl;
-							break;
-						}
-
-						case leftShiftUp:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::leftShift] = keyState_t::up;
-							translatedKey = TinyWindow::key_t::leftShift;
-							break;
-						}
-
-						case rightShiftUp:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::rightShift] = keyState_t::up;
-							translatedKey = TinyWindow::key_t::rightShift;
-							break;
-						}
-
-						default:
-						{
-							translatedKey = (TinyWindow::key_t)Windows_TranslateKey(wordParam);
-							window->keys[(unsigned int)translatedKey] = keyState_t::up;
-							break;
-						}
-					}
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(translatedKey, keyState_t::up);
-					}
+					window->keys[(unsigned int)key_t::rightControl] = keyState_t::down;
+					translatedKey = key_t::rightControl;
 					break;
 				}
 
-				case WM_SYSKEYDOWN:
+				case leftShiftDown:
 				{
-					TinyWindow::key_t translatedKey ;
-					switch (HIWORD(longParam))
-					{
-						case leftAltDown:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::leftAlt] = keyState_t::down;
-							translatedKey = TinyWindow::key_t::leftAlt;
-							break;
-						}
-
-						case rightAltDown:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::rightAlt] = keyState_t::down;
-							translatedKey = TinyWindow::key_t::rightAlt;
-						}
-
-						default:
-						{
-							return 0;
-						}
-					}
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(translatedKey, keyState_t::down);
-					}
-
+					window->keys[(unsigned int)key_t::leftShift] = keyState_t::down;
+					translatedKey = key_t::leftShift;
 					break;
 				}
 
-				case WM_SYSKEYUP:
+				case rightShiftDown:
 				{
-					TinyWindow::key_t translatedKey;
-					switch (HIWORD(longParam))
-					{
-						case leftAltUp:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::leftAlt] = keyState_t::up;
-							translatedKey = TinyWindow::key_t::leftAlt;
-							break;
-						}
-
-
-						case rightAltUp:
-						{
-							window->keys[(unsigned int)TinyWindow::key_t::rightAlt] = keyState_t::up;
-							translatedKey = TinyWindow::key_t::rightAlt;
-							break;
-						}
-
-						default:
-						{
-							return 0;
-						}
-					}
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(translatedKey, keyState_t::up);
-					}
-					break;
-				}
-
-				//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
-				/*case WM_CHAR:
-				{
-					int keyDown = longParam & 0x31;
-					if (keyDown == 1)
-					{
-						window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
-					}
-
-					else if (keyDown == 0)
-					{
-						window->keys[wordParam] = tinyWindowKeyState_t::UP;
-					}
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
-					}
-				}*/
-
-				case WM_MOUSEMOVE:
-				{
-					window->mousePosition.x = (int)LOWORD(longParam);
-					window->mousePosition.y = (int)HIWORD(longParam);
-
-					POINT point;
-					point.x = (LONG)window->mousePosition.x;
-					point.y = (LONG)window->mousePosition.y;
-
-					ClientToScreen(windowHandle, &point);
-
-					if (window->mouseMoveEvent != nullptr)
-					{
-						window->mouseMoveEvent(window->mousePosition, vec2_t<int>(point.x, point.y));
-					}
-					break;
-				}
-
-				case WM_LBUTTONDOWN:
-				{
-					window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
-					}
-					break;
-				}
-
-				case WM_LBUTTONUP:
-				{
-					window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
-					}
-					break;
-				}
-
-				case WM_RBUTTONDOWN:
-				{
-					window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
-					}
-					break;
-				}
-
-				case WM_RBUTTONUP:
-				{
-					window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
-					}
-					break;
-				}
-
-				case WM_MBUTTONDOWN:
-				{
-					window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
-					}
-					break;
-				}
-
-				case WM_MBUTTONUP:
-				{
-					window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::up;
-
-					if (window->mouseButtonEvent != nullptr)
-					{
-						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
-					}
-					break;
-				}
-
-				case WM_MOUSEWHEEL:
-				{
-					int delta = GET_WHEEL_DELTA_WPARAM(wordParam);
-					if (delta > 0)
-					{
-						//if was previously negative, revert to zero
-						if (window->accumWheelDelta < 0)
-						{
-							window->accumWheelDelta = 0;
-						}
-
-						else
-						{
-							window->accumWheelDelta += delta;
-						}
-
-						if (window->accumWheelDelta >= WHEEL_DELTA)
-						{
-							if (window->mouseWheelEvent != nullptr)
-							{
-								window->mouseWheelEvent(mouseScroll_t::down);
-							}
-							//reset accum
-							window->accumWheelDelta = 0;
-						}
-					}
-
-					else
-					{
-						//if was previously positive, revert to zero
-						if (window->accumWheelDelta > 0)
-						{
-							window->accumWheelDelta = 0;
-						}
-
-						else
-						{
-							window->accumWheelDelta += delta;
-						}
-
-						//if the delta is equal to or greater than delta
-						if (window->accumWheelDelta <= -WHEEL_DELTA)
-						{
-							if (window->mouseWheelEvent != nullptr)
-							{
-								window->mouseWheelEvent(mouseScroll_t::up);
-							}
-							//reset accum
-							window->accumWheelDelta = 0;
-						}
-					}
-
+					window->keys[(unsigned int)key_t::rightShift] = keyState_t::down;
+					translatedKey = key_t::rightShift;
 					break;
 				}
 
 				default:
 				{
-					//windowList[getWindow]
-					return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
+					translatedKey = (key_t)Windows_TranslateKey(wordParam);
+					window->keys[(unsigned int)translatedKey] = keyState_t::down;
+					break;
 				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::down);
+				}
+				break;
+			}
+
+			case WM_KEYUP:
+			{
+				TinyWindow::key_t translatedKey;
+
+				switch (HIWORD(longParam))
+				{
+				case leftControlUp:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::leftControl] = keyState_t::up;
+					translatedKey = TinyWindow::key_t::leftControl;
+					break;
+				}
+
+				case rightControlUp:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::rightControl] = keyState_t::up;
+					translatedKey = TinyWindow::key_t::rightControl;
+					break;
+				}
+
+				case leftShiftUp:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::leftShift] = keyState_t::up;
+					translatedKey = TinyWindow::key_t::leftShift;
+					break;
+				}
+
+				case rightShiftUp:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::rightShift] = keyState_t::up;
+					translatedKey = TinyWindow::key_t::rightShift;
+					break;
+				}
+
+				default:
+				{
+					translatedKey = (TinyWindow::key_t)Windows_TranslateKey(wordParam);
+					window->keys[(unsigned int)translatedKey] = keyState_t::up;
+					break;
+				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::up);
+				}
+				break;
+			}
+
+			case WM_SYSKEYDOWN:
+			{
+				TinyWindow::key_t translatedKey;
+				switch (HIWORD(longParam))
+				{
+				case leftAltDown:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::leftAlt] = keyState_t::down;
+					translatedKey = TinyWindow::key_t::leftAlt;
+					break;
+				}
+
+				case rightAltDown:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::rightAlt] = keyState_t::down;
+					translatedKey = TinyWindow::key_t::rightAlt;
+				}
+
+				default:
+				{
+					return 0;
+				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::down);
+				}
+
+				break;
+			}
+
+			case WM_SYSKEYUP:
+			{
+				TinyWindow::key_t translatedKey;
+				switch (HIWORD(longParam))
+				{
+				case leftAltUp:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::leftAlt] = keyState_t::up;
+					translatedKey = TinyWindow::key_t::leftAlt;
+					break;
+				}
+
+
+				case rightAltUp:
+				{
+					window->keys[(unsigned int)TinyWindow::key_t::rightAlt] = keyState_t::up;
+					translatedKey = TinyWindow::key_t::rightAlt;
+					break;
+				}
+
+				default:
+				{
+					return 0;
+				}
+				}
+
+				if (window->keyEvent != nullptr)
+				{
+					window->keyEvent(translatedKey, keyState_t::up);
+				}
+				break;
+			}
+
+			//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
+			/*case WM_CHAR:
+			{
+			int keyDown = longParam & 0x31;
+			if (keyDown == 1)
+			{
+			window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
+			}
+
+			else if (keyDown == 0)
+			{
+			window->keys[wordParam] = tinyWindowKeyState_t::UP;
+			}
+
+			if (window->keyEvent != nullptr)
+			{
+			window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
+			}
+			}*/
+
+			case WM_MOUSEMOVE:
+			{
+				window->mousePosition.x = (int)LOWORD(longParam);
+				window->mousePosition.y = (int)HIWORD(longParam);
+
+				POINT point;
+				point.x = (LONG)window->mousePosition.x;
+				point.y = (LONG)window->mousePosition.y;
+
+				ClientToScreen(windowHandle, &point);
+
+				if (window->mouseMoveEvent != nullptr)
+				{
+					window->mouseMoveEvent(window->mousePosition, vec2_t<int>(point.x, point.y));
+				}
+				break;
+			}
+
+			case WM_LBUTTONDOWN:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
+				}
+				break;
+			}
+
+			case WM_LBUTTONUP:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
+				}
+				break;
+			}
+
+			case WM_RBUTTONDOWN:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
+				}
+				break;
+			}
+
+			case WM_RBUTTONUP:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
+				}
+				break;
+			}
+
+			case WM_MBUTTONDOWN:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
+				}
+				break;
+			}
+
+			case WM_MBUTTONUP:
+			{
+				window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::up;
+
+				if (window->mouseButtonEvent != nullptr)
+				{
+					window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+				}
+				break;
+			}
+
+			case WM_MOUSEWHEEL:
+			{
+				int delta = GET_WHEEL_DELTA_WPARAM(wordParam);
+				if (delta > 0)
+				{
+					//if was previously negative, revert to zero
+					if (window->accumWheelDelta < 0)
+					{
+						window->accumWheelDelta = 0;
+					}
+
+					else
+					{
+						window->accumWheelDelta += delta;
+					}
+
+					if (window->accumWheelDelta >= WHEEL_DELTA)
+					{
+						if (window->mouseWheelEvent != nullptr)
+						{
+							window->mouseWheelEvent(mouseScroll_t::down);
+						}
+						//reset accum
+						window->accumWheelDelta = 0;
+					}
+				}
+
+				else
+				{
+					//if was previously positive, revert to zero
+					if (window->accumWheelDelta > 0)
+					{
+						window->accumWheelDelta = 0;
+					}
+
+					else
+					{
+						window->accumWheelDelta += delta;
+					}
+
+					//if the delta is equal to or greater than delta
+					if (window->accumWheelDelta <= -WHEEL_DELTA)
+					{
+						if (window->mouseWheelEvent != nullptr)
+						{
+							window->mouseWheelEvent(mouseScroll_t::up);
+						}
+						//reset accum
+						window->accumWheelDelta = 0;
+					}
+				}
+
+				break;
+			}
+
+			default:
+			{
+				//windowList[getWindow]
+				return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
+			}
 			}
 			return 0;
 		}
@@ -1983,13 +1924,14 @@ namespace TinyWindow
 			window->windowClass.hIcon = icon;
 			window->windowClass.hCursor = cursor;
 			window->windowClass.hbrBackground = brush;
-			window->windowClass.lpszMenuName = window->name;
-			window->windowClass.lpszClassName = window->name;
+			window->windowClass.lpszMenuName = window->name.c_str();
+			window->windowClass.lpszClassName = window->name.c_str();
 			RegisterClass(&window->windowClass);
 
-			window->windowHandle =
-				CreateWindow(window->name, window->name, WS_OVERLAPPEDWINDOW, 0,
-				0, window->resolution.width,
+			window->windowHandle = CreateWindow(
+				window->name.c_str(), window->name.c_str(),
+				WS_OVERLAPPEDWINDOW, 0, 0,
+				window->resolution.width,
 				window->resolution.height,
 				0, 0, 0, 0);
 
@@ -2055,259 +1997,254 @@ namespace TinyWindow
 			return;
 		}
 
-		void Windows_Shutown()
-		{
-
-		}
-
 		static TinyWindow::key_t Windows_TranslateKey(WPARAM wordParam)
 		{
 			switch (wordParam)
 			{
-				case VK_ESCAPE:
-				{
-					return TinyWindow::key_t::escape;
-				}
+			case VK_ESCAPE:
+			{
+				return TinyWindow::key_t::escape;
+			}
 
-				case VK_SPACE:
-				{
-					return TinyWindow::key_t::spacebar;
-				}
+			case VK_SPACE:
+			{
+				return TinyWindow::key_t::spacebar;
+			}
 
-				case VK_F1:
-				{
-					return TinyWindow::key_t::F1;
-				}
+			case VK_F1:
+			{
+				return TinyWindow::key_t::F1;
+			}
 
-				case VK_F2:
-				{
-					return TinyWindow::key_t::F2;
-				}
+			case VK_F2:
+			{
+				return TinyWindow::key_t::F2;
+			}
 
-				case VK_F3:
-				{
-					return TinyWindow::key_t::F3;
-				}
+			case VK_F3:
+			{
+				return TinyWindow::key_t::F3;
+			}
 
-				case VK_F4:
-				{
-					return TinyWindow::key_t::F4;
-				}
+			case VK_F4:
+			{
+				return TinyWindow::key_t::F4;
+			}
 
-				case VK_F5:
-				{
-					return TinyWindow::key_t::F5;
-				}
+			case VK_F5:
+			{
+				return TinyWindow::key_t::F5;
+			}
 
-				case VK_F6:
-				{
-					return TinyWindow::key_t::F6;
-				}
+			case VK_F6:
+			{
+				return TinyWindow::key_t::F6;
+			}
 
-				case VK_F7:
-				{
-					return TinyWindow::key_t::F7;
-				}
+			case VK_F7:
+			{
+				return TinyWindow::key_t::F7;
+			}
 
-				case VK_F8:
-				{
-					return TinyWindow::key_t::F8;
-				}
+			case VK_F8:
+			{
+				return TinyWindow::key_t::F8;
+			}
 
-				case VK_F9:
-				{
-					return TinyWindow::key_t::F9;
-				}
+			case VK_F9:
+			{
+				return TinyWindow::key_t::F9;
+			}
 
-				case VK_F10:
-				{
-					return TinyWindow::key_t::F10;
-				}
+			case VK_F10:
+			{
+				return TinyWindow::key_t::F10;
+			}
 
-				case VK_F11:
-				{
-					return TinyWindow::key_t::F11;
-				}
+			case VK_F11:
+			{
+				return TinyWindow::key_t::F11;
+			}
 
-				case VK_F12:
-				{
-					return TinyWindow::key_t::F12;
-				}
+			case VK_F12:
+			{
+				return TinyWindow::key_t::F12;
+			}
 
-				case VK_BACK:
-				{
-					return TinyWindow::key_t::backspace;
-				}
+			case VK_BACK:
+			{
+				return TinyWindow::key_t::backspace;
+			}
 
-				case VK_TAB:
-				{
-					return TinyWindow::key_t::tab;
-				}
+			case VK_TAB:
+			{
+				return TinyWindow::key_t::tab;
+			}
 
-				case VK_CAPITAL:
-				{
-					return TinyWindow::key_t::capsLock;
-				}
+			case VK_CAPITAL:
+			{
+				return TinyWindow::key_t::capsLock;
+			}
 
-				case VK_RETURN:
-				{
-					return TinyWindow::key_t::enter;
-				}
+			case VK_RETURN:
+			{
+				return TinyWindow::key_t::enter;
+			}
 
-				case VK_PRINT:
-				{
-					return TinyWindow::key_t::printScreen;
-				}
+			case VK_PRINT:
+			{
+				return TinyWindow::key_t::printScreen;
+			}
 
-				case VK_SCROLL:
-				{
-					return TinyWindow::key_t::scrollLock;
-				}
+			case VK_SCROLL:
+			{
+				return TinyWindow::key_t::scrollLock;
+			}
 
-				case VK_PAUSE:
-				{
-					return TinyWindow::key_t::pause;
-				}
+			case VK_PAUSE:
+			{
+				return TinyWindow::key_t::pause;
+			}
 
-				case VK_INSERT:
-				{
-					return TinyWindow::key_t::insert;
-				}
+			case VK_INSERT:
+			{
+				return TinyWindow::key_t::insert;
+			}
 
-				case VK_HOME:
-				{
-					return TinyWindow::key_t::home;
-				}
+			case VK_HOME:
+			{
+				return TinyWindow::key_t::home;
+			}
 
-				case VK_DELETE:
-				{
-					return TinyWindow::key_t::del;
-				}
+			case VK_DELETE:
+			{
+				return TinyWindow::key_t::del;
+			}
 
-				case VK_END:
-				{
-					return TinyWindow::key_t::end;
-				}
+			case VK_END:
+			{
+				return TinyWindow::key_t::end;
+			}
 
-				case VK_PRIOR:
-				{
-					return TinyWindow::key_t::pageUp;
-				}
+			case VK_PRIOR:
+			{
+				return TinyWindow::key_t::pageUp;
+			}
 
-				case VK_NEXT:
-				{
-					return TinyWindow::key_t::pageDown;
-				}
+			case VK_NEXT:
+			{
+				return TinyWindow::key_t::pageDown;
+			}
 
-				case VK_DOWN:
-				{
-					return TinyWindow::key_t::arrowDown;
-				}
+			case VK_DOWN:
+			{
+				return TinyWindow::key_t::arrowDown;
+			}
 
-				case VK_UP:
-				{
-					return TinyWindow::key_t::arrowUp;
-				}
+			case VK_UP:
+			{
+				return TinyWindow::key_t::arrowUp;
+			}
 
-				case VK_LEFT:
-				{
-					return TinyWindow::key_t::arrowLeft;
-				}
+			case VK_LEFT:
+			{
+				return TinyWindow::key_t::arrowLeft;
+			}
 
-				case VK_RIGHT:
-				{
-					return TinyWindow::key_t::arrowRight;
-				}
+			case VK_RIGHT:
+			{
+				return TinyWindow::key_t::arrowRight;
+			}
 
-				case VK_DIVIDE:
-				{
-					return TinyWindow::key_t::keypadDivide;
-				}
+			case VK_DIVIDE:
+			{
+				return TinyWindow::key_t::keypadDivide;
+			}
 
-				case VK_MULTIPLY:
-				{
-					return TinyWindow::key_t::keypadMultiply;
-				}
+			case VK_MULTIPLY:
+			{
+				return TinyWindow::key_t::keypadMultiply;
+			}
 
-				case VK_SUBTRACT:
-				{
-					return TinyWindow::key_t::keypadDivide;
-				}
+			case VK_SUBTRACT:
+			{
+				return TinyWindow::key_t::keypadDivide;
+			}
 
-				case VK_ADD:
-				{
-					return TinyWindow::key_t::keypadAdd;
-				}
+			case VK_ADD:
+			{
+				return TinyWindow::key_t::keypadAdd;
+			}
 
-				case VK_DECIMAL:
-				{
-					return TinyWindow::key_t::keypadPeriod;
-				}
+			case VK_DECIMAL:
+			{
+				return TinyWindow::key_t::keypadPeriod;
+			}
 
-				case VK_NUMPAD0:
-				{
-					return TinyWindow::key_t::keypad0;
-				}
+			case VK_NUMPAD0:
+			{
+				return TinyWindow::key_t::keypad0;
+			}
 
-				case VK_NUMPAD1:
-				{
-					return TinyWindow::key_t::keypad1;
-				}
+			case VK_NUMPAD1:
+			{
+				return TinyWindow::key_t::keypad1;
+			}
 
-				case VK_NUMPAD2:
-				{
-					return TinyWindow::key_t::keypad2;
-				}
+			case VK_NUMPAD2:
+			{
+				return TinyWindow::key_t::keypad2;
+			}
 
-				case VK_NUMPAD3:
-				{
-					return TinyWindow::key_t::keypad3;
-				}
+			case VK_NUMPAD3:
+			{
+				return TinyWindow::key_t::keypad3;
+			}
 
-				case VK_NUMPAD4:
-				{
-					return TinyWindow::key_t::keypad4;
-				}
+			case VK_NUMPAD4:
+			{
+				return TinyWindow::key_t::keypad4;
+			}
 
-				case VK_NUMPAD5:
-				{
-					return TinyWindow::key_t::keypad5;
-				}
+			case VK_NUMPAD5:
+			{
+				return TinyWindow::key_t::keypad5;
+			}
 
-				case VK_NUMPAD6:
-				{
-					return TinyWindow::key_t::keypad6;
-				}
+			case VK_NUMPAD6:
+			{
+				return TinyWindow::key_t::keypad6;
+			}
 
-				case VK_NUMPAD7:
-				{
-					return TinyWindow::key_t::keypad7;
-				}
+			case VK_NUMPAD7:
+			{
+				return TinyWindow::key_t::keypad7;
+			}
 
-				case VK_NUMPAD8:
-				{
-					return TinyWindow::key_t::keypad8;
-				}
+			case VK_NUMPAD8:
+			{
+				return TinyWindow::key_t::keypad8;
+			}
 
-				case VK_NUMPAD9:
-				{
-					return TinyWindow::key_t::keypad9;
-				}
+			case VK_NUMPAD9:
+			{
+				return TinyWindow::key_t::keypad9;
+			}
 
-				case VK_LWIN:
-				{
-					return TinyWindow::key_t::leftWindow;
-				}
+			case VK_LWIN:
+			{
+				return TinyWindow::key_t::leftWindow;
+			}
 
-				case VK_RWIN:
-				{
-					return TinyWindow::key_t::rightWindow;
-				}
+			case VK_RWIN:
+			{
+				return TinyWindow::key_t::rightWindow;
+			}
 
-				default:
-				{
-					return (TinyWindow::key_t)wordParam;
-				}
+			default:
+			{
+				return (TinyWindow::key_t)wordParam;
+			}
 			}
 		}
 
@@ -2338,90 +2275,90 @@ namespace TinyWindow
 		{
 			switch(currentEvent.type)
 			{
-				case Expose:
-				{
-					return GetWindowByHandle(currentEvent.xexpose.window);
-				}
+			case Expose:
+			{
+				return GetWindowByHandle(currentEvent.xexpose.window);
+			}
 
-				case DestroyNotify:
-				{
-					return GetWindowByHandle(currentEvent.xdestroywindow.window);
-				}
+			case DestroyNotify:
+			{
+				return GetWindowByHandle(currentEvent.xdestroywindow.window);
+			}
 
-				case CreateNotify:
-				{
-					return GetWindowByHandle(currentEvent.xcreatewindow.window);
-				}
+			case CreateNotify:
+			{
+				return GetWindowByHandle(currentEvent.xcreatewindow.window);
+			}
 
-				case KeyPress:
-				{
-					return GetWindowByHandle(currentEvent.xkey.window);
-				}
+			case KeyPress:
+			{
+				return GetWindowByHandle(currentEvent.xkey.window);
+			}
 
-				case KeyRelease:
-				{
-					return GetWindowByHandle(currentEvent.xkey.window);
-				}
+			case KeyRelease:
+			{
+				return GetWindowByHandle(currentEvent.xkey.window);
+			}
 
-				case ButtonPress:
-				{
-					return GetWindowByHandle(currentEvent.xbutton.window);
-				}
+			case ButtonPress:
+			{
+				return GetWindowByHandle(currentEvent.xbutton.window);
+			}
 
-				case ButtonRelease:
-				{
-					return GetWindowByHandle(currentEvent.xbutton.window);
-				}
+			case ButtonRelease:
+			{
+				return GetWindowByHandle(currentEvent.xbutton.window);
+			}
 
-				case MotionNotify:
-				{
-					return GetWindowByHandle(currentEvent.xmotion.window);
-				}
+			case MotionNotify:
+			{
+				return GetWindowByHandle(currentEvent.xmotion.window);
+			}
 
-				case FocusIn:
-				{
-					return GetWindowByHandle(currentEvent.xfocus.window);
-				}
+			case FocusIn:
+			{
+				return GetWindowByHandle(currentEvent.xfocus.window);
+			}
 
-				case FocusOut:
-				{
-					return GetWindowByHandle(currentEvent.xfocus.window);
-				}
+			case FocusOut:
+			{
+				return GetWindowByHandle(currentEvent.xfocus.window);
+			}
 
-				case ResizeRequest:
-				{
-					return GetWindowByHandle(currentEvent.xresizerequest.window);
-				}
+			case ResizeRequest:
+			{
+				return GetWindowByHandle(currentEvent.xresizerequest.window);
+			}
 
-				case ConfigureNotify:
-				{
-					return GetWindowByHandle(currentEvent.xconfigure.window);
-				}
+			case ConfigureNotify:
+			{
+				return GetWindowByHandle(currentEvent.xconfigure.window);
+			}
 
-				case PropertyNotify:
-				{
-					return GetWindowByHandle(currentEvent.xproperty.window);
-				}
+			case PropertyNotify:
+			{
+				return GetWindowByHandle(currentEvent.xproperty.window);
+			}
 
-				case GravityNotify:
-				{
-					return GetWindowByHandle(currentEvent.xgravity.window);
-				}
+			case GravityNotify:
+			{
+				return GetWindowByHandle(currentEvent.xgravity.window);
+			}
 
-				case ClientMessage:
-				{
-					return GetWindowByHandle(currentEvent.xclient.window);
-				}
+			case ClientMessage:
+			{
+				return GetWindowByHandle(currentEvent.xclient.window);
+			}
 
-				case VisibilityNotify:
-				{
-					return GetWindowByHandle(currentEvent.xvisibility.window);
-				}
+			case VisibilityNotify:
+			{
+				return GetWindowByHandle(currentEvent.xvisibility.window);
+			}
 
-				default:
-				{
-					return nullptr;
-				}
+			default:
+			{
+				return nullptr;
+			}
 			}
 		}
 
@@ -2429,10 +2366,10 @@ namespace TinyWindow
 		{
 			window->attributes = new int[ 5]{
 				GLX_RGBA,
-				GLX_DOUBLEBUFFER,
-				GLX_DEPTH_SIZE,
-				window->depthBits,
-				None};
+					GLX_DOUBLEBUFFER,
+					GLX_DEPTH_SIZE,
+					window->depthBits,
+					None};
 
 			window->linuxDecorators = 1;
 			window->currentStyle |= window->linuxClose | window->linuxMaximize | window->linuxMinimize | window->linuxMove;
@@ -2507,422 +2444,422 @@ namespace TinyWindow
 
 			switch (currentEvent.type)
 			{
-				case Expose:
+			case Expose:
+			{
+				break;
+			}
+
+			case DestroyNotify:
+			{
+				if (window->destroyedEvent != nullptr)
 				{
-					break;
+					window->destroyedEvent();
 				}
 
-				case DestroyNotify:
-				{
-					if (window->destroyedEvent != nullptr)
-					{
-						window->destroyedEvent();
-					}
+				ShutdownWindow(window);
+				break;
+			}
 
-					ShutdownWindow(window);
-					break;
-				}
+			/*case CreateNotify:
+			{
+			printf("Window was created\n");
+			l_Window->InitializeGL();
 
-				/*case CreateNotify:
-				{
-				printf("Window was created\n");
-				l_Window->InitializeGL();
+			if(IsValid(l_Window->m_OnCreated))
+			{
+			l_Window->m_OnCreated();
+			}
 
-				if(IsValid(l_Window->m_OnCreated))
+			break;
+			} */
+
+			case KeyPress:
+			{
+				unsigned int functionKeysym = XkbKeycodeToKeysym(
+					currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
+
+				unsigned int translatedKey = Linux_TranslateKey(functionKeysym);
+				window->keys[ translatedKey] = keyState_t::down;
+				if (window->keyEvent != nullptr)
 				{
-				l_Window->m_OnCreated();
+					window->keyEvent(translatedKey, keyState_t::down);
 				}
 
 				break;
-				} */
+			}
 
-				case KeyPress:
+			case KeyRelease:
+			{
+				bool isRetriggered = false;
+				if (XEventsQueued(currentDisplay, QueuedAfterReading))
+				{
+					XEvent nextEvent;
+					XPeekEvent(currentDisplay, &nextEvent);
+
+					if (nextEvent.type == KeyPress &&
+						nextEvent.xkey.time == currentEvent.xkey.time &&
+						nextEvent.xkey.keycode == currentEvent.xkey.keycode)
+					{
+						unsigned int functionKeysym = XkbKeycodeToKeysym(
+							currentDisplay, currentEvent.xkey.keycode, 0,
+							currentEvent.xkey.state & ShiftMask ? 1 : 0);
+
+						XNextEvent(currentDisplay, &currentEvent);
+						window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
+						isRetriggered = true;
+					}
+				}
+
+				if (!isRetriggered)
 				{
 					unsigned int functionKeysym = XkbKeycodeToKeysym(
 						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-						unsigned int translatedKey = Linux_TranslateKey(functionKeysym);
-						window->keys[ translatedKey] = keyState_t::down;
-						if (window->keyEvent != nullptr)
-						{
-							window->keyEvent(translatedKey, keyState_t::down);
-						}
-
-					break;
+					unsigned int translatedKey = Linux_TranslateKey(functionKeysym);
+					window->keys[ translatedKey] = keyState_t::up;
+					if (window->keyEvent != nullptr)
+					{
+						window->keyEvent(translatedKey, keyState_t::up);
+					}
 				}
 
-				case KeyRelease:
+				break;
+			}
+
+			case ButtonPress:
+			{
+				switch (currentEvent.xbutton.button)
 				{
-					bool isRetriggered = false;
-					if (XEventsQueued(currentDisplay, QueuedAfterReading))
-					{
-						XEvent nextEvent;
-						XPeekEvent(currentDisplay, &nextEvent);
-
-						if (nextEvent.type == KeyPress &&
-							nextEvent.xkey.time == currentEvent.xkey.time &&
-							nextEvent.xkey.keycode == currentEvent.xkey.keycode)
-						{
-							unsigned int functionKeysym = XkbKeycodeToKeysym(
-								currentDisplay, currentEvent.xkey.keycode, 0,
-								currentEvent.xkey.state & ShiftMask ? 1 : 0);
-
-							XNextEvent(currentDisplay, &currentEvent);
-							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
-							isRetriggered = true;
-						}
-					}
-
-					if (!isRetriggered)
-					{
-						unsigned int functionKeysym = XkbKeycodeToKeysym(
-						currentDisplay, currentEvent.xkey.keycode, 0, currentEvent.xkey.state & ShiftMask ? 1 : 0);
-
-						unsigned int translatedKey = Linux_TranslateKey(functionKeysym);
-						window->keys[ translatedKey] = keyState_t::up;
-						if (window->keyEvent != nullptr)
-						{
-							window->keyEvent(translatedKey, keyState_t::up);
-						}
-					}
-
-					break;
-				}
-
-				case ButtonPress:
+				case 1:
 				{
-					switch (currentEvent.xbutton.button)
+					window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::down;
+
+					if (window->mouseButtonEvent != nullptr)
 					{
-					case 1:
-					{
-						window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::down;
-
-						if (window->mouseButtonEvent != nullptr)
-						{
-							window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
-						}
-						break;
-					}
-
-					case 2:
-					{
-						window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::down;
-
-						if (window->mouseButtonEvent != nullptr)
-						{
-							window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
-						}
-						break;
-					}
-
-					case 3:
-					{
-						window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::down;
-
-						if (window->mouseButtonEvent != nullptr)
-						{
-							window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
-						}
-						break;
-					}
-
-					case 4:
-					{
-						window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
-
-						if (window->mouseWheelEvent != nullptr)
-						{
-							window->mouseWheelEvent(mouseScroll_t::down);
-						}
-						break;
-					}
-
-					case 5:
-					{
-						window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
-
-						if (window->mouseWheelEvent != nullptr)
-						{
-							window->mouseWheelEvent(mouseScroll_t::down);
-						}
-						break;
-					}
-
-					default:
-					{
-						//need to add more mouse buttons
-						break;
-					}
-					}
-
-					break;
-				}
-
-				case ButtonRelease:
-				{
-					switch (currentEvent.xbutton.button)
-					{
-					case 1:
-					{
-						//the left mouse button was released
-						window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::up;
-
-						if (window->mouseButtonEvent != nullptr)
-						{
-							window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
-						}
-						break;
-					}
-
-					case 2:
-					{
-						//the middle mouse button was released
-						window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::up;
-
-						if (window->mouseButtonEvent != nullptr)
-						{
-							window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
-						}
-						break;
-					}
-
-					case 3:
-					{
-						//the right mouse button was released
-						window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::up;
-
-						if (window->mouseButtonEvent != nullptr)
-						{
-							window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
-						}
-						break;
-					}
-
-					case 4:
-					{
-						//the mouse wheel was scrolled up
-						window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
-						break;
-					}
-
-					case 5:
-					{
-						//the mouse wheel was scrolled down
-						window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
-						break;
-					}
-
-					default:
-					{
-						//need to add more mouse buttons
-						break;
-					}
+						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
 					}
 					break;
 				}
 
-				//when the mouse/pointer device is moved
-				case MotionNotify:
+				case 2:
 				{
-					//set the windows mouse position to match the event
-					window->mousePosition.x =
-						currentEvent.xmotion.x;
+					window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::down;
 
-					window->mousePosition.y =
-						currentEvent.xmotion.y;
-
-					///set the screen mouse position to match the event
-					screenMousePosition.x = currentEvent.xmotion.x_root;
-					screenMousePosition.y = currentEvent.xmotion.y_root;
-
-					if (window->mouseMoveEvent != nullptr)
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->mouseMoveEvent( vec2_t<int>(currentEvent.xmotion.x,
-							currentEvent.xmotion.y), vec2_t<int>(currentEvent.xmotion.x_root,
-							currentEvent.xmotion.y_root));
+						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
 					}
 					break;
 				}
 
-				//when the window goes out of focus
-				case FocusOut:
+				case 3:
 				{
-					window->inFocus = false;
-					if (window->focusEvent != nullptr)
+					window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::down;
+
+					if (window->mouseButtonEvent != nullptr)
 					{
-						window->focusEvent(
-							window->inFocus);
+						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
 					}
 					break;
 				}
 
-				//when the window is back in focus (use to call restore callback?)
-				case FocusIn:
+				case 4:
 				{
-					window->inFocus = true;
+					window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
 
-					if (window->focusEvent != nullptr)
+					if (window->mouseWheelEvent != nullptr)
 					{
-						window->focusEvent(window->inFocus);
+						window->mouseWheelEvent(mouseScroll_t::down);
 					}
 					break;
 				}
 
-				//when a request to resize the window is made either by
-				//dragging out the window or programmatically
-				case ResizeRequest:
+				case 5:
 				{
-					window->resolution.width = currentEvent.xresizerequest.width;
-					window->resolution.height = currentEvent.xresizerequest.height;
+					window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
 
-					glViewport(0, 0,
-						window->resolution.width,
-						window->resolution.height);
-
-					if (window->resizeEvent != nullptr)
+					if (window->mouseWheelEvent != nullptr)
 					{
-						window->resizeEvent(vec2_t<unsigned int>(currentEvent.xresizerequest.width,
-							currentEvent.xresizerequest.height));
-					}
-
-					break;
-				}
-
-				//when a request to configure the window is made
-				case ConfigureNotify:
-				{
-					glViewport(0, 0, currentEvent.xconfigure.width,
-						currentEvent.xconfigure.height);
-
-					//check if window was resized
-					if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
-						|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
-					{
-						if (window->resizeEvent != nullptr)
-						{
-							window->resizeEvent(vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
-						}
-
-						window->resolution.width = currentEvent.xconfigure.width;
-						window->resolution.height = currentEvent.xconfigure.height;
-					}
-
-					//check if window was moved
-					if (currentEvent.xconfigure.x != window->position.x
-						|| currentEvent.xconfigure.y != window->position.y)
-					{
-						if (window->movedEvent != nullptr)
-						{
-							window->movedEvent(vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
-						}
-
-						window->position.x = currentEvent.xconfigure.x;
-						window->position.y = currentEvent.xconfigure.y;
+						window->mouseWheelEvent(mouseScroll_t::down);
 					}
 					break;
-				}
-
-				case PropertyNotify:
-				{
-					//this is needed in order to read from the windows WM_STATE Atomic
-					//to determine if the property notify event was caused by a client
-					//iconify event(minimizing the window), a maximise event, a focus
-					//event and an attention demand event. NOTE these should only be
-					//for eventts that are not triggered programatically
-
-					Atom type;
-					int format;
-					ulong numItems, bytesAfter;
-					unsigned char* properties = nullptr;
-
-					XGetWindowProperty(currentDisplay, currentEvent.xproperty.window,
-						window->AtomState,
-						0, LONG_MAX, false, AnyPropertyType,
-						&type, &format, &numItems, &bytesAfter,
-						& properties);
-
-					if (properties && (format == 32))
-					{
-						//go through each property and match it to an existing Atomic state
-						for (unsigned int itemIndex = 0; itemIndex < numItems; itemIndex++)
-						{
-							Atom currentProperty = ((long*)(properties))[ itemIndex];
-
-							if (currentProperty == window->AtomHidden)
-							{
-								//window was minimized
-								if (window->minimizedEvent != nullptr)
-								{
-									//if the minimized callback for the window was set
-									window->minimizedEvent();
-								}
-							}
-
-							if (currentProperty == window->AtomMaxVert ||
-								currentProperty == window->AtomMaxVert)
-							{
-								//window was maximized
-								if (window->maximizedEvent != nullptr)
-								{
-									//if the maximized callback for the window was set
-									window->maximizedEvent();
-								}
-							}
-
-							if (currentProperty == window->AtomFocused)
-							{
-								//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
-							}
-
-							if (currentProperty == window->AtomDemandsAttention)
-							{
-								//the window demands user attention
-							}
-						}
-					}
-
-					break;
-				}
-
-				case GravityNotify:
-				{
-					//this is only supposed to pop up when the parent of this window(if any) has something happen
-					//to it so that this window can react to said event as well.
-					break;
-				}
-
-				//check for events that were created by the TinyWindow manager
-				case ClientMessage:
-				{
-					const char* atomName = XGetAtomName(currentDisplay, currentEvent.xclient.message_type);
-					if (atomName != nullptr)
-					{
-						//printf("%s\n", l_AtomName);
-					}
-
-					if ((Atom)currentEvent.xclient.data.l[0] == window->AtomClose)
-					{
-						window->shouldClose = true;
-						if(window->destroyedEvent != nullptr)
-						{
-							window->destroyedEvent();
-						}
-						break;
-					}
-
-					//check if full screen
-					if ((Atom)currentEvent.xclient.data.l[1] == window->AtomFullScreen)
-					{
-						break;
-					}
-					break;
-
 				}
 
 				default:
 				{
-					return;
+					//need to add more mouse buttons
+					break;
 				}
+				}
+
+				break;
+			}
+
+			case ButtonRelease:
+			{
+				switch (currentEvent.xbutton.button)
+				{
+				case 1:
+				{
+					//the left mouse button was released
+					window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::up;
+
+					if (window->mouseButtonEvent != nullptr)
+					{
+						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
+					}
+					break;
+				}
+
+				case 2:
+				{
+					//the middle mouse button was released
+					window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::up;
+
+					if (window->mouseButtonEvent != nullptr)
+					{
+						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+					}
+					break;
+				}
+
+				case 3:
+				{
+					//the right mouse button was released
+					window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::up;
+
+					if (window->mouseButtonEvent != nullptr)
+					{
+						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
+					}
+					break;
+				}
+
+				case 4:
+				{
+					//the mouse wheel was scrolled up
+					window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
+					break;
+				}
+
+				case 5:
+				{
+					//the mouse wheel was scrolled down
+					window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
+					break;
+				}
+
+				default:
+				{
+					//need to add more mouse buttons
+					break;
+				}
+				}
+				break;
+			}
+
+			//when the mouse/pointer device is moved
+			case MotionNotify:
+			{
+				//set the windows mouse position to match the event
+				window->mousePosition.x =
+					currentEvent.xmotion.x;
+
+				window->mousePosition.y =
+					currentEvent.xmotion.y;
+
+				///set the screen mouse position to match the event
+				screenMousePosition.x = currentEvent.xmotion.x_root;
+				screenMousePosition.y = currentEvent.xmotion.y_root;
+
+				if (window->mouseMoveEvent != nullptr)
+				{
+					window->mouseMoveEvent( vec2_t<int>(currentEvent.xmotion.x,
+						currentEvent.xmotion.y), vec2_t<int>(currentEvent.xmotion.x_root,
+						currentEvent.xmotion.y_root));
+				}
+				break;
+			}
+
+			//when the window goes out of focus
+			case FocusOut:
+			{
+				window->inFocus = false;
+				if (window->focusEvent != nullptr)
+				{
+					window->focusEvent(
+						window->inFocus);
+				}
+				break;
+			}
+
+			//when the window is back in focus (use to call restore callback?)
+			case FocusIn:
+			{
+				window->inFocus = true;
+
+				if (window->focusEvent != nullptr)
+				{
+					window->focusEvent(window->inFocus);
+				}
+				break;
+			}
+
+			//when a request to resize the window is made either by
+			//dragging out the window or programmatically
+			case ResizeRequest:
+			{
+				window->resolution.width = currentEvent.xresizerequest.width;
+				window->resolution.height = currentEvent.xresizerequest.height;
+
+				glViewport(0, 0,
+					window->resolution.width,
+					window->resolution.height);
+
+				if (window->resizeEvent != nullptr)
+				{
+					window->resizeEvent(vec2_t<unsigned int>(currentEvent.xresizerequest.width,
+						currentEvent.xresizerequest.height));
+				}
+
+				break;
+			}
+
+			//when a request to configure the window is made
+			case ConfigureNotify:
+			{
+				glViewport(0, 0, currentEvent.xconfigure.width,
+					currentEvent.xconfigure.height);
+
+				//check if window was resized
+				if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
+					|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
+				{
+					if (window->resizeEvent != nullptr)
+					{
+						window->resizeEvent(vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
+					}
+
+					window->resolution.width = currentEvent.xconfigure.width;
+					window->resolution.height = currentEvent.xconfigure.height;
+				}
+
+				//check if window was moved
+				if (currentEvent.xconfigure.x != window->position.x
+					|| currentEvent.xconfigure.y != window->position.y)
+				{
+					if (window->movedEvent != nullptr)
+					{
+						window->movedEvent(vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+					}
+
+					window->position.x = currentEvent.xconfigure.x;
+					window->position.y = currentEvent.xconfigure.y;
+				}
+				break;
+			}
+
+			case PropertyNotify:
+			{
+				//this is needed in order to read from the windows WM_STATE Atomic
+				//to determine if the property notify event was caused by a client
+				//iconify event(minimizing the window), a maximise event, a focus
+				//event and an attention demand event. NOTE these should only be
+				//for eventts that are not triggered programatically
+
+				Atom type;
+				int format;
+				ulong numItems, bytesAfter;
+				unsigned char* properties = nullptr;
+
+				XGetWindowProperty(currentDisplay, currentEvent.xproperty.window,
+					window->AtomState,
+					0, LONG_MAX, false, AnyPropertyType,
+					&type, &format, &numItems, &bytesAfter,
+					& properties);
+
+				if (properties && (format == 32))
+				{
+					//go through each property and match it to an existing Atomic state
+					for (unsigned int itemIndex = 0; itemIndex < numItems; itemIndex++)
+					{
+						Atom currentProperty = ((long*)(properties))[ itemIndex];
+
+						if (currentProperty == window->AtomHidden)
+						{
+							//window was minimized
+							if (window->minimizedEvent != nullptr)
+							{
+								//if the minimized callback for the window was set
+								window->minimizedEvent();
+							}
+						}
+
+						if (currentProperty == window->AtomMaxVert ||
+							currentProperty == window->AtomMaxVert)
+						{
+							//window was maximized
+							if (window->maximizedEvent != nullptr)
+							{
+								//if the maximized callback for the window was set
+								window->maximizedEvent();
+							}
+						}
+
+						if (currentProperty == window->AtomFocused)
+						{
+							//window is now in focus. we can ignore this is as FocusIn/FocusOut does this anyway
+						}
+
+						if (currentProperty == window->AtomDemandsAttention)
+						{
+							//the window demands user attention
+						}
+					}
+				}
+
+				break;
+			}
+
+			case GravityNotify:
+			{
+				//this is only supposed to pop up when the parent of this window(if any) has something happen
+				//to it so that this window can react to said event as well.
+				break;
+			}
+
+			//check for events that were created by the TinyWindow manager
+			case ClientMessage:
+			{
+				const char* atomName = XGetAtomName(currentDisplay, currentEvent.xclient.message_type);
+				if (atomName != nullptr)
+				{
+					//printf("%s\n", l_AtomName);
+				}
+
+				if ((Atom)currentEvent.xclient.data.l[0] == window->AtomClose)
+				{
+					window->shouldClose = true;
+					if(window->destroyedEvent != nullptr)
+					{
+						window->destroyedEvent();
+					}
+					break;
+				}
+
+				//check if full screen
+				if ((Atom)currentEvent.xclient.data.l[1] == window->AtomFullScreen)
+				{
+					break;
+				}
+				break;
+
+			}
+
+			default:
+			{
+				return;
+			}
 			}
 		}
 
@@ -3401,21 +3338,21 @@ namespace TinyWindow
 
 inline
 TinyWindow::tWindow::tWindow
-	(
-		TinyWindow::windowManager& mmanager,
-		const char* name,
-		vec2_t<unsigned int>& resolution,
-		unsigned int colorBits,
-		unsigned int depthBits,
-		unsigned int stencilBits
-	) :
-	manager(mmanager)
+(
+TinyWindow::windowManager& mmanager,
+const char* nname,
+vec2_t<unsigned int>& resolution,
+unsigned int ccolorBits,
+unsigned int ddepthBits,
+unsigned int sstencilBits
+) :
+manager(mmanager),
+name(nname),
+colorBits(ccolorBits),
+depthBits(ddepthBits),
+stencilBits(sstencilBits)
 {
-	this->name = name;
 	this->resolution = resolution;
-	this->colorBits = colorBits;
-	this->depthBits = depthBits;
-	this->stencilBits = stencilBits;
 
 	this->shouldClose = false;
 	this->currentState = state_t::normal;
@@ -3445,4 +3382,70 @@ TinyWindow::tWindow::tWindow
 	}
 }
 
+inline
+TinyWindow::tWindow::~tWindow(void)
+{
+	bool erased = false;
+	for (size_t i = 0; i < manager.windowList.size();)
+	{
+		if (this != manager.windowList[i].get())
+		{
+			++i;
+		}
+		else
+		{
+			assert(!erased);
+			manager.windowList[i].release();
+			manager.windowList.erase(i + manager.windowList.begin());
+			erased = true;
+		}
+	}
+
+	assert(erased);
+
+	assert(shouldClose);
+	if (destroyedEvent)
+		destroyedEvent();
+	assert(shouldClose);
+
+#if defined(TW_WINDOWS)
+	assert(glRenderingContextHandle);
+	{
+		wglMakeCurrent(nullptr, nullptr);
+		wglDeleteContext(glRenderingContextHandle);
+		glRenderingContextHandle = nullptr;
+	}
+
+	assert(paletteHandle);
+	{
+		DeleteObject(paletteHandle);
+		paletteHandle = nullptr;
+	}
+
+	assert(deviceContextHandle);
+	{
+		ReleaseDC(windowHandle, deviceContextHandle);
+		deviceContextHandle = nullptr;
+		windowHandle = nullptr;
+	}
+
+	assert(instanceHandle);
+	{
+		UnregisterClass(name.c_str(), instanceHandle);
+		FreeModule(instanceHandle);
+	}
+
+#elif defined(TW_LINUX)
+	if (window->currentState == state_t::fullscreen)
+	{
+		window->Restore();
+	}
+
+	glXDestroyContext(currentDisplay, window->context);
+	XUnmapWindow(currentDisplay, window->windowHandle);
+	XDestroyWindow(currentDisplay, window->windowHandle);
+	window->windowHandle = 0;
+	window->context = 0;
 #endif
+	}
+
