@@ -3406,12 +3406,23 @@ namespace TinyWindow
 		}
 #endif
 	public:
-		template<typename M>
 		static std::unique_ptr<TinyWindow::windowManager> New(void)
 		{
 			return std::unique_ptr<TinyWindow::windowManager>(new TinyWindow::windowManager());
 		}
 	};
+
+	inline
+	void* twGetGLProc(const char* procname)
+	{
+#if defined(TW_WINDOWS)
+		const auto wgl = wglGetProcAddress(procname);
+
+		return wgl ? wgl : GetProcAddress(GetModuleHandle("OpenGL32.dll"), procname);
+#else
+#	error TODO ; Implement for the platform
+#endif
+	}
 }
 
 inline
