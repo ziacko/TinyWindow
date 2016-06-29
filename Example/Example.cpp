@@ -29,7 +29,7 @@ void HandleMouseWheel(mouseScroll_t mouseScrollDirection)
 
 int main()
 {
-	std::unique_ptr<windowManager> manager = TinyWindow::windowManager::New<std::unique_ptr<TinyWindow::windowManager>>();
+	std::unique_ptr<windowManager> manager = TinyWindow::windowManager::New();
 
 	std::unique_ptr<tWindow> window = manager->AddWindow("Example");
 
