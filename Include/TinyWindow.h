@@ -1513,14 +1513,6 @@ namespace TinyWindow
 			window->windowHandle = nullptr;
 			window->glRenderingContextHandle = nullptr;
 
-			for (auto it = windowList.begin(); it != windowList.end(); ++it)
-			{
-				if (window == it->get())
-				{
-					windowList.erase(it);
-					break;
-				}
-			}
 	#elif defined(TW_LINUX)
 			if (window->currentState == state_t::fullscreen)
 			{
@@ -1533,6 +1525,16 @@ namespace TinyWindow
 			window->windowHandle = 0;
 			window->context = 0;
 	#endif
+
+			for (auto it = windowList.begin(); it != windowList.end(); ++it)
+			{
+				if (window == it->get())
+				{
+					it->release();
+					windowList.erase(it);
+					break;
+				}
+			}
 		}
 	
 #if defined(TW_WINDOWS)
