@@ -57,6 +57,7 @@
 
 namespace TinyWindow
 {
+	class tWindow;
 	const int defaultWindowWidth = 1280;
 	const int defaultWindowHeight = 720;
 
@@ -235,16 +236,16 @@ namespace TinyWindow
 		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
-	typedef std::function<void(unsigned int key, keyState_t keyState)>									keyEvent_t;
-	typedef std::function<void(mouseButton_t mouseButton, buttonState_t buttonState)>					mouseButtonEvent_t;
-	typedef std::function<void(mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
-	typedef std::function<void()>																		destroyedEvent_t;
-	typedef std::function<void()>																		maximizedEvent_t;
-	typedef std::function<void()>																		minimizedEvent_t;
-	typedef std::function<void(bool isFocused)>															focusEvent_t;
-	typedef std::function<void(vec2_t<int> windowPosition)>												movedEvent_t;
-	typedef std::function<void(vec2_t<unsigned int> windowResolution)>									resizeEvent_t;
-	typedef std::function<void(vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)>		mouseMoveEvent_t;
+	typedef std::function<void(tWindow* window, int key, keyState_t keyState)>												keyEvent_t;
+	typedef std::function<void(tWindow* window, mouseButton_t mouseButton, buttonState_t buttonState)>						mouseButtonEvent_t;
+	typedef std::function<void(tWindow* window, mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
+	typedef std::function<void(tWindow* window)>																			destroyedEvent_t;
+	typedef std::function<void(tWindow* window)>																			maximizedEvent_t;
+	typedef std::function<void(tWindow* window)>																			minimizedEvent_t;
+	typedef std::function<void(tWindow* window, bool isFocused)>															focusEvent_t;
+	typedef std::function<void(tWindow* window, vec2_t<int> windowPosition)>												movedEvent_t;
+	typedef std::function<void(tWindow* window, vec2_t<unsigned int> windowResolution)>										resizeEvent_t;
+	typedef std::function<void(tWindow* window, vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)>			mouseMoveEvent_t;
 
 	class errorCategory_t : public std::error_category
 	{
@@ -421,17 +422,6 @@ namespace TinyWindow
 		state_t									currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
 		unsigned int							currentStyle;											/**< The current style of the window */
 
-		keyEvent_t								keyEvent;												/**< This is the callback to be used when a key has been pressed */
-		mouseButtonEvent_t						mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
-		mouseWheelEvent_t						mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
-		destroyedEvent_t						destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
-		maximizedEvent_t						maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
-		minimizedEvent_t						minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
-		focusEvent_t							focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
-		movedEvent_t							movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
-		resizeEvent_t							resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
-		mouseMoveEvent_t						mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
-
 	private:
 
 #if defined(TW_USE_VULKAN)
@@ -540,17 +530,7 @@ namespace TinyWindow
 
 		tWindow(const char* name = nullptr,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-			bool shouldClose = false, state_t currentState = state_t::normal,
-			keyEvent_t keyEvent = nullptr,
-			mouseButtonEvent_t mouseButtonEvent = nullptr,
-			mouseWheelEvent_t mouseWheelEvent = nullptr,
-			destroyedEvent_t destroyedEvent = nullptr,
-			maximizedEvent_t maximizedEvent = nullptr,
-			minimizedEvent_t minimizedEvent = nullptr,
-			focusEvent_t focusEvent = nullptr,
-			movedEvent_t movedEvent = nullptr,
-			resizeEvent_t resizeEvent = nullptr,
-			mouseMoveEvent_t mouseMoveEvent = nullptr)
+			bool shouldClose = false, state_t currentState = state_t::normal)
 		{
 			this->name = name;
 			this->colorBits = colorBits;
@@ -559,7 +539,7 @@ namespace TinyWindow
 			this->shouldClose = shouldClose;
 			this->currentState = currentState;
 
-			this->keyEvent = keyEvent;
+			/*this->keyEvent = keyEvent;
 			this->mouseButtonEvent = mouseButtonEvent;
 			this->mouseWheelEvent = mouseWheelEvent;
 			this->destroyedEvent = destroyedEvent;
@@ -568,7 +548,7 @@ namespace TinyWindow
 			this->focusEvent = focusEvent;
 			this->movedEvent = movedEvent;
 			this->resizeEvent = resizeEvent;
-			this->mouseMoveEvent = mouseMoveEvent;
+			this->mouseMoveEvent = mouseMoveEvent;*/
 
 			initialized = false;
 			contextCreated = false;
@@ -737,7 +717,7 @@ namespace TinyWindow
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
-				XSendEvent(currentDisplay,
+				XSendEvent(window, currentDisplay,
 					XDefaultRootWindow(currentDisplay),
 					0, SubstructureNotifyMask, &currentEvent);
 #endif
@@ -760,7 +740,7 @@ namespace TinyWindow
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
-				XSendEvent(currentDisplay,
+				XSendEvent(window, currentDisplay,
 					XDefaultRootWindow(currentDisplay),
 					0, SubstructureNotifyMask, &currentEvent);
 #endif
@@ -796,7 +776,7 @@ namespace TinyWindow
 			currentEvent.xclient.data.l[0] = currentState == state_t::fullscreen;
 			currentEvent.xclient.data.l[1] = AtomFullScreen;
 
-			XSendEvent(currentDisplay,
+			XSendEvent(window, currentDisplay,
 				XDefaultRootWindow(currentDisplay),
 				0, SubstructureNotifyMask, &currentEvent);
 #endif
@@ -1230,6 +1210,17 @@ namespace TinyWindow
 
 	public:
 
+		keyEvent_t								keyEvent;												/**< This is the callback to be used when a key has been pressed */
+		mouseButtonEvent_t						mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
+		mouseWheelEvent_t						mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
+		destroyedEvent_t						destroyedEvent;											/**< This is the callback to be used when the window has been closed in a non-programmatic fashion */
+		maximizedEvent_t						maximizedEvent;											/**< This is the callback to be used when the window has been maximized in a non-programmatic fashion */
+		minimizedEvent_t						minimizedEvent;											/**< This is the callback to be used when the window has been minimized in a non-programmatic fashion */
+		focusEvent_t							focusEvent;												/**< This is the callback to be used when the window has been given focus in a non-programmatic fashion */
+		movedEvent_t							movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
+		resizeEvent_t							resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
+		mouseMoveEvent_t						mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
+
 		windowManager()
 		{
 	#if defined(TW_WINDOWS)
@@ -1389,7 +1380,7 @@ namespace TinyWindow
 			//if there are any events to process
 			if (XEventsQueued(currentDisplay, QueuedAfterReading))
 			{
-				XNextEvent(currentDisplay, &currentEvent);
+				XNextEvent(window, currentDisplay, &currentEvent);
 				Linux_ProcessEvents(currentEvent);
 			}
 	#endif
@@ -1412,7 +1403,7 @@ namespace TinyWindow
 			}
 	#elif defined(TW_LINUX)
 			//even if there aren't any events to process
-			XNextEvent(currentDisplay, &currentEvent);
+			XNextEvent(window, currentDisplay, &currentEvent);
 			Linux_ProcessEvents(currentEvent);
 	#endif
 		}
@@ -1577,9 +1568,9 @@ namespace TinyWindow
 					{
 						window->shouldClose = true;
 
-						if (window->destroyedEvent != nullptr)
+						if (manager->destroyedEvent != nullptr)
 						{
-							window->destroyedEvent();
+							manager->destroyedEvent(window);
 						}
 						manager->ShutdownWindow(window);
 					}
@@ -1591,9 +1582,9 @@ namespace TinyWindow
 					window->position.x = LOWORD(longParam);
 					window->position.y = HIWORD(longParam);
 
-					if (window->movedEvent != nullptr)
+					if (manager->movedEvent != nullptr)
 					{
-						window->movedEvent(window->position);
+						manager->movedEvent(window, window->position);
 					}
 
 					break;
@@ -1604,9 +1595,9 @@ namespace TinyWindow
 					window->position.x = LOWORD(longParam);
 					window->position.y = HIWORD(longParam);
 
-					if (window->movedEvent != nullptr)
+					if (manager->movedEvent != nullptr)
 					{
-						window->movedEvent(window->position);
+						manager->movedEvent(window, window->position);
 					}
 					break;
 				}
@@ -1620,9 +1611,9 @@ namespace TinyWindow
 					{
 						case SIZE_MAXIMIZED:
 						{
-							if (window->maximizedEvent != nullptr)
+							if (manager->maximizedEvent != nullptr)
 							{
-								window->maximizedEvent();
+								manager->maximizedEvent(window);
 							}
 
 							break;
@@ -1630,18 +1621,18 @@ namespace TinyWindow
 
 						case SIZE_MINIMIZED:
 						{
-							if (window->minimizedEvent != nullptr)
+							if (manager->minimizedEvent != nullptr)
 							{
-								window->minimizedEvent();
+								manager->minimizedEvent(window);
 							}
 							break;
 						}
 
 						default:
 						{
-							if (window->resizeEvent != nullptr)
+							if (manager->resizeEvent != nullptr)
 							{
-								window->resizeEvent(window->resolution);
+								manager->resizeEvent(window, window->resolution);
 							}
 							break;
 						}
@@ -1654,9 +1645,9 @@ namespace TinyWindow
 					window->resolution.width = (unsigned int)LOWORD(longParam);
 					window->resolution.height = (unsigned int)HIWORD(longParam);
 
-					if (window->resizeEvent != nullptr)
+					if (manager->resizeEvent != nullptr)
 					{
-						window->resizeEvent(window->resolution);
+						manager->resizeEvent(window, window->resolution);
 					}
 					break;
 				}
@@ -1703,9 +1694,9 @@ namespace TinyWindow
 						}
 					}
 
-					if (window->keyEvent != nullptr)
+					if (manager->keyEvent != nullptr)
 					{
-						window->keyEvent(translatedKey, keyState_t::down);
+						manager->keyEvent(window, translatedKey, keyState_t::down);
 					}
 					break;
 				}
@@ -1752,9 +1743,9 @@ namespace TinyWindow
 						}
 					}
 
-					if (window->keyEvent != nullptr)
+					if (manager->keyEvent != nullptr)
 					{
-						window->keyEvent(translatedKey, keyState_t::up);
+						manager->keyEvent(window, translatedKey, keyState_t::up);
 					}
 					break;
 				}
@@ -1783,9 +1774,9 @@ namespace TinyWindow
 						}
 					}
 
-					if (window->keyEvent != nullptr)
+					if (manager->keyEvent != nullptr)
 					{
-						window->keyEvent(translatedKey, keyState_t::down);
+						manager->keyEvent(window, translatedKey, keyState_t::down);
 					}
 
 					break;
@@ -1817,9 +1808,9 @@ namespace TinyWindow
 						}
 					}
 
-					if (window->keyEvent != nullptr)
+					if (manager->keyEvent != nullptr)
 					{
-						window->keyEvent(translatedKey, keyState_t::up);
+						manager->keyEvent(window, translatedKey, keyState_t::up);
 					}
 					break;
 				}
@@ -1840,7 +1831,7 @@ namespace TinyWindow
 
 					if (window->keyEvent != nullptr)
 					{
-						window->keyEvent(wordParam, (tinyWindowKeyState_t)keyDown);
+						window->keyEvent(window, wordParam, (tinyWindowKeyState_t)keyDown);
 					}
 				}*/
 
@@ -1855,9 +1846,9 @@ namespace TinyWindow
 
 					ClientToScreen(windowHandle, &point);
 
-					if (window->mouseMoveEvent != nullptr)
+					if (manager->mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent(window->mousePosition, vec2_t<int>(point.x, point.y));
+						manager->mouseMoveEvent(window, window->mousePosition, vec2_t<int>(point.x, point.y));
 					}
 					break;
 				}
@@ -1866,9 +1857,9 @@ namespace TinyWindow
 				{
 					window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::down;
 
-					if (window->mouseButtonEvent != nullptr)
+					if (manager->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
+						manager->mouseButtonEvent(window, mouseButton_t::left, buttonState_t::down);
 					}
 					break;
 				}
@@ -1877,9 +1868,9 @@ namespace TinyWindow
 				{
 					window->mouseButton[(unsigned int)mouseButton_t::left] = buttonState_t::up;
 
-					if (window->mouseButtonEvent != nullptr)
+					if (manager->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
+						manager->mouseButtonEvent(window, mouseButton_t::left, buttonState_t::up);
 					}
 					break;
 				}
@@ -1888,9 +1879,9 @@ namespace TinyWindow
 				{
 					window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::down;
 
-					if (window->mouseButtonEvent != nullptr)
+					if (manager->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
+						manager->mouseButtonEvent(window, mouseButton_t::right, buttonState_t::down);
 					}
 					break;
 				}
@@ -1899,9 +1890,9 @@ namespace TinyWindow
 				{
 					window->mouseButton[(unsigned int)mouseButton_t::right] = buttonState_t::up;
 
-					if (window->mouseButtonEvent != nullptr)
+					if (manager->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
+						manager->mouseButtonEvent(window, mouseButton_t::right, buttonState_t::up);
 					}
 					break;
 				}
@@ -1910,9 +1901,9 @@ namespace TinyWindow
 				{
 					window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::down;
 
-					if (window->mouseButtonEvent != nullptr)
+					if (manager->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
+						manager->mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::down);
 					}
 					break;
 				}
@@ -1921,9 +1912,9 @@ namespace TinyWindow
 				{
 					window->mouseButton[(unsigned int)mouseButton_t::middle] = buttonState_t::up;
 
-					if (window->mouseButtonEvent != nullptr)
+					if (manager->mouseButtonEvent != nullptr)
 					{
-						window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+						manager->mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::up);
 					}
 					break;
 				}
@@ -1946,9 +1937,9 @@ namespace TinyWindow
 
 						if (window->accumWheelDelta >= WHEEL_DELTA)
 						{
-							if (window->mouseWheelEvent != nullptr)
+							if (manager->mouseWheelEvent != nullptr)
 							{
-								window->mouseWheelEvent(mouseScroll_t::down);
+								manager->mouseWheelEvent(window, mouseScroll_t::down);
 							}
 							//reset accum
 							window->accumWheelDelta = 0;
@@ -1971,15 +1962,14 @@ namespace TinyWindow
 						//if the delta is equal to or greater than delta
 						if (window->accumWheelDelta <= -WHEEL_DELTA)
 						{
-							if (window->mouseWheelEvent != nullptr)
+							if (manager->mouseWheelEvent != nullptr)
 							{
-								window->mouseWheelEvent(mouseScroll_t::up);
+								manager->mouseWheelEvent(window, mouseScroll_t::up);
 							}
 							//reset accum
 							window->accumWheelDelta = 0;
 						}
 					}
-
 					break;
 				}
 
@@ -2378,7 +2368,7 @@ namespace TinyWindow
 			return nullptr;
 		}
 
-		tWindow* GetWindowByEvent(XEvent currentEvent)
+		tWindow* GetWindowByEvent(window, XEvent currentEvent)
 		{
 			switch(currentEvent.type)
 			{
@@ -2547,7 +2537,7 @@ namespace TinyWindow
 
 		void Linux_ProcessEvents(XEvent currentEvent)
 		{
-			tWindow* window = GetWindowByEvent(currentEvent);
+			tWindow* window = GetWindowByEvent(window, currentEvent);
 
 			switch (currentEvent.type)	
 			{
@@ -2560,7 +2550,7 @@ namespace TinyWindow
 				{
 					if (window->destroyedEvent != nullptr)
 					{
-						window->destroyedEvent();
+						window->destroyedEvent(window, );
 					}
 
 					ShutdownWindow(window);
@@ -2589,7 +2579,7 @@ namespace TinyWindow
 						window->keys[ translatedKey] = keyState_t::down;
 						if (window->keyEvent != nullptr)
 						{
-							window->keyEvent(translatedKey, keyState_t::down);
+							window->keyEvent(window, translatedKey, keyState_t::down);
 						}
 
 					break;
@@ -2601,7 +2591,7 @@ namespace TinyWindow
 					if (XEventsQueued(currentDisplay, QueuedAfterReading))
 					{
 						XEvent nextEvent;
-						XPeekEvent(currentDisplay, &nextEvent);
+						XPeekEvent(window, currentDisplay, &nextEvent);
 
 						if (nextEvent.type == KeyPress &&
 							nextEvent.xkey.time == currentEvent.xkey.time &&
@@ -2611,8 +2601,8 @@ namespace TinyWindow
 								currentDisplay, currentEvent.xkey.keycode, 0, 
 								currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-							XNextEvent(currentDisplay, &currentEvent);
-							window->keyEvent(Linux_TranslateKey(functionKeysym), keyState_t::down);
+							XNextEvent(window, currentDisplay, &currentEvent);
+							window->keyEvent(window, Linux_TranslateKey(functionKeysym), keyState_t::down);
 							isRetriggered = true;
 						}
 					}
@@ -2626,7 +2616,7 @@ namespace TinyWindow
 						window->keys[ translatedKey] = keyState_t::up;
 						if (window->keyEvent != nullptr)
 						{
-							window->keyEvent(translatedKey, keyState_t::up);
+							window->keyEvent(window, translatedKey, keyState_t::up);
 						}
 					}
 
@@ -2643,7 +2633,7 @@ namespace TinyWindow
 
 						if (window->mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(mouseButton_t::left, buttonState_t::down);
+							window->mouseButtonEvent(window, mouseButton_t::left, buttonState_t::down);
 						}
 						break;
 					}
@@ -2654,7 +2644,7 @@ namespace TinyWindow
 
 						if (window->mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::down);
+							window->mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::down);
 						}
 						break;
 					}
@@ -2665,7 +2655,7 @@ namespace TinyWindow
 
 						if (window->mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(mouseButton_t::right, buttonState_t::down);
+							window->mouseButtonEvent(window, mouseButton_t::right, buttonState_t::down);
 						}
 						break;
 					}
@@ -2676,7 +2666,7 @@ namespace TinyWindow
 
 						if (window->mouseWheelEvent != nullptr)
 						{
-							window->mouseWheelEvent(mouseScroll_t::down);
+							window->mouseWheelEvent(window, mouseScroll_t::down);
 						}
 						break;
 					}
@@ -2687,7 +2677,7 @@ namespace TinyWindow
 
 						if (window->mouseWheelEvent != nullptr)
 						{
-							window->mouseWheelEvent(mouseScroll_t::down);
+							window->mouseWheelEvent(window, mouseScroll_t::down);
 						}
 						break;
 					}
@@ -2713,7 +2703,7 @@ namespace TinyWindow
 
 						if (window->mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(mouseButton_t::left, buttonState_t::up);
+							window->mouseButtonEvent(window, mouseButton_t::left, buttonState_t::up);
 						}
 						break;
 					}
@@ -2725,7 +2715,7 @@ namespace TinyWindow
 
 						if (window->mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(mouseButton_t::middle, buttonState_t::up);
+							window->mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::up);
 						}
 						break;
 					}
@@ -2737,7 +2727,7 @@ namespace TinyWindow
 
 						if (window->mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(mouseButton_t::right, buttonState_t::up);
+							window->mouseButtonEvent(window, mouseButton_t::right, buttonState_t::up);
 						}
 						break;
 					}
@@ -2781,7 +2771,7 @@ namespace TinyWindow
 
 					if (window->mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent( vec2_t<int>(currentEvent.xmotion.x,
+						window->mouseMoveEvent(window,  vec2_t<int>(currentEvent.xmotion.x,
 							currentEvent.xmotion.y), vec2_t<int>(currentEvent.xmotion.x_root,
 							currentEvent.xmotion.y_root));
 					}
@@ -2794,7 +2784,7 @@ namespace TinyWindow
 					window->inFocus = false;
 					if (window->focusEvent != nullptr)
 					{
-						window->focusEvent(
+						window->focusEvent(window, 
 							window->inFocus);
 					}
 					break;
@@ -2807,7 +2797,7 @@ namespace TinyWindow
 
 					if (window->focusEvent != nullptr)
 					{
-						window->focusEvent(window->inFocus);
+						window->focusEvent(window, window->inFocus);
 					}
 					break;
 				}
@@ -2825,7 +2815,7 @@ namespace TinyWindow
 
 					if (window->resizeEvent != nullptr)
 					{
-						window->resizeEvent(vec2_t<unsigned int>(currentEvent.xresizerequest.width,
+						window->resizeEvent(window, vec2_t<unsigned int>(currentEvent.xresizerequest.width,
 							currentEvent.xresizerequest.height));
 					}
 
@@ -2844,7 +2834,7 @@ namespace TinyWindow
 					{
 						if (window->resizeEvent != nullptr)
 						{
-							window->resizeEvent(vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
+							window->resizeEvent(window, vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
 						}
 
 						window->resolution.width = currentEvent.xconfigure.width;
@@ -2857,7 +2847,7 @@ namespace TinyWindow
 					{
 						if (window->movedEvent != nullptr)
 						{
-							window->movedEvent(vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+							window->movedEvent(window, vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
 						}
 
 						window->position.x = currentEvent.xconfigure.x;
@@ -2870,7 +2860,7 @@ namespace TinyWindow
 				{
 					//this is needed in order to read from the windows WM_STATE Atomic
 					//to determine if the property notify event was caused by a client
-					//iconify event(minimizing the window), a maximise event, a focus 
+					//iconify Event(window, minimizing the window), a maximise event, a focus 
 					//event and an attention demand event. NOTE these should only be 
 					//for eventts that are not triggered programatically 
 
@@ -2898,7 +2888,7 @@ namespace TinyWindow
 								if (window->minimizedEvent != nullptr)
 								{
 									//if the minimized callback for the window was set							
-									window->minimizedEvent();
+									window->minimizedEvent(window, );
 								}
 							}
 
@@ -2909,7 +2899,7 @@ namespace TinyWindow
 								if (window->maximizedEvent != nullptr)
 								{
 									//if the maximized callback for the window was set
-									window->maximizedEvent();
+									window->maximizedEvent(window, );
 								}
 							}
 
@@ -2949,7 +2939,7 @@ namespace TinyWindow
 						window->shouldClose = true;
 						if(window->destroyedEvent != nullptr)
 						{
-							window->destroyedEvent();
+							window->destroyedEvent(window, );
 						}
 						break;	
 					}
