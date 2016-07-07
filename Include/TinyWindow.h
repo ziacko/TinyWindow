@@ -1,4 +1,5 @@
 //created by Ziyad Barakat 2014 - 2016
+// non-trivially restructured by Peter LaValle
 
 #pragma once
 
