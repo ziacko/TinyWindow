@@ -717,8 +717,8 @@ namespace TinyWindow
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
-				XSendEvent(window, currentDisplay,
-					XDefaultRootWindow(currentDisplay),
+				XSendEvent(currentDisplay,
+					windowHandle,
 					0, SubstructureNotifyMask, &currentEvent);
 #endif
 			}
@@ -740,8 +740,7 @@ namespace TinyWindow
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
-				XSendEvent(window, currentDisplay,
-					XDefaultRootWindow(currentDisplay),
+				XSendEvent(currentDisplay, windowHandle,
 					0, SubstructureNotifyMask, &currentEvent);
 #endif
 			}
@@ -776,8 +775,7 @@ namespace TinyWindow
 			currentEvent.xclient.data.l[0] = currentState == state_t::fullscreen;
 			currentEvent.xclient.data.l[1] = AtomFullScreen;
 
-			XSendEvent(window, currentDisplay,
-				XDefaultRootWindow(currentDisplay),
+			XSendEvent(currentDisplay, windowHandle,
 				0, SubstructureNotifyMask, &currentEvent);
 #endif
 			return TinyWindow::error_t::success;
@@ -1380,7 +1378,7 @@ namespace TinyWindow
 			//if there are any events to process
 			if (XEventsQueued(currentDisplay, QueuedAfterReading))
 			{
-				XNextEvent(window, currentDisplay, &currentEvent);
+				XNextEvent(currentDisplay, &currentEvent);
 				Linux_ProcessEvents(currentEvent);
 			}
 	#endif
@@ -1403,7 +1401,7 @@ namespace TinyWindow
 			}
 	#elif defined(TW_LINUX)
 			//even if there aren't any events to process
-			XNextEvent(window, currentDisplay, &currentEvent);
+			XNextEvent(currentDisplay, &currentEvent);
 			Linux_ProcessEvents(currentEvent);
 	#endif
 		}
@@ -2368,7 +2366,7 @@ namespace TinyWindow
 			return nullptr;
 		}
 
-		tWindow* GetWindowByEvent(window, XEvent currentEvent)
+		tWindow* GetWindowByEvent(XEvent currentEvent)
 		{
 			switch(currentEvent.type)
 			{
@@ -2537,7 +2535,7 @@ namespace TinyWindow
 
 		void Linux_ProcessEvents(XEvent currentEvent)
 		{
-			tWindow* window = GetWindowByEvent(window, currentEvent);
+			tWindow* window = GetWindowByEvent(currentEvent);
 
 			switch (currentEvent.type)	
 			{
@@ -2548,9 +2546,9 @@ namespace TinyWindow
 
 				case DestroyNotify:
 				{
-					if (window->destroyedEvent != nullptr)
+					if (destroyedEvent != nullptr)
 					{
-						window->destroyedEvent(window, );
+						destroyedEvent(window);
 					}
 
 					ShutdownWindow(window);
@@ -2577,9 +2575,9 @@ namespace TinyWindow
 
 						unsigned int translatedKey = Linux_TranslateKey(functionKeysym); 
 						window->keys[ translatedKey] = keyState_t::down;
-						if (window->keyEvent != nullptr)
+						if (keyEvent != nullptr)
 						{
-							window->keyEvent(window, translatedKey, keyState_t::down);
+							keyEvent(window, translatedKey, keyState_t::down);
 						}
 
 					break;
@@ -2591,7 +2589,7 @@ namespace TinyWindow
 					if (XEventsQueued(currentDisplay, QueuedAfterReading))
 					{
 						XEvent nextEvent;
-						XPeekEvent(window, currentDisplay, &nextEvent);
+						XPeekEvent(currentDisplay, &nextEvent);
 
 						if (nextEvent.type == KeyPress &&
 							nextEvent.xkey.time == currentEvent.xkey.time &&
@@ -2601,9 +2599,12 @@ namespace TinyWindow
 								currentDisplay, currentEvent.xkey.keycode, 0, 
 								currentEvent.xkey.state & ShiftMask ? 1 : 0);
 
-							XNextEvent(window, currentDisplay, &currentEvent);
-							window->keyEvent(window, Linux_TranslateKey(functionKeysym), keyState_t::down);
+							XNextEvent(currentDisplay, &currentEvent);
 							isRetriggered = true;
+							if(keyEvent != nullptr)
+							{
+								keyEvent(window, Linux_TranslateKey(functionKeysym), keyState_t::down);
+							}
 						}
 					}
 
@@ -2614,9 +2615,9 @@ namespace TinyWindow
 
 						unsigned int translatedKey = Linux_TranslateKey(functionKeysym); 
 						window->keys[ translatedKey] = keyState_t::up;
-						if (window->keyEvent != nullptr)
+						if (keyEvent != nullptr)
 						{
-							window->keyEvent(window, translatedKey, keyState_t::up);
+							keyEvent(window, translatedKey, keyState_t::up);
 						}
 					}
 
@@ -2631,9 +2632,9 @@ namespace TinyWindow
 					{
 						window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::down;
 
-						if (window->mouseButtonEvent != nullptr)
+						if (mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(window, mouseButton_t::left, buttonState_t::down);
+							mouseButtonEvent(window, mouseButton_t::left, buttonState_t::down);
 						}
 						break;
 					}
@@ -2642,9 +2643,9 @@ namespace TinyWindow
 					{
 						window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::down;
 
-						if (window->mouseButtonEvent != nullptr)
+						if (mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::down);
+							mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::down);
 						}
 						break;
 					}
@@ -2653,9 +2654,9 @@ namespace TinyWindow
 					{
 						window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::down;
 
-						if (window->mouseButtonEvent != nullptr)
+						if (mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(window, mouseButton_t::right, buttonState_t::down);
+							mouseButtonEvent(window, mouseButton_t::right, buttonState_t::down);
 						}
 						break;
 					}
@@ -2664,9 +2665,9 @@ namespace TinyWindow
 					{
 						window->mouseButton[ (unsigned int)mouseScroll_t::up] = buttonState_t::down;
 
-						if (window->mouseWheelEvent != nullptr)
+						if (mouseWheelEvent != nullptr)
 						{
-							window->mouseWheelEvent(window, mouseScroll_t::down);
+							mouseWheelEvent(window, mouseScroll_t::down);
 						}
 						break;
 					}
@@ -2675,9 +2676,9 @@ namespace TinyWindow
 					{
 						window->mouseButton[ (unsigned int)mouseScroll_t::down] = buttonState_t::down;
 
-						if (window->mouseWheelEvent != nullptr)
+						if (mouseWheelEvent != nullptr)
 						{
-							window->mouseWheelEvent(window, mouseScroll_t::down);
+							mouseWheelEvent(window, mouseScroll_t::down);
 						}
 						break;
 					}
@@ -2701,9 +2702,9 @@ namespace TinyWindow
 						//the left mouse button was released
 						window->mouseButton[ (unsigned int)mouseButton_t::left] = buttonState_t::up;
 
-						if (window->mouseButtonEvent != nullptr)
+						if (mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(window, mouseButton_t::left, buttonState_t::up);
+							mouseButtonEvent(window, mouseButton_t::left, buttonState_t::up);
 						}
 						break;
 					}
@@ -2713,9 +2714,9 @@ namespace TinyWindow
 						//the middle mouse button was released
 						window->mouseButton[ (unsigned int)mouseButton_t::middle] = buttonState_t::up;
 
-						if (window->mouseButtonEvent != nullptr)
+						if (mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::up);
+							mouseButtonEvent(window, mouseButton_t::middle, buttonState_t::up);
 						}
 						break;
 					}
@@ -2725,9 +2726,9 @@ namespace TinyWindow
 						//the right mouse button was released
 						window->mouseButton[ (unsigned int)mouseButton_t::right] = buttonState_t::up;
 
-						if (window->mouseButtonEvent != nullptr)
+						if (mouseButtonEvent != nullptr)
 						{
-							window->mouseButtonEvent(window, mouseButton_t::right, buttonState_t::up);
+							mouseButtonEvent(window, mouseButton_t::right, buttonState_t::up);
 						}
 						break;
 					}
@@ -2769,9 +2770,9 @@ namespace TinyWindow
 					screenMousePosition.x = currentEvent.xmotion.x_root;
 					screenMousePosition.y = currentEvent.xmotion.y_root;
 
-					if (window->mouseMoveEvent != nullptr)
+					if (mouseMoveEvent != nullptr)
 					{
-						window->mouseMoveEvent(window,  vec2_t<int>(currentEvent.xmotion.x,
+						mouseMoveEvent(window,  vec2_t<int>(currentEvent.xmotion.x,
 							currentEvent.xmotion.y), vec2_t<int>(currentEvent.xmotion.x_root,
 							currentEvent.xmotion.y_root));
 					}
@@ -2782,10 +2783,9 @@ namespace TinyWindow
 				case FocusOut:
 				{
 					window->inFocus = false;
-					if (window->focusEvent != nullptr)
+					if (focusEvent != nullptr)
 					{
-						window->focusEvent(window, 
-							window->inFocus);
+						focusEvent(window, window->inFocus);
 					}
 					break;
 				}
@@ -2795,9 +2795,9 @@ namespace TinyWindow
 				{
 					window->inFocus = true;
 
-					if (window->focusEvent != nullptr)
+					if (focusEvent != nullptr)
 					{
-						window->focusEvent(window, window->inFocus);
+						focusEvent(window, window->inFocus);
 					}
 					break;
 				}
@@ -2813,9 +2813,9 @@ namespace TinyWindow
 						window->resolution.width,
 						window->resolution.height);
 
-					if (window->resizeEvent != nullptr)
+					if (resizeEvent != nullptr)
 					{
-						window->resizeEvent(window, vec2_t<unsigned int>(currentEvent.xresizerequest.width,
+						resizeEvent(window, vec2_t<unsigned int>(currentEvent.xresizerequest.width,
 							currentEvent.xresizerequest.height));
 					}
 
@@ -2832,9 +2832,9 @@ namespace TinyWindow
 					if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
 						|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
 					{
-						if (window->resizeEvent != nullptr)
+						if (resizeEvent != nullptr)
 						{
-							window->resizeEvent(window, vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
+							resizeEvent(window, vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
 						}
 
 						window->resolution.width = currentEvent.xconfigure.width;
@@ -2845,9 +2845,9 @@ namespace TinyWindow
 					if (currentEvent.xconfigure.x != window->position.x
 						|| currentEvent.xconfigure.y != window->position.y)
 					{
-						if (window->movedEvent != nullptr)
+						if (movedEvent != nullptr)
 						{
-							window->movedEvent(window, vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
+							movedEvent(window, vec2_t<int>(currentEvent.xconfigure.x, currentEvent.xconfigure.y));
 						}
 
 						window->position.x = currentEvent.xconfigure.x;
@@ -2885,10 +2885,10 @@ namespace TinyWindow
 							if (currentProperty == window->AtomHidden)
 							{
 								//window was minimized
-								if (window->minimizedEvent != nullptr)
+								if (minimizedEvent != nullptr)
 								{
 									//if the minimized callback for the window was set							
-									window->minimizedEvent(window, );
+									minimizedEvent(window);
 								}
 							}
 
@@ -2896,10 +2896,10 @@ namespace TinyWindow
 								currentProperty == window->AtomMaxVert)
 							{
 								//window was maximized
-								if (window->maximizedEvent != nullptr)
+								if (maximizedEvent != nullptr)
 								{
 									//if the maximized callback for the window was set
-									window->maximizedEvent(window, );
+									maximizedEvent(window);
 								}
 							}
 
@@ -2937,9 +2937,9 @@ namespace TinyWindow
 					if ((Atom)currentEvent.xclient.data.l[0] == window->AtomClose)
 					{
 						window->shouldClose = true;
-						if(window->destroyedEvent != nullptr)
+						if(destroyedEvent != nullptr)
 						{
-							window->destroyedEvent(window, );
+							destroyedEvent(window);
 						}
 						break;	
 					}
