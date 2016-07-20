@@ -1328,7 +1328,7 @@ namespace TinyWindow
 			screenMousePosition.y = mousePosition.y;
 
 	#if defined(TW_WINDOWS)
-			SetCursorPos(screenMousePosition.y, screenMousePosition.y);
+			SetCursorPos(screenMousePosition.x, screenMousePosition.y);
 	#elif defined(TW_LINUX)
 			XWarpPointer(currentDisplay, None,
 				XDefaultRootWindow(currentDisplay), 0, 0,
