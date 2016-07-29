@@ -421,7 +421,7 @@ namespace TinyWindow
 		bool									isCurrentContext;										/**< Whether the window is the current window being drawn to */
 		state_t									currentState;											/**< The current state of the window. these states include Normal, Minimized, Maximized and Full screen */
 		unsigned int							currentStyle;											/**< The current style of the window */
-
+		void*									userData;
 	private:
 
 #if defined(TW_USE_VULKAN)
@@ -528,16 +528,17 @@ namespace TinyWindow
 
 	public:
 
-		tWindow(const char* name = nullptr,
+		tWindow(const char* name = nullptr, void* userData = nullptr,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
-			bool shouldClose = false, state_t currentState = state_t::normal)
+			state_t currentState = state_t::normal)
 		{
 			this->name = name;
 			this->colorBits = colorBits;
 			this->depthBits = depthBits;
 			this->stencilBits = stencilBits;
-			this->shouldClose = shouldClose;
+			this->shouldClose = false;
 			this->currentState = currentState;
+			this->userData = userData;
 
 			/*this->keyEvent = keyEvent;
 			this->mouseButtonEvent = mouseButtonEvent;
@@ -1267,7 +1268,7 @@ namespace TinyWindow
 		 */
 		 void ShutDown()
 		 {
-			 assert(windowList.empty());
+			//windowList.empty();
 	#if defined(__linux__)
 			Linux_Shutdown();
 	#endif
@@ -1282,18 +1283,12 @@ namespace TinyWindow
 		/**
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
-		tWindow* AddWindow(const char* windowName, vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
+		tWindow* AddWindow(const char* windowName, void* userData = nullptr, vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
 				int colourBits = 8, int depthBits = 8, int stencilBits = 8)
 		{
 			if (windowName != nullptr)
 			{
-				std::unique_ptr<tWindow> newWindow(new tWindow);
-				newWindow->name = windowName;
-				newWindow->resolution = resolution;
-				newWindow->colorBits = colourBits;
-				newWindow->depthBits = depthBits;
-				newWindow->stencilBits = stencilBits;
-
+				std::unique_ptr<tWindow> newWindow(new tWindow(windowName, userData, colourBits, depthBits, stencilBits));
 				windowList.push_back(std::move(newWindow));
 				Platform_InitializeWindow(windowList.back().get());
 
