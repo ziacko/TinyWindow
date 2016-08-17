@@ -11,7 +11,7 @@
 //for gamepad support
 #pragma comment (lib, "winmm.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/subsystem:Console /ENTRY:mainCRTStartup")
 #endif //_MSC_VER
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -92,19 +92,105 @@ namespace TinyWindow
 	};
 
 	template<typename type>
+	struct vec4_t
+	{
+		vec4_t()
+		{
+			this->x = 0;
+			this->y = 0;
+			this->z = 0;
+			this->w = 0;
+		}
+
+		vec4_t(type x, type y, type z, type w)
+		{
+			this->x = x;
+			this->y = y;
+			this->z = z;
+			this->w = w;
+		}
+
+		union
+		{
+			type x;
+			type width;
+			type left;
+		};
+
+		union
+		{
+			type y;
+			type height;
+			type top;
+		};
+
+		union
+		{
+			type z;
+			type depth;
+			type right;
+		};
+
+		union 
+		{
+			type w;
+			type homogenous;
+			type bottom;
+		};
+
+		static vec4_t Zero()
+		{
+			return vec4_t<type>(0, 0, 0, 0);
+		}
+	};
+
+	struct monitorSetting_t
+	{
+		vec2_t<unsigned int>		resolution; //native resolution?
+		unsigned int				bitsPerPixel;
+		unsigned int				displayFrequency;
+
+		monitorSetting_t(vec2_t<unsigned int> resolution, unsigned int bitsPerPixel, unsigned int displayFrequency)
+		{
+			this->resolution = resolution;
+			this->bitsPerPixel = bitsPerPixel;
+			this->displayFrequency = displayFrequency;
+		}
+	};	
+
 	struct monitor_t
 	{
 		friend class windowManager;
-		//i guess for now i just put resolution?
-		vec2_t<type> resolution; //native resolution?
+
+		monitorSetting_t*					currentSetting;
+		vec4_t<unsigned int>				extents;
+		std::vector<monitorSetting_t*>		settings;
 		//store all display settings
 
-	private:
+		std::string deviceName;
+		std::string monitorName;
+
+		bool isPrimary;
+
+	//private:
 #if defined(TW_WINDOWS)
 		HMONITOR monitorHandle;
+		std::string displayName;
 #elif defined(TW_LINUX)
 
 #endif
+
+		monitor_t() {};
+
+		monitor_t(std::string displayName, std::string deviceName, std::string monitorName, bool isPrimary = false)
+		{
+			//this->resolution = resolution;
+			this->extents = extents;
+			this->displayName = displayName;
+			this->deviceName = deviceName;
+			this->monitorName = monitorName;
+			this->isPrimary = isPrimary;
+		}
 	};
 
 	enum class keyState_t
@@ -239,6 +325,7 @@ namespace TinyWindow
 		invalidCallback,						/**< If the given event callback was invalid */
 		windowInvalid,							/**< If the window given was invalid */
 		invalidWindowStyle,						/**< If the window style gives is invalid */
+		fullscreenFailed,						/**< If setting the window to fullscreen has failed*/
 		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
 		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
 		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
@@ -331,6 +418,11 @@ namespace TinyWindow
 					return "Error: invalid window style given \n";
 				}
 
+				case error_t::fullscreenFailed:
+				{
+					return "Error: failed to enter fullscreen mode \n";
+				}
+
 				case error_t::functionNotImplemented:
 				{
 					return "Error: I'm sorry but this function has not been implemented yet :(\n";
@@ -407,12 +499,12 @@ namespace TinyWindow
 
 		typedef std::function<void(tWindow* window, unsigned int key, keyState_t keyState)>									keyEvent_t;
 		typedef std::function<void(tWindow* window, mouseButton_t mouseButton, buttonState_t buttonState)>					mouseButtonEvent_t;
-		typedef std::function<void(tWindow* window, mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
+		typedef std::function<void(tWindow* window, mouseScroll_t mouseScrollDirection)>									mouseWheelEvent_t;
 		typedef std::function<void(tWindow* window)>																		destroyedEvent_t;
 		typedef std::function<void(tWindow* window)>																		maximizedEvent_t;
 		typedef std::function<void(tWindow* window)>																		minimizedEvent_t;
-		typedef std::function<void(tWindow* window, bool isFocused)>															focusEvent_t;
-		typedef std::function<void(tWindow* window, vec2_t<int> windowPosition)>												movedEvent_t;
+		typedef std::function<void(tWindow* window, bool isFocused)>														focusEvent_t;
+		typedef std::function<void(tWindow* window, vec2_t<int> windowPosition)>											movedEvent_t;
 		typedef std::function<void(tWindow* window, vec2_t<unsigned int> windowResolution)>									resizeEvent_t;
 		typedef std::function<void(tWindow* window, vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)>		mouseMoveEvent_t;
 
@@ -437,6 +529,7 @@ namespace TinyWindow
 		unsigned int							currentStyle;											/**< The current style of the window */
 		unsigned int							currentScreenIndex;										/**< The Index of the screen currently being rendered to (fullscreen)*/
 		bool									isFullscreen;											/**< Whether the window is currently in fullscreen mode */
+		TinyWindow::monitor_t*				currentMonitor;											/**< The monitor that the window is currently rendering to */
 
 		keyEvent_t								keyEvent;												/**< This is the callback to be used when a key has been pressed */
 		mouseButtonEvent_t						mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
@@ -1202,46 +1295,65 @@ namespace TinyWindow
 			return TinyWindow::error_t::success;
 		}
 
-		std::error_code ToggleFullscreen(int ScreenIndex)
+		std::error_code ToggleFullscreen(monitor_t* monitor)
 		{
+			
+			currentMonitor = monitor;
 
-			//get all display devices
-			//EnumDisplayDevices(NULL, )
-			DEVMODE devMode = {};
-			devMode.dmSize = sizeof(devMode);
-			devMode.dmPelsHeight = 1920;
-			devMode.dmPelsWidth = 1080;
-			devMode.dmBitsPerPel = 24;
-			devMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-
-			long err = ChangeDisplaySettings(&devMode, CDS_FULLSCREEN);
-
-			if (err != DISP_CHANGE_SUCCESSFUL)
+			DEVMODE devMode;
+			ZeroMemory(&devMode, sizeof(DEVMODE));
+			devMode.dmSize = sizeof(DEVMODE);
+			int err = 0;
+			if (isFullscreen)
 			{
-				//DISP_CHANGE_BADMODE
-				isFullscreen = false;
-				//change it later
-				return error_t::success;
+				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), NULL, NULL, CDS_FULLSCREEN, NULL);
 			}
 
 			else
 			{
-				isFullscreen = true;
-				
+				devMode.dmPelsWidth = resolution.width;
+				devMode.dmPelsHeight = resolution.height;
+				devMode.dmBitsPerPel = colorBits;
+				devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
+				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), &devMode, NULL, CDS_FULLSCREEN, NULL);
 			}
-			DWORD windowStyle = WS_POPUP;
-			DWORD extendedStyle = WS_EX_APPWINDOW;
-			RECT windowRect = {};
-			windowRect.left = resolution.width;
-			windowRect.right = 0;
-			windowRect.top = 0;
-			windowRect.bottom = resolution.height;
 
+			switch (err)
+			{
+				case DISP_CHANGE_SUCCESSFUL:
+				{
+					isFullscreen = !isFullscreen;
+					if (isFullscreen)
+					{
+						SetStyle(style_t::popup);
+					}
 
-			AdjustWindowRectEx(&windowRect, windowStyle, FALSE, extendedStyle);
+					else
+					{
+						SetStyle(style_t::normal);
+					}
+
+					break;
+				}
+
+				case DISP_CHANGE_BADDUALVIEW:
+				case DISP_CHANGE_BADFLAGS:
+				case DISP_CHANGE_BADMODE:
+				case DISP_CHANGE_BADPARAM:
+				case DISP_CHANGE_FAILED:
+				case DISP_CHANGE_NOTUPDATED:
+				{
+					return error_t::fullscreenFailed;
+				}
+
+				default:
+				{
+					break;
+				}
+			}
+			SetPosition(vec2_t<int>((int)monitor->extents.left, (int)monitor->extents.top));
 
 			return error_t::success;
-
 		}
 
 		//if windows is defined then allow the user to only GET the necessary info
@@ -1265,9 +1377,7 @@ namespace TinyWindow
 		{
 			return instanceHandle;
 		}
-#endif
-
-#if defined(TW_LINUX)
+#elif defined(TW_LINUX)
 		Window GetWindowHandle()
 		{
 			return windowHandle;
@@ -1285,17 +1395,17 @@ namespace TinyWindow
 #endif
 	};
 
-	class windowManager
+	class windowManager 
 	{
 
 	public:
 
 		windowManager()
 		{
-			numScreens = 0;
+			//numScreens = 0;
 	#if defined(TW_WINDOWS)
-			CreateTerminal(); //feel free to comment this out
-			RECT desktop;
+			//CreateTerminal(); //feel free to comment this out
+			//RECT desktop;
 
 			HWND desktopHandle = GetDesktopWindow();
 
@@ -1303,10 +1413,10 @@ namespace TinyWindow
 			{
 				Platform_GetScreenInfo();
 
-				GetWindowRect(desktopHandle, &desktop);
+				//GetWindowRect(desktopHandle, &desktop);
 
-				screenResolution.x = desktop.right;
-				screenResolution.y = desktop.bottom;
+				//screenResolution.x = desktop.right;
+				//screenResolution.y = desktop.bottom;
 
 				return;
 			}
@@ -1356,7 +1466,7 @@ namespace TinyWindow
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
 		tWindow* AddWindow(const char* windowName, vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-				int colourBits = 8, int depthBits = 8, int stencilBits = 8)
+				int colourBits = 32, int depthBits = 8, int stencilBits = 8)
 		{
 			if (windowName != nullptr)
 			{
@@ -1415,7 +1525,7 @@ namespace TinyWindow
 		/**
 		* Return the Resolution of the current screen
 		*/
-		TinyWindow::vec2_t<unsigned int> GetScreenResolution()
+		/*TinyWindow::vec2_t<unsigned int> GetScreenResolution()
 		{
 	#if defined(TW_WINDOWS)
 			RECT screen;
@@ -1428,7 +1538,7 @@ namespace TinyWindow
 			screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
 	#endif
 			return screenResolution;
-		}
+		}*/
 
 		/**
 		* Ask the window manager to poll for events
@@ -1493,15 +1603,20 @@ namespace TinyWindow
 			return TinyWindow::error_t::windowInvalid;
 		}
 
+		std::vector<monitor_t*> GetMonitors()
+		{
+			return monitorList;
+		}
+
 	private:
 
 		std::vector<std::unique_ptr<tWindow>>		windowList;
-		std::vector<monitor_t<int>>					monitorList;
+		std::vector<monitor_t*>						monitorList;
 
-		TinyWindow::vec2_t<unsigned int>			screenResolution;
+		//TinyWindow::vec2_t<unsigned int>			screenResolution;
 		TinyWindow::vec2_t<int>						screenMousePosition;
 
-		unsigned int								numScreens;
+		//unsigned int								numScreens;
 
 		void Platform_InitializeWindow(tWindow* window)
 		{
@@ -1565,6 +1680,20 @@ namespace TinyWindow
 #endif
 		}
 
+		void CheckWindowScreen(tWindow* window)
+		{
+#if defined(TW_WINDOWS)
+			//for each monitor
+			for (unsigned int monitorIndex = 0; monitorIndex < monitorList.size(); monitorIndex++)
+			{
+				if (monitorList[monitorIndex]->monitorHandle == MonitorFromWindow(window->windowHandle, MONITOR_DEFAULTTONEAREST))
+				{
+					window->currentMonitor = monitorList[monitorIndex];
+				}
+			}
+#endif
+		}
+
 		void ShutdownWindow(tWindow* window)
 		{
 	#if defined(TW_WINDOWS)
@@ -1612,7 +1741,7 @@ namespace TinyWindow
 		}
 	
 #if defined(TW_WINDOWS)
-
+		
 		enum keyLong_t
 		{
 			leftControlDown = 29,
@@ -1665,6 +1794,7 @@ namespace TinyWindow
 				{
 					window->position.x = LOWORD(longParam);
 					window->position.y = HIWORD(longParam);
+					manager->CheckWindowScreen(window);
 
 					if (window->movedEvent != nullptr)
 					{
@@ -1688,8 +1818,8 @@ namespace TinyWindow
 
 				case WM_SIZE:
 				{
-					window->resolution.width = (unsigned int)LOWORD(longParam);
-					window->resolution.height = (unsigned int)HIWORD(longParam);
+					//window->resolution.width = (unsigned int)LOWORD(longParam);
+					//window->resolution.height = (unsigned int)HIWORD(longParam);
 
 					switch (wordParam)
 					{
@@ -1723,7 +1853,7 @@ namespace TinyWindow
 					}
 					break;
 				}
-
+				 
 				case WM_SIZING:
 				{
 					window->resolution.width = (unsigned int)LOWORD(longParam);
@@ -2068,17 +2198,24 @@ namespace TinyWindow
 		}
 
 		//user data should be a pointer to a window manager
-		static BOOL CALLBACK MonitorEnumProcedure(HMONITOR monitorHandle, HDC monitorDeviceContextHandle, LPRECT montitorSize, LPARAM userData)
+		static BOOL CALLBACK MonitorEnumProcedure(HMONITOR monitorHandle, HDC monitorDeviceContextHandle, LPRECT monitorSize, LPARAM userData)
 		{
 			windowManager* manager = (windowManager*)userData;
-			monitor_t<int> monitor = {};
-
-			monitor.monitorHandle = monitorHandle;
-			monitor.resolution.height = (montitorSize->bottom - montitorSize->top);
-			monitor.resolution.width = (montitorSize->right - montitorSize->left);
-
-			manager->monitorList.push_back(std::move(monitor));
-			manager->numScreens++;
+			MONITORINFOEX info = {};
+			info.cbSize = sizeof(info);
+			GetMonitorInfo(monitorHandle, &info);
+			
+			monitor_t* monitor = manager->GetMonitorByHandle(info.szDevice);// new monitor_t(std::string(info.szDevice), nullptr);// ,
+			monitor->monitorHandle = monitorHandle;
+			//monitor->currentSetting->resolution = vec2_t<unsigned int>((monitorSize->right - monitorSize->left), (monitorSize->bottom - monitorSize->top));
+			monitor->extents = vec4_t<unsigned int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
+			
+			/*printf("%s \n", info.szDevice);
+			printf("%i \n", (int)monitor->monitorHandle);
+			printf("width: %i height: %i \n", monitor->currentSetting->resolution.width, monitor->currentSetting->resolution.height);
+			printf("top: %i left: %i bottom: %i right: %i \n", monitor->extents.top, monitor->extents.left, monitor->extents.bottom, monitor->extents.right);*/
+			//manager->monitorList.push_back(std::move(monitor));
+			//manager->numScreens++;
 			return true;
 		}
 
@@ -2090,6 +2227,18 @@ namespace TinyWindow
 				if (windowList[windowIndex]->windowHandle == windowHandle)
 				{
 					return windowList[windowIndex].get();
+				}
+			}
+			return nullptr;
+		}
+
+		monitor_t* GetMonitorByHandle(std::string displayName)
+		{
+			for (unsigned int iter = 0; iter < monitorList.size(); iter++)
+			{
+				if (displayName.compare(monitorList[iter]->displayName) == 0)
+				{
+					return monitorList[iter];
 				}
 			}
 			return nullptr;
@@ -2131,6 +2280,12 @@ namespace TinyWindow
 #endif
 			ShowWindow(window->windowHandle, true);
 			UpdateWindow(window->windowHandle);
+
+			//get the current screen the window is on
+			//MonitorFromWindow(window->windowHandle);
+			CheckWindowScreen(window);
+
+			//get screen by window Handle
 
 			window->SetStyle(style_t::normal);
 		}
@@ -2176,7 +2331,7 @@ namespace TinyWindow
 
 		}
 
-		void CreateTerminal()
+		/*void CreateTerminal()
 		{
 			int conHandle;
 			long stdHandle;
@@ -2192,7 +2347,7 @@ namespace TinyWindow
 			*stdout = *fp;
 
 			setvbuf(stdout, nullptr, _IONBF, 0);
-		}
+		}*/
 
 		static unsigned int Windows_TranslateKey(WPARAM wordParam)
 		{
@@ -2453,18 +2608,64 @@ namespace TinyWindow
 
 		void Windows_GetScreenInfo()
 		{
-			if (EnumDisplayMonitors(NULL, NULL, MonitorEnumProcedure, (LPARAM)this))
+			DISPLAY_DEVICE monitorDevice;
+			monitorDevice.cb = sizeof(DISPLAY_DEVICE);
+			DWORD deviceNum = 0;
+			while (EnumDisplayDevices(NULL, deviceNum, &monitorDevice, NULL))
 			{
-				printf("%i \n", numScreens);
+				/*printf("Device Name: %s \n", monitorDevice.DeviceName);
+				printf("Device string: %s \n", monitorDevice.DeviceString);
+				printf("Device Flags: %x \n", monitorDevice.StateFlags);*/
+
+				DISPLAY_DEVICE graphicsDevice = { 0 };
+				graphicsDevice.cb = sizeof(DISPLAY_DEVICE);
+				DWORD monitorNum = 0;
+				//if it has children add them to the list, else, ignore them since those are only POTENTIAL monitors/devices
+				while (EnumDisplayDevices(monitorDevice.DeviceName, monitorNum, &graphicsDevice, 0))
+				{
+					monitor_t* monitor = new monitor_t(monitorDevice.DeviceName, monitorDevice.DeviceString, graphicsDevice.DeviceString, (monitorDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);					
+					//get current display mode
+					DEVMODE devmode;
+
+					/*if (EnumDisplaySettings(monitorDevice.DeviceName, ENUM_CURRENT_SETTINGS, &devmode))
+					{
+
+					}*/
+					//get all display modes
+					unsigned int modeIndex = -1;
+					while (EnumDisplaySettings(monitorDevice.DeviceName, modeIndex, &devmode))
+					{
+						if (modeIndex == ENUM_CURRENT_SETTINGS)
+						{
+							monitor->currentSetting = new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency);
+							//monitor->settings.push_back(monitor->currentSetting);
+						}
+						else
+						{
+							monitor->settings.push_back(std::move(new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency)));
+						}
+						modeIndex++;
+						
+					}
+
+					monitorList.push_back(std::move(monitor));
+					/*printf("Device Name: %s \n", graphicsDevice.DeviceName);
+					printf("Device string: %s \n", graphicsDevice.DeviceString);
+					printf("Device Flags: %x \n", graphicsDevice.StateFlags);*/
+					monitorNum++;
+				}
+				deviceNum++;
+
 			}
 
-			MONITORINFOEX info = {};
-			info.cbSize = sizeof(info);
-			for (unsigned int screenIndex = 0; screenIndex < numScreens; screenIndex++)
+
+			if (EnumDisplayMonitors(NULL, NULL, MonitorEnumProcedure, (LPARAM)this))
 			{
-				GetMonitorInfo(monitorList[screenIndex].monitorHandle, &info);
+				//printf("%i \n", numScreens);
 			}
 		}
+
+		
 
 #elif defined(TW_LINUX)
 

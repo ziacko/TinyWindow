@@ -49,7 +49,8 @@ int main()
 
 		if (spacePressed)
 		{
-			window->ToggleFullscreen(0);
+			window->ToggleFullscreen(manager->GetMonitors()[0]);
+			spacePressed = false;
 		}
 
 		window->SwapDrawBuffers();
