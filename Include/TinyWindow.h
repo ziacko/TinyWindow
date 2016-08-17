@@ -2210,10 +2210,7 @@ namespace TinyWindow
 			//monitor->currentSetting->resolution = vec2_t<unsigned int>((monitorSize->right - monitorSize->left), (monitorSize->bottom - monitorSize->top));
 			monitor->extents = vec4_t<unsigned int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
 			
-			/*printf("%s \n", info.szDevice);
-			printf("%i \n", (int)monitor->monitorHandle);
-			printf("width: %i height: %i \n", monitor->currentSetting->resolution.width, monitor->currentSetting->resolution.height);
-			printf("top: %i left: %i bottom: %i right: %i \n", monitor->extents.top, monitor->extents.left, monitor->extents.bottom, monitor->extents.right);*/
+			/**/
 			//manager->monitorList.push_back(std::move(monitor));
 			//manager->numScreens++;
 			return true;

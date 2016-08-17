@@ -40,6 +40,22 @@ int main()
 	std::unique_ptr<windowManager> manager(new windowManager());
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
 
+	for (auto monitorIter : manager->GetMonitors())
+	{
+		//printf(iter->
+		printf("%s \n", monitorIter->deviceName.c_str());
+		printf("%s \n", monitorIter->monitorName.c_str());
+		printf("%s \n", monitorIter->displayName.c_str());
+		printf("resolution:\t current width: %i | current height: %i \n", monitorIter->currentSetting->resolution.width, monitorIter->currentSetting->resolution.height);
+		printf("extents:\t top: %i | left: %i | bottom: %i | right: %i \n", monitorIter->extents.top, monitorIter->extents.left, monitorIter->extents.bottom, monitorIter->extents.right);
+		for (auto settingIter : monitorIter->settings)
+		{
+			printf("width %i | height %i | frequency %i | pixel depth: %i \n", 
+				settingIter->resolution.width, settingIter->resolution.height, settingIter->displayFrequency, settingIter->bitsPerPixel);
+		}
+		printf("\n");
+	}
+
 	window->keyEvent = HandleKeyPresses;
 	window->mouseWheelEvent = HandleMouseWheel;
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
