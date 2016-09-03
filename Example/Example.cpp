@@ -11,9 +11,10 @@ void HandleKeyPresses(tWindow* window, unsigned int key, keyState_t keyState)
 		spacePressed = true;
 	}
 
-	else if (keyState == keyState_t::up && key == spacebar)
+	else if (keyState == keyState_t::up && key == escape)
 	{
-		spacePressed = false;
+		window->shouldClose = true;
+		//spacePressed = false;
 	}
 }
 
@@ -65,7 +66,10 @@ int main()
 
 		if (spacePressed)
 		{
-			window->ToggleFullscreen(manager->GetMonitors()[0]);
+			window->SetStyle(style_t::popup);
+			window->SetPosition(vec2_t<int>::Zero());
+			window->SetResolution(vec2_t<unsigned int>(manager->GetMonitors().back()->extents.right, manager->GetMonitors().back()->extents.bottom));
+			//window->ToggleFullscreen(manager->GetMonitors()[0]);
 			spacePressed = false;
 		}
 

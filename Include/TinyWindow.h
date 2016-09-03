@@ -2153,7 +2153,7 @@ namespace TinyWindow
 						{
 							if (window->mouseWheelEvent != nullptr)
 							{
-								window->mouseWheelEvent(window, mouseScroll_t::down);
+								window->mouseWheelEvent(window, mouseScroll_t::up);
 							}
 							//reset accum
 							window->accumWheelDelta = 0;
@@ -2178,7 +2178,7 @@ namespace TinyWindow
 						{
 							if (window->mouseWheelEvent != nullptr)
 							{
-								window->mouseWheelEvent(window, mouseScroll_t::up);
+								window->mouseWheelEvent(window, mouseScroll_t::down);
 							}
 							//reset accum
 							window->accumWheelDelta = 0;
