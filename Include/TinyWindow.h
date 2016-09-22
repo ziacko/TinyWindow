@@ -11,7 +11,7 @@
 //for gamepad support
 #pragma comment (lib, "winmm.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
-#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#pragma comment(linker, "/subsystem:console /ENTRY:mainCRTStartup")
 #endif //_MSC_VER
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -23,6 +23,7 @@
 #include <Windows.h>
 #if !defined(TW_USE_VULKAN)
 #include <gl/GL.h>
+#include <gl/wglext.h>
 #else
 #include <vulkan.h>
 #endif
@@ -210,6 +211,12 @@ namespace TinyWindow
 		popup,									/**< The window has no decorators */
 	};
 
+	enum class profile_t
+	{
+		core,
+		compatibility,
+	};
+
 	enum class error_t
 	{
 		success,								/**< If a function call was successful*/
@@ -226,6 +233,8 @@ namespace TinyWindow
 		invalidCallback,						/**< If the given event callback was invalid */
 		windowInvalid,							/**< If the window given was invalid */
 		invalidWindowStyle,						/**< If the window style gives is invalid */
+		invalidVersion,							/**< If an invalid OpenGL version is being used */
+		invalidProfile,							/**< If an invalid OpenGL profile is being used */
 		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
 		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
 		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
@@ -329,6 +338,16 @@ namespace TinyWindow
 					return "Error: invalid window style given \n";
 				}
 
+				case error_t::invalidVersion:
+				{
+					return "Error: invalid OpenGL version \n";
+				}
+
+				case error_t::invalidProfile:
+				{
+					return "Error: invalid OpenGL profile \n";
+				}
+
 				case error_t::functionNotImplemented:
 				{
 					return "Error: I'm sorry but this function has not been implemented yet :(\n";
@@ -414,6 +433,7 @@ namespace TinyWindow
 		TinyWindow::vec2_t<unsigned int>		resolution;												/**< Resolution/Size of the window stored in an array */
 		TinyWindow::vec2_t<int>					position;												/**< Position of the Window relative to the screen co-ordinates */
 		TinyWindow::vec2_t<int>					mousePosition;											/**< Position of the Mouse cursor relative to the window co-ordinates */
+		TinyWindow::vec2_t<int>					previousMousePosition;
 		bool									shouldClose;											/**< Whether the Window should be closing */
 		bool									inFocus;												/**< Whether the Window is currently in focus(if it is the current window be used) */
 		bool									initialized;											/**< Whether the window has been successfully initialized */
@@ -427,18 +447,23 @@ namespace TinyWindow
 #if defined(TW_USE_VULKAN)
 		VkInstance								vulkanInstanceHandle;
 		VkSurfaceKHR							vulkanSurfaceHandle;
+
+#else
+		GLint									versionMajor;
+		GLint									versionMinor;
+		GLint									profile;
 #endif
 
 #if defined(TW_WINDOWS)
 
-		HDC								deviceContextHandle;									/**< A handle to a device context */
-		HGLRC							glRenderingContextHandle;								/**< A handle to an OpenGL rendering context*/
-		HPALETTE						paletteHandle;											/**< A handle to a Win32 palette*/
-		PIXELFORMATDESCRIPTOR			pixelFormatDescriptor;									/**< Describes the pixel format of a drawing surface*/
-		WNDCLASS						windowClass;											/**< Contains the window class attributes */
-		HWND							windowHandle;											/**< A handle to A window */
-		HINSTANCE						instanceHandle;											/**< A handle to the window class instance */
-		int								accumWheelDelta;										/**< holds the accumulated mouse wheel delta for this window */
+		HDC										deviceContextHandle;									/**< A handle to a device context */
+		HGLRC									glRenderingContextHandle;								/**< A handle to an OpenGL rendering context*/
+		HPALETTE								paletteHandle;											/**< A handle to a Win32 palette*/
+		PIXELFORMATDESCRIPTOR					pixelFormatDescriptor;									/**< Describes the pixel format of a drawing surface*/
+		WNDCLASS								windowClass;											/**< Contains the window class attributes */
+		HWND									windowHandle;											/**< A handle to A window */
+		HINSTANCE								instanceHandle;											/**< A handle to the window class instance */
+		int										accumWheelDelta;										/**< holds the accumulated mouse wheel delta for this window */
 
 #elif defined(TW_LINUX)
 
@@ -528,28 +553,23 @@ namespace TinyWindow
 
 	public:
 
-		tWindow(const char* name = nullptr, void* userData = nullptr,
+		tWindow(const char* name = nullptr, void* userData = nullptr, 
+			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
+			int versionMajor = 4, int versionMinor = 5, profile_t profile = profile_t::compatibility,
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			state_t currentState = state_t::normal)
 		{
 			this->name = name;
+			this->resolution = resolution;
 			this->colorBits = colorBits;
 			this->depthBits = depthBits;
 			this->stencilBits = stencilBits;
 			this->shouldClose = false;
 			this->currentState = currentState;
 			this->userData = userData;
-
-			/*this->keyEvent = keyEvent;
-			this->mouseButtonEvent = mouseButtonEvent;
-			this->mouseWheelEvent = mouseWheelEvent;
-			this->destroyedEvent = destroyedEvent;
-			this->maximizedEvent = maximizedEvent;
-			this->minimizedEvent = minimizedEvent;
-			this->focusEvent = focusEvent;
-			this->movedEvent = movedEvent;
-			this->resizeEvent = resizeEvent;
-			this->mouseMoveEvent = mouseMoveEvent;*/
+			this->versionMajor = versionMajor;
+			this->versionMinor = versionMinor;
+			this->profile = (profile == profile_t::compatibility) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
 
 			initialized = false;
 			contextCreated = false;
@@ -1223,18 +1243,19 @@ namespace TinyWindow
 		windowManager()
 		{
 	#if defined(TW_WINDOWS)
-			CreateTerminal(); //feel free to comment this out
+			//CreateTerminal(); //feel free to comment this out
 			RECT desktop;
 
 			HWND desktopHandle = GetDesktopWindow();
 
 			if (desktopHandle)
 			{
+				Platform_CreateDummyContext();
+				Platform_InitExtensions();
 				GetWindowRect(desktopHandle, &desktop);
 
 				screenResolution.x = desktop.right;
 				screenResolution.y = desktop.bottom;
-				return;
 			}
 	#elif defined(TW_LINUX)
 			currentDisplay = XOpenDisplay(0);
@@ -1283,12 +1304,14 @@ namespace TinyWindow
 		/**
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
-		tWindow* AddWindow(const char* windowName, void* userData = nullptr, vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-				int colourBits = 8, int depthBits = 8, int stencilBits = 8)
+		tWindow* AddWindow(const char* windowName, void* userData = nullptr, 
+			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
+			int glMajor = 4, int glMinor = 5, profile_t profile = profile_t::compatibility,
+			int colourBits = 8, int depthBits = 8, int stencilBits = 8)
 		{
 			if (windowName != nullptr)
 			{
-				std::unique_ptr<tWindow> newWindow(new tWindow(windowName, userData, colourBits, depthBits, stencilBits));
+				std::unique_ptr<tWindow> newWindow(new tWindow(windowName, userData, resolution, glMajor, glMinor, profile, colourBits, depthBits, stencilBits));
 				windowList.push_back(std::move(newWindow));
 				Platform_InitializeWindow(windowList.back().get());
 
@@ -1421,6 +1444,30 @@ namespace TinyWindow
 		TinyWindow::vec2_t<unsigned int>			screenResolution;
 		TinyWindow::vec2_t<int>						screenMousePosition;
 
+		void Platform_CreateDummyContext()
+		{
+#if defined(TW_WINDOWS)
+			Windows_CreateDummyContext();
+#elif defined(TW_LINUX)
+
+#endif // 
+		}
+
+		void Platform_InitExtensions()
+		{
+#if defined(TW_WINDOWS)
+			wglGetExtensionsStringARB =		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+			wglChoosePixelFormatARB =		(PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+			wglCreateContextAttribsARB =	(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+
+			const char* wglExtensions = wglGetExtensionsStringARB(dummyDeviceContextHandle);
+			printf("%s \n", wglExtensions);
+#elif defined(TW_LINUX)
+
+#endif
+		}
+
 		void Platform_InitializeWindow(tWindow* window)
 		{
 	#if defined(TW_WINDOWS)
@@ -1435,7 +1482,35 @@ namespace TinyWindow
 	#if defined(TW_WINDOWS)
 			window->deviceContextHandle = GetDC(window->windowHandle);
 			InitializePixelFormat(window);
-			window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
+			int attribs[]
+			{
+				WGL_CONTEXT_MAJOR_VERSION_ARB, window->versionMajor,
+				WGL_CONTEXT_MINOR_VERSION_ARB, window->versionMinor,
+				WGL_CONTEXT_PROFILE_MASK_ARB, window->profile,
+#if defined(DEBUG)
+				WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+#endif
+				0
+			};
+
+			window->glRenderingContextHandle = wglCreateContextAttribsARB(window->deviceContextHandle, NULL, attribs);
+
+			if (window->glRenderingContextHandle == NULL)
+			{
+				switch (GetLastError())
+				{
+				case ERROR_INVALID_VERSION_ARB:
+				{
+					return TinyWindow::error_t::invalidVersion;
+				}
+
+				case ERROR_INVALID_PROFILE_ARB:
+				{
+					return TinyWindow::error_t::invalidProfile;
+				}
+				}
+			}
+
 			wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
 
 			window->contextCreated = (window->glRenderingContextHandle != nullptr);
@@ -1446,7 +1521,7 @@ namespace TinyWindow
 			}
 
 			return TinyWindow::error_t::invalidContext;
-	#elif defined(TW_LINUX)
+#elif defined(TW_LINUX)
 				window->context = glXCreateContext(
 					currentDisplay,
 					window->visualInfo,
@@ -1540,8 +1615,15 @@ namespace TinyWindow
 			rightAltUp = 49464,
 		};
 
-		MSG		winMessage;
-		HDC		deviceContextHandle;
+		MSG											winMessage;
+		HGLRC										glDummyContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
+		HDC											dummyDeviceContextHandle;
+
+		//wgl extensions
+		PFNWGLGETEXTENSIONSSTRINGARBPROC			wglGetExtensionsStringARB;
+		PFNWGLCHOOSEPIXELFORMATARBPROC				wglChoosePixelFormatARB;
+		PFNWGLCREATECONTEXTATTRIBSARBPROC			wglCreateContextAttribsARB;
+		PFNWGLSWAPINTERVALEXTPROC					wglSwapIntervalEXT;
 
 		//the window procedure for all windows. This is used mainly to handle window events
 		static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
@@ -1830,6 +1912,7 @@ namespace TinyWindow
 
 				case WM_MOUSEMOVE:
 				{
+					window->previousMousePosition = window->mousePosition;
 					window->mousePosition.x = (int)LOWORD(longParam);
 					window->mousePosition.y = (int)HIWORD(longParam);
 
@@ -2031,33 +2114,28 @@ namespace TinyWindow
 		//initialize the pixel format for the selected window
 		void InitializePixelFormat(tWindow* window)
 		{
-			window->pixelFormatDescriptor = {
-				sizeof(PIXELFORMATDESCRIPTOR), /* size */
-				1, /* version */
-				PFD_DRAW_TO_WINDOW |
-				PFD_DOUBLEBUFFER, /* support double-buffering */
-				PFD_TYPE_RGBA, /* color type */
-				(BYTE)window->colorBits, 0, /* preferred color depth */
-				0, 0,
-				0, 0,
-				0, 0,
-				0, /* color bits (ignored) */ /* no alpha buffer */ /* alpha bits (ignored) */
-				0, /* no accumulation buffer */
-				0, 0, 0, 0, /* accum bits (ignored) */
-				(BYTE)window->depthBits, /* depth buffer */
-				(BYTE)window->stencilBits, /* no stencil buffer */
-				0, /* no auxiliary buffers */
-				PFD_MAIN_PLANE, /* main layer */
-				0, /* reserved */
-				0, 0, 0, /* no layer, visible, damage masks */
+			unsigned int count = 0;
+			int format = 0;
+			int attribs[] =
+			{
+				WGL_SUPPORT_OPENGL_ARB, 1,
+				WGL_DRAW_TO_WINDOW_ARB, 1,
+				WGL_RED_BITS_ARB, window->colorBits,
+				WGL_GREEN_BITS_ARB, window->colorBits,
+				WGL_BLUE_BITS_ARB, window->colorBits,
+				WGL_DEPTH_BITS_ARB, window->depthBits,
+				WGL_STENCIL_BITS_ARB, window->stencilBits,
+				WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
+				WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+				0
 			};
 
-			int LocalPixelFormat = ChoosePixelFormat(window->deviceContextHandle,
-				&window->pixelFormatDescriptor);
+			wglChoosePixelFormatARB(window->deviceContextHandle,
+				&attribs[0], NULL, 1, &format, &count);
 
-			if (LocalPixelFormat)
+			if (format)
 			{
-				SetPixelFormat(window->deviceContextHandle, LocalPixelFormat,
+				SetPixelFormat(window->deviceContextHandle, format,
 					&window->pixelFormatDescriptor);
 				return;
 			}
@@ -2069,22 +2147,31 @@ namespace TinyWindow
 
 		}
 
-		void CreateTerminal()
+		void Windows_CreateDummyContext()
 		{
-			int conHandle;
-			long stdHandle;
-			FILE* fp;
+			dummyDeviceContextHandle = GetDC(GetDesktopWindow());
+			PIXELFORMATDESCRIPTOR pfd;
+			pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+			pfd.nVersion = 1;
+			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_GENERIC_ACCELERATED;
+			pfd.iPixelType = PFD_TYPE_RGBA;
+			pfd.cColorBits = 24;
+			pfd.cRedBits = 8;
+			pfd.cGreenBits = 8;
+			pfd.cBlueBits = 8;
+			pfd.cDepthBits = 32;
 
-			// allocate a console for this app
-			AllocConsole();
+			int LocalPixelFormat = ChoosePixelFormat(dummyDeviceContextHandle,
+				&pfd);
 
-			// redirect unbuffered STDOUT to the console
-			stdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
-			conHandle = _open_osfhandle(stdHandle, _O_TEXT);
-			fp = _fdopen(conHandle, "w");
-			*stdout = *fp;
+			if (LocalPixelFormat)
+			{
+				SetPixelFormat(dummyDeviceContextHandle, LocalPixelFormat,
+					&pfd);
+			}
 
-			setvbuf(stdout, nullptr, _IONBF, 0);
+			glDummyContextHandle = wglCreateContext(dummyDeviceContextHandle);
+			wglMakeCurrent(dummyDeviceContextHandle, glDummyContextHandle);
 		}
 
 		static unsigned int Windows_TranslateKey(WPARAM wordParam)

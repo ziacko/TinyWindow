@@ -3,9 +3,9 @@
 using namespace TinyWindow;
 void HandleKeyPresses(tWindow* window, int key, keyState_t keyState)
 {
-	if(keyState == keyState_t::down && key == spacebar)
+	if (keyState == keyState_t::down)
 	{
-		printf("spacebar has been pressed \n");
+		printf("%c \n", key);
 	}
 }
 
@@ -30,7 +30,8 @@ void HandleMouseWheel(tWindow* window, mouseScroll_t mouseScrollDirection)
 int main()
 {
 	std::unique_ptr<windowManager> manager(new windowManager());
-	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
+	std::unique_ptr<tWindow> window(manager->AddWindow("Example", nullptr, 
+		TinyWindow::vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight), 4, 5, profile_t::core ));
 
 	manager->keyEvent = HandleKeyPresses;
 	manager->mouseWheelEvent = HandleMouseWheel;
