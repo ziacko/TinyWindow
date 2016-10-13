@@ -31,10 +31,11 @@ int main()
 {
 	std::unique_ptr<windowManager> manager(new windowManager());
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example", nullptr, 
-		TinyWindow::vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight), 4, 5, profile_t::core ));
+		TinyWindow::vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight), 4, 5, profile_t::core));
 
 	manager->keyEvent = HandleKeyPresses;
 	manager->mouseWheelEvent = HandleMouseWheel;
+	manager->SetWindowSwapInterval(window.get(), 1);
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
 	{

@@ -235,6 +235,7 @@ namespace TinyWindow
 		invalidWindowStyle,						/**< If the window style gives is invalid */
 		invalidVersion,							/**< If an invalid OpenGL version is being used */
 		invalidProfile,							/**< If an invalid OpenGL profile is being used */
+		invalidInterval,						/**< If a window swap interval setting is invalid*/
 		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
 		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
 		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
@@ -555,8 +556,8 @@ namespace TinyWindow
 
 		tWindow(const char* name = nullptr, void* userData = nullptr, 
 			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-			int versionMajor = 4, int versionMinor = 5, profile_t profile = profile_t::compatibility,
-			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
+			int versionMajor = 4, int versionMinor = 5, profile_t profile = profile_t::core,
+			unsigned int colorBits = 8, unsigned int depthBits = 24, unsigned int stencilBits = 8,
 			state_t currentState = state_t::normal)
 		{
 			this->name = name;
@@ -1306,8 +1307,8 @@ namespace TinyWindow
 		 */
 		tWindow* AddWindow(const char* windowName, void* userData = nullptr, 
 			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-			int glMajor = 4, int glMinor = 5, profile_t profile = profile_t::compatibility,
-			int colourBits = 8, int depthBits = 8, int stencilBits = 8)
+			int glMajor = 4, int glMinor = 5, profile_t profile = profile_t::core,
+			int colourBits = 8, int depthBits = 24, int stencilBits = 8)
 		{
 			if (windowName != nullptr)
 			{
@@ -1437,6 +1438,47 @@ namespace TinyWindow
 			return TinyWindow::error_t::windowInvalid;
 		}
 
+		/**
+		* Set window swap interval
+		*/
+		std::error_code SetWindowSwapInterval(tWindow* window, int interval)
+		{
+#if defined(TW_WINDOWS)
+			//HGLRC lastContext = wglGetCurrentContext();
+			//window->MakeCurrentContext();
+			if (wglSwapIntervalEXT(interval))
+			{
+				//could be better
+				//wglMakeCurrent(window->deviceContextHandle, lastContext);
+				return error_t::success;
+			}
+
+			else
+			{
+			//	wglMakeCurrent(window->deviceContextHandle, lastContext);
+				return error_t::invalidInterval;
+			}
+#elif defined(TW_LINUX)
+			
+#endif
+		}
+		/**
+		* get the wwap interva lof the given window
+		*/
+
+		int GetWindowSwapInterval(tWindow* window)
+		{
+#if defined(TW_WINDOWS)
+			HGLRC lastContext = wglGetCurrentContext();
+			window->MakeCurrentContext();
+			int interval = wglGetSwapIntervalEXT();
+			wglMakeCurrent(window->deviceContextHandle, lastContext);
+			return interval;
+#elif defined(TW_LINUX)
+
+#endif
+		}
+
 	private:
 
 		std::vector<std::unique_ptr<tWindow>>		windowList;
@@ -1460,6 +1502,7 @@ namespace TinyWindow
 			wglChoosePixelFormatARB =		(PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 			wglCreateContextAttribsARB =	(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+			wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
 
 			const char* wglExtensions = wglGetExtensionsStringARB(dummyDeviceContextHandle);
 			printf("%s \n", wglExtensions);
@@ -1487,7 +1530,7 @@ namespace TinyWindow
 				WGL_CONTEXT_MAJOR_VERSION_ARB, window->versionMajor,
 				WGL_CONTEXT_MINOR_VERSION_ARB, window->versionMinor,
 				WGL_CONTEXT_PROFILE_MASK_ARB, window->profile,
-#if defined(DEBUG)
+#if defined(_DEBUG)
 				WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
 #endif
 				0
@@ -1624,6 +1667,7 @@ namespace TinyWindow
 		PFNWGLCHOOSEPIXELFORMATARBPROC				wglChoosePixelFormatARB;
 		PFNWGLCREATECONTEXTATTRIBSARBPROC			wglCreateContextAttribsARB;
 		PFNWGLSWAPINTERVALEXTPROC					wglSwapIntervalEXT;
+		PFNWGLGETSWAPINTERVALEXTPROC				wglGetSwapIntervalEXT;
 
 		//the window procedure for all windows. This is used mainly to handle window events
 		static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
