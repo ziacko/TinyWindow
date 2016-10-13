@@ -529,6 +529,7 @@ namespace TinyWindow
 	public:
 
 		tWindow(const char* name = nullptr, void* userData = nullptr,
+			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
 			unsigned int colorBits = 0, unsigned int depthBits = 0, unsigned int stencilBits = 0,
 			state_t currentState = state_t::normal)
 		{
@@ -539,6 +540,7 @@ namespace TinyWindow
 			this->shouldClose = false;
 			this->currentState = currentState;
 			this->userData = userData;
+			this->resolution = resolution;
 
 			/*this->keyEvent = keyEvent;
 			this->mouseButtonEvent = mouseButtonEvent;
@@ -1288,7 +1290,7 @@ namespace TinyWindow
 		{
 			if (windowName != nullptr)
 			{
-				std::unique_ptr<tWindow> newWindow(new tWindow(windowName, userData, colourBits, depthBits, stencilBits));
+				std::unique_ptr<tWindow> newWindow(new tWindow(windowName, userData, resolution, colourBits, depthBits, stencilBits));
 				windowList.push_back(std::move(newWindow));
 				Platform_InitializeWindow(windowList.back().get());
 
