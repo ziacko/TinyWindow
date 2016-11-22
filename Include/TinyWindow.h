@@ -11,7 +11,11 @@
 //for gamepad support
 #pragma comment (lib, "winmm.lib")
 //this makes sure that the entry point of your program is main() not Winmain(). feel free to comment out
+#if defined(TW_NO_CONSOLE)
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#else
 #pragma comment(linker, "/subsystem:console /ENTRY:mainCRTStartup")
+#endif
 #endif //_MSC_VER
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN 1
@@ -1437,7 +1441,7 @@ namespace TinyWindow
 			{
 				Platform_CreateDummyContext();
 				Platform_InitExtensions();
-				GetWindowRect(desktopHandle, &desktop);
+				//GetWindowRect(desktopHandle, &desktop);
 				Platform_GetScreenInfo();
 
 			}
@@ -1939,8 +1943,8 @@ namespace TinyWindow
 
 				case WM_SIZE:
 				{
-					//window->resolution.width = (unsigned int)LOWORD(longParam);
-					//window->resolution.height = (unsigned int)HIWORD(longParam);
+					window->resolution.width = (unsigned int)LOWORD(longParam);
+					window->resolution.height = (unsigned int)HIWORD(longParam);
 
 					switch (wordParam)
 					{

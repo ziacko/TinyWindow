@@ -57,8 +57,6 @@ int main()
 		printf("\n");
 	}
 
-	window->keyEvent = HandleKeyPresses;
-	window->mouseWheelEvent = HandleMouseWheel;
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
 	{
