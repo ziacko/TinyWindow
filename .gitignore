@@ -7,3 +7,4 @@ Example/CMakeFiles/
 *.opendb
 *.db
 *.sln
+*.cmake
