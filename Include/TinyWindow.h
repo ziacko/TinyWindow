@@ -188,12 +188,19 @@ namespace TinyWindow
 
 #endif
 
-		monitor_t() {};
+		monitor_t() 
+		{
+			currentSetting = NULL;
+			isPrimary = false;
+			monitorHandle = NULL;
+		};
 
 		monitor_t(std::string displayName, std::string deviceName, std::string monitorName, bool isPrimary = false)
 		{
 			//this->resolution = resolution;
-			this->extents = extents;
+			//this->extents = extents;
+			this->monitorHandle = NULL;
+			this->currentSetting = NULL;
 			this->displayName = displayName;
 			this->deviceName = deviceName;
 			this->monitorName = monitorName;
@@ -682,7 +689,7 @@ namespace TinyWindow
 
 	public:
 
-		tWindow(const char* name = nullptr, void* userData = nullptr, 
+		tWindow(const char* name = nullptr, void* userData = nullptr,
 			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
 			int versionMajor = 4, int versionMinor = 5, profile_t profile = profile_t::core,
 			unsigned int colorBits = 8, unsigned int depthBits = 24, unsigned int stencilBits = 8,
@@ -704,6 +711,23 @@ namespace TinyWindow
 			contextCreated = false;
 			currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
 
+			std::fill(keys, keys + last, keyState_t::up);// = { keyState_t.bad };
+			std::fill(mouseButton, mouseButton + (unsigned int)mouseButton_t::last, buttonState_t::up);
+
+			inFocus = false;
+			isCurrentContext = false;
+			currentScreenIndex = 0;
+			isFullscreen = false;
+			currentMonitor = NULL;
+			deviceContextHandle = NULL;
+			glRenderingContextHandle = NULL;
+			paletteHandle = NULL;
+			pixelFormatDescriptor = PIXELFORMATDESCRIPTOR();
+			windowClass = WNDCLASS();
+			windowHandle = NULL;
+			instanceHandle = NULL;
+			accumWheelDelta = 0;
+
 #if defined(__linux__)
 			context = 0;
 #endif 
@@ -712,17 +736,17 @@ namespace TinyWindow
 		/**
 		* Set the Size/Resolution of the given window
 		*/
-		std::error_code SetResolution(TinyWindow::vec2_t<unsigned int> resolution)
+		std::error_code SetResolution(TinyWindow::vec2_t<unsigned int> newResolution)
 		{
-			this->resolution = resolution;
+			this->resolution = newResolution;
 #if defined(TW_WINDOWS)
 			SetWindowPos(windowHandle, HWND_TOP,
 				position.x, position.y,
-				resolution.x, resolution.y,
+				newResolution.x, newResolution.y,
 				SWP_SHOWWINDOW | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 #elif defined(TW_LINUX)
 			XResizeWindow(currentDisplay,
-				windowHandle, resolution.x, resolution.y);
+				windowHandle, newResolution.x, newResolution.y);
 #endif
 			return TinyWindow::error_t::success;
 		}
@@ -730,19 +754,19 @@ namespace TinyWindow
 		/**
 		* Set the Position of the given window relative to screen co-ordinates
 		*/
-		std::error_code SetPosition(TinyWindow::vec2_t<int> position)
+		std::error_code SetPosition(TinyWindow::vec2_t<int> newPosition)
 		{
-			this->position = position;
+			this->position = newPosition;
 
 #if defined(TW_WINDOWS)
-			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
+			SetWindowPos(windowHandle, HWND_TOP, newPosition.x, newPosition.y,
 				resolution.x, resolution.y,
 				SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 #elif defined(TW_LINUX)
 			XWindowChanges windowChanges;
 
-			windowChanges.x = position.x;
-			windowChanges.y = position.y;
+			windowChanges.x = newPosition.x;
+			windowChanges.y = newPosition.y;
 
 			XConfigureWindow(
 				currentDisplay,
@@ -754,14 +778,14 @@ namespace TinyWindow
 		/**
 		* Set the mouse Position of the given window's co-ordinates
 		*/
-		std::error_code SetMousePosition(TinyWindow::vec2_t<unsigned int> mousePosition)
+		std::error_code SetMousePosition(TinyWindow::vec2_t<unsigned int> newMousePosition)
 		{
-			this->mousePosition.x = mousePosition.x;
-			this->mousePosition.y = mousePosition.y;
+			this->mousePosition.x = newMousePosition.x;
+			this->mousePosition.y = newMousePosition.y;
 #if defined(TW_WINDOWS)
 			POINT mousePoint;
-			mousePoint.x = mousePosition.x;
-			mousePoint.y = mousePosition.y;
+			mousePoint.x = newMousePosition.x;
+			mousePoint.y = newMousePosition.y;
 			ClientToScreen(windowHandle, &mousePoint);
 			SetCursorPos(mousePoint.x, mousePoint.y);
 #elif defined(TW_LINUX)
@@ -770,7 +794,7 @@ namespace TinyWindow
 				windowHandle, windowHandle,
 				position.x, position.y,
 				resolution.width, resolution.height,
-				mousePosition.x, mousePosition.y);
+				newMousePosition.x, newMousePosition.y);
 #endif
 			return TinyWindow::error_t::success;
 		}
@@ -906,8 +930,8 @@ namespace TinyWindow
 
 #if defined(TW_WINDOWS)
 
-			SetWindowLongPtr(windowHandle, GWL_STYLE,
-				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE);
+			SetWindowLongPtr(windowHandle, GWL_STYLE, static_cast<LONG_PTR>(
+				WS_SYSMENU | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_VISIBLE));
 
 			RECT desktop;
 			GetWindowRect(windowHandle, &desktop);
@@ -1123,7 +1147,7 @@ namespace TinyWindow
 				currentStyle |= WS_SIZEBOX;
 			}
 
-			SetWindowLongPtr(windowHandle, GWL_STYLE, currentStyle);
+			SetWindowLongPtr(windowHandle, GWL_STYLE, static_cast<LONG_PTR>(currentStyle));
 			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
 				resolution.width, resolution.height, SWP_FRAMECHANGED);
 
@@ -1220,7 +1244,7 @@ namespace TinyWindow
 			}
 
 			SetWindowLongPtr(windowHandle, GWL_STYLE,
-				currentStyle | WS_VISIBLE);
+				static_cast<LONG_PTR>(currentStyle | WS_VISIBLE));
 
 			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
 				resolution.width, resolution.height, SWP_FRAMECHANGED);
@@ -1482,7 +1506,7 @@ namespace TinyWindow
 			Linux_Shutdown();
 	#endif
 
-			for (unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
+			for (size_t windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			{
 				ShutdownWindow(windowList[windowIndex].get());
 			}
@@ -1493,7 +1517,7 @@ namespace TinyWindow
 		 * Use this to add a window to the manager. returns a pointer to the manager which allows for the easy creation of multiple windows
 		 */
 		tWindow* AddWindow(const char* windowName, void* userData = nullptr, 
-			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
+			vec2_t<unsigned int> const &resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
 			int glMajor = 4, int glMinor = 5, profile_t profile = profile_t::core,
 			int colourBits = 8, int depthBits = 24, int stencilBits = 8)
 		{
@@ -1800,7 +1824,7 @@ namespace TinyWindow
 		{
 #if defined(TW_WINDOWS)
 			//for each monitor
-			for (unsigned int monitorIndex = 0; monitorIndex < monitorList.size(); monitorIndex++)
+			for (size_t monitorIndex = 0; monitorIndex < monitorList.size(); monitorIndex++)
 			{
 				if (monitorList[monitorIndex]->monitorHandle == MonitorFromWindow(window->windowHandle, MONITOR_DEFAULTTONEAREST))
 				{
@@ -2344,7 +2368,7 @@ namespace TinyWindow
 		//get the window that is associated with this Win32 window handle
 		tWindow* GetWindowByHandle(HWND windowHandle)
 		{
-			for (unsigned int windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
+			for (size_t windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			{
 				if (windowList[windowIndex]->windowHandle == windowHandle)
 				{
@@ -2354,9 +2378,9 @@ namespace TinyWindow
 			return nullptr;
 		}
 
-		monitor_t* GetMonitorByHandle(std::string displayName)
+		monitor_t* GetMonitorByHandle(std::string const &displayName)
 		{
-			for (unsigned int iter = 0; iter < monitorList.size(); iter++)
+			for (size_t iter = 0; iter < monitorList.size(); iter++)
 			{
 				if (displayName.compare(monitorList[iter]->displayName) == 0)
 				{
@@ -2400,7 +2424,7 @@ namespace TinyWindow
 #if !defined(TW_USE_VULKAN)
 			Platform_InitializeGL(window);
 #endif
-			ShowWindow(window->windowHandle, true);
+			ShowWindow(window->windowHandle, 1);
 			UpdateWindow(window->windowHandle);
 
 			//get the current screen the window is on
@@ -2460,7 +2484,7 @@ namespace TinyWindow
 			pfd.cRedBits = 8;
 			pfd.cGreenBits = 8;
 			pfd.cBlueBits = 8;
-			pfd.cDepthBits = 32;
+			pfd.cDepthBits = 24;
 
 			int LocalPixelFormat = ChoosePixelFormat(dummyDeviceContextHandle,
 				&pfd);
