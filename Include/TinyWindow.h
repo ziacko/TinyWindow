@@ -59,6 +59,8 @@
 #include <functional>
 #include <memory>
 #include <system_error>
+#include <bitset>
+#include <ctype.h>
 
 namespace TinyWindow
 {
@@ -275,6 +277,7 @@ namespace TinyWindow
 		del,									/**< The Delete key */
 		spacebar,								/**< The Spacebar key */
 		escape,									/**< The Escape key */
+		apps,									/**< The Applications key*/
 		last = escape,							/**< The last key to be supported */
 	};
 
@@ -1399,6 +1402,7 @@ namespace TinyWindow
 
 		//if windows is defined then allow the user to only GET the necessary info
 #if defined(TW_WINDOWS)
+
 		inline HDC GetDeviceContextDeviceHandle()
 		{
 			return deviceContextHandle;
@@ -1418,7 +1422,9 @@ namespace TinyWindow
 		{
 			return instanceHandle;
 		}
+
 #elif defined(TW_LINUX)
+
 		Window GetWindowHandle()
 		{
 			return windowHandle;
@@ -1438,9 +1444,7 @@ namespace TinyWindow
 
 	class windowManager 
 	{
-
 	public:
-
 		keyEvent_t								keyEvent;												/**< This is the callback to be used when a key has been pressed */
 		mouseButtonEvent_t						mouseButtonEvent;										/**< This is the callback to be used when a mouse button has been pressed */
 		mouseWheelEvent_t						mouseWheelEvent;										/**< This is the callback to be used when the mouse wheel has been scrolled. */
@@ -1467,7 +1471,6 @@ namespace TinyWindow
 				Platform_InitExtensions();
 				//GetWindowRect(desktopHandle, &desktop);
 				Platform_GetScreenInfo();
-
 			}
 	#elif defined(TW_LINUX)
 			currentDisplay = XOpenDisplay(0);
@@ -1721,10 +1724,7 @@ namespace TinyWindow
 			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 			wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
 
-		//unsigned int								numScreens;
-
 			const char* wglExtensions = wglGetExtensionsStringARB(dummyDeviceContextHandle);
-			printf("%s \n", wglExtensions);
 #elif defined(TW_LINUX)
 
 #endif
@@ -1882,23 +1882,6 @@ namespace TinyWindow
 		}
 	
 #if defined(TW_WINDOWS)
-		
-		enum keyLong_t
-		{
-			leftControlDown = 29,
-			rightControlDown = 285,
-			leftShiftDown = 42,
-			rightShiftDown = 54,
-			leftAltDown = 8248,
-			rightAltDown = 8504,
-
-			leftControlUp = 49181,
-			rightControlUp = 49437,
-			leftShiftUp = 49194,
-			rightShiftUp = 49206,
-			leftAltUp = 49208,
-			rightAltUp = 49464,
-		};
 
 		MSG											winMessage;
 		HGLRC										glDummyContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
@@ -1920,6 +1903,9 @@ namespace TinyWindow
 			{
 				window = manager->GetWindowByHandle(windowHandle);
 			}
+
+			unsigned int translatedKey = 0;
+			static bool wasLowerCase = false;
 		
 			switch (winMessage)
 			{
@@ -2015,44 +2001,173 @@ namespace TinyWindow
 					break;
 				}
 
+				case WM_INPUT:
+				{
+					char buffer[sizeof(RAWINPUT)] = {};
+					UINT size = sizeof(RAWINPUT);
+					GetRawInputData(reinterpret_cast<HRAWINPUT>(longParam), RID_INPUT, buffer, &size, sizeof(RAWINPUTHEADER));
+
+					RAWINPUT* rawInput = reinterpret_cast<RAWINPUT*>(buffer);
+					switch (rawInput->header.dwType)
+					{
+						//grab raw keyboard info
+						case RIM_TYPEKEYBOARD:
+						{
+							const RAWKEYBOARD& rawKB = rawInput->data.keyboard;
+							unsigned int virtualKey = rawKB.VKey;
+							unsigned int scanCode = rawKB.MakeCode;
+							unsigned int flags = rawKB.Flags;
+							bool isE0 = false;
+							bool isE1 = false;
+
+							if (virtualKey == 255)
+							{
+								break;
+							}
+
+							keyState_t keyState;
+							if ((flags & RI_KEY_BREAK) != 0)
+							{
+								keyState = keyState_t::up;
+							}
+
+							else
+							{
+								keyState = keyState_t::down;
+							}
+
+							if ((flags & RI_KEY_E0))
+							{
+								isE0 = true;
+							}
+
+							if ((flags & RI_KEY_E1))
+							{
+								isE1 = true;
+							}
+
+							if (virtualKey == VK_SHIFT)
+							{
+								virtualKey = MapVirtualKey(scanCode, MAPVK_VSC_TO_VK_EX);
+
+								if (virtualKey == VK_LSHIFT)
+								{
+									window->keys[leftShift] = keyState;
+								}
+
+								else if (virtualKey == VK_RSHIFT)
+								{
+									window->keys[rightShift] = keyState;
+								}
+							}
+
+							else if (virtualKey == VK_NUMLOCK)
+							{
+								//in raw input there is a big problem with PAUSE/break and numlock
+								//the scancode needs to be remapped and have the extended bit set
+								scanCode = (MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC) | 0x100);
+
+								if (scanCode == VK_PAUSE)
+								{
+								}
+
+								//std::bitset<64> bits(scanCode);
+								//bits.set(24);
+							}
+
+							if (isE1)
+							{
+								if (virtualKey == VK_PAUSE)
+								{
+									scanCode = 0x45; //the E key???
+								}
+
+								else
+								{
+									scanCode = MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC);
+								}
+							}
+
+							unsigned int translatedKey = 0;
+
+							switch (virtualKey)
+							{
+								case VK_CONTROL:
+								{
+									translatedKey = (isE0) ? rightControl : leftControl;
+									break;
+								}
+							}
+						}
+
+						//grab mouse info
+						case RIM_TYPEMOUSE:
+						{
+							break;
+						}
+
+						//grab joystick info
+						case RIM_TYPEHID:
+						{
+							break;
+						}
+					}
+				}
+
+				
+				case WM_CHAR:
+				{
+					//WM_KEYUP/DOWN cannot tell between uppercase and lowercase since it takes directly from the keyboard
+					//so WM_CHAR is needed to determine casing. still a pain though to see whether the key
+					//was pressed or released.
+					wasLowerCase = islower(static_cast<int>(wordParam)) != 0;
+					window->keys[wordParam] = keyState_t::down;
+					if (manager->keyEvent != nullptr)
+					{
+						manager->keyEvent(window, static_cast<int>(wordParam), keyState_t::down);
+					}
+					break;
+				}
+
 				case WM_KEYDOWN:
 				{
-					unsigned int translatedKey = 0;
-
-					switch (HIWORD(longParam))
+					switch (DetermineLeftOrRight(wordParam, longParam))
 					{
-						case leftControlDown:
+						case VK_LCONTROL:
 						{
 							window->keys[leftControl] = keyState_t::down;
 							translatedKey = leftControl;
 							break;
 						}
 
-						case rightControlDown:
+						case VK_RCONTROL:
 						{
 							window->keys[rightControl] = keyState_t::down;
 							translatedKey = rightControl;
 							break;
 						}
 
-						case leftShiftDown:
+						case VK_LSHIFT:
 						{
 							window->keys[leftShift] = keyState_t::down;
 							translatedKey = leftShift;
 							break;
 						}
 
-						case rightShiftDown:
+						case VK_RSHIFT:
 						{
 							window->keys[rightShift] = keyState_t::down;
 							translatedKey = rightShift;
 							break;
 						}
-
+					
 						default:
 						{
 							translatedKey = Windows_TranslateKey(wordParam);
-							window->keys[translatedKey] = keyState_t::down;
+							if (translatedKey != 0)
+							{
+								window->keys[translatedKey] = keyState_t::down;
+							}
 							break;
 						}
 					}
@@ -2066,32 +2181,30 @@ namespace TinyWindow
 
 				case WM_KEYUP:
 				{
-					unsigned int translatedKey = 0;
-
-					switch (HIWORD(longParam))
+					switch (DetermineLeftOrRight(wordParam, longParam))
 					{
-						case leftControlUp:
+						case VK_LCONTROL:
 						{
 							window->keys[leftControl] = keyState_t::up;
 							translatedKey = leftControl;
 							break;
 						}
 
-						case rightControlUp:
+						case VK_RCONTROL:
 						{
 							window->keys[rightControl] = keyState_t::up;
 							translatedKey = rightControl;
 							break;
 						}
 
-						case leftShiftUp:
+						case VK_LSHIFT:
 						{
 							window->keys[leftShift] = keyState_t::up;
 							translatedKey = leftShift;
 							break;
 						}
 
-						case rightShiftUp:
+						case VK_RSHIFT:
 						{
 							window->keys[rightShift] = keyState_t::up;
 							translatedKey = rightShift;
@@ -2101,7 +2214,29 @@ namespace TinyWindow
 						default:
 						{
 							translatedKey = Windows_TranslateKey(wordParam);
-							window->keys[translatedKey] = keyState_t::up;
+							if (translatedKey != 0)
+							{
+								window->keys[translatedKey] = keyState_t::up;
+							}
+
+							else
+							{
+								//if it was lowercase 
+								if (wasLowerCase)
+								{
+									//change the wordParam to lowercase
+									translatedKey = tolower(static_cast<unsigned int>(wordParam));
+								}
+								else
+								{
+									//keep it as is if it isn't
+									translatedKey = static_cast<unsigned int>(wordParam);
+								}
+
+								window->keys[translatedKey] = keyState_t::up;
+							}
+							//reset it
+							wasLowerCase = false;
 							break;
 						}
 					}
@@ -2116,25 +2251,23 @@ namespace TinyWindow
 				case WM_SYSKEYDOWN:
 				{
 					unsigned int translatedKey = 0;
-					switch (HIWORD(longParam))
-					{
-						case leftAltDown:
+
+						switch (DetermineLeftOrRight(wordParam, longParam))
+						{
+						case VK_LMENU:
 						{
 							window->keys[leftAlt] = keyState_t::down;
 							translatedKey = leftAlt;
 							break;
 						}
 
-						case rightAltDown:
+						case VK_RMENU:
 						{
 							window->keys[rightAlt] = keyState_t::down;
 							translatedKey = rightAlt;
-						}
-
-						default:
-						{
 							break;
 						}
+
 					}
 
 					if (manager->keyEvent != nullptr)
@@ -2148,9 +2281,9 @@ namespace TinyWindow
 				case WM_SYSKEYUP:
 				{
 					unsigned int translatedKey = 0;
-					switch (HIWORD(longParam))
+					switch (DetermineLeftOrRight(wordParam, longParam))
 					{
-						case leftAltUp:
+						case VK_LMENU:
 						{
 							window->keys[leftAlt] = keyState_t::up;
 							translatedKey = leftAlt;
@@ -2158,7 +2291,7 @@ namespace TinyWindow
 						}
 
 
-						case rightAltUp:
+						case VK_RMENU:
 						{
 							window->keys[rightAlt] = keyState_t::up;
 							translatedKey = rightAlt;
@@ -2177,26 +2310,6 @@ namespace TinyWindow
 					}
 					break;
 				}
-
-				//WM_KEYUP/DOWN cannot tell between uppercase and lowercase.
-				/*case WM_CHAR:
-				{
-					int keyDown = longParam & 0x31;
-					if (keyDown == 1)
-					{
-						window->keys[wordParam] = tinyWindowKeyState_t::DOWN;
-					}
-
-					else if (keyDown == 0)
-					{
-						window->keys[wordParam] = tinyWindowKeyState_t::UP;
-					}
-
-					if (window->keyEvent != nullptr)
-					{
-						window->keyEvent(window, wordParam, (tinyWindowKeyState_t)keyDown);
-					}
-				}*/
 
 				case WM_MOUSEMOVE:
 				{
@@ -2358,10 +2471,6 @@ namespace TinyWindow
 			monitor->monitorHandle = monitorHandle;
 			//monitor->currentSetting->resolution = vec2_t<unsigned int>((monitorSize->right - monitorSize->left), (monitorSize->bottom - monitorSize->top));
 			monitor->extents = vec4_t<unsigned int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
-			
-			/**/
-			//manager->monitorList.push_back(std::move(monitor));
-			//manager->numScreens++;
 			return true;
 		}
 
@@ -2434,6 +2543,13 @@ namespace TinyWindow
 			//get screen by window Handle
 
 			window->SetStyle(style_t::normal);
+
+			/*RAWINPUTDEVICE device;
+			device.usUsagePage = 0x01;
+			device.usUsage = 0x06;
+			device.dwFlags = RIDEV_NOLEGACY;        // do not generate legacy messages such as WM_KEYDOWN
+			device.hwndTarget = window->windowHandle;
+			RegisterRawInputDevices(&device, 1, sizeof(device)); */
 		}
 
 		//initialize the pixel format for the selected window
@@ -2499,6 +2615,40 @@ namespace TinyWindow
 			wglMakeCurrent(dummyDeviceContextHandle, glDummyContextHandle);
 		}
 
+		static int RetrieveDataFromWin32Pointer(LPARAM longParam, unsigned int depth)
+		{
+			return (longParam >> depth) & ((1L << sizeof(longParam)) - 1);
+		}
+
+		static WPARAM DetermineLeftOrRight(WPARAM key, LPARAM longParam)
+		{
+
+			std::bitset<sizeof(LPARAM)> bits(longParam);
+			WPARAM newKey = key;
+			//extract data at the 16th bit point to retrieve the scancode
+			UINT scancode = RetrieveDataFromWin32Pointer(longParam, 16);
+			//extract at the 24th bit point to determine if it is an extended key
+			int extended = bits.test(24) != 0;
+
+			switch (key) {
+			case VK_SHIFT:
+				newKey = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+				break;
+			case VK_CONTROL:
+				newKey = extended ? VK_RCONTROL : VK_LCONTROL;
+				break;
+			case VK_MENU:
+				newKey = extended ? VK_RMENU : VK_LMENU;
+				break;
+			default:
+				// if it cannot determine left from right then just return the original key
+				newKey = key;
+				break;
+			}
+
+			return newKey;
+		}
+
 		static unsigned int Windows_TranslateKey(WPARAM wordParam)
 		{
 			switch (wordParam)
@@ -2512,7 +2662,7 @@ namespace TinyWindow
 				{
 					return spacebar;
 				}
-			   
+				
 				case VK_F1:
 				{
 					return F1;
@@ -2745,7 +2895,7 @@ namespace TinyWindow
 
 				default:
 				{
-					return (unsigned int)wordParam;
+					return 0;
 				}
 			}
 		}
@@ -2763,10 +2913,6 @@ namespace TinyWindow
 			DWORD deviceNum = 0;
 			while (EnumDisplayDevices(NULL, deviceNum, &monitorDevice, NULL))
 			{
-				/*printf("Device Name: %s \n", monitorDevice.DeviceName);
-				printf("Device string: %s \n", monitorDevice.DeviceString);
-				printf("Device Flags: %x \n", monitorDevice.StateFlags);*/
-
 				DISPLAY_DEVICE graphicsDevice = { 0 };
 				graphicsDevice.cb = sizeof(DISPLAY_DEVICE);
 				DWORD monitorNum = 0;
@@ -2799,23 +2945,16 @@ namespace TinyWindow
 					}
 
 					monitorList.push_back(std::move(monitor));
-					/*printf("Device Name: %s \n", graphicsDevice.DeviceName);
-					printf("Device string: %s \n", graphicsDevice.DeviceString);
-					printf("Device Flags: %x \n", graphicsDevice.StateFlags);*/
 					monitorNum++;
 				}
 				deviceNum++;
-
 			}
-
 
 			if (EnumDisplayMonitors(NULL, NULL, MonitorEnumProcedure, (LPARAM)this))
 			{
-				//printf("%i \n", numScreens);
+
 			}
 		}
-
-		
 
 #elif defined(TW_LINUX)
 
@@ -3025,7 +3164,6 @@ namespace TinyWindow
 
 				/*case CreateNotify:
 				{
-				printf("Window was created\n");
 				l_Window->InitializeGL();
 
 				if(IsValid(l_Window->m_OnCreated))
@@ -3399,7 +3537,6 @@ namespace TinyWindow
 					const char* atomName = XGetAtomName(currentDisplay, currentEvent.xclient.message_type);
 					if (atomName != nullptr)
 					{
-						//printf("%s\n", l_AtomName);
 					}
 
 					if ((Atom)currentEvent.xclient.data.l[0] == window->AtomClose)
@@ -3870,7 +4007,6 @@ namespace TinyWindow
 
 				if (visualInfo)
 				{
-					//printf("%i %i %i\n", VisInfo->depth, VisInfo->bits_per_rgb, VisInfo->colormap_size);
 					int samples, sampleBuffer;
 					glXGetFBConfigAttrib(currentDisplay, configs[ configIndex], GLX_SAMPLE_BUFFERS, &sampleBuffer);
 					glXGetFBConfigAttrib(currentDisplay, configs[configIndex], GLX_SAMPLES, &samples);

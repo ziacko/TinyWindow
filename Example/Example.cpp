@@ -15,7 +15,6 @@ void HandleKeyPresses(tWindow* window, unsigned int key, keyState_t keyState)
 	else if (keyState == keyState_t::up && key == escape)
 	{
 		window->shouldClose = true;
-		//spacePressed = false;
 	}
 }
 
@@ -37,14 +36,10 @@ void HandleMouseWheel(tWindow* window, mouseScroll_t mouseScrollDirection)
 	}
 }
 
-int main()
+void PrintMonitorInfo(windowManager* manager)
 {
-	std::unique_ptr<windowManager> manager(new windowManager());
-	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
-
 	for (auto monitorIter : manager->GetMonitors())
 	{
-		//printf(iter->
 		printf("%s \n", monitorIter->deviceName.c_str());
 		printf("%s \n", monitorIter->monitorName.c_str());
 		printf("%s \n", monitorIter->displayName.c_str());
@@ -52,11 +47,18 @@ int main()
 		printf("extents:\t top: %i | left: %i | bottom: %i | right: %i \n", monitorIter->extents.top, monitorIter->extents.left, monitorIter->extents.bottom, monitorIter->extents.right);
 		for (auto settingIter : monitorIter->settings)
 		{
-			printf("width %i | height %i | frequency %i | pixel depth: %i \n", 
+			printf("width %i | height %i | frequency %i | pixel depth: %i \n",
 				settingIter->resolution.width, settingIter->resolution.height, settingIter->displayFrequency, settingIter->bitsPerPixel);
 		}
 		printf("\n");
 	}
+}
+
+int main()
+{
+	std::unique_ptr<windowManager> manager(new windowManager());
+	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
+	PrintMonitorInfo(manager.get());
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
