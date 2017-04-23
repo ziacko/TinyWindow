@@ -60,6 +60,7 @@ int main()
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
 	PrintMonitorInfo(manager.get());
 
+	manager->keyEvent = HandleKeyPresses;
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
 	{

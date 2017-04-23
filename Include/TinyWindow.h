@@ -2623,7 +2623,7 @@ namespace TinyWindow
 		static WPARAM DetermineLeftOrRight(WPARAM key, LPARAM longParam)
 		{
 
-			std::bitset<sizeof(LPARAM)> bits(longParam);
+			std::bitset<32> bits(longParam);
 			WPARAM newKey = key;
 			//extract data at the 16th bit point to retrieve the scancode
 			UINT scancode = RetrieveDataFromWin32Pointer(longParam, 16);
