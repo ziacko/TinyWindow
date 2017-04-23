@@ -71,7 +71,7 @@ int main()
 			window->SetStyle(style_t::popup);
 			window->SetPosition(vec2_t<int>::Zero());
 			window->SetResolution(vec2_t<unsigned int>(manager->GetMonitors().back()->extents.right, manager->GetMonitors().back()->extents.bottom));
-			//window->ToggleFullscreen(manager->GetMonitors()[0]);
+			window->ToggleFullscreen(manager->GetMonitors()[0]);
 			spacePressed = false;
 		}
 

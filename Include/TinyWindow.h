@@ -1341,7 +1341,6 @@ namespace TinyWindow
 
 		std::error_code ToggleFullscreen(monitor_t* monitor)
 		{
-			
 			currentMonitor = monitor;
 
 			DEVMODE devMode;
@@ -1357,7 +1356,7 @@ namespace TinyWindow
 			{
 				devMode.dmPelsWidth = resolution.width;
 				devMode.dmPelsHeight = resolution.height;
-				devMode.dmBitsPerPel = colorBits;
+				devMode.dmBitsPerPel = colorBits * 4;
 				devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
 				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), &devMode, NULL, CDS_FULLSCREEN, NULL);
 			}
@@ -1395,8 +1394,8 @@ namespace TinyWindow
 					break;
 				}
 			}
-			SetPosition(vec2_t<int>((int)monitor->extents.left, (int)monitor->extents.top));
 
+			SetPosition(vec2_t<int>((int)monitor->extents.left, (int)monitor->extents.top));
 			return error_t::success;
 		}
 
