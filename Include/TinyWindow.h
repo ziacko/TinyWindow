@@ -23,6 +23,10 @@
 #ifndef NOMINMAX
 #define NOMINMAX 1
 #endif //NOMINMAX
+#ifndef WGL_WGLEXT_PROTOTYPES
+#define WGL_WGLEXT_PROTOTYPES 1
+#endif //WGL_WGLEXT_PROTOTYPES
+
 
 #include <Windows.h>
 #if !defined(TW_USE_VULKAN)
@@ -351,8 +355,10 @@ namespace TinyWindow
 		invalidWindowStyle,						/**< If the window style gives is invalid */
 		invalidVersion,							/**< If an invalid OpenGL version is being used */
 		invalidProfile,							/**< If an invalid OpenGL profile is being used */
-		invalidInterval,						/**< If a window swap interval setting is invalid*/
-		fullscreenFailed,						/**< If setting the window to fullscreen has failed*/
+		invalidInterval,						/**< If a window swap interval setting is invalid */
+		fullscreenFailed,						/**< If setting the window to fullscreen has failed */
+		noExtensions,							/**< If platform specific window extensions have not been properly loaded */
+		invalidExtension,						/**< If a platform specific window extension is not supported */
 		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
 		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
 		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
@@ -476,6 +482,16 @@ namespace TinyWindow
 					return "Error: I'm sorry but this function has not been implemented yet :(\n";
 				}
 
+				case error_t::noExtensions:
+				{
+					return "Error: Platform extensions have not been loaded correctly. how old is your PC bruh? \n";
+				}
+
+				case error_t::invalidExtension:
+				{
+					return "Error: Platform specific extension is not valid \n";
+				}
+
 				case error_t::linuxCannotConnectXServer:
 				{
 					return "Error: cannot connect to X server \n";
@@ -579,7 +595,7 @@ namespace TinyWindow
 		void*									userData;
 		unsigned int							currentScreenIndex;										/**< The Index of the screen currently being rendered to (fullscreen)*/
 		bool									isFullscreen;											/**< Whether the window is currently in fullscreen mode */
-		TinyWindow::monitor_t*				currentMonitor;											/**< The monitor that the window is currently rendering to */
+		TinyWindow::monitor_t*					currentMonitor;											/**< The monitor that the window is currently rendering to */
 
 	private:
 
@@ -1457,19 +1473,20 @@ namespace TinyWindow
 
 		windowManager()
 		{
-			//numScreens = 0;
 	#if defined(TW_WINDOWS)
-			//CreateTerminal(); //feel free to comment this out
-			//RECT desktop;
-
 			HWND desktopHandle = GetDesktopWindow();
 
 			if (desktopHandle)
 			{
 				Platform_CreateDummyContext();
-				Platform_InitExtensions();
-				//GetWindowRect(desktopHandle, &desktop);
-				Platform_GetScreenInfo();
+				if (Platform_InitExtensions() == error_t::success)
+				{
+					Platform_GetScreenInfo();
+
+					//delete the dummy context and make the current context null
+					wglMakeCurrent(dummyDeviceContextHandle, NULL);
+					wglDeleteContext(glDummyContextHandle);
+				}
 			}
 	#elif defined(TW_LINUX)
 			currentDisplay = XOpenDisplay(0);
@@ -1659,18 +1676,12 @@ namespace TinyWindow
 #if defined(TW_WINDOWS)
 			//HGLRC lastContext = wglGetCurrentContext();
 			//window->MakeCurrentContext();
-			if (wglSwapIntervalEXT(interval))
+			if (swapControlEXT && wglSwapIntervalEXT != NULL)
 			{
-				//could be better
-				//wglMakeCurrent(window->deviceContextHandle, lastContext);
-				return error_t::success;
+				wglSwapIntervalEXT(interval);
 			}
-
-			else
-			{
-			//	wglMakeCurrent(window->deviceContextHandle, lastContext);
-				return error_t::invalidInterval;
-			}
+			//wglMakeCurrent(window->deviceContextHandle, lastContext);
+			return error_t::success;
 #elif defined(TW_LINUX)
 			
 #endif
@@ -1682,10 +1693,10 @@ namespace TinyWindow
 		int GetWindowSwapInterval(tWindow* window)
 		{
 #if defined(TW_WINDOWS)
-			HGLRC lastContext = wglGetCurrentContext();
-			window->MakeCurrentContext();
+			//HGLRC lastContext = wglGetCurrentContext();
+			//window->MakeCurrentContext();
 			int interval = wglGetSwapIntervalEXT();
-			wglMakeCurrent(window->deviceContextHandle, lastContext);
+			//wglMakeCurrent(window->deviceContextHandle, lastContext);
 			return interval;
 #elif defined(TW_LINUX)
 
@@ -1714,19 +1725,29 @@ namespace TinyWindow
 #endif // 
 		}
 
-		void Platform_InitExtensions()
+		std::error_code Platform_InitExtensions()
 		{
 #if defined(TW_WINDOWS)
-			wglGetExtensionsStringARB =		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-			wglChoosePixelFormatARB =		(PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-			wglCreateContextAttribsARB =	(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+			wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+			wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+			if (wglGetExtensionsStringARB == NULL && wglGetExtensionsStringEXT == NULL)
+			{
+				return error_t::noExtensions;
+				
+			}
+			wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");	
+			wglChoosePixelFormatEXT = (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");	 
+			wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");			
+			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");	
 			wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
 
-			const char* wglExtensions = wglGetExtensionsStringARB(dummyDeviceContextHandle);
+			swapControlEXT = Windows_ExtensionSupported("WGL_EXT_swap_control");
+
+			
 #elif defined(TW_LINUX)
 
 #endif
+			return error_t::success;
 		}
 
 		void Platform_InitializeWindow(tWindow* window)
@@ -1885,13 +1906,17 @@ namespace TinyWindow
 		MSG											winMessage;
 		HGLRC										glDummyContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
 		HDC											dummyDeviceContextHandle;
-
+		
 		//wgl extensions
 		PFNWGLGETEXTENSIONSSTRINGARBPROC			wglGetExtensionsStringARB;
+		PFNWGLGETEXTENSIONSSTRINGEXTPROC			wglGetExtensionsStringEXT;
 		PFNWGLCHOOSEPIXELFORMATARBPROC				wglChoosePixelFormatARB;
+		PFNWGLCHOOSEPIXELFORMATEXTPROC				wglChoosePixelFormatEXT;
 		PFNWGLCREATECONTEXTATTRIBSARBPROC			wglCreateContextAttribsARB;
 		PFNWGLSWAPINTERVALEXTPROC					wglSwapIntervalEXT;
 		PFNWGLGETSWAPINTERVALEXTPROC				wglGetSwapIntervalEXT;
+
+		bool										swapControlEXT;
 
 		//the window procedure for all windows. This is used mainly to handle window events
 		static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
@@ -2560,6 +2585,7 @@ namespace TinyWindow
 			{
 				WGL_SUPPORT_OPENGL_ARB, 1,
 				WGL_DRAW_TO_WINDOW_ARB, 1,
+				WGL_DOUBLE_BUFFER_ARB, 1,
 				WGL_RED_BITS_ARB, window->colorBits,
 				WGL_GREEN_BITS_ARB, window->colorBits,
 				WGL_BLUE_BITS_ARB, window->colorBits,
@@ -2570,8 +2596,17 @@ namespace TinyWindow
 				0
 			};
 
-			wglChoosePixelFormatARB(window->deviceContextHandle,
-				&attribs[0], NULL, 1, &format, &count);
+			if (wglChoosePixelFormatARB != NULL)
+			{
+				wglChoosePixelFormatARB(window->deviceContextHandle,
+					&attribs[0], NULL, 1, &format, &count);
+			}
+
+			else if (wglChoosePixelFormatEXT != NULL)
+			{
+				wglChoosePixelFormatEXT(window->deviceContextHandle, 
+					&attribs[0], NULL, 1, &format, &count);
+			}
 
 			if (format)
 			{
@@ -2593,7 +2628,7 @@ namespace TinyWindow
 			PIXELFORMATDESCRIPTOR pfd;
 			pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 			pfd.nVersion = 1;
-			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL | PFD_GENERIC_ACCELERATED;
+			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
 			pfd.iPixelType = PFD_TYPE_RGBA;
 			pfd.cColorBits = 24;
 			pfd.cRedBits = 8;
@@ -2953,6 +2988,37 @@ namespace TinyWindow
 			{
 
 			}
+		}
+
+		bool Windows_ExtensionSupported(const char* extensionName)
+		{
+			const char* wglExtensions;
+
+			if (wglGetExtensionsStringARB != NULL)
+			{
+				wglExtensions = wglGetExtensionsStringARB(dummyDeviceContextHandle);
+				if (wglExtensions != NULL)
+				{
+					if (std::strstr(wglExtensions, extensionName) != NULL)
+					{
+						return true;
+					}
+				}
+			}
+
+			if (wglGetExtensionsStringEXT != NULL)
+			{
+				wglExtensions = wglGetExtensionsStringEXT();
+				if (wglExtensions != NULL)
+				{
+					if (std::strstr(wglExtensions, extensionName) != NULL)
+					{
+						return true;
+					}
+				}
+
+			}
+			return false;
 		}
 
 #elif defined(TW_LINUX)
