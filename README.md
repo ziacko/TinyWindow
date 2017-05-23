@@ -1,6 +1,6 @@
 TinyWindow
 ==========
-![Codewake](https://www.codewake.com/badges/ask_question.svg)](https://www.codewake.com/p/tinywindow)
+[![Codewake](https://www.codewake.com/badges/ask_question.svg)](https://www.codewake.com/p/tinywindow)
 ![alt tag](https://raw.githubusercontent.com/ziacko/tinywindow/master/TinyWindow_Logo.png)
 
 a cross platform single header window management library
