@@ -183,13 +183,13 @@ namespace TinyWindow
 
 		std::string deviceName;
 		std::string monitorName;
-
+		std::string displayName;
 		bool isPrimary;
 
 	//private:
 #if defined(TW_WINDOWS)
 		HMONITOR monitorHandle;
-		std::string displayName;
+		
 #elif defined(TW_LINUX)
 
 #endif
@@ -198,16 +198,20 @@ namespace TinyWindow
 		{
 			currentSetting = NULL;
 			isPrimary = false;
+			#if defined(TW_WINDOWS)
 			monitorHandle = NULL;
+			#endif
 		};
 
 		monitor_t(std::string displayName, std::string deviceName, std::string monitorName, bool isPrimary = false)
 		{
 			//this->resolution = resolution;
 			//this->extents = extents;
+			#if defined(TW_WINDOWS)
 			this->monitorHandle = NULL;
-			this->currentSetting = NULL;
 			this->displayName = displayName;
+			#endif
+			this->currentSetting = NULL;			
 			this->deviceName = deviceName;
 			this->monitorName = monitorName;
 			this->isPrimary = isPrimary;
@@ -724,8 +728,9 @@ namespace TinyWindow
 			this->userData = userData;
 			this->versionMajor = versionMajor;
 			this->versionMinor = versionMinor;
+#if defined(TW_WINDOWS)
 			this->profile = (profile == profile_t::compatibility) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-
+#endif
 			initialized = false;
 			contextCreated = false;
 			currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
@@ -738,6 +743,8 @@ namespace TinyWindow
 			currentScreenIndex = 0;
 			isFullscreen = false;
 			currentMonitor = NULL;
+			
+			#if defined(TW_WINDOWS)
 			deviceContextHandle = NULL;
 			glRenderingContextHandle = NULL;
 			paletteHandle = NULL;
@@ -746,6 +753,8 @@ namespace TinyWindow
 			windowHandle = NULL;
 			instanceHandle = NULL;
 			accumWheelDelta = 0;
+			#endif
+			
 
 #if defined(__linux__)
 			context = 0;
@@ -1357,6 +1366,7 @@ namespace TinyWindow
 
 		std::error_code ToggleFullscreen(monitor_t* monitor)
 		{
+			#if defined(TW_WINDOWS)
 			currentMonitor = monitor;
 
 			DEVMODE devMode;
@@ -1413,6 +1423,9 @@ namespace TinyWindow
 
 			SetPosition(vec2_t<int>((int)monitor->extents.left, (int)monitor->extents.top));
 			return error_t::success;
+			#elif defined(TW_LINUX)
+			return error_t::functionNotImplemented;
+			#endif
 		}
 
 		//if windows is defined then allow the user to only GET the necessary info
@@ -1496,13 +1509,13 @@ namespace TinyWindow
 				return;
 			}
 
-			screenResolution.x = WidthOfScreen(
+			/*screenResolution.x = WidthOfScreen(
 				XScreenOfDisplay(currentDisplay,
 					DefaultScreen(currentDisplay)));
 
 			screenResolution.y = HeightOfScreen(
 				XScreenOfDisplay(currentDisplay,
-					DefaultScreen(currentDisplay)));
+					DefaultScreen(currentDisplay)));*/
 	#endif
 		}
 
@@ -1579,11 +1592,11 @@ namespace TinyWindow
 	#if defined(TW_WINDOWS)
 			SetCursorPos(screenMousePosition.x, screenMousePosition.y);
 	#elif defined(TW_LINUX)
-			XWarpPointer(currentDisplay, None,
+			/*XWarpPointer(currentDisplay, None,
 				XDefaultRootWindow(currentDisplay), 0, 0,
 				screenResolution.x,
 				screenResolution.y,
-				screenMousePosition.x, screenMousePosition.y);
+				screenMousePosition.x, screenMousePosition.y);*/
 	#endif
 		}
 
