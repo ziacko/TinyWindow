@@ -8,13 +8,51 @@ void HandleKeyPresses(tWindow* window, unsigned int key, keyState_t keyState)
 {
 	if(keyState == keyState_t::down && key == spacebar)
 	{
-		printf("spacebar has been pressed \n");
+		printf("Window: %s | spacebar has been pressed \n", window->name);
 		spacePressed = true;
 	}
 
 	else if (keyState == keyState_t::up && key == escape)
 	{
 		window->shouldClose = true;
+	}
+
+	else if(keyState == keyState_t::down)
+	{
+		printf("Window: %s | %c \n", window->name, key);
+	}
+}
+
+void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state)
+{
+	switch (button)
+	{
+	case mouseButton_t::left:
+	{
+		if (state == buttonState_t::down)
+		{
+			printf("Window: %s | left button down \n", window->name);
+		}
+		break;
+	}
+
+	case mouseButton_t::middle:
+	{
+		if (state == buttonState_t::down)
+		{
+			printf("Window: %s | middle button down \n", window->name);
+		}
+		break;
+	}
+
+	case mouseButton_t::right:
+	{
+		if (state == buttonState_t::down)
+		{
+			printf("Window: %s | right button down \n", window->name);
+		}
+		break;
+	}
 	}
 }
 
@@ -24,16 +62,52 @@ void HandleMouseWheel(tWindow* window, mouseScroll_t mouseScrollDirection)
 	{
 		case mouseScroll_t::down:
 		{
-			printf("mouse wheel down \n");
+			printf("Window: %s | mouse wheel down \n", window->name);
 			break;
 		}
 
 		case mouseScroll_t::up:
 		{
-			printf("mouse wheel up \n");
+			printf("Window: %s | mouse wheel up \n", window->name);
 			break;
 		}
 	}
+}
+
+void HandleShutdown(tWindow* window)
+{
+	printf("window: %s has closed \n", window->name);
+}
+
+void HandleMaximized(tWindow* window)
+{
+	printf("Window: %s | has been maximized \n", window->name);
+}
+
+void HandleMinimized(tWindow* window)
+{
+	printf("Window: %s | has been minimized \n", window->name);
+}
+
+void HandleFocus(tWindow* window, bool isFocused)
+{
+	isFocused ? printf("Window: %s | is now in focus\n", window->name) : printf("Window: %s | is out of focus\n", window->name);
+}
+
+void HandleMovement(tWindow* window, vec2_t<int> windowPosition)
+{
+	printf("Window: %s | new position X: %i Y:%i\n", window->name, windowPosition.x, windowPosition.y);
+}
+
+void HandleResize(tWindow* window, vec2_t<unsigned int> windowSize)
+{
+	printf("Window: %s | new position X: %i Y:%i\n", window->name, windowSize.width, windowSize.height);
+}
+
+void HandleMouseMovement(tWindow* window, vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)
+{
+	printf("Window: %s | window position X: %i Y: %i | screen position X: %i Y: %i \n", window->name,
+		windowMousePosition.x, windowMousePosition.y, screenMousePosition.x, screenMousePosition.y);
 }
 
 void PrintMonitorInfo(windowManager* manager)
@@ -45,11 +119,11 @@ void PrintMonitorInfo(windowManager* manager)
 		printf("%s \n", monitorIter->displayName.c_str());
 		printf("resolution:\t current width: %i | current height: %i \n", monitorIter->currentSetting->resolution.width, monitorIter->currentSetting->resolution.height);
 		printf("extents:\t top: %i | left: %i | bottom: %i | right: %i \n", monitorIter->extents.top, monitorIter->extents.left, monitorIter->extents.bottom, monitorIter->extents.right);
-		for (auto settingIter : monitorIter->settings)
+		/*for (auto settingIter : monitorIter->settings)
 		{
 			printf("width %i | height %i | frequency %i | pixel depth: %i \n",
 				settingIter->resolution.width, settingIter->resolution.height, settingIter->displayFrequency, settingIter->bitsPerPixel);
-		}
+		}*/
 		printf("\n");
 	}
 }
@@ -61,6 +135,16 @@ int main()
 	PrintMonitorInfo(manager.get());
 
 	manager->keyEvent = HandleKeyPresses;
+	manager->mouseButtonEvent = HandleMouseClick;
+	manager->mouseWheelEvent = HandleMouseWheel;
+	manager->destroyedEvent = HandleShutdown;
+	manager->maximizedEvent = HandleMaximized;
+	manager->minimizedEvent = HandleMinimized;
+	manager->focusEvent = HandleFocus;
+	manager->movedEvent = HandleMovement;
+	manager->resizeEvent = HandleResize;
+	//manager->mouseMoveEvent = HandleMouseMovement;
+	
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 	while (!window->shouldClose)
 	{
@@ -79,8 +163,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
+	manager->ShutDown();
 	tWindow* tempWindow = window.release();
 	delete tempWindow;
-	manager->ShutDown();
+	
 	return 0;
 }

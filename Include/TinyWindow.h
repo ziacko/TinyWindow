@@ -1856,6 +1856,10 @@ namespace TinyWindow
 
 		void ShutdownWindow(tWindow* window)
 		{
+			if (destroyedEvent != nullptr)
+			{
+				destroyedEvent(window);
+			}
 	#if defined(TW_WINDOWS)
 			window->shouldClose = true;
 			if (window->glRenderingContextHandle)
@@ -2137,7 +2141,6 @@ namespace TinyWindow
 						}
 					}
 				}
-
 				
 				case WM_CHAR:
 				{
@@ -2196,7 +2199,7 @@ namespace TinyWindow
 						}
 					}
 
-					if (manager->keyEvent != nullptr)
+					if (manager->keyEvent != nullptr && translatedKey != 0)
 					{
 						manager->keyEvent(window, translatedKey, keyState_t::down);
 					}
@@ -2440,7 +2443,7 @@ namespace TinyWindow
 						{
 							if (manager->mouseWheelEvent != nullptr)
 							{
-								manager->mouseWheelEvent(window, mouseScroll_t::down);
+								manager->mouseWheelEvent(window, mouseScroll_t::up);
 							}
 							//reset accum
 							window->accumWheelDelta = 0;
@@ -2465,7 +2468,7 @@ namespace TinyWindow
 						{
 							if (manager->mouseWheelEvent != nullptr)
 							{
-								manager->mouseWheelEvent(window, mouseScroll_t::up);
+								manager->mouseWheelEvent(window, mouseScroll_t::down);
 							}
 							//reset accum
 							window->accumWheelDelta = 0;
@@ -2474,9 +2477,28 @@ namespace TinyWindow
 					break;
 				}
 
+				case WM_SETFOCUS:
+				{
+					window->inFocus = true;
+					if (manager->focusEvent != nullptr)
+					{
+						manager->focusEvent(window, true);
+					}
+					break;
+				}
+
+				case WM_KILLFOCUS:
+				{
+					window->inFocus = false;
+					if (manager->focusEvent != nullptr)
+					{
+						manager->focusEvent(window, false);
+					}
+					break;
+				}
+
 				default:
 				{
-					//windowList[getWindow]
 					return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
 				}
 			}
