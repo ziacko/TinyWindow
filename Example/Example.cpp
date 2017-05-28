@@ -53,6 +53,11 @@ void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state
 		}
 		break;
 	}
+
+	default:
+	{
+		break;
+	}
 	}
 }
 
@@ -94,17 +99,17 @@ void HandleFocus(tWindow* window, bool isFocused)
 	isFocused ? printf("Window: %s | is now in focus\n", window->name) : printf("Window: %s | is out of focus\n", window->name);
 }
 
-void HandleMovement(tWindow* window, vec2_t<int> windowPosition)
+void HandleMovement(tWindow* window, const vec2_t<int>& windowPosition)
 {
 	printf("Window: %s | new position X: %i Y:%i\n", window->name, windowPosition.x, windowPosition.y);
 }
 
-void HandleResize(tWindow* window, vec2_t<unsigned int> windowSize)
+void HandleResize(tWindow* window, const vec2_t<unsigned int>& windowSize)
 {
 	printf("Window: %s | new position X: %i Y:%i\n", window->name, windowSize.width, windowSize.height);
 }
 
-void HandleMouseMovement(tWindow* window, vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)
+void HandleMouseMovement(tWindow* window, const vec2_t<int>& windowMousePosition, const vec2_t<int>& screenMousePosition)
 {
 	printf("Window: %s | window position X: %i Y: %i | screen position X: %i Y: %i \n", window->name,
 		windowMousePosition.x, windowMousePosition.y, screenMousePosition.x, screenMousePosition.y);
@@ -149,7 +154,6 @@ int main()
 	while (!window->shouldClose)
 	{
 		manager->PollForEvents();
-
 		if (spacePressed)
 		{
 			window->SetStyle(style_t::popup);

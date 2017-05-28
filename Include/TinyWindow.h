@@ -198,19 +198,19 @@ namespace TinyWindow
 		{
 			currentSetting = NULL;
 			isPrimary = false;
-			#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			monitorHandle = NULL;
-			#endif
+#endif
 		};
 
 		monitor_t(std::string displayName, std::string deviceName, std::string monitorName, bool isPrimary = false)
 		{
 			//this->resolution = resolution;
 			//this->extents = extents;
-			#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			this->monitorHandle = NULL;
 			this->displayName = displayName;
-			#endif
+#endif
 			this->currentSetting = NULL;			
 			this->deviceName = deviceName;
 			this->monitorName = monitorName;
@@ -363,6 +363,10 @@ namespace TinyWindow
 		fullscreenFailed,						/**< If setting the window to fullscreen has failed */
 		noExtensions,							/**< If platform specific window extensions have not been properly loaded */
 		invalidExtension,						/**< If a platform specific window extension is not supported */
+		invalidDummyPixelFormat,				/**< If the pixel format for the dummy context id invalid */
+		dummyCreationFailed,					/**< If the dummy context has failed to be created */
+		invalidDummyContext,					/**< If the dummy context in invalid */
+		dummyCannotMakeCurrent,					/**< If the dummy cannot be made the current context */
 		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
 		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
 		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
@@ -488,12 +492,32 @@ namespace TinyWindow
 
 				case error_t::noExtensions:
 				{
-					return "Error: Platform extensions have not been loaded correctly. how old is your PC bruh? \n";
+					return "Error: Platform extensions have not been loaded correctly \n";
 				}
 
 				case error_t::invalidExtension:
 				{
 					return "Error: Platform specific extension is not valid \n";
+				}
+
+				case error_t::invalidDummyPixelFormat:
+				{
+					return "Error: the pixel format for the dummy context id invalid \n";
+				}
+
+				case error_t::dummyCreationFailed:
+				{
+					return "Error: the dummy context has failed to be created \n";
+				}				
+
+				case error_t::invalidDummyContext:
+				{
+					return "Error: the dummy context in invalid \n";
+				}
+				
+				case error_t::dummyCannotMakeCurrent:
+				{
+					return "Error: the dummy cannot be made the current context \n";
 				}
 
 				case error_t::linuxCannotConnectXServer:
@@ -744,7 +768,7 @@ namespace TinyWindow
 			isFullscreen = false;
 			currentMonitor = NULL;
 			
-			#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			deviceContextHandle = NULL;
 			glRenderingContextHandle = NULL;
 			paletteHandle = NULL;
@@ -1366,7 +1390,7 @@ namespace TinyWindow
 
 		std::error_code ToggleFullscreen(monitor_t* monitor)
 		{
-			#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			currentMonitor = monitor;
 
 			DEVMODE devMode;
@@ -1484,21 +1508,31 @@ namespace TinyWindow
 		resizeEvent_t							resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
 		mouseMoveEvent_t						mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
 
-		windowManager()
+		windowManager(/*error_t* errorCode = nullptr*/)
 		{
+			/*if (errorCode != nullptr)
+			{
+				*errorCode = error_t::success;
+			}*/
 	#if defined(TW_WINDOWS)
 			HWND desktopHandle = GetDesktopWindow();
 
 			if (desktopHandle)
 			{
+				Platform_GetScreenInfo();
 				Platform_CreateDummyContext();
 				if (Platform_InitExtensions() == error_t::success)
 				{
-					Platform_GetScreenInfo();
+					
 
 					//delete the dummy context and make the current context null
 					wglMakeCurrent(dummyDeviceContextHandle, NULL);
 					wglDeleteContext(glDummyContextHandle);
+				}
+
+				else
+				{
+					//dummy context has failed so you must use older WGL/openGL methods
 				}
 			}
 	#elif defined(TW_LINUX)
@@ -1550,7 +1584,7 @@ namespace TinyWindow
 		 */
 		tWindow* AddWindow(const char* windowName, void* userData = nullptr, 
 			vec2_t<unsigned int> const &resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight),
-			int glMajor = 4, int glMinor = 5, profile_t profile = profile_t::core,
+			int glMajor = 4, int glMinor = 5, profile_t profile = profile_t::compatibility,
 			int colourBits = 8, int depthBits = 24, int stencilBits = 8)
 		{
 			if (windowName != nullptr)
@@ -1687,33 +1721,44 @@ namespace TinyWindow
 		std::error_code SetWindowSwapInterval(tWindow* window, int interval)
 		{
 #if defined(TW_WINDOWS)
-			//HGLRC lastContext = wglGetCurrentContext();
-			//window->MakeCurrentContext();
 			if (swapControlEXT && wglSwapIntervalEXT != NULL)
 			{
+				HGLRC previousGLContext = wglGetCurrentContext();
+				HDC previousDeviceContext = wglGetCurrentDC();
+				wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
 				wglSwapIntervalEXT(interval);
+				wglMakeCurrent(previousDeviceContext, previousGLContext);
 			}
-			//wglMakeCurrent(window->deviceContextHandle, lastContext);
 			return error_t::success;
 #elif defined(TW_LINUX)
 			
 #endif
 		}
+		
 		/**
-		* get the wwap interva lof the given window
+		* get the swap interval (V-Sync) of the given window
 		*/
-
 		int GetWindowSwapInterval(tWindow* window)
 		{
 #if defined(TW_WINDOWS)
-			//HGLRC lastContext = wglGetCurrentContext();
-			//window->MakeCurrentContext();
-			int interval = wglGetSwapIntervalEXT();
-			//wglMakeCurrent(window->deviceContextHandle, lastContext);
-			return interval;
+			
+			if (wglGetSwapIntervalEXT && swapControlEXT)
+			{
+				HGLRC previousGLContext = wglGetCurrentContext();
+				HDC previousDeviceContext = wglGetCurrentDC();
+				wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
+				int interval = wglGetSwapIntervalEXT();
+				wglMakeCurrent(previousDeviceContext, previousGLContext);
+				return interval;
+			}
 #elif defined(TW_LINUX)
 
 #endif
+			else
+			{
+				return 0;
+			}
+
 		}
 
 		std::vector<monitor_t*> GetMonitors()
@@ -1729,10 +1774,10 @@ namespace TinyWindow
 		//TinyWindow::vec2_t<unsigned int>			screenResolution;
 		TinyWindow::vec2_t<int>						screenMousePosition;
 
-		void Platform_CreateDummyContext()
+		std::error_code Platform_CreateDummyContext()
 		{
 #if defined(TW_WINDOWS)
-			Windows_CreateDummyContext();
+			return Windows_CreateDummyContext();
 #elif defined(TW_LINUX)
 
 #endif // 
@@ -1756,6 +1801,11 @@ namespace TinyWindow
 
 			swapControlEXT = Windows_ExtensionSupported("WGL_EXT_swap_control");
 
+			wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
+			wglGetPixelFormatAttribfvEXT = (PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribfvEXT");
+			wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
+			wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribivEXT");
+
 			
 #elif defined(TW_LINUX)
 
@@ -1774,36 +1824,45 @@ namespace TinyWindow
 
 		std::error_code Platform_InitializeGL(tWindow* window)
 		{
-	#if defined(TW_WINDOWS)
+#if defined(TW_WINDOWS)
 			window->deviceContextHandle = GetDC(window->windowHandle);
 			InitializePixelFormat(window);
-			int attribs[]
+			if (wglCreateContextAttribsARB)
 			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, window->versionMajor,
-				WGL_CONTEXT_MINOR_VERSION_ARB, window->versionMinor,
-				WGL_CONTEXT_PROFILE_MASK_ARB, window->profile,
-#if defined(_DEBUG)
-				WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
-#endif
-				0
-			};
+				int attribs[]
+				{
+					WGL_CONTEXT_MAJOR_VERSION_ARB, window->versionMajor,
+					WGL_CONTEXT_MINOR_VERSION_ARB, window->versionMinor,
+					WGL_CONTEXT_PROFILE_MASK_ARB, window->profile,
+	#if defined(_DEBUG)
+					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+	#endif
+					0
+				};
 
-			window->glRenderingContextHandle = wglCreateContextAttribsARB(window->deviceContextHandle, NULL, attribs);
+				window->glRenderingContextHandle = wglCreateContextAttribsARB(window->deviceContextHandle, NULL, attribs);
 
-			if (window->glRenderingContextHandle == NULL)
+				if (window->glRenderingContextHandle == NULL)
+				{
+					switch (GetLastError())
+					{
+					case ERROR_INVALID_VERSION_ARB:
+					{
+						return TinyWindow::error_t::invalidVersion;
+					}
+
+					case ERROR_INVALID_PROFILE_ARB:
+					{
+						return TinyWindow::error_t::invalidProfile;
+					}
+					}
+				}
+			}
+
+			else
 			{
-				switch (GetLastError())
-				{
-				case ERROR_INVALID_VERSION_ARB:
-				{
-					return TinyWindow::error_t::invalidVersion;
-				}
-
-				case ERROR_INVALID_PROFILE_ARB:
-				{
-					return TinyWindow::error_t::invalidProfile;
-				}
-				}
+				//use the old fashion method if the extensions aren't loading
+				window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
 			}
 
 			wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
@@ -1932,6 +1991,10 @@ namespace TinyWindow
 		PFNWGLCREATECONTEXTATTRIBSARBPROC			wglCreateContextAttribsARB;
 		PFNWGLSWAPINTERVALEXTPROC					wglSwapIntervalEXT;
 		PFNWGLGETSWAPINTERVALEXTPROC				wglGetSwapIntervalEXT;
+		PFNWGLGETPIXELFORMATATTRIBFVARBPROC			wglGetPixelFormatAttribfvARB;
+		PFNWGLGETPIXELFORMATATTRIBFVEXTPROC			wglGetPixelFormatAttribfvEXT;
+		PFNWGLGETPIXELFORMATATTRIBIVARBPROC			wglGetPixelFormatAttribivARB;
+		PFNWGLGETPIXELFORMATATTRIBIVEXTPROC			wglGetPixelFormatAttribivEXT;
 
 		bool										swapControlEXT;
 
@@ -2614,7 +2677,7 @@ namespace TinyWindow
 		//initialize the pixel format for the selected window
 		void InitializePixelFormat(tWindow* window)
 		{
-			unsigned int count = 0;
+			unsigned int count = WGL_NUMBER_PIXEL_FORMATS_ARB;
 			int format = 0;
 			int attribs[] =
 			{
@@ -2624,6 +2687,7 @@ namespace TinyWindow
 				WGL_RED_BITS_ARB, window->colorBits,
 				WGL_GREEN_BITS_ARB, window->colorBits,
 				WGL_BLUE_BITS_ARB, window->colorBits,
+				WGL_ALPHA_BITS_ARB, window->colorBits,
 				WGL_DEPTH_BITS_ARB, window->depthBits,
 				WGL_STENCIL_BITS_ARB, window->stencilBits,
 				WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
@@ -2635,21 +2699,45 @@ namespace TinyWindow
 			{
 				wglChoosePixelFormatARB(window->deviceContextHandle,
 					&attribs[0], NULL, 1, &format, &count);
+				SetPixelFormat(window->deviceContextHandle, format,
+					&window->pixelFormatDescriptor);
 			}
 
 			else if (wglChoosePixelFormatEXT != NULL)
 			{
 				wglChoosePixelFormatEXT(window->deviceContextHandle, 
 					&attribs[0], NULL, 1, &format, &count);
-			}
-
-			if (format)
-			{
 				SetPixelFormat(window->deviceContextHandle, format,
 					&window->pixelFormatDescriptor);
-				return;
 			}
-			return;
+
+			else
+			{
+				//use the old PFD system on the window if none of the extensions will load	
+				PIXELFORMATDESCRIPTOR pfd = {};
+				pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+				pfd.nVersion = 1;
+				pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
+				pfd.iPixelType = PFD_TYPE_RGBA;
+				pfd.cColorBits = window->colorBits * 3;
+				pfd.cRedBits = window->colorBits;
+				pfd.cGreenBits = window->colorBits;
+				pfd.cBlueBits = window->colorBits;
+				pfd.cDepthBits = window->depthBits;
+				pfd.cStencilBits = window->stencilBits;
+				
+				int LocalPixelFormat = ChoosePixelFormat(window->deviceContextHandle,
+					&window->pixelFormatDescriptor);
+
+				if (LocalPixelFormat)
+				{
+					if (SetPixelFormat(window->deviceContextHandle, LocalPixelFormat, &pfd))
+					{
+						window->pixelFormatDescriptor = pfd;
+						return;
+					}
+				}
+			}
 		}
 	
 		void Windows_Shutown()
@@ -2657,7 +2745,7 @@ namespace TinyWindow
 
 		}
 
-		void Windows_CreateDummyContext()
+		std::error_code Windows_CreateDummyContext()
 		{
 			dummyDeviceContextHandle = GetDC(GetDesktopWindow());
 			PIXELFORMATDESCRIPTOR pfd;
@@ -2666,22 +2754,30 @@ namespace TinyWindow
 			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
 			pfd.iPixelType = PFD_TYPE_RGBA;
 			pfd.cColorBits = 24;
-			pfd.cRedBits = 8;
-			pfd.cGreenBits = 8;
-			pfd.cBlueBits = 8;
-			pfd.cDepthBits = 24;
 
 			int LocalPixelFormat = ChoosePixelFormat(dummyDeviceContextHandle,
 				&pfd);
 
 			if (LocalPixelFormat)
 			{
-				SetPixelFormat(dummyDeviceContextHandle, LocalPixelFormat,
-					&pfd);
+				if (!SetPixelFormat(dummyDeviceContextHandle, LocalPixelFormat, &pfd))
+				{
+					return error_t::invalidDummyPixelFormat;
+				}
 			}
 
 			glDummyContextHandle = wglCreateContext(dummyDeviceContextHandle);
-			wglMakeCurrent(dummyDeviceContextHandle, glDummyContextHandle);
+			if (!glDummyContextHandle)
+			{
+				return error_t::dummyCreationFailed;
+			}
+
+			if (!wglMakeCurrent(dummyDeviceContextHandle, glDummyContextHandle))
+			{
+				return error_t::dummyCannotMakeCurrent;
+			}
+
+			return error_t::success;
 		}
 
 		static int RetrieveDataFromWin32Pointer(LPARAM longParam, unsigned int depth)
