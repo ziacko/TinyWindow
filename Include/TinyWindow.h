@@ -1578,7 +1578,7 @@ namespace TinyWindow
 			{
 				bestPixelFormat = nullptr;
 				Platform_GetScreenInfo();
-				/*Platform_CreateDummyContext();
+				Platform_CreateDummyContext();
 				if (Platform_InitExtensions() == error_t::success)
 				{
 					//delete the dummy context and make the current context null
@@ -1589,7 +1589,7 @@ namespace TinyWindow
 				else
 				{
 					//dummy context has failed so you must use older WGL/openGL methods
-				}*/
+				}
 			}
 	#elif defined(TW_LINUX)
 			currentDisplay = XOpenDisplay(0);
@@ -3018,13 +3018,14 @@ namespace TinyWindow
 		{
 			dummyDeviceContextHandle = GetDC(GetDesktopWindow());
 			PIXELFORMATDESCRIPTOR pfd = {};
-			pfd.nSize = sizeof(pfd);
-			pfd.nVersion = 1;
-			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
-			pfd.iPixelType = PFD_TYPE_RGBA;
-			pfd.cColorBits = 24;
+			formatSetting_t* desiredSetting = new formatSetting_t();
+			unsigned int bestPFDHandle = CreateLegacyPFD(desiredSetting, dummyDeviceContextHandle)->handle;
+			if (!DescribePixelFormat(dummyDeviceContextHandle, bestPFDHandle, sizeof(pfd), &pfd))
+			{
+				error_t::invalidDummyPixelFormat;
+			}
 
-			if (!SetPixelFormat(dummyDeviceContextHandle, ChoosePixelFormat(dummyDeviceContextHandle, &pfd), &pfd))
+			if (SetPixelFormat(dummyDeviceContextHandle, bestPFDHandle, &pfd))
 			{
 				return error_t::invalidDummyPixelFormat;
 			}
