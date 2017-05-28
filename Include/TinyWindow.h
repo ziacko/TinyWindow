@@ -174,8 +174,6 @@ namespace TinyWindow
 
 	struct monitor_t
 	{
-		friend class windowManager;
-
 		monitorSetting_t*					currentSetting;
 		vec4_t<unsigned int>				extents;
 		std::vector<monitorSetting_t*>		settings;
@@ -215,6 +213,65 @@ namespace TinyWindow
 			this->deviceName = deviceName;
 			this->monitorName = monitorName;
 			this->isPrimary = isPrimary;
+		}
+	};
+
+	struct formatSetting_t
+	{
+		friend class windowManager;
+
+		int redBits;
+		int greenBits;
+		int blueBits;
+		int alphaBits;
+		int depthBits;
+		int stencilBits;
+
+		int accumRedBits;
+		int accumGreenBits;
+		int accumBlueBits;
+		int accumAplhaBits;
+
+		int auxBuffers;
+		int numSamples;
+
+		bool stereo;
+		bool doubleBuffer;
+		bool pixelRGB;
+
+	private:
+#if defined(TW_WINDOWS)
+		int handle;
+#endif
+
+	public:
+
+		formatSetting_t(int redBits = 8, int greenBits = 8, int	blueBits = 8, int alphaBits = 8, 
+			int depthBits = 24, int stencilBits = 8, 
+			int accumRedBits = 0, int accumGreenBits = 0, int accumBlueBits = 0, int accumAplhaBits = 0, 
+			int	auxBuffers = 0, int numSamples = 0, bool stereo = false, bool doubleBuffer = true)
+		{
+			this->redBits = redBits;
+			this->greenBits = greenBits;
+			this->blueBits = blueBits;
+			this->alphaBits = alphaBits;
+			this->depthBits = depthBits;
+			this->stencilBits = stencilBits;
+
+			this->accumRedBits = accumRedBits;
+			this->accumGreenBits = accumGreenBits;
+			this->accumBlueBits = accumBlueBits;
+			this->accumAplhaBits = accumAplhaBits;
+
+			this->auxBuffers = auxBuffers;
+			this->numSamples = numSamples;
+
+			this->stereo = stereo;
+			this->doubleBuffer = doubleBuffer;
+			pixelRGB = true;
+#if defined(TW_WINDOWS)
+			this->handle = 0;
+#endif
 		}
 	};
 
@@ -1519,21 +1576,20 @@ namespace TinyWindow
 
 			if (desktopHandle)
 			{
+				bestPixelFormat = nullptr;
 				Platform_GetScreenInfo();
-				Platform_CreateDummyContext();
+				/*Platform_CreateDummyContext();
 				if (Platform_InitExtensions() == error_t::success)
 				{
-					
-
 					//delete the dummy context and make the current context null
 					wglMakeCurrent(dummyDeviceContextHandle, NULL);
-					wglDeleteContext(glDummyContextHandle);
+					wglDeleteContext(dummyGLContextHandle);
 				}
 
 				else
 				{
 					//dummy context has failed so you must use older WGL/openGL methods
-				}
+				}*/
 			}
 	#elif defined(TW_LINUX)
 			currentDisplay = XOpenDisplay(0);
@@ -1770,6 +1826,7 @@ namespace TinyWindow
 
 		std::vector<std::unique_ptr<tWindow>>		windowList;
 		std::vector<monitor_t*>						monitorList;
+		std::vector<formatSetting_t*>				formatList;
 
 		//TinyWindow::vec2_t<unsigned int>			screenResolution;
 		TinyWindow::vec2_t<int>						screenMousePosition;
@@ -1980,7 +2037,7 @@ namespace TinyWindow
 #if defined(TW_WINDOWS)
 
 		MSG											winMessage;
-		HGLRC										glDummyContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
+		HGLRC										dummyGLContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
 		HDC											dummyDeviceContextHandle;
 		
 		//wgl extensions
@@ -1997,6 +2054,8 @@ namespace TinyWindow
 		PFNWGLGETPIXELFORMATATTRIBIVEXTPROC			wglGetPixelFormatAttribivEXT;
 
 		bool										swapControlEXT;
+
+		formatSetting_t*							bestPixelFormat;
 
 		//the window procedure for all windows. This is used mainly to handle window events
 		static LRESULT CALLBACK WindowProcedure(HWND windowHandle, unsigned int winMessage, WPARAM wordParam, LPARAM longParam)
@@ -2713,31 +2772,241 @@ namespace TinyWindow
 
 			else
 			{
-				//use the old PFD system on the window if none of the extensions will load	
 				PIXELFORMATDESCRIPTOR pfd = {};
-				pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-				pfd.nVersion = 1;
-				pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
-				pfd.iPixelType = PFD_TYPE_RGBA;
-				pfd.cColorBits = window->colorBits * 3;
-				pfd.cRedBits = window->colorBits;
-				pfd.cGreenBits = window->colorBits;
-				pfd.cBlueBits = window->colorBits;
-				pfd.cDepthBits = window->depthBits;
-				pfd.cStencilBits = window->stencilBits;
-				
-				int LocalPixelFormat = ChoosePixelFormat(window->deviceContextHandle,
-					&window->pixelFormatDescriptor);
-
-				if (LocalPixelFormat)
+				formatSetting_t* desiredSetting = new formatSetting_t(window->colorBits, window->colorBits, window->colorBits, window->colorBits, window->depthBits, window->stencilBits);
+				unsigned int bestPFDHandle = CreateLegacyPFD(desiredSetting, window->deviceContextHandle)->handle;
+				if (!DescribePixelFormat(window->deviceContextHandle, bestPFDHandle, sizeof(pfd), &pfd))
 				{
-					if (SetPixelFormat(window->deviceContextHandle, LocalPixelFormat, &pfd))
+					return;
+				}
+				SetPixelFormat(window->deviceContextHandle, bestPFDHandle, &pfd);
+			}
+		}
+
+		formatSetting_t* CreateLegacyPFD(formatSetting_t* desiredSetting, HDC deviceContextHandle)
+		{
+			//use the old PFD system on the window if none of the extensions will load	
+			int nativeCount = 0;
+			int numCompatible = 0;
+			//pass NULL to get the total number of PFDs that are available
+			nativeCount = DescribePixelFormat(deviceContextHandle, 1, sizeof(PIXELFORMATDESCRIPTOR), NULL);
+
+			for (int nativeIter = 0; nativeIter < nativeCount; nativeIter++)
+			{
+				const int num = nativeIter + 1;
+				PIXELFORMATDESCRIPTOR pfd;
+				if (!DescribePixelFormat(deviceContextHandle, num, sizeof(PIXELFORMATDESCRIPTOR), &pfd))
+				{
+					continue;
+				}
+
+				//skip if the PFD does not have PFD_DRAW_TO_WINDOW and PFD_SUPPORT_OPENGL 
+				if (!(pfd.dwFlags & PFD_DRAW_TO_WINDOW) || !(pfd.dwFlags & PFD_SUPPORT_OPENGL))
+				{
+					continue;
+				}
+
+				//skip if the PFD does not have PFD_GENERIC_ACCELERATION and PFD_GENERIC FORMAT
+				if (!(pfd.dwFlags & PFD_GENERIC_ACCELERATED) &&
+					(pfd.dwFlags & PFD_GENERIC_FORMAT))
+				{
+					continue;
+				}
+
+				//if the pixel type is not RGBA
+				if (pfd.iPixelType != PFD_TYPE_RGBA)
+				{
+					continue;
+				}
+
+				formatSetting_t* setting = new formatSetting_t(pfd.cRedBits, pfd.cGreenBits, pfd.cBlueBits, pfd.cAlphaBits,
+					pfd.cDepthBits, pfd.cStencilBits,
+					pfd.cAccumRedBits, pfd.cAccumGreenBits, pfd.cAccumBlueBits, pfd.cAccumAlphaBits,
+					pfd.cAuxBuffers, (pfd.dwFlags & PFD_STEREO) ? true : false, (pfd.dwFlags & PFD_DOUBLEBUFFER) ? true : false);
+				setting->handle = num;
+
+				formatList.push_back(std::move(setting));
+				numCompatible++;
+			}
+
+			if (numCompatible == 0)
+			{
+				//need to add an error message pipeline to this.
+				//or a list of messages with a function to get last error
+				//your driver has no compatible PFDs for OpenGL. at all. the fuck?
+				return nullptr;
+			}
+
+			//the best PFD would probably be the most basic by far
+			formatSetting_t defaultSetting = formatSetting_t();
+			defaultSetting.redBits = 8;
+			defaultSetting.greenBits = 8;
+			defaultSetting.blueBits = 8;
+			defaultSetting.alphaBits = 8;
+			defaultSetting.depthBits = 24;
+			defaultSetting.stencilBits = 8;
+			defaultSetting.doubleBuffer = true;
+
+			//if the best format hasn't already been found then find them manually
+			formatSetting_t* bestFormat = GetClosestFormat(desiredSetting);
+			if (!bestFormat)
+			{
+				return nullptr;
+			}
+			return bestFormat;
+		}
+
+		formatSetting_t* GetClosestFormat(const formatSetting_t* desiredSetting)
+		{
+			//go through all the compatible format settings 
+			unsigned int absent, lowestAbsent = UINT_MAX;
+			unsigned int colorDiff, lowestColorDiff = UINT_MAX;
+			unsigned int extraDiff, lowestExtraDiff = UINT_MAX;
+			formatSetting_t* currentFormat;
+			formatSetting_t* closestFormat = nullptr;
+
+			for (auto formatIter : formatList)
+			{
+				currentFormat = formatIter;
+				
+				//must have the same stereoscopic setting
+				if (desiredSetting->stereo && !currentFormat->stereo)
+				{
+					continue;
+				}
+
+				//must have the same double buffer setting
+				if (desiredSetting->doubleBuffer != currentFormat->doubleBuffer)
+				{
+					continue;
+				}
+
+				//get the missing buffers
+				{
+					absent = 0;
+
+					//if the current format doesn't have any alpha bits	and the desired has over 0
+					if (desiredSetting->alphaBits && !currentFormat->alphaBits)
 					{
-						window->pixelFormatDescriptor = pfd;
-						return;
+						absent++;
+					}
+					//if the current format doesn't have any depth bits	and the desired has over 0
+					if (desiredSetting->depthBits && !currentFormat->depthBits)
+					{
+						absent++;
+					}
+					//if the current format doesn't have any stencil bits and the desired has over 0
+					if (desiredSetting->stencilBits && !currentFormat->stencilBits)
+					{
+						absent++;
+					}
+					//if the desired has aux buffers and the desired has more aux buffers than the current
+					if (desiredSetting->auxBuffers && currentFormat->auxBuffers < desiredSetting->auxBuffers)
+					{
+						//add up the missing buffers as the difference in buffers between desired and current in aux buffer count
+						absent += desiredSetting->auxBuffers - currentFormat->auxBuffers;
+					}
+
+					//for modern framebuffers.if the desired needs samples and the current has not samples
+					if (desiredSetting->numSamples > 0 && !currentFormat->numSamples)
+					{
+						absent++;
 					}
 				}
+
+				//gather the value differences in color channels
+				{
+					colorDiff = 0;
+
+					if (desiredSetting->redBits != -1)
+					{
+						colorDiff += pow((desiredSetting->redBits - currentFormat->redBits), 2);
+					}
+
+					if (desiredSetting->greenBits != -1)
+					{
+						colorDiff += pow((desiredSetting->greenBits - currentFormat->greenBits), 2);
+					}
+
+					if (desiredSetting->blueBits != -1)
+					{
+						colorDiff += pow((desiredSetting->blueBits - currentFormat->blueBits), 2);
+					}
+				}
+
+				//calculates the difference in values for extras 
+				{
+					extraDiff = 0;
+
+					if (desiredSetting->alphaBits != -1)
+					{
+						extraDiff += pow((desiredSetting->alphaBits - currentFormat->alphaBits), 2);
+					}
+
+					if (desiredSetting->depthBits != -1)
+					{
+						extraDiff += pow((desiredSetting->depthBits - currentFormat->depthBits), 2);
+					}
+
+					if (desiredSetting->stencilBits != -1)
+					{
+						extraDiff += pow((desiredSetting->stencilBits - currentFormat->stencilBits), 2);
+					}
+
+					if (desiredSetting->accumRedBits != -1)
+					{
+						extraDiff += pow((desiredSetting->accumRedBits - currentFormat->accumRedBits), 2);
+					}
+
+					if (desiredSetting->accumGreenBits != -1)
+					{
+						extraDiff += pow((desiredSetting->accumGreenBits - currentFormat->accumGreenBits), 2);
+					}
+
+					if (desiredSetting->accumBlueBits != -1)
+					{
+						extraDiff += pow((desiredSetting->accumBlueBits - currentFormat->accumBlueBits), 2);
+					}
+
+					if (desiredSetting->numSamples != -1)
+					{
+						extraDiff += pow((desiredSetting->numSamples - currentFormat->numSamples), 2);
+					}
+
+					if (desiredSetting->alphaBits != -1)
+					{
+						extraDiff += pow((desiredSetting->alphaBits - currentFormat->alphaBits), 2);
+					}
+
+					if (desiredSetting->pixelRGB && !currentFormat->pixelRGB)
+					{
+						extraDiff++;
+					}
+				}
+
+				//determine if the current one is better than the best one so far
+				if (absent < lowestAbsent)
+				{
+					closestFormat = currentFormat;
+				}
+
+				else if (absent == lowestAbsent)
+				{
+					if ((colorDiff < lowestColorDiff) ||
+						(colorDiff == lowestColorDiff && extraDiff < lowestExtraDiff))
+					{
+						closestFormat = currentFormat;
+					}
+				}
+
+				if (currentFormat == closestFormat)
+				{
+					lowestAbsent = absent;
+					lowestColorDiff = colorDiff;
+					lowestExtraDiff = extraDiff;
+				}
 			}
+			return closestFormat;
 		}
 	
 		void Windows_Shutown()
@@ -2748,31 +3017,25 @@ namespace TinyWindow
 		std::error_code Windows_CreateDummyContext()
 		{
 			dummyDeviceContextHandle = GetDC(GetDesktopWindow());
-			PIXELFORMATDESCRIPTOR pfd;
-			pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+			PIXELFORMATDESCRIPTOR pfd = {};
+			pfd.nSize = sizeof(pfd);
 			pfd.nVersion = 1;
 			pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_DOUBLEBUFFER | PFD_SUPPORT_OPENGL;
 			pfd.iPixelType = PFD_TYPE_RGBA;
 			pfd.cColorBits = 24;
 
-			int LocalPixelFormat = ChoosePixelFormat(dummyDeviceContextHandle,
-				&pfd);
-
-			if (LocalPixelFormat)
+			if (!SetPixelFormat(dummyDeviceContextHandle, ChoosePixelFormat(dummyDeviceContextHandle, &pfd), &pfd))
 			{
-				if (!SetPixelFormat(dummyDeviceContextHandle, LocalPixelFormat, &pfd))
-				{
-					return error_t::invalidDummyPixelFormat;
-				}
+				return error_t::invalidDummyPixelFormat;
 			}
 
-			glDummyContextHandle = wglCreateContext(dummyDeviceContextHandle);
-			if (!glDummyContextHandle)
+			dummyGLContextHandle = wglCreateContext(dummyDeviceContextHandle);
+			if (!dummyGLContextHandle)
 			{
 				return error_t::dummyCreationFailed;
 			}
 
-			if (!wglMakeCurrent(dummyDeviceContextHandle, glDummyContextHandle))
+			if (!wglMakeCurrent(dummyDeviceContextHandle, dummyGLContextHandle))
 			{
 				return error_t::dummyCannotMakeCurrent;
 			}
