@@ -38,6 +38,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include <mmsystem.h>
+#include <shellapi.h>
 #endif	//_WIN32 || _WIN64
 
 #if defined(__linux__)
@@ -434,16 +435,17 @@ namespace TinyWindow
 		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
-	typedef std::function<void(tWindow* window, int key, keyState_t keyState)>												keyEvent_t;
-	typedef std::function<void(tWindow* window, mouseButton_t mouseButton, buttonState_t buttonState)>						mouseButtonEvent_t;
-	typedef std::function<void(tWindow* window, mouseScroll_t mouseScrollDirection)>										mouseWheelEvent_t;
-	typedef std::function<void(tWindow* window)>																			destroyedEvent_t;
-	typedef std::function<void(tWindow* window)>																			maximizedEvent_t;
-	typedef std::function<void(tWindow* window)>																			minimizedEvent_t;
-	typedef std::function<void(tWindow* window, bool isFocused)>															focusEvent_t;
-	typedef std::function<void(tWindow* window, vec2_t<int> windowPosition)>												movedEvent_t;
-	typedef std::function<void(tWindow* window, vec2_t<unsigned int> windowResolution)>										resizeEvent_t;
-	typedef std::function<void(tWindow* window, vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)>			mouseMoveEvent_t;
+	typedef std::function<void(tWindow* window, int key, keyState_t keyState)>													keyEvent_t;
+	typedef std::function<void(tWindow* window, mouseButton_t mouseButton, buttonState_t buttonState)>							mouseButtonEvent_t;
+	typedef std::function<void(tWindow* window, mouseScroll_t mouseScrollDirection)>											mouseWheelEvent_t;
+	typedef std::function<void(tWindow* window)>																				destroyedEvent_t;
+	typedef std::function<void(tWindow* window)>																				maximizedEvent_t;
+	typedef std::function<void(tWindow* window)>																				minimizedEvent_t;
+	typedef std::function<void(tWindow* window, bool isFocused)>																focusEvent_t;
+	typedef std::function<void(tWindow* window, vec2_t<int> windowPosition)>													movedEvent_t;
+	typedef std::function<void(tWindow* window, vec2_t<unsigned int> windowResolution)>											resizeEvent_t;
+	typedef std::function<void(tWindow* window, vec2_t<int> windowMousePosition, vec2_t<int> screenMousePosition)>				mouseMoveEvent_t;
+	typedef std::function<void(tWindow* window, std::vector<std::string> files, vec2_t<int> windowMousePosition)>		fileDropEvent_t;
 
 	class errorCategory_t : public std::error_category
 	{
@@ -1564,6 +1566,7 @@ namespace TinyWindow
 		movedEvent_t							movedEvent;												/**< This is the callback to be used the window has been moved in a non-programmatic fashion */
 		resizeEvent_t							resizeEvent;											/**< This is a callback to be used when the window has been resized in a non-programmatic fashion */
 		mouseMoveEvent_t						mouseMoveEvent;											/**< This is a callback to be used when the mouse has been moved */
+		fileDropEvent_t							fileDropEvent;											/**< This is a callback to be used when files have been dragged onto a window */
 
 		windowManager(/*error_t* errorCode = nullptr*/)
 		{
@@ -2632,6 +2635,36 @@ namespace TinyWindow
 					break;
 				}
 
+				case WM_DROPFILES:
+				{
+					//get the number of files that were dropped
+					unsigned int numfilesDropped = DragQueryFile((HDROP)wordParam, 0xFFFFFFFF, NULL, 0);
+					std::vector<std::string> files;
+					
+					//for each file dropped store the path
+					for (size_t fileIter = 0; fileIter < numfilesDropped; fileIter++)
+					{
+						char file[255] = {0};
+						unsigned int stringSize = DragQueryFile((HDROP)wordParam, fileIter, NULL, 0); //get the size of the string
+						DragQueryFile((HDROP)wordParam, fileIter, file, stringSize + 1);  //get the string itself
+						files.push_back(file);
+					}
+					POINT mousePoint;
+					vec2_t<int> mousePosition;
+					if (DragQueryPoint((HDROP)wordParam, &mousePoint)) //get the mouse position where the file was dropped
+					{
+						mousePosition = vec2_t<int>(mousePoint.x, mousePoint.y);
+					}
+
+					//release the memory
+					DragFinish((HDROP)wordParam);
+
+					if (manager->fileDropEvent != nullptr)
+					{
+						manager->fileDropEvent(window, std::move(files), mousePosition);
+					}
+				}
+
 				default:
 				{
 					return DefWindowProc(windowHandle, winMessage, wordParam, longParam);
@@ -2724,6 +2757,8 @@ namespace TinyWindow
 			//get screen by window Handle
 
 			window->SetStyle(style_t::normal);
+
+			DragAcceptFiles(window->windowHandle, true);
 
 			/*RAWINPUTDEVICE device;
 			device.usUsagePage = 0x01;
@@ -2920,17 +2955,17 @@ namespace TinyWindow
 
 					if (desiredSetting->redBits != -1)
 					{
-						colorDiff += pow((desiredSetting->redBits - currentFormat->redBits), 2);
+						colorDiff += (unsigned int)pow((desiredSetting->redBits - currentFormat->redBits), 2);
 					}
 
 					if (desiredSetting->greenBits != -1)
 					{
-						colorDiff += pow((desiredSetting->greenBits - currentFormat->greenBits), 2);
+						colorDiff += (unsigned int)pow((desiredSetting->greenBits - currentFormat->greenBits), 2);
 					}
 
 					if (desiredSetting->blueBits != -1)
 					{
-						colorDiff += pow((desiredSetting->blueBits - currentFormat->blueBits), 2);
+						colorDiff += (unsigned int)pow((desiredSetting->blueBits - currentFormat->blueBits), 2);
 					}
 				}
 
@@ -2940,42 +2975,42 @@ namespace TinyWindow
 
 					if (desiredSetting->alphaBits != -1)
 					{
-						extraDiff += pow((desiredSetting->alphaBits - currentFormat->alphaBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->alphaBits - currentFormat->alphaBits), 2);
 					}
 
 					if (desiredSetting->depthBits != -1)
 					{
-						extraDiff += pow((desiredSetting->depthBits - currentFormat->depthBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->depthBits - currentFormat->depthBits), 2);
 					}
 
 					if (desiredSetting->stencilBits != -1)
 					{
-						extraDiff += pow((desiredSetting->stencilBits - currentFormat->stencilBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->stencilBits - currentFormat->stencilBits), 2);
 					}
 
 					if (desiredSetting->accumRedBits != -1)
 					{
-						extraDiff += pow((desiredSetting->accumRedBits - currentFormat->accumRedBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->accumRedBits - currentFormat->accumRedBits), 2);
 					}
 
 					if (desiredSetting->accumGreenBits != -1)
 					{
-						extraDiff += pow((desiredSetting->accumGreenBits - currentFormat->accumGreenBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->accumGreenBits - currentFormat->accumGreenBits), 2);
 					}
 
 					if (desiredSetting->accumBlueBits != -1)
 					{
-						extraDiff += pow((desiredSetting->accumBlueBits - currentFormat->accumBlueBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->accumBlueBits - currentFormat->accumBlueBits), 2);
 					}
 
 					if (desiredSetting->numSamples != -1)
 					{
-						extraDiff += pow((desiredSetting->numSamples - currentFormat->numSamples), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->numSamples - currentFormat->numSamples), 2);
 					}
 
 					if (desiredSetting->alphaBits != -1)
 					{
-						extraDiff += pow((desiredSetting->alphaBits - currentFormat->alphaBits), 2);
+						extraDiff += (unsigned int)pow((desiredSetting->alphaBits - currentFormat->alphaBits), 2);
 					}
 
 					if (desiredSetting->pixelRGB && !currentFormat->pixelRGB)
@@ -3339,16 +3374,18 @@ namespace TinyWindow
 		{
 			DISPLAY_DEVICE monitorDevice;
 			monitorDevice.cb = sizeof(DISPLAY_DEVICE);
-			DWORD deviceNum = 0;
+			DWORD deviceNum = 0; 
+			DWORD monitorNum = 0;
 			while (EnumDisplayDevices(NULL, deviceNum, &monitorDevice, NULL))
 			{
 				DISPLAY_DEVICE graphicsDevice = { 0 };
 				graphicsDevice.cb = sizeof(DISPLAY_DEVICE);
-				DWORD monitorNum = 0;
+				monitor_t* monitor = nullptr;
+				
 				//if it has children add them to the list, else, ignore them since those are only POTENTIAL monitors/devices
 				while (EnumDisplayDevices(monitorDevice.DeviceName, monitorNum, &graphicsDevice, 0))
 				{
-					monitor_t* monitor = new monitor_t(monitorDevice.DeviceName, monitorDevice.DeviceString, graphicsDevice.DeviceString, (monitorDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);					
+					monitor = new monitor_t(monitorDevice.DeviceName, monitorDevice.DeviceString, graphicsDevice.DeviceString, (monitorDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);					
 					//get current display mode
 					DEVMODE devmode;
 
@@ -3360,19 +3397,19 @@ namespace TinyWindow
 					unsigned int modeIndex = -1;
 					while (EnumDisplaySettings(monitorDevice.DeviceName, modeIndex, &devmode))
 					{
+						//get the current settings od the display
 						if (modeIndex == ENUM_CURRENT_SETTINGS)
 						{
 							monitor->currentSetting = new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency);
 							//monitor->settings.push_back(monitor->currentSetting);
 						}
+						//get the settings that are stored in the registry
 						else
 						{
 							monitor->settings.push_back(std::move(new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency)));
 						}
-						modeIndex++;
-						
+						modeIndex++;						
 					}
-
 					monitorList.push_back(std::move(monitor));
 					monitorNum++;
 				}
