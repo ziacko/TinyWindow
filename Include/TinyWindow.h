@@ -838,7 +838,6 @@ namespace TinyWindow
 			accumWheelDelta = 0;
 			#endif
 			
-
 #if defined(__linux__)
 			context = 0;
 #endif 
@@ -1357,7 +1356,7 @@ namespace TinyWindow
 			SetWindowLongPtr(windowHandle, GWL_STYLE,
 				static_cast<LONG_PTR>(currentStyle | WS_VISIBLE));
 
-			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y,
+			SetWindowPos(windowHandle, HWND_TOPMOST, position.x, position.y,
 				resolution.width, resolution.height, SWP_FRAMECHANGED);
 #elif defined(TW_LINUX)
 			if (decorators & closeButton)
@@ -2663,6 +2662,7 @@ namespace TinyWindow
 					{
 						manager->fileDropEvent(window, std::move(files), mousePosition);
 					}
+					break;
 				}
 
 				default:
@@ -3057,10 +3057,10 @@ namespace TinyWindow
 			unsigned int bestPFDHandle = CreateLegacyPFD(desiredSetting, dummyDeviceContextHandle)->handle;
 			if (!DescribePixelFormat(dummyDeviceContextHandle, bestPFDHandle, sizeof(pfd), &pfd))
 			{
-				error_t::invalidDummyPixelFormat;
+				return error_t::invalidDummyPixelFormat;
 			}
 
-			if (SetPixelFormat(dummyDeviceContextHandle, bestPFDHandle, &pfd))
+			if (!SetPixelFormat(dummyDeviceContextHandle, bestPFDHandle, &pfd))
 			{
 				return error_t::invalidDummyPixelFormat;
 			}
