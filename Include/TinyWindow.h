@@ -811,9 +811,7 @@ namespace TinyWindow
 			this->userData = userData;
 			this->versionMajor = versionMajor;
 			this->versionMinor = versionMinor;
-#if defined(TW_WINDOWS)
-			this->profile = (profile == profile_t::compatibility) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
-#endif
+
 			initialized = false;
 			contextCreated = false;
 			currentStyle = titleBar | icon | border | minimizeButton | maximizeButton | closeButton | sizeableBorder;
@@ -836,11 +834,59 @@ namespace TinyWindow
 			windowHandle = NULL;
 			instanceHandle = NULL;
 			accumWheelDelta = 0;
-			#endif
+			this->profile = (profile == profile_t::compatibility) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+#endif
 			
 #if defined(__linux__)
 			context = 0;
 #endif 
+		}
+
+		tWindow(tWindow* sourceWindow, const char* name = nullptr, void* userData = nullptr,
+			vec2_t<unsigned int> resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight))
+		{
+			if (sourceWindow)
+			{
+				this->name = name;
+				this->resolution = resolution;
+				this->colorBits = sourceWindow->colorBits;
+				this->depthBits = sourceWindow->depthBits;
+				this->stencilBits = sourceWindow->stencilBits;
+				this->shouldClose = false;
+				this->currentState = sourceWindow->currentState;
+				this->userData = userData;
+				this->versionMajor = sourceWindow->versionMajor;
+				this->versionMinor = sourceWindow->versionMinor;
+
+				initialized = false;
+				contextCreated = false;
+				currentStyle = sourceWindow->currentStyle;
+
+				std::fill(keys, keys + last, keyState_t::up);// = { keyState_t.bad };
+				std::fill(mouseButton, mouseButton + (unsigned int)mouseButton_t::last, buttonState_t::up);
+
+				inFocus = false;
+				isCurrentContext = false;
+				currentScreenIndex = 0;
+				isFullscreen = false;
+				currentMonitor = NULL;
+
+#if defined(TW_WINDOWS)
+				this->profile = sourceWindow->profile;
+				deviceContextHandle = NULL;
+				glRenderingContextHandle = NULL;
+				paletteHandle = NULL;
+				pixelFormatDescriptor = PIXELFORMATDESCRIPTOR();
+				windowClass = WNDCLASS();
+				windowHandle = NULL;
+				instanceHandle = NULL;
+				accumWheelDelta = 0;
+#endif
+
+#if defined(__linux__)
+				context = 0;
+#endif
+			}
 		}
 
 		/**
@@ -1657,6 +1703,21 @@ namespace TinyWindow
 			return nullptr;
 		}
 
+		tWindow* AddSharedWindow(tWindow* sourceWindow, const char* windowName, void* userData = nullptr,
+			vec2_t<unsigned int> const& resolution = vec2_t<unsigned int>(defaultWindowWidth, defaultWindowHeight))
+		{
+			if (windowName != nullptr)
+			{
+				std::unique_ptr<tWindow> newWindow(new tWindow(sourceWindow, windowName, userData, resolution));
+				windowList.push_back(std::move(newWindow));
+				Platform_InitializeWindow(windowList.back().get());
+				Platform_ShareContexts(sourceWindow, windowList.back().get());
+
+				return windowList.back().get();
+			}
+			return nullptr;
+		}
+
 		/**
 		 * Return the total amount of windows the manager has
 		 */
@@ -2034,6 +2095,15 @@ namespace TinyWindow
 					break;
 				}
 			}
+		}
+
+		void Platform_ShareContexts(tWindow* sourceWindow, tWindow* newWindow)
+		{
+#if defined(TW_WINDOWS)
+			wglShareLists(sourceWindow->glRenderingContextHandle, newWindow->glRenderingContextHandle);
+#elif defined(TW_LINUX)
+
+#endif
 		}
 	
 #if defined(TW_WINDOWS)
@@ -2750,8 +2820,6 @@ namespace TinyWindow
 			ShowWindow(window->windowHandle, 1);
 			UpdateWindow(window->windowHandle);
 
-			//get the current screen the window is on
-			//MonitorFromWindow(window->windowHandle);
 			CheckWindowScreen(window);
 
 			//get screen by window Handle
@@ -2759,13 +2827,6 @@ namespace TinyWindow
 			window->SetStyle(style_t::normal);
 
 			DragAcceptFiles(window->windowHandle, true);
-
-			/*RAWINPUTDEVICE device;
-			device.usUsagePage = 0x01;
-			device.usUsage = 0x06;
-			device.dwFlags = RIDEV_NOLEGACY;        // do not generate legacy messages such as WM_KEYDOWN
-			device.hwndTarget = window->windowHandle;
-			RegisterRawInputDevices(&device, 1, sizeof(device)); */
 		}
 
 		//initialize the pixel format for the selected window
