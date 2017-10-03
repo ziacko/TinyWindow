@@ -3433,20 +3433,24 @@ namespace TinyWindow
 
 		void Windows_GetScreenInfo()
 		{
-			DISPLAY_DEVICE monitorDevice;
-			monitorDevice.cb = sizeof(DISPLAY_DEVICE);
+			//get display device info
+			DISPLAY_DEVICE graphicsDevice;
+			graphicsDevice.cb = sizeof(DISPLAY_DEVICE);
+			graphicsDevice.StateFlags = DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
 			DWORD deviceNum = 0; 
 			DWORD monitorNum = 0;
-			while (EnumDisplayDevices(NULL, deviceNum, &monitorDevice, NULL))
+			while (EnumDisplayDevices(NULL, deviceNum, &graphicsDevice, EDD_GET_DEVICE_INTERFACE_NAME))
 			{
-				DISPLAY_DEVICE graphicsDevice = { 0 };
-				graphicsDevice.cb = sizeof(DISPLAY_DEVICE);
+				//get monitor infor for the current display device
+				DISPLAY_DEVICE monitorDevice = { 0 };
+				monitorDevice.cb = sizeof(DISPLAY_DEVICE);
+				monitorDevice.StateFlags = DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
 				monitor_t* monitor = nullptr;
 				
 				//if it has children add them to the list, else, ignore them since those are only POTENTIAL monitors/devices
-				while (EnumDisplayDevices(monitorDevice.DeviceName, monitorNum, &graphicsDevice, 0))
+				while (EnumDisplayDevices(graphicsDevice.DeviceName, monitorNum, &monitorDevice, EDD_GET_DEVICE_INTERFACE_NAME))
 				{
-					monitor = new monitor_t(monitorDevice.DeviceName, monitorDevice.DeviceString, graphicsDevice.DeviceString, (monitorDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);					
+					monitor = new monitor_t(graphicsDevice.DeviceName, graphicsDevice.DeviceString, monitorDevice.DeviceString, (graphicsDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);					
 					//get current display mode
 					DEVMODE devmode;
 
@@ -3456,7 +3460,7 @@ namespace TinyWindow
 					}*/
 					//get all display modes
 					unsigned int modeIndex = -1;
-					while (EnumDisplaySettings(monitorDevice.DeviceName, modeIndex, &devmode))
+					while (EnumDisplaySettings(graphicsDevice.DeviceName, modeIndex, &devmode))
 					{
 						//get the current settings od the display
 						if (modeIndex == ENUM_CURRENT_SETTINGS)
@@ -3473,8 +3477,12 @@ namespace TinyWindow
 					}
 					monitorList.push_back(std::move(monitor));
 					monitorNum++;
+					monitorDevice = { 0 };
+					monitorDevice.cb = sizeof(DISPLAY_DEVICE);
+					monitorDevice.StateFlags = DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
 				}
 				deviceNum++;
+				monitorNum = 0;
 			}
 
 			if (EnumDisplayMonitors(NULL, NULL, MonitorEnumProcedure, (LPARAM)this))
