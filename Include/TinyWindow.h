@@ -971,7 +971,7 @@ namespace TinyWindow
 		/**
 		* Swap the draw buffers of the given window.
 		*/
-		inline std::error_code SwapDrawBuffers()
+		inline std::error_code SwapDrawBuffers() 
 		{
 #if defined(TW_WINDOWS)
 			SwapBuffers(deviceContextHandle);
@@ -2469,8 +2469,6 @@ namespace TinyWindow
 
 								window->keys[translatedKey] = keyState_t::up;
 							}
-							//reset it
-							wasLowerCase = false;
 							break;
 						}
 					}
@@ -2751,9 +2749,8 @@ namespace TinyWindow
 			info.cbSize = sizeof(info);
 			GetMonitorInfo(monitorHandle, &info);
 			
-			monitor_t* monitor = manager->GetMonitorByHandle(info.szDevice);// new monitor_t(std::string(info.szDevice), nullptr);// ,
+			monitor_t* monitor = manager->GetMonitorByHandle(info.szDevice);
 			monitor->monitorHandle = monitorHandle;
-			//monitor->currentSetting->resolution = vec2_t<unsigned int>((monitorSize->right - monitorSize->left), (monitorSize->bottom - monitorSize->top));
 			monitor->extents = vec4_t<unsigned int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
 			return true;
 		}
@@ -3450,14 +3447,9 @@ namespace TinyWindow
 				//if it has children add them to the list, else, ignore them since those are only POTENTIAL monitors/devices
 				while (EnumDisplayDevices(graphicsDevice.DeviceName, monitorNum, &monitorDevice, EDD_GET_DEVICE_INTERFACE_NAME))
 				{
-					monitor = new monitor_t(graphicsDevice.DeviceName, graphicsDevice.DeviceString, monitorDevice.DeviceString, (graphicsDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);					
+					monitor = new monitor_t(graphicsDevice.DeviceName, graphicsDevice.DeviceString, monitorDevice.DeviceString, (graphicsDevice.StateFlags | DISPLAY_DEVICE_PRIMARY_DEVICE) ? true : false);
 					//get current display mode
 					DEVMODE devmode;
-
-					/*if (EnumDisplaySettings(monitorDevice.DeviceName, ENUM_CURRENT_SETTINGS, &devmode))
-					{
-
-					}*/
 					//get all display modes
 					unsigned int modeIndex = -1;
 					while (EnumDisplaySettings(graphicsDevice.DeviceName, modeIndex, &devmode))
@@ -3466,7 +3458,6 @@ namespace TinyWindow
 						if (modeIndex == ENUM_CURRENT_SETTINGS)
 						{
 							monitor->currentSetting = new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency);
-							//monitor->settings.push_back(monitor->currentSetting);
 						}
 						//get the settings that are stored in the registry
 						else
@@ -3477,18 +3468,13 @@ namespace TinyWindow
 					}
 					monitorList.push_back(std::move(monitor));
 					monitorNum++;
-					monitorDevice = { 0 };
-					monitorDevice.cb = sizeof(DISPLAY_DEVICE);
 					monitorDevice.StateFlags = DISPLAY_DEVICE_ATTACHED_TO_DESKTOP;
 				}
 				deviceNum++;
 				monitorNum = 0;
 			}
-
-			if (EnumDisplayMonitors(NULL, NULL, MonitorEnumProcedure, (LPARAM)this))
-			{
-
-			}
+			//this is just to grab the monitor extents
+			EnumDisplayMonitors(NULL, NULL, MonitorEnumProcedure, (LPARAM)this);
 		}
 
 		bool Windows_ExtensionSupported(const char* extensionName)
