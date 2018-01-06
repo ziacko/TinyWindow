@@ -2757,8 +2757,8 @@ namespace TinyWindow
 			monitor_t* monitor = manager->GetMonitorByHandle(info.szDevice);
 			monitor->monitorHandle = monitorHandle;
 			monitor->extents = vec4_t<int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
-			monitor->resolution.width = abs(monitor->extents.left) + abs(monitor->extents.right);
-			monitor->resolution.height = abs(monitor->extents.top) + abs(monitor->extents.bottom);
+			monitor->resolution.width = abs(monitor->extents.right - monitor->extents.left);
+			monitor->resolution.height = abs(monitor->extents.bottom - monitor->extents.top);
 			return true;
 		}
 
