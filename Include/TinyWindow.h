@@ -66,6 +66,7 @@
 #include <system_error>
 #include <bitset>
 #include <ctype.h>
+#include <math.h>
 
 namespace TinyWindow
 {
@@ -165,21 +166,20 @@ namespace TinyWindow
 		unsigned int				bitsPerPixel;
 		unsigned int				displayFrequency;
 
-		monitorSetting_t(vec2_t<unsigned int> resolution, unsigned int bitsPerPixel, unsigned int displayFrequency)
+		monitorSetting_t(vec2_t<unsigned int> inResolution, unsigned int inBitsPerPixel, unsigned int inDisplayFrequency)	: resolution(inResolution), bitsPerPixel(inBitsPerPixel), displayFrequency(inDisplayFrequency)
 		{
-			this->resolution = resolution;
-			this->bitsPerPixel = bitsPerPixel;
-			this->displayFrequency = displayFrequency;
+
 		}
 	};	
 
 	struct monitor_t
 	{
 		monitorSetting_t*					currentSetting;
-		vec4_t<unsigned int>				extents;
 		std::vector<monitorSetting_t*>		settings;
 		//store all display settings
 
+		vec2_t<unsigned int> resolution;
+		vec4_t<int> extents;;
 		std::string deviceName;
 		std::string monitorName;
 		std::string displayName;
@@ -197,6 +197,8 @@ namespace TinyWindow
 		{
 			currentSetting = NULL;
 			isPrimary = false;
+			resolution = vec2_t<unsigned int>::Zero();
+			extents = vec4_t<int>::Zero();
 #if defined(TW_WINDOWS)
 			monitorHandle = NULL;
 #endif
@@ -1492,6 +1494,9 @@ namespace TinyWindow
 			return TinyWindow::error_t::success;
 		}
 
+		/**
+		* Toggles full-screen mode for a window by parsing in a monitor
+		*/
 		std::error_code ToggleFullscreen(monitor_t* monitor)
 		{
 #if defined(TW_WINDOWS)
@@ -2712,8 +2717,8 @@ namespace TinyWindow
 					for (size_t fileIter = 0; fileIter < numfilesDropped; fileIter++)
 					{
 						char file[255] = {0};
-						unsigned int stringSize = DragQueryFile((HDROP)wordParam, fileIter, NULL, 0); //get the size of the string
-						DragQueryFile((HDROP)wordParam, fileIter, file, stringSize + 1);  //get the string itself
+						unsigned int stringSize = DragQueryFile((HDROP)wordParam, (UINT)fileIter, NULL, 0); //get the size of the string
+						DragQueryFile((HDROP)wordParam, (UINT)fileIter, file, stringSize + 1);  //get the string itself
 						files.push_back(file);
 					}
 					POINT mousePoint;
@@ -2751,7 +2756,9 @@ namespace TinyWindow
 			
 			monitor_t* monitor = manager->GetMonitorByHandle(info.szDevice);
 			monitor->monitorHandle = monitorHandle;
-			monitor->extents = vec4_t<unsigned int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
+			monitor->extents = vec4_t<int>(monitorSize->left, monitorSize->top, monitorSize->right, monitorSize->bottom);
+			monitor->resolution.width = abs(monitor->extents.left) + abs(monitor->extents.right);
+			monitor->resolution.height = abs(monitor->extents.top) + abs(monitor->extents.bottom);
 			return true;
 		}
 
