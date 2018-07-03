@@ -249,7 +249,9 @@ namespace TinyWindow
 	public:
 
 		formatSetting_t(int redBits = 8, int greenBits = 8, int	blueBits = 8, int alphaBits = 8, 
+			int depthBits = 32, int stencilBits = 8, 
 			int accumRedBits = 0, int accumGreenBits = 0, int accumBlueBits = 0, int accumAplhaBits = 0, 
+			int	auxBuffers = 4, int numSamples = 0, bool stereo = false, bool doubleBuffer = true) 
 		{
 			this->redBits = redBits;
 			this->greenBits = greenBits;
