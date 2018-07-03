@@ -1511,7 +1511,7 @@ namespace TinyWindow
 			int err = 0;
 			if (isFullscreen)
 			{
-				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), NULL, NULL, CDS_FULLSCREEN, NULL);
+				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), nullptr, nullptr, CDS_FULLSCREEN, nullptr);
 			}
 
 			else
@@ -1641,6 +1641,7 @@ namespace TinyWindow
 					wglMakeCurrent(dummyDeviceContextHandle, NULL);
 					wglMakeCurrent(dummyDeviceContextHandle, nullptr);
 					wglDeleteContext(dummyGLContextHandle);
+					ShutdownDummy();
 				}
 
 				else
@@ -2055,6 +2056,27 @@ namespace TinyWindow
 #endif
 		}
 
+		void ShutdownDummy()
+		{
+	#if defined(TW_WINDOWS)
+			if (dummyGLContextHandle)
+			{
+				wglMakeCurrent(nullptr, nullptr);
+				wglDeleteContext(dummyGLContextHandle);
+			}
+
+			ReleaseDC(dummyWindowHandle, dummyDeviceContextHandle);
+			UnregisterClass("dummy", dummyWindowInstance);
+
+			FreeModule(dummyWindowInstance);
+
+			dummyDeviceContextHandle = nullptr;
+			dummyWindowHandle = nullptr;
+			dummyGLContextHandle = nullptr;
+
+	#endif
+		}
+
 		void ShutdownWindow(tWindow* window)
 		{
 			if (destroyedEvent != nullptr)
@@ -2122,6 +2144,7 @@ namespace TinyWindow
 		HGLRC										dummyGLContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
 		HDC											dummyDeviceContextHandle;
 		
+		HINSTANCE                                   dummyWindowInstance;
 		//wgl extensions
 		PFNWGLGETEXTENSIONSSTRINGARBPROC			wglGetExtensionsStringARB;
 		PFNWGLGETEXTENSIONSSTRINGEXTPROC			wglGetExtensionsStringEXT;
@@ -2841,13 +2864,13 @@ namespace TinyWindow
 
 		std::error_code Windows_CreateDummyWindow()
 		{
-			HINSTANCE instanceHandle = GetModuleHandle(nullptr);
+			dummyWindowInstance = GetModuleHandle(nullptr);
 			WNDCLASS dummyClass;
 			dummyClass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_DROPSHADOW;
 			dummyClass.lpfnWndProc = windowManager::WindowProcedure;
 			dummyClass.cbClsExtra = 0;
 			dummyClass.cbWndExtra = 0;
-			dummyClass.hInstance = instanceHandle;
+			dummyClass.hInstance = dummyWindowInstance;
 			dummyClass.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
 			dummyClass.hCursor = LoadCursor(nullptr, IDC_ARROW);
 			dummyClass.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
@@ -3176,7 +3199,6 @@ namespace TinyWindow
 			{
 				return error_t::dummyCannotMakeCurrent;
 			}
-
 			return error_t::success;
 		}
 
