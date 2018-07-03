@@ -123,7 +123,7 @@ void HandleMouseMovement(tWindow* window, const vec2_t<int>& windowMousePosition
 void HandleFileDrop(tWindow* window, const std::vector<std::string>& files, const vec2_t<int>& windowMousePosition)
 {
 	printf("Window: %s files dropped | \n", window->name);
-	for (auto iter : files)
+	for (const auto& iter : files)
 	{
 		printf("\t %s \n", iter.c_str());
 	}
@@ -149,9 +149,10 @@ void PrintMonitorInfo(windowManager* manager)
 
 int main()
 {
+
 	std::unique_ptr<windowManager> manager(new windowManager());
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
-	//PrintMonitorInfo(manager.get());
+	PrintMonitorInfo(manager.get());
 
 	manager->keyEvent = HandleKeyPresses;
 	//manager->mouseButtonEvent = HandleMouseClick;
@@ -165,7 +166,7 @@ int main()
 	//manager->fileDropEvent = HandleFileDrop;
 	//manager->mouseMoveEvent = HandleMouseMovement;
 	
-	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
+	
 	while (!window->shouldClose)
 	{
 		manager->PollForEvents();
@@ -178,6 +179,7 @@ int main()
 			spacePressed = false;
 		}
 
+		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		window->SwapDrawBuffers();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
