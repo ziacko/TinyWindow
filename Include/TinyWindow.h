@@ -166,9 +166,21 @@ namespace TinyWindow
 		unsigned int				bitsPerPixel;
 		unsigned int				displayFrequency;
 
+#if defined(TW_WINDOWS)
+		unsigned int       displayFlags;
+		unsigned int       fixedOutput;
+#endif
+
 		monitorSetting_t(vec2_t<unsigned int> inResolution, unsigned int inBitsPerPixel, unsigned int inDisplayFrequency)	: resolution(inResolution), bitsPerPixel(inBitsPerPixel), displayFrequency(inDisplayFrequency)
 		{
+			resolution = vec2_t<unsigned int>().Zero();
+			bitsPerPixel = 0;
+			displayFrequency = 0;
 
+#if defined(TW_WINDOWS)
+			displayFlags = 0;
+			fixedOutput = 0;
+#endif
 		}
 	};	
 
@@ -899,7 +911,7 @@ namespace TinyWindow
 		/**
 		* Set the Size/Resolution of the given window
 		*/
-		std::error_code SetResolution(TinyWindow::vec2_t<unsigned int> newResolution)
+		std::error_code SetWindowSize(TinyWindow::vec2_t<unsigned int> newResolution)
 		{
 			this->resolution = newResolution;
 #if defined(TW_WINDOWS)
@@ -1640,7 +1652,7 @@ namespace TinyWindow
 				if (Platform_InitExtensions() == error_t::success)
 				{
 					//delete the dummy context and make the current context null
-					wglMakeCurrent(dummyDeviceContextHandle, NULL);
+					wglMakeCurrent(dummyDeviceContextHandle, nullptr);
 					wglMakeCurrent(dummyDeviceContextHandle, nullptr);
 					wglDeleteContext(dummyGLContextHandle);
 					ShutdownDummy();
@@ -3524,11 +3536,16 @@ namespace TinyWindow
 						if (modeIndex == ENUM_CURRENT_SETTINGS)
 						{
 							monitor->currentSetting = new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency);
+							monitor->currentSetting->displayFlags = devmode.dmDisplayFlags;
+							monitor->currentSetting->fixedOutput = devmode.dmDisplayFixedOutput;
 						}
 						//get the settings that are stored in the registry
 						else
 						{
-							monitor->settings.push_back(std::move(new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency)));
+							monitorSetting_t* newSetting = new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency);
+							newSetting->displayFlags = devmode.dmDisplayFlags;
+							newSetting->fixedOutput = devmode.dmDisplayFixedOutput;
+							monitor->settings.push_back(std::move(newSetting));
 						}
 						modeIndex++;						
 					}

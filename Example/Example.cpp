@@ -122,7 +122,7 @@ void HandleMouseMovement(tWindow* window, const vec2_t<int>& windowMousePosition
 
 void HandleFileDrop(tWindow* window, const std::vector<std::string>& files, const vec2_t<int>& windowMousePosition)
 {
-	printf("Window: %s files dropped | \n", window->name);
+	printf("Window: %s | files dropped | \n", window->name);
 	for (const auto& iter : files)
 	{
 		printf("\t %s \n", iter.c_str());
@@ -140,8 +140,33 @@ void PrintMonitorInfo(windowManager* manager)
 		printf("extents:\t top: %i | left: %i | bottom: %i | right: %i \n", monitorIter->extents.top, monitorIter->extents.left, monitorIter->extents.bottom, monitorIter->extents.right);
 		for (auto settingIter : monitorIter->settings)
 		{
-			printf("width %i | height %i | frequency %i | pixel depth: %i \n",
+			printf("width %i | height %i | frequency %i | pixel depth: %i",
 				settingIter->resolution.width, settingIter->resolution.height, settingIter->displayFrequency, settingIter->bitsPerPixel);
+#if defined(TW_WINDOWS)
+			printf(" | flags %i", settingIter->displayFlags);
+			switch (settingIter->fixedOutput)
+			{
+				case DMDFO_DEFAULT:
+				{
+					printf(" | output: %s", "default");
+					break;
+				}
+
+				case DMDFO_CENTER:
+				{
+					printf(" | output: %s", "center");
+					break;
+				}
+
+				case DMDFO_STRETCH:
+				{
+					printf(" | output: %s", "stretch");
+					break;
+				}
+			}
+#endif
+				printf("\n");
+
 		}
 		printf("\n");
 	}
@@ -149,7 +174,6 @@ void PrintMonitorInfo(windowManager* manager)
 
 int main()
 {
-
 	std::unique_ptr<windowManager> manager(new windowManager());
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
 	PrintMonitorInfo(manager.get());
@@ -166,15 +190,12 @@ int main()
 	//manager->fileDropEvent = HandleFileDrop;
 	//manager->mouseMoveEvent = HandleMouseMovement;
 	
-	
 	while (!window->shouldClose)
 	{
 		manager->PollForEvents();
 		if (spacePressed)
 		{
-			window->SetStyle(style_t::popup);
-			window->SetPosition(vec2_t<int>::Zero());
-			window->SetResolution(vec2_t<unsigned int>(manager->GetMonitors().back()->resolution.width, manager->GetMonitors().back()->resolution.height));
+			window->SetWindowSize(vec2_t<unsigned int>(manager->GetMonitors().back()->resolution.width, manager->GetMonitors().back()->resolution.height));
 			window->ToggleFullscreen(manager->GetMonitors()[0]);
 			spacePressed = false;
 		}
