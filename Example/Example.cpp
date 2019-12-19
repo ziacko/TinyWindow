@@ -187,7 +187,7 @@ int main()
 	//manager->focusEvent = HandleFocus;
 	//manager->movedEvent = HandleMovement;
 	//manager->resizeEvent = HandleResize;
-	//manager->fileDropEvent = HandleFileDrop;
+	manager->fileDropEvent = HandleFileDrop;
 	//manager->mouseMoveEvent = HandleMouseMovement;
 	
 	while (!window->shouldClose)
@@ -196,7 +196,7 @@ int main()
 		if (spacePressed)
 		{
 			window->SetWindowSize(vec2_t<unsigned int>(manager->GetMonitors().back()->resolution.width, manager->GetMonitors().back()->resolution.height));
-			window->ToggleFullscreen(manager->GetMonitors()[0]);
+			window->ToggleFullscreen(manager->GetMonitors()[0], 0);
 			spacePressed = false;
 		}
 

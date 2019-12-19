@@ -32,6 +32,9 @@
 #if !defined(TW_USE_VULKAN)
 #include <gl/GL.h>
 #include <gl/wglext.h>
+#include <dinput.h>
+#include <Xinput.h>
+#include <Dbt.h>
 #else
 #include <vulkan.h>
 #endif
@@ -59,6 +62,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vector>
+#include <stack>
 #include <limits.h>
 #include <string.h>
 #include <functional>
@@ -171,11 +175,10 @@ namespace TinyWindow
 		unsigned int       fixedOutput;
 #endif
 
-		monitorSetting_t(vec2_t<unsigned int> inResolution, unsigned int inBitsPerPixel, unsigned int inDisplayFrequency)	: resolution(inResolution), bitsPerPixel(inBitsPerPixel), displayFrequency(inDisplayFrequency)
+		monitorSetting_t(vec2_t<unsigned int> inResolution = vec2_t<unsigned int>().Zero(), 
+			unsigned int inBitsPerPixel = 0, unsigned int inDisplayFrequency = 0) : 
+			resolution(inResolution), bitsPerPixel(inBitsPerPixel), displayFrequency(inDisplayFrequency)
 		{
-			resolution = vec2_t<unsigned int>().Zero();
-			bitsPerPixel = 0;
-			displayFrequency = 0;
 
 #if defined(TW_WINDOWS)
 			displayFlags = 0;
@@ -191,7 +194,7 @@ namespace TinyWindow
 		//store all display settings
 
 		vec2_t<unsigned int> resolution;
-		vec4_t<int> extents;;
+		vec4_t<int> extents;
 		std::string deviceName;
 		std::string monitorName;
 		std::string displayName;
@@ -439,14 +442,22 @@ namespace TinyWindow
 		dummyCreationFailed,					/**< If the dummy context has failed to be created */
 		invalidDummyContext,					/**< If the dummy context in invalid */
 		dummyCannotMakeCurrent,					/**< If the dummy cannot be made the current context */
+		invalidMonitorSettingIndex,				/**< If the provided monitor setting index is invalid */
 		functionNotImplemented,					/**< If the function has not yet been implemented in the current version of the API */
-		linuxCannotConnectXServer,				/**< Linux: if cannot connect to an X11 server */
-		linuxInvalidVisualinfo,					/**< Linux: if visual information given was invalid */
-		linuxCannotCreateWindow,				/**< Linux: when X11 fails to create a new window */
-		linuxFunctionNotImplemented,			/**< Linux: when the function has not yet been implemented on the Linux in the current version of the API */
-		windowsCannotCreateWindows,				/**< Windows: when Win32 cannot create a window */
-		windowsCannotInitialize,				/**< Windows: when Win32 cannot initialize */
-		windowsFunctionNotImplemented,			/**< Windows: when a function has yet to be implemented on the Windows platform in the current version of the API */
+		linuxCannotConnectXServer,				/**< Linux: If cannot connect to an X11 server */
+		linuxInvalidVisualinfo,					/**< Linux: If visual information given was invalid */
+		linuxCannotCreateWindow,				/**< Linux: When X11 fails to create a new window */
+		linuxFunctionNotImplemented,			/**< Linux: When the function has not yet been implemented on the Linux in the current version of the API */
+		windowsCannotCreateWindows,				/**< Windows: When Win32 cannot create a window */
+		windowsCannotInitialize,				/**< Windows: When Win32 cannot initialize */
+		windowsFullscreenBadDualView,			/**< Windows: The system is DualView capable. whatever that means */
+		windowsFullscreenBadFlags,				/**< Windows: Bad display change flags */
+		windowsFullscreenBadMode,				/**< Windows: Bad display change mode */
+		WindowsFullscreenBadParam,				/**< Windows: Bad display change Parameter */
+		WindowsFullscreenChangeFailed,			/**< Windows: The display driver failed to implement the specified graphics mode */
+		WindowsFullscreenNotUpdated,			/**< Windows: Unable to write settings to the registry */
+		WindowsFullscreenNeedRestart,			/**< Windows: The computer must be restarted for the graphics mode to work */
+		windowsFunctionNotImplemented,			/**< Windows: When a function has yet to be implemented on the Windows platform in the current version of the API */
 	};
 
 	using keyEvent_t = std::function<void(tWindow* window, int key, keyState_t keyState)>;
@@ -473,7 +484,7 @@ namespace TinyWindow
 		/**
 		* return the error message associated with the given error number
 		*/
-		virtual std::string message(int errorValue) const override
+		std::string message(int errorValue) const override
 		{
 			error_t err = (error_t)errorValue;
 			switch (err)
@@ -598,29 +609,69 @@ namespace TinyWindow
 					return "Error: the dummy cannot be made the current context \n";
 				}
 
+				case error_t::invalidMonitorSettingIndex:
+				{
+					return "Error: the provided monitor setting index is invalid \n";
+				}
+
 				case error_t::linuxCannotConnectXServer:
 				{
-					return "Error: cannot connect to X server \n";
+					return "Linux Error: cannot connect to X server \n";
 				}
 
 				case error_t::linuxInvalidVisualinfo:
 				{
-					return "Error: Invalid visual information given \n";
+					return "Linux Error: Invalid visual information given \n";
 				}
 
 				case error_t::linuxCannotCreateWindow:
 				{
-					return "Error: failed to create window \n";
+					return "Linux Error: failed to create window \n";
 				}
 
 				case error_t::linuxFunctionNotImplemented:
 				{
-					return "Error: function not implemented on Linux platform yet. sorry :(\n";
+					return "Linux Error: function not implemented on Linux platform yet. sorry :(\n";
 				}
 
 				case error_t::windowsCannotCreateWindows:
 				{
-					return "Error: failed to create window \n";
+					return "Windows Error: failed to create window \n";
+				}
+
+				case error_t::windowsFullscreenBadDualView:
+				{
+					return "Windows Error: The system is DualView capable. whatever that means \n";
+				}
+
+				case error_t::windowsFullscreenBadFlags:
+				{
+					return "Windows Error: Bad display change flags \n";
+				}
+
+				case error_t::windowsFullscreenBadMode:
+				{
+					return "Windows Error: Bad display change mode \n";
+				}
+				
+				case error_t::WindowsFullscreenBadParam:
+				{
+					return "Windows Error: Bad display change Parameter \n";
+				}
+
+				case error_t::WindowsFullscreenChangeFailed:
+				{
+					return "Windows Error: The display driver failed to implement the specified graphics mode \n";
+				}
+
+				case error_t::WindowsFullscreenNotUpdated:
+				{
+					return "Windows Error: Unable to write settings to the registry \n";
+				}
+
+				case error_t::WindowsFullscreenNeedRestart:
+				{
+					return "Windows Error: The computer must be restarted for the graphics mode to work \n";
 				}
 
 				case error_t::windowsFunctionNotImplemented:
@@ -640,7 +691,7 @@ namespace TinyWindow
 			}
 		}
 		
-		errorCategory_t() {};
+		errorCategory_t() = default;
 
 		const static errorCategory_t& get()
 		{
@@ -725,6 +776,8 @@ namespace TinyWindow
 		HWND									windowHandle;											/**< A handle to A window */
 		HINSTANCE								instanceHandle;											/**< A handle to the window class instance */
 		int										accumWheelDelta;										/**< holds the accumulated mouse wheel delta for this window */
+
+		vec2_t<unsigned int>					clientArea;												/**< the width and height of the client window */
 
 #elif defined(TW_LINUX)
 
@@ -854,6 +907,7 @@ namespace TinyWindow
 			instanceHandle = nullptr;
 			accumWheelDelta = 0;
 			this->profile = (profile == profile_t::compatibility) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+			clientArea = vec2_t<unsigned int>::Zero();
 #endif
 			
 #if defined(__linux__)
@@ -1099,7 +1153,7 @@ namespace TinyWindow
 		/**
 		* Toggle the given window's full screen mode
 		*/
-		std::error_code SetFullScreen(bool newState)
+		std::error_code SetFullScreen(bool newState /* need to add definition for which screen*/)
 		{
 			currentState = (newState == true) ? state_t::fullscreen : state_t::normal;
 
@@ -1128,6 +1182,18 @@ namespace TinyWindow
 				0, SubstructureNotifyMask, &currentEvent);
 #endif
 			return TinyWindow::error_t::success;
+		}
+
+		/**
+		* Toggles full-screen mode for a window by parsing in a monitor and a monitor setting index
+		*/
+		std::error_code ToggleFullscreen(monitor_t* monitor, unsigned int monitorSettingIndex)
+		{
+#if defined(TW_WINDOWS)
+			return Windows_ToggleFullscreen(monitor, monitorSettingIndex);
+#elif defined(TW_LINUX)
+			return error_t::functionNotImplemented;
+#endif
 		}
 
 		/**
@@ -1511,73 +1577,6 @@ namespace TinyWindow
 			return TinyWindow::error_t::success;
 		}
 
-		/**
-		* Toggles full-screen mode for a window by parsing in a monitor
-		*/
-		std::error_code ToggleFullscreen(monitor_t* monitor)
-		{
-#if defined(TW_WINDOWS)
-			currentMonitor = monitor;
-
-			DEVMODE devMode;
-			ZeroMemory(&devMode, sizeof(DEVMODE));
-			devMode.dmSize = sizeof(DEVMODE);
-			int err = 0;
-			if (isFullscreen)
-			{
-				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), nullptr, nullptr, CDS_FULLSCREEN, nullptr);
-			}
-
-			else
-			{
-				devMode.dmPelsWidth = resolution.width;
-				devMode.dmPelsHeight = resolution.height;
-				devMode.dmBitsPerPel = colorBits * 4;
-				devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), &devMode, nullptr, CDS_FULLSCREEN, nullptr);
-			}
-
-			switch (err)
-			{
-				case DISP_CHANGE_SUCCESSFUL:
-				{
-					isFullscreen = !isFullscreen;
-					if (isFullscreen)
-					{
-						SetStyle(style_t::popup);
-					}
-
-					else
-					{
-						SetStyle(style_t::normal);
-					}
-
-					break;
-				}
-
-				case DISP_CHANGE_BADDUALVIEW:
-				case DISP_CHANGE_BADFLAGS:
-				case DISP_CHANGE_BADMODE:
-				case DISP_CHANGE_BADPARAM:
-				case DISP_CHANGE_FAILED:
-				case DISP_CHANGE_NOTUPDATED:
-				{
-					return error_t::fullscreenFailed;
-				}
-
-				default:
-				{
-					break;
-				}
-			}
-
-			SetPosition(vec2_t<int>((int)monitor->extents.left, (int)monitor->extents.top));
-			return error_t::success;
-			#elif defined(TW_LINUX)
-			return error_t::functionNotImplemented;
-			#endif
-		}
-
 		//if windows is defined then allow the user to only GET the necessary info
 #if defined(TW_WINDOWS)
 
@@ -1599,6 +1598,85 @@ namespace TinyWindow
 		inline HINSTANCE GetWindowClassInstance()
 		{
 			return instanceHandle;
+		}
+
+		std::error_code Windows_ToggleFullscreen(monitor_t* monitor, unsigned int monitorSettingIndex)
+		{
+			currentMonitor = monitor;
+
+			DEVMODE devMode;
+			ZeroMemory(&devMode, sizeof(DEVMODE));
+			devMode.dmSize = sizeof(DEVMODE);
+			int err = 0;
+			if (isFullscreen)
+			{
+				err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), nullptr, nullptr, CDS_FULLSCREEN, nullptr);
+			}
+
+			else
+			{
+				if (monitorSettingIndex < (monitor->settings.size() - 1))
+				{
+					monitorSetting_t* selectedSetting = monitor->settings[monitorSettingIndex];
+					devMode.dmPelsWidth = selectedSetting->resolution.width;
+					devMode.dmPelsHeight = selectedSetting->resolution.height;
+					devMode.dmBitsPerPel = colorBits * 4;
+					devMode.dmDisplayFrequency = selectedSetting->displayFrequency;
+					devMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL | DM_DISPLAYFREQUENCY;
+					err = ChangeDisplaySettingsEx(currentMonitor->displayName.c_str(), &devMode, nullptr, CDS_FULLSCREEN, nullptr);
+				}
+				else
+				{
+					return error_t::invalidMonitorSettingIndex;
+				}
+			}
+
+			switch (err)
+			{
+			case DISP_CHANGE_SUCCESSFUL:
+			{
+				isFullscreen = !isFullscreen;
+				if (isFullscreen)
+				{
+					SetStyle(style_t::popup);
+				}
+
+				else
+				{
+					SetStyle(style_t::normal);
+				}
+
+				break;
+			}
+
+			case DISP_CHANGE_BADDUALVIEW:
+			{
+				return error_t::windowsFullscreenBadDualView;
+			}
+			case DISP_CHANGE_BADFLAGS:
+			{
+				return error_t::windowsFullscreenBadFlags;
+			}
+			case DISP_CHANGE_BADMODE:
+			{
+				return error_t::windowsFullscreenBadMode;
+			}
+			case DISP_CHANGE_BADPARAM:
+			{
+				return error_t::WindowsFullscreenBadParam;
+			}
+			case DISP_CHANGE_FAILED:
+			{
+				return error_t::WindowsFullscreenChangeFailed;
+			}
+			case DISP_CHANGE_NOTUPDATED:
+			{
+				return error_t::WindowsFullscreenNotUpdated;
+			}
+			}
+
+			SetPosition(vec2_t<int>((int)monitor->extents.left, (int)monitor->extents.top));
+			return error_t::success;
 		}
 
 #elif defined(TW_LINUX)
@@ -1647,9 +1725,9 @@ namespace TinyWindow
 			if (desktopHandle)
 			{
 				bestPixelFormat = nullptr;
-				Platform_GetScreenInfo();
-				Platform_CreateDummyContext();
-				if (Platform_InitExtensions() == error_t::success)
+				GetScreenInfo();
+				CreateDummyContext();
+				if (InitExtensions() == error_t::success)
 				{
 					//delete the dummy context and make the current context null
 					wglMakeCurrent(dummyDeviceContextHandle, nullptr);
@@ -1696,10 +1774,12 @@ namespace TinyWindow
 		 void ShutDown()
 		 {
 			//windowList.empty();
-	#if defined(__linux__)
+	#if defined(TW_WINDOWS)
+			 ResetMonitors();
+	#elif defined(TW_LINUX)
 			Linux_Shutdown();
 	#endif
-
+			
 			for (auto & windowIndex : windowList)
 			{
 				ShutdownWindow(windowIndex.get());
@@ -1719,11 +1799,10 @@ namespace TinyWindow
 			{
 				std::unique_ptr<tWindow> newWindow(new tWindow(windowName, userData, resolution, glMajor, glMinor, profile, colourBits, depthBits, stencilBits));
 				windowList.push_back(std::move(newWindow));
-				Platform_InitializeWindow(windowList.back().get());
+				InitializeWindow(windowList.back().get());
 
 				return windowList.back().get();
 			}
-			//PrintErrorMessage(std::error_code(invalidWindowName));
 			return nullptr;
 		}
 
@@ -1734,8 +1813,8 @@ namespace TinyWindow
 			{
 				std::unique_ptr<tWindow> newWindow(new tWindow(sourceWindow, windowName, userData, resolution));
 				windowList.push_back(std::move(newWindow));
-				Platform_InitializeWindow(windowList.back().get());
-				Platform_ShareContexts(sourceWindow, windowList.back().get());
+				InitializeWindow(windowList.back().get());
+				ShareContexts(sourceWindow, windowList.back().get());
 
 				return windowList.back().get();
 			}
@@ -1776,24 +1855,6 @@ namespace TinyWindow
 				screenMousePosition.x, screenMousePosition.y);*/
 	#endif
 		}
-
-		/**
-		* Return the Resolution of the current screen
-		*/
-		/*TinyWindow::vec2_t<unsigned int> GetScreenResolution()
-		{
-	#if defined(TW_WINDOWS)
-			RECT screen;
-			HWND desktop = GetDesktopWindow();
-			GetWindowRect(desktop, &screen);
-			screenResolution.width = screen.right;
-			screenResolution.height = screen.bottom;
-	#elif defined(TW_LINUX)
-			screenResolution.width = WidthOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-			screenResolution.height = HeightOfScreen(XDefaultScreenOfDisplay(currentDisplay));
-	#endif
-			return screenResolution;
-		}*/
 
 		/**
 		* Ask the window manager to poll for events
@@ -1904,6 +1965,9 @@ namespace TinyWindow
 
 		}
 
+		/**
+		*	get the list of monitors connected to the system
+		*/
 		std::vector<monitor_t*> GetMonitors()
 		{
 			return monitorList;
@@ -1915,10 +1979,9 @@ namespace TinyWindow
 		std::vector<monitor_t*>						monitorList;
 		std::vector<formatSetting_t*>				formatList;
 
-		//TinyWindow::vec2_t<unsigned int>			screenResolution;
 		TinyWindow::vec2_t<int>						screenMousePosition;
 
-		std::error_code Platform_CreateDummyContext()
+		std::error_code CreateDummyContext()
 		{
 #if defined(TW_WINDOWS)
 			return Windows_CreateDummyContext();
@@ -1927,37 +1990,17 @@ namespace TinyWindow
 #endif // 
 		}
 
-		std::error_code Platform_InitExtensions()
+		std::error_code InitExtensions()
 		{
 #if defined(TW_WINDOWS)
-			wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-			wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
-			if (wglGetExtensionsStringARB == nullptr && wglGetExtensionsStringEXT == nullptr)
-			{
-				return error_t::noExtensions;
-				
-			}
-			wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");	
-			wglChoosePixelFormatEXT = (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");	 
-			wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");			
-			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");	
-			wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
-
-			swapControlEXT = Windows_ExtensionSupported("WGL_EXT_swap_control");
-
-			wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
-			wglGetPixelFormatAttribfvEXT = (PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribfvEXT");
-			wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
-			wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribivEXT");
-
-			
+			return Windows_InitExtensions();			
 #elif defined(TW_LINUX)
-
+			return error_t::linuxFunctionNotImplemented;
 #endif
 			return error_t::success;
 		}
 
-		void Platform_InitializeWindow(tWindow* window)
+		void InitializeWindow(tWindow* window)
 		{
 	#if defined(TW_WINDOWS)
 			Windows_InitializeWindow(window);
@@ -1966,88 +2009,16 @@ namespace TinyWindow
 	#endif
 		}
 
-		std::error_code Platform_InitializeGL(tWindow* window)
+		std::error_code InitializeGL(tWindow* window)
 		{
 #if defined(TW_WINDOWS)
-			window->deviceContextHandle = GetDC(window->windowHandle);
-			InitializePixelFormat(window);
-			if (wglCreateContextAttribsARB)
-			{
-				int attribs[]
-				{
-					WGL_CONTEXT_MAJOR_VERSION_ARB, window->versionMajor,
-					WGL_CONTEXT_MINOR_VERSION_ARB, window->versionMinor,
-					WGL_CONTEXT_PROFILE_MASK_ARB, window->profile,
-	#if defined(_DEBUG)
-					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
-	#endif
-					0
-				};
-
-				window->glRenderingContextHandle = wglCreateContextAttribsARB(window->deviceContextHandle, nullptr, attribs);
-
-				if (window->glRenderingContextHandle == nullptr)
-				{
-					switch (GetLastError())
-					{
-					case ERROR_INVALID_VERSION_ARB:
-					{
-						return TinyWindow::error_t::invalidVersion;
-					}
-
-					case ERROR_INVALID_PROFILE_ARB:
-					{
-						return TinyWindow::error_t::invalidProfile;
-					}
-					}
-				}
-			}
-
-			else
-			{
-				//use the old fashion method if the extensions aren't loading
-				window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
-			}
-
-			wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
-
-			window->contextCreated = (window->glRenderingContextHandle != nullptr);
-
-			if (window->contextCreated)
-			{
-				return TinyWindow::error_t::success;
-			}
-
-			return TinyWindow::error_t::invalidContext;
+			return Windows_InitGL(window);
 #elif defined(TW_LINUX)
-				window->context = glXCreateContext(
-					currentDisplay,
-					window->visualInfo,
-					0,
-					true);
-
-				if (window->context)
-				{
-					glXMakeCurrent(currentDisplay,
-						window->windowHandle,
-						window->context);
-
-					XWindowAttributes l_Attributes;
-
-					XGetWindowAttributes(currentDisplay,
-						window->windowHandle, &l_Attributes);
-					window->position.x = l_Attributes.x;
-					window->position.y = l_Attributes.y;
-
-					window->contextCreated = true;
-					window->InitializeAtoms();
-					return TinyWindow::error_t::success;
-				}
-				return TinyWindow::error_t::linuxCannotConnectXServer;
+			return Linux_InitGL(window);
 	#endif
 		}
 
-		void Platform_GetScreenInfo()
+		void GetScreenInfo()
 		{
 #if defined(TW_WINDOWS)
 			Windows_GetScreenInfo();
@@ -2142,10 +2113,19 @@ namespace TinyWindow
 			}
 		}
 
-		void Platform_ShareContexts(tWindow* sourceWindow, tWindow* newWindow)
+		void ShareContexts(tWindow* sourceWindow, tWindow* newWindow)
 		{
 #if defined(TW_WINDOWS)
-			wglShareLists(sourceWindow->glRenderingContextHandle, newWindow->glRenderingContextHandle);
+			Windows_ShareContexts(sourceWindow, newWindow);
+#elif defined(TW_LINUX)
+			//TODO: need to implement shared context functionality
+#endif
+		}
+
+		void ResetMonitors()
+		{
+#if defined(TW_WINDOWS)
+			Windows_ResetMonitors();
 #elif defined(TW_LINUX)
 
 #endif
@@ -2235,8 +2215,9 @@ namespace TinyWindow
 
 				case WM_SIZE:
 				{
-					window->resolution.width = (unsigned int)LOWORD(longParam);
-					window->resolution.height = (unsigned int)HIWORD(longParam);
+					//high and low word are the client resolution. will need to change this
+					window->clientArea.width = (unsigned int)LOWORD(longParam);
+					window->clientArea.height = (unsigned int)HIWORD(longParam);
 
 					switch (wordParam)
 					{
@@ -2862,7 +2843,7 @@ namespace TinyWindow
 
 			//if TW_USE_VULKAN is defined then stop TinyWindow from creating an OpenGL context since it will conflict with a vulkan context
 #if !defined(TW_USE_VULKAN)
-			Platform_InitializeGL(window);
+			InitializeGL(window);
 #endif
 			ShowWindow(window->windowHandle, 1);
 			UpdateWindow(window->windowHandle);
@@ -3545,7 +3526,7 @@ namespace TinyWindow
 							monitorSetting_t* newSetting = new monitorSetting_t(vec2_t<unsigned int>(devmode.dmPelsWidth, devmode.dmPelsHeight), devmode.dmBitsPerPel, devmode.dmDisplayFrequency);
 							newSetting->displayFlags = devmode.dmDisplayFlags;
 							newSetting->fixedOutput = devmode.dmDisplayFixedOutput;
-							monitor->settings.push_back(std::move(newSetting));
+							monitor->settings.insert(monitor->settings.begin(), std::move(newSetting));
 						}
 						modeIndex++;						
 					}
@@ -3589,6 +3570,98 @@ namespace TinyWindow
 
 			}
 			return false;
+		}
+
+		void Windows_ResetMonitors()
+		{
+			for (auto iter : monitorList)
+			{
+				ChangeDisplaySettingsEx(iter->displayName.c_str(), nullptr, nullptr, CDS_FULLSCREEN, nullptr);
+			}
+		}
+
+		std::error_code Windows_InitExtensions()
+		{
+			wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+			wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+			if (wglGetExtensionsStringARB == nullptr && wglGetExtensionsStringEXT == nullptr)
+			{
+				return error_t::noExtensions;
+
+			}
+			wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+			wglChoosePixelFormatEXT = (PFNWGLCHOOSEPIXELFORMATEXTPROC)wglGetProcAddress("wglChoosePixelFormatEXT");
+			wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+			wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
+			wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
+
+			swapControlEXT = Windows_ExtensionSupported("WGL_EXT_swap_control");
+
+			wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
+			wglGetPixelFormatAttribfvEXT = (PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribfvEXT");
+			wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
+			wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribivEXT");
+
+			return error_t::success;
+		}
+
+		std::error_code Windows_InitGL(tWindow* window)
+		{
+			window->deviceContextHandle = GetDC(window->windowHandle);
+			InitializePixelFormat(window);
+			if (wglCreateContextAttribsARB)
+			{
+				int attribs[]
+				{
+					WGL_CONTEXT_MAJOR_VERSION_ARB, window->versionMajor,
+					WGL_CONTEXT_MINOR_VERSION_ARB, window->versionMinor,
+					WGL_CONTEXT_PROFILE_MASK_ARB, window->profile,
+	#if defined(_DEBUG)
+					WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
+	#endif
+					0
+				};
+
+				window->glRenderingContextHandle = wglCreateContextAttribsARB(window->deviceContextHandle, nullptr, attribs);
+
+				if (window->glRenderingContextHandle == nullptr)
+				{
+					switch (GetLastError())
+					{
+					case ERROR_INVALID_VERSION_ARB:
+					{
+						return TinyWindow::error_t::invalidVersion;
+					}
+
+					case ERROR_INVALID_PROFILE_ARB:
+					{
+						return TinyWindow::error_t::invalidProfile;
+					}
+					}
+				}
+			}
+
+			else
+			{
+				//use the old fashion method if the extensions aren't loading
+				window->glRenderingContextHandle = wglCreateContext(window->deviceContextHandle);
+			}
+
+			wglMakeCurrent(window->deviceContextHandle, window->glRenderingContextHandle);
+
+			window->contextCreated = (window->glRenderingContextHandle != nullptr);
+
+			if (window->contextCreated)
+			{
+				return TinyWindow::error_t::success;
+			}
+
+			return TinyWindow::error_t::invalidContext;
+		}
+
+		void Windows_ShareContexts(tWindow* sourceWindow, tWindow* newWindow)
+		{
+			wglShareLists(sourceWindow->glRenderingContextHandle, newWindow->glRenderingContextHandle);
 		}
 
 #elif defined(TW_LINUX)
@@ -3755,7 +3828,7 @@ namespace TinyWindow
 			XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);	
 
 			window->currentDisplay = currentDisplay;
-			Platform_InitializeGL(window);
+			InitializeGL(window);
 			
 			return TinyWindow::error_t::success;
 		}
@@ -4661,6 +4734,34 @@ namespace TinyWindow
 			XFree(configs);
 
 			return BestConfig;
+		}
+
+		std::error_code Linux_InitGL(tWindow* window)
+		{
+			window->context = glXCreateContext(
+				currentDisplay,
+				window->visualInfo,
+				0,
+				true);
+
+			if (window->context)
+			{
+				glXMakeCurrent(currentDisplay,
+					window->windowHandle,
+					window->context);
+
+				XWindowAttributes l_Attributes;
+
+				XGetWindowAttributes(currentDisplay,
+					window->windowHandle, &l_Attributes);
+				window->position.x = l_Attributes.x;
+				window->position.y = l_Attributes.y;
+
+				window->contextCreated = true;
+				window->InitializeAtoms();
+				return TinyWindow::error_t::success;
+			}
+			return TinyWindow::error_t::linuxCannotConnectXServer;
 		}
 
 #endif
