@@ -1997,7 +1997,6 @@ namespace TinyWindow
 #elif defined(TW_LINUX)
 			return error_t::linuxFunctionNotImplemented;
 #endif
-			return error_t::success;
 		}
 
 		void InitializeWindow(tWindow* window)
@@ -2351,7 +2350,7 @@ namespace TinyWindow
 								}
 							}
 
-							unsigned int translatedKey = 0;
+							translatedKey = 0;
 
 							switch (virtualKey)
 							{
@@ -2510,10 +2509,10 @@ namespace TinyWindow
 
 				case WM_SYSKEYDOWN:
 				{
-					unsigned int translatedKey = 0;
+					translatedKey = 0;
 
-						switch (DetermineLeftOrRight(wordParam, longParam))
-						{
+					switch (DetermineLeftOrRight(wordParam, longParam))
+					{
 						case VK_LMENU:
 						{
 							window->keys[leftAlt] = keyState_t::down;
@@ -2527,7 +2526,6 @@ namespace TinyWindow
 							translatedKey = rightAlt;
 							break;
 						}
-
 					}
 
 					if (manager->keyEvent != nullptr)
@@ -2540,7 +2538,7 @@ namespace TinyWindow
 
 				case WM_SYSKEYUP:
 				{
-					unsigned int translatedKey = 0;
+					translatedKey = 0;
 					switch (DetermineLeftOrRight(wordParam, longParam))
 					{
 						case VK_LMENU:
@@ -2788,7 +2786,6 @@ namespace TinyWindow
 		//get the window that is associated with this Win32 window handle
 		tWindow* GetWindowByHandle(HWND windowHandle)
 		{
-			for (size_t windowIndex = 0; windowIndex < windowList.size(); windowIndex++)
 			for (auto & windowIndex : windowList)
 			{
 				if (windowIndex->windowHandle == windowHandle)
@@ -3510,7 +3507,7 @@ namespace TinyWindow
 					//get current display mode
 					DEVMODE devmode;
 					//get all display modes
-					unsigned int modeIndex = -1;
+					unsigned int modeIndex = UINT_MAX;
 					while (EnumDisplaySettings(graphicsDevice.DeviceName, modeIndex, &devmode))
 					{
 						//get the current settings of the display

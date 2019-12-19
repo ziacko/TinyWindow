@@ -176,9 +176,10 @@ int main()
 {
 	std::unique_ptr<windowManager> manager(new windowManager());
 	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
-	PrintMonitorInfo(manager.get());
+	
+	//PrintMonitorInfo(manager.get());
 
-	manager->keyEvent = HandleKeyPresses;
+	//manager->keyEvent = HandleKeyPresses;
 	//manager->mouseButtonEvent = HandleMouseClick;
 	//manager->mouseWheelEvent = HandleMouseWheel;
 	//manager->destroyedEvent = HandleShutdown;
@@ -187,7 +188,7 @@ int main()
 	//manager->focusEvent = HandleFocus;
 	//manager->movedEvent = HandleMovement;
 	//manager->resizeEvent = HandleResize;
-	manager->fileDropEvent = HandleFileDrop;
+	//manager->fileDropEvent = HandleFileDrop;
 	//manager->mouseMoveEvent = HandleMouseMovement;
 	
 	while (!window->shouldClose)
