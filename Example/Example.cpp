@@ -166,7 +166,6 @@ void PrintMonitorInfo(windowManager* manager)
 			}
 #endif
 				printf("\n");
-
 		}
 		printf("\n");
 	}

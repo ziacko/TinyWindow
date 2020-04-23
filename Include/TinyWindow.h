@@ -1,4 +1,4 @@
-//created by Ziyad Barakat 2014 - 2016
+//created by Ziyad Barakat 2014 - 2020
 
 #ifndef TINYWINDOW_H
 #define TINYWINDOW_H
@@ -437,7 +437,7 @@ namespace TinyWindow
 		fullscreenFailed,						/**< If setting the window to fullscreen has failed */
 		noExtensions,							/**< If platform specific window extensions have not been properly loaded */
 		invalidExtension,						/**< If a platform specific window extension is not supported */
-		invalidDummyWindow,                     /**< If the dummy window creation has failed */
+		invalidDummyWindow,						/**< If the dummy window creation has failed */
 		invalidDummyPixelFormat,				/**< If the pixel format for the dummy context id invalid */
 		dummyCreationFailed,					/**< If the dummy context has failed to be created */
 		invalidDummyContext,					/**< If the dummy context in invalid */
@@ -2133,11 +2133,11 @@ namespace TinyWindow
 #if defined(TW_WINDOWS)
 
 		MSG											winMessage;
-		HWND                                        dummyWindowHandle;
+		HWND										dummyWindowHandle;
 		HGLRC										dummyGLContextHandle;			/**< A handle to the dummy OpenGL rendering context*/
 		HDC											dummyDeviceContextHandle;
 		
-		HINSTANCE                                   dummyWindowInstance;
+		HINSTANCE									dummyWindowInstance;
 		//wgl extensions
 		PFNWGLGETEXTENSIONSSTRINGARBPROC			wglGetExtensionsStringARB;
 		PFNWGLGETEXTENSIONSSTRINGEXTPROC			wglGetExtensionsStringEXT;
@@ -2215,8 +2215,17 @@ namespace TinyWindow
 				case WM_SIZE:
 				{
 					//high and low word are the client resolution. will need to change this
-					window->clientArea.width = (unsigned int)LOWORD(longParam);
-					window->clientArea.height = (unsigned int)HIWORD(longParam);
+					window->resolution.width = (unsigned int)LOWORD(longParam);
+					window->resolution.height = (unsigned int)HIWORD(longParam);
+
+					RECT tempRect;
+					GetClientRect(window->windowHandle, &tempRect);
+					window->clientArea.width = tempRect.right;
+					window->clientArea.height = tempRect.bottom;
+
+					GetWindowRect(window->windowHandle, &tempRect);
+					//window->resolution.width = tempRect.right;
+					//window->resolution.height = tempRect.bottom;
 
 					switch (wordParam)
 					{
@@ -2250,16 +2259,24 @@ namespace TinyWindow
 					}
 					break;
 				}
-				 
+				//only occurs when the window size is being dragged
 				case WM_SIZING:
 				{
-					window->resolution.width = (unsigned int)LOWORD(longParam);
-					window->resolution.height = (unsigned int)HIWORD(longParam);
+					RECT tempRect;
+					GetWindowRect(window->windowHandle, &tempRect);
+					window->resolution.width = tempRect.right;
+					window->resolution.height = tempRect.bottom;
+
+					GetClientRect(window->windowHandle, &tempRect);
+					window->clientArea.width = tempRect.right;
+					window->clientArea.height = tempRect.bottom;
 
 					if (manager->resizeEvent != nullptr)
 					{
 						manager->resizeEvent(window, window->resolution);
 					}
+
+					UpdateWindow(window->windowHandle);// , NULL, true);
 					break;
 				}
 
