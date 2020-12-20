@@ -8,7 +8,7 @@ void HandleKeyPresses(tWindow* window, unsigned int key, keyState_t keyState)
 {
 	if(keyState == keyState_t::down && key == spacebar)
 	{
-		printf("Window: %s | spacebar has been pressed \n", window->name);
+		printf("Window: %s | spacebar has been pressed \n", window->settings.name);
 		spacePressed = true;
 	}
 
@@ -19,12 +19,12 @@ void HandleKeyPresses(tWindow* window, unsigned int key, keyState_t keyState)
 
 	else if(keyState == keyState_t::down)
 	{
-		printf("Window: %s | %c | down\n", window->name, key);
+		printf("Window: %s | %c | down\n", window->settings.name, key);
 	}
 
 	else if (keyState == keyState_t::up)
 	{
-		printf("Window: %s | %c | up\n", window->name, key);
+		printf("Window: %s | %c | up\n", window->settings.name, key);
 	}
 }
 
@@ -36,7 +36,7 @@ void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state
 	{
 		if (state == buttonState_t::down)
 		{
-			printf("Window: %s | left button down \n", window->name);
+			printf("Window: %s | left button down \n", window->settings.name);
 		}
 		break;
 	}
@@ -45,7 +45,7 @@ void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state
 	{
 		if (state == buttonState_t::down)
 		{
-			printf("Window: %s | middle button down \n", window->name);
+			printf("Window: %s | middle button down \n", window->settings.name);
 		}
 		break;
 	}
@@ -54,7 +54,7 @@ void HandleMouseClick(tWindow* window, mouseButton_t button, buttonState_t state
 	{
 		if (state == buttonState_t::down)
 		{
-			printf("Window: %s | right button down \n", window->name);
+			printf("Window: %s | right button down \n", window->settings.name);
 		}
 		break;
 	}
@@ -72,13 +72,13 @@ void HandleMouseWheel(tWindow* window, mouseScroll_t mouseScrollDirection)
 	{
 		case mouseScroll_t::down:
 		{
-			printf("Window: %s | mouse wheel down \n", window->name);
+			printf("Window: %s | mouse wheel down \n", window->settings.name);
 			break;
 		}
 
 		case mouseScroll_t::up:
 		{
-			printf("Window: %s | mouse wheel up \n", window->name);
+			printf("Window: %s | mouse wheel up \n", window->settings.name);
 			break;
 		}
 	}
@@ -86,43 +86,43 @@ void HandleMouseWheel(tWindow* window, mouseScroll_t mouseScrollDirection)
 
 void HandleShutdown(tWindow* window)
 {
-	printf("window: %s has closed \n", window->name);
+	printf("window: %s has closed \n", window->settings.name);
 }
 
 void HandleMaximized(tWindow* window)
 {
-	printf("Window: %s | has been maximized \n", window->name);
+	printf("Window: %s | has been maximized \n", window->settings.name);
 }
 
 void HandleMinimized(tWindow* window)
 {
-	printf("Window: %s | has been minimized \n", window->name);
+	printf("Window: %s | has been minimized \n", window->settings.name);
 }
 
 void HandleFocus(tWindow* window, bool isFocused)
 {
-	isFocused ? printf("Window: %s | is now in focus\n", window->name) : printf("Window: %s | is out of focus\n", window->name);
+	isFocused ? printf("Window: %s | is now in focus\n", window->settings.name) : printf("Window: %s | is out of focus\n", window->settings.name);
 }
 
 void HandleMovement(tWindow* window, const vec2_t<int>& windowPosition)
 {
-	printf("Window: %s | new position X: %i Y:%i\n", window->name, windowPosition.x, windowPosition.y);
+	printf("Window: %s | new position X: %i Y:%i\n", window->settings.name, windowPosition.x, windowPosition.y);
 }
 
 void HandleResize(tWindow* window, const vec2_t<unsigned int>& windowSize)
 {
-	printf("Window: %s | new position X: %i Y:%i\n", window->name, windowSize.width, windowSize.height);
+	printf("Window: %s | new position X: %i Y:%i\n", window->settings.name, windowSize.width, windowSize.height);
 }
 
 void HandleMouseMovement(tWindow* window, const vec2_t<int>& windowMousePosition, const vec2_t<int>& screenMousePosition)
 {
-	printf("Window: %s | window position X: %i Y: %i | screen position X: %i Y: %i \n", window->name,
+	printf("Window: %s | window position X: %i Y: %i | screen position X: %i Y: %i \n", window->settings.name,
 		windowMousePosition.x, windowMousePosition.y, screenMousePosition.x, screenMousePosition.y);
 }
 
 void HandleFileDrop(tWindow* window, const std::vector<std::string>& files, const vec2_t<int>& windowMousePosition)
 {
-	printf("Window: %s | files dropped | \n", window->name);
+	printf("Window: %s | files dropped | \n", window->settings.name);
 	for (const auto& iter : files)
 	{
 		printf("\t %s \n", iter.c_str());
@@ -165,20 +165,33 @@ void PrintMonitorInfo(windowManager* manager)
 				}
 			}
 #endif
-				printf("\n");
+			printf("\n");
 		}
 		printf("\n");
 	}
 }
 
+void HandleGamepadState(gamepad_t* pad)
+{
+	printf("%i \n", pad->rightStick[0]);
+
+}
+
 int main()
 {
+	windowSetting_t defaultSetting;
+	defaultSetting.name = "example window";
+	defaultSetting.resolution = vec2_t<unsigned int>(1280, 720);
+	defaultSetting.SetProfile(profile_t::core);
+	defaultSetting.currentState = state_t::maximized;
+	defaultSetting.enableSRGB = true;
+
 	std::unique_ptr<windowManager> manager(new windowManager());
-	std::unique_ptr<tWindow> window(manager->AddWindow("Example"));
-	
+	std::unique_ptr<tWindow> window(manager->AddWindow(defaultSetting));
+
 	//PrintMonitorInfo(manager.get());
 
-	//manager->keyEvent = HandleKeyPresses;
+	manager->keyEvent = HandleKeyPresses;
 	//manager->mouseButtonEvent = HandleMouseClick;
 	//manager->mouseWheelEvent = HandleMouseWheel;
 	//manager->destroyedEvent = HandleShutdown;
@@ -193,16 +206,16 @@ int main()
 	while (!window->shouldClose)
 	{
 		manager->PollForEvents();
+		//HandleGamepadState(manager->GetGamepads()[0]);
 		if (spacePressed)
 		{
 			window->SetWindowSize(vec2_t<unsigned int>(manager->GetMonitors().back()->resolution.width, manager->GetMonitors().back()->resolution.height));
 			window->ToggleFullscreen(manager->GetMonitors()[0], 0);
 			spacePressed = false;
 		}
-
 		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		window->SwapDrawBuffers();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	manager->ShutDown();
