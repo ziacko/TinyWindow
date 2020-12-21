@@ -2219,6 +2219,7 @@ namespace TinyWindow
 		PFNWGLGETPIXELFORMATATTRIBIVEXTPROC			wglGetPixelFormatAttribivEXT;
 
 		bool										swapControlEXT;
+		bool										wglFramebufferSRGBCapableARB;
 
 		formatSetting_t*							bestPixelFormat;
 
@@ -2998,6 +2999,7 @@ namespace TinyWindow
 					attribList.push_back(WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB);
 				}
 
+				attribList.push_back(0); //needs a 0 to notify as the end of the list.
 				wglChoosePixelFormatARB(window->deviceContextHandle,
 					&attribList[0], nullptr, 1, &format, &count);
 				SetPixelFormat(window->deviceContextHandle, format,
@@ -3011,6 +3013,7 @@ namespace TinyWindow
 					attribList.push_back(WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT);
 				}
 
+				attribList.push_back(0);
 				wglChoosePixelFormatEXT(window->deviceContextHandle, 
 					&attribList[0], nullptr, 1, &format, &count);
 				SetPixelFormat(window->deviceContextHandle, format,
@@ -3691,6 +3694,7 @@ namespace TinyWindow
 			wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)wglGetProcAddress("wglGetSwapIntervalEXT");
 
 			swapControlEXT = Windows_ExtensionSupported("WGL_EXT_swap_control");
+			wglFramebufferSRGBCapableARB = Windows_ExtensionSupported("WGL_ARB_framebuffer_sRGB");
 
 			wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribfvARB");
 			wglGetPixelFormatAttribfvEXT = (PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)wglGetProcAddress("wglGetPixelFormatAttribfvEXT");
