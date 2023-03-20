@@ -324,9 +324,12 @@ namespace TinyWindow
 			this->stencilBits = stencilBits;
 			this->currentState = currentState;
 			this->userData = userData;
+			this->enableSRGB = false;
+
+#if defined(TM_WINDOWS) && !defined(TW_USE_VULKAN)
 			this->versionMajor = versionMajor;
 			this->versionMinor = versionMinor;
-			this->enableSRGB = false;
+#endif
 
 			SetProfile(profile);
 		}
@@ -1087,7 +1090,7 @@ namespace TinyWindow
 				currentDisplay,
 				windowHandle, windowHandle,
 				position.x, position.y,
-				resolution.width, resolution.height,
+				settings.resolution.width, settings.resolution.height,
 				newMousePosition.x, newMousePosition.y);
 #endif
 			return TinyWindow::error_t::success;
@@ -1181,7 +1184,7 @@ namespace TinyWindow
 				currentEvent.xclient.message_type = AtomState;
 				currentEvent.xclient.format = 32;
 				currentEvent.xclient.window = windowHandle;
-				currentEvent.xclient.data.l[0] = (currentState == state_t::maximized);
+				currentEvent.xclient.data.l[0] = (settings.currentState == state_t::maximized);
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
@@ -1204,7 +1207,7 @@ namespace TinyWindow
 				currentEvent.xclient.message_type = AtomState;
 				currentEvent.xclient.format = 32;
 				currentEvent.xclient.window = windowHandle;
-				currentEvent.xclient.data.l[0] = (currentState == state_t::maximized);
+				currentEvent.xclient.data.l[0] = (settings.currentState == state_t::maximized);
 				currentEvent.xclient.data.l[1] = AtomMaxVert;
 				currentEvent.xclient.data.l[2] = AtomMaxHorz;
 
@@ -1240,7 +1243,7 @@ namespace TinyWindow
 			currentEvent.xclient.message_type = AtomState;
 			currentEvent.xclient.format = 32;
 			currentEvent.xclient.window = windowHandle;
-			currentEvent.xclient.data.l[0] = currentState == state_t::fullscreen;
+			currentEvent.xclient.data.l[0] = settings.currentState == state_t::fullscreen;
 			currentEvent.xclient.data.l[1] = AtomFullScreen;
 
 			XSendEvent(currentDisplay, windowHandle,
@@ -2026,7 +2029,10 @@ namespace TinyWindow
 				return interval;
 			}
 #elif defined(TW_LINUX)
+			if (0)
+			{
 
+			}
 #endif
 			else
 			{
@@ -2147,7 +2153,7 @@ namespace TinyWindow
 			window->glRenderingContextHandle = nullptr;
 
 	#elif defined(TW_LINUX)
-			if (window->currentState == state_t::fullscreen)
+			if (window->settings.currentState == state_t::fullscreen)
 			{
 				window->Restore();
 			}
@@ -3992,7 +3998,7 @@ namespace TinyWindow
 				GLX_RGBA,
 				GLX_DOUBLEBUFFER, 
 				GLX_DEPTH_SIZE, 
-				window->depthBits, 
+				window->settings.depthBits, 
 				None};
 
 			window->linuxDecorators = 1;
@@ -4024,7 +4030,7 @@ namespace TinyWindow
 		
 			window->windowHandle = XCreateWindow(currentDisplay,
 				XDefaultRootWindow(currentDisplay), 0, 0,
-				window->resolution.width, window->resolution.height,
+				window->settings.resolution.width, window->settings.resolution.height,
 				0, window->visualInfo->depth, InputOutput,
 				window->visualInfo->visual, CWColormap | CWEventMask,
 				&window->setAttributes);
@@ -4037,7 +4043,7 @@ namespace TinyWindow
 
 			XMapWindow(currentDisplay, window->windowHandle);
 			XStoreName(currentDisplay, window->windowHandle,
-				window->name);
+				window->settings.name);
 
 			XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);	
 
@@ -4334,12 +4340,12 @@ namespace TinyWindow
 				//dragging out the window or programmatically
 				case ResizeRequest:
 				{
-					window->resolution.width = currentEvent.xresizerequest.width;
-					window->resolution.height = currentEvent.xresizerequest.height;
+					window->settings.resolution.width = currentEvent.xresizerequest.width;
+					window->settings.resolution.height = currentEvent.xresizerequest.height;
 
 					glViewport(0, 0,
-						window->resolution.width,
-						window->resolution.height);
+						window->settings.resolution.width,
+						window->settings.resolution.height);
 
 					if (resizeEvent != nullptr)
 					{
@@ -4357,16 +4363,16 @@ namespace TinyWindow
 						currentEvent.xconfigure.height);
 
 					//check if window was resized
-					if ((unsigned int)currentEvent.xconfigure.width != window->resolution.width
-						|| (unsigned int)currentEvent.xconfigure.height != window->resolution.height)
+					if ((unsigned int)currentEvent.xconfigure.width != window->settings.resolution.width
+						|| (unsigned int)currentEvent.xconfigure.height != window->settings.resolution.height)
 					{
 						if (resizeEvent != nullptr)
 						{
 							resizeEvent(window, vec2_t<unsigned int>(currentEvent.xconfigure.width, currentEvent.xconfigure.height));
 						}
 
-						window->resolution.width = currentEvent.xconfigure.width;
-						window->resolution.height = currentEvent.xconfigure.height;
+						window->settings.resolution.width = currentEvent.xconfigure.width;
+						window->settings.resolution.height = currentEvent.xconfigure.height;
 					}
 
 					//check if window was moved
@@ -4909,12 +4915,12 @@ namespace TinyWindow
 				GLX_X_RENDERABLE, true,
 				GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
 				GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
-				GLX_RED_SIZE, window->colorBits,
-				GLX_GREEN_SIZE, window->colorBits,
-				GLX_BLUE_SIZE, window->colorBits,
-				GLX_ALPHA_SIZE, window->colorBits,
-				GLX_DEPTH_SIZE, window->depthBits,
-				GLX_STENCIL_SIZE, window->stencilBits,
+				GLX_RED_SIZE, window->settings.colorBits,
+				GLX_GREEN_SIZE, window->settings.colorBits,
+				GLX_BLUE_SIZE, window->settings.colorBits,
+				GLX_ALPHA_SIZE, window->settings.colorBits,
+				GLX_DEPTH_SIZE, window->settings.depthBits,
+				GLX_STENCIL_SIZE, window->settings.stencilBits,
 				GLX_DOUBLEBUFFER, true,
 				None
 			};
