@@ -1,3 +1,0 @@
-C:/Users/Ziyad/Documents/TinyWindow/Vulkan/CMakeFiles/TinyWindow_Vulkan.dir
-C:/Users/Ziyad/Documents/TinyWindow/Vulkan/CMakeFiles/ALL_BUILD.dir
-C:/Users/Ziyad/Documents/TinyWindow/Vulkan/CMakeFiles/ZERO_CHECK.dir
