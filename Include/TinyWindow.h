@@ -4112,14 +4112,15 @@ namespace TinyWindow
                 return TinyWindow::error_t::linuxCannotCreateWindow;
                 exit(0);
             }
+			// @lp64ace, atoms need to be loaded before calling #XSetWMProtocols below, since it uses the AtomClose!
+			window->currentDisplay = currentDisplay;
+			window->InitializeAtoms();
 
             XMapWindow(currentDisplay, window->windowHandle);
-            XStoreName(currentDisplay, window->windowHandle,
-                window->settings.name);
+            XStoreName(currentDisplay, window->windowHandle, window->settings.name);
 
             XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);    
 
-            window->currentDisplay = currentDisplay;
             InitializeGL(window);
             
             return TinyWindow::error_t::success;
@@ -5134,7 +5135,6 @@ namespace TinyWindow
                 window->position.y = attributes.y;
 
                 window->contextCreated = true;
-                window->InitializeAtoms();
 
 
                 return TinyWindow::error_t::success;
