@@ -1838,6 +1838,17 @@ namespace TinyWindow
             screenResolution.y = HeightOfScreen(
                 XScreenOfDisplay(currentDisplay,
                     DefaultScreen(currentDisplay)));*/
+			
+			unsigned long mask = 0;
+		
+			mask |= KeyPressMask | KeyReleaseMask;
+			mask |= ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
+			mask |= PointerMotionMask | EnterWindowMask | LeaveWindowMask;
+			mask |= StructureNotifyMask | PropertyChangeMask | FocusChangeMask;
+			mask |= ExposureMask;
+			
+			/** Listen to events associated with the specified event mask. */
+			XSelectInput(currentDisplay, XDefaultRootWindow(currentDisplay), StructureNotifyMask);
     #endif
 
 
