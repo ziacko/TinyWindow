@@ -1838,6 +1838,17 @@ namespace TinyWindow
             screenResolution.y = HeightOfScreen(
                 XScreenOfDisplay(currentDisplay,
                     DefaultScreen(currentDisplay)));*/
+			
+			unsigned long mask = 0;
+		
+			mask |= KeyPressMask | KeyReleaseMask;
+			mask |= ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
+			mask |= PointerMotionMask | EnterWindowMask | LeaveWindowMask;
+			mask |= StructureNotifyMask | PropertyChangeMask | FocusChangeMask;
+			mask |= ExposureMask;
+			
+			/** Listen to events associated with the specified event mask. */
+			XSelectInput(currentDisplay, XDefaultRootWindow(currentDisplay), mask);
     #endif
 
 
@@ -4112,14 +4123,15 @@ namespace TinyWindow
                 return TinyWindow::error_t::linuxCannotCreateWindow;
                 exit(0);
             }
+			// @lp64ace, atoms need to be loaded before calling #XSetWMProtocols below, since it uses the AtomClose!
+			window->currentDisplay = currentDisplay;
+			window->InitializeAtoms();
 
             XMapWindow(currentDisplay, window->windowHandle);
-            XStoreName(currentDisplay, window->windowHandle,
-                window->settings.name);
+            XStoreName(currentDisplay, window->windowHandle, window->settings.name);
 
             XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);    
 
-            window->currentDisplay = currentDisplay;
             InitializeGL(window);
             
             return TinyWindow::error_t::success;
@@ -5134,7 +5146,6 @@ namespace TinyWindow
                 window->position.y = attributes.y;
 
                 window->contextCreated = true;
-                window->InitializeAtoms();
 
 
                 return TinyWindow::error_t::success;
