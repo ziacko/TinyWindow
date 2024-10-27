@@ -1848,7 +1848,7 @@ namespace TinyWindow
 			mask |= ExposureMask;
 			
 			/** Listen to events associated with the specified event mask. */
-			XSelectInput(currentDisplay, XDefaultRootWindow(currentDisplay), StructureNotifyMask);
+			XSelectInput(currentDisplay, XDefaultRootWindow(currentDisplay), mask);
     #endif
 
 
