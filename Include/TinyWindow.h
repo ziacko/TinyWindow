@@ -4155,6 +4155,11 @@ namespace TinyWindow
         void Linux_ProcessEvents(XEvent currentEvent)
         {
             tWindow* window = GetWindowByEvent(currentEvent);
+			
+			/** Some events we receive do not have a valid window, since they are dispatched to the root window. */
+			if(!window) {
+				return;
+			}
 
             switch (currentEvent.type)    
             {
