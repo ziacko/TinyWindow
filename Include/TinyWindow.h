@@ -2313,7 +2313,6 @@ namespace TinyWindow
 					 * while here we override them with the dimensions of the client area.
 					 */
 					
-					//high and low word are the client resolution. will need to change this
                     window->clientArea.width = (unsigned int)LOWORD(longParam);
                     window->clientArea.height = (unsigned int)HIWORD(longParam);
 
