@@ -4141,7 +4141,8 @@ namespace TinyWindow
             mask |= KeyPressMask | KeyReleaseMask;
             mask |= ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
             mask |= PointerMotionMask | EnterWindowMask | LeaveWindowMask;
-            mask |= StructureNotifyMask | PropertyChangeMask | FocusChangeMask;
+            mask |= SubstructureNotifyMask | StructureNotifyMask;
+            mask |= PropertyChangeMask | FocusChangeMask;
             mask |= ExposureMask;
 			
 			/** Listen to events associated with the specified event mask. */
