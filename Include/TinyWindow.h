@@ -2316,14 +2316,13 @@ namespace TinyWindow
                     window->clientArea.width = (unsigned int)LOWORD(longParam);
                     window->clientArea.height = (unsigned int)HIWORD(longParam);
 
+					/**
+					 * Also since WM_SIZE is received by the window "after its size has changed".
+					 */
 					RECT tempRect;
-                    GetClientRect(window->windowHandle, &tempRect);
-                    LONG cx = tempRect.right - tempRect.left;
-                    LONG cy = tempRect.bottom - tempRect.top;
-					
                     GetWindowRect(window->windowHandle, &tempRect);
-                    window->resolution.width = window->clientArea.width + (tempRect.right - tempRect.left) - cx;
-                    window->resolution.height = window->clientArea.height + (tempRect.bottom - tempRect.top) - cy;
+                    window->resolution.width = tempRect.right - tempRect.left;
+                    window->resolution.height = tempRect.bottom - tempRect.top;
 
                     switch (wordParam)
                     {
