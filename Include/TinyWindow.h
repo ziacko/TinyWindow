@@ -2347,12 +2347,12 @@ namespace TinyWindow
                 {
                     RECT tempRect;
                     GetWindowRect(window->windowHandle, &tempRect);
-                    window->settings.resolution.width = tempRect.right;
-                    window->settings.resolution.height = tempRect.bottom;
+                    window->settings.resolution.width = tempRect.right - tempRect.left;
+                    window->settings.resolution.height = tempRect.bottom - tempRect.top;
 
                     GetClientRect(window->windowHandle, &tempRect);
-                    window->clientArea.width = tempRect.right;
-                    window->clientArea.height = tempRect.bottom;
+                    window->clientArea.width = tempRect.right - tempRect.left;
+                    window->clientArea.height = tempRect.bottom - tempRect.top;
 
                     if (manager->resizeEvent != nullptr)
                     {
