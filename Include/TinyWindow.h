@@ -2321,8 +2321,8 @@ namespace TinyWindow
 					 */
 					RECT tempRect;
                     GetWindowRect(window->windowHandle, &tempRect);
-                    window->resolution.width = tempRect.right - tempRect.left;
-                    window->resolution.height = tempRect.bottom - tempRect.top;
+                    window->settings.resolution.width = tempRect.right - tempRect.left;
+                    window->settings.resolution.height = tempRect.bottom - tempRect.top;
 
                     switch (wordParam)
                     {
