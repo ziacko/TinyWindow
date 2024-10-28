@@ -2297,18 +2297,34 @@ namespace TinyWindow
 
                 case WM_SIZE:
                 {
-                    //high and low word are the client resolution. will need to change this
-                    window->settings.resolution.width = (unsigned int)LOWORD(longParam);
-                    window->settings.resolution.height = (unsigned int)HIWORD(longParam);
+					/**
+					 * @Microsoft
+					 * https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-size
+					 *
+					 * The low-order word of lParam specifies the new width of the client area.
+					 * The high-order word of lParam specifies the new height of the client area.
+					 *
+					 * If we keep 
+					 *
+					 * window->settings.resolution.width = (unsigned int)LOWORD(longParam);
+					 * window->settings.resolution.height = (unsigned int)HIWORD(longParam);
+					 *
+					 * Then we have an imbalance with WM_SIZING where we pass the dimensions of the window
+					 * while here we override them with the dimensions of the client area.
+					 */
+					
+					//high and low word are the client resolution. will need to change this
+                    window->clientArea.width = (unsigned int)LOWORD(longParam);
+                    window->clientArea.height = (unsigned int)HIWORD(longParam);
 
-                    RECT tempRect;
+					RECT tempRect;
                     GetClientRect(window->windowHandle, &tempRect);
-                    window->clientArea.width = tempRect.right;
-                    window->clientArea.height = tempRect.bottom;
-
+                    LONG cx = tempRect.right - tempRect.left;
+                    LONG cy = tempRect.bottom - tempRect.top;
+					
                     GetWindowRect(window->windowHandle, &tempRect);
-                    //window->resolution.width = tempRect.right;
-                    //window->resolution.height = tempRect.bottom;
+                    window->resolution.width = window->clientArea.width + (tempRect.right - tempRect.left) - cx;
+                    window->resolution.height = window->clientArea.height + (tempRect.bottom - tempRect.top) - cy;
 
                     switch (wordParam)
                     {
@@ -2356,6 +2372,7 @@ namespace TinyWindow
 
                     if (manager->resizeEvent != nullptr)
                     {
+						/** Notice that this is the resolution of the window including the borders. */
                         manager->resizeEvent(window, window->settings.resolution);
                     }
 
