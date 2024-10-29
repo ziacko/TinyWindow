@@ -1838,17 +1838,6 @@ namespace TinyWindow
             screenResolution.y = HeightOfScreen(
                 XScreenOfDisplay(currentDisplay,
                     DefaultScreen(currentDisplay)));*/
-			
-			unsigned long mask = 0;
-		
-			mask |= KeyPressMask | KeyReleaseMask;
-			mask |= ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
-			mask |= PointerMotionMask | EnterWindowMask | LeaveWindowMask;
-			mask |= StructureNotifyMask | PropertyChangeMask | FocusChangeMask;
-			mask |= ExposureMask;
-			
-			/** Listen to events associated with the specified event mask. */
-			XSelectInput(currentDisplay, XDefaultRootWindow(currentDisplay), mask);
     #endif
 
 
@@ -2308,18 +2297,32 @@ namespace TinyWindow
 
                 case WM_SIZE:
                 {
-                    //high and low word are the client resolution. will need to change this
-                    window->settings.resolution.width = (unsigned int)LOWORD(longParam);
-                    window->settings.resolution.height = (unsigned int)HIWORD(longParam);
+					/**
+					 * @Microsoft
+					 * https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-size
+					 *
+					 * The low-order word of lParam specifies the new width of the client area.
+					 * The high-order word of lParam specifies the new height of the client area.
+					 *
+					 * If we keep 
+					 *
+					 * window->settings.resolution.width = (unsigned int)LOWORD(longParam);
+					 * window->settings.resolution.height = (unsigned int)HIWORD(longParam);
+					 *
+					 * Then we have an imbalance with WM_SIZING where we pass the dimensions of the window
+					 * while here we override them with the dimensions of the client area.
+					 */
+					
+                    window->clientArea.width = (unsigned int)LOWORD(longParam);
+                    window->clientArea.height = (unsigned int)HIWORD(longParam);
 
-                    RECT tempRect;
-                    GetClientRect(window->windowHandle, &tempRect);
-                    window->clientArea.width = tempRect.right;
-                    window->clientArea.height = tempRect.bottom;
-
+					/**
+					 * Also since WM_SIZE is received by the window "after its size has changed".
+					 */
+					RECT tempRect;
                     GetWindowRect(window->windowHandle, &tempRect);
-                    //window->resolution.width = tempRect.right;
-                    //window->resolution.height = tempRect.bottom;
+                    window->settings.resolution.width = tempRect.right - tempRect.left;
+                    window->settings.resolution.height = tempRect.bottom - tempRect.top;
 
                     switch (wordParam)
                     {
@@ -2358,15 +2361,16 @@ namespace TinyWindow
                 {
                     RECT tempRect;
                     GetWindowRect(window->windowHandle, &tempRect);
-                    window->settings.resolution.width = tempRect.right;
-                    window->settings.resolution.height = tempRect.bottom;
+                    window->settings.resolution.width = tempRect.right - tempRect.left;
+                    window->settings.resolution.height = tempRect.bottom - tempRect.top;
 
                     GetClientRect(window->windowHandle, &tempRect);
-                    window->clientArea.width = tempRect.right;
-                    window->clientArea.height = tempRect.bottom;
+                    window->clientArea.width = tempRect.right - tempRect.left;
+                    window->clientArea.height = tempRect.bottom - tempRect.top;
 
                     if (manager->resizeEvent != nullptr)
                     {
+						/** Notice that this is the resolution of the window including the borders. */
                         manager->resizeEvent(window, window->settings.resolution);
                     }
 
@@ -4131,6 +4135,18 @@ namespace TinyWindow
             XStoreName(currentDisplay, window->windowHandle, window->settings.name);
 
             XSetWMProtocols(currentDisplay, window->windowHandle, &window->AtomClose, true);    
+			
+            unsigned long mask = 0;
+		
+            mask |= KeyPressMask | KeyReleaseMask;
+            mask |= ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
+            mask |= PointerMotionMask | EnterWindowMask | LeaveWindowMask;
+            mask |= SubstructureNotifyMask | StructureNotifyMask;
+            mask |= PropertyChangeMask | FocusChangeMask;
+            mask |= ExposureMask;
+			
+			/** Listen to events associated with the specified event mask. */
+            XSelectInput(currentDisplay, window->windowHandle, mask);
 
             InitializeGL(window);
             
