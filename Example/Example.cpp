@@ -68,7 +68,7 @@ void HandleKeyPresses(const tWindow* window, const unsigned int key, const keySt
 
 void HandleMouseClick(const tWindow* window, const mouseButton_e button, const buttonState_e state)
 {
-	auto windowSettings = window->GetSettings();
+	const auto& windowSettings = window->GetSettings();
 	switch (button)
 	{
 	case mouseButton_e::left:
@@ -125,7 +125,7 @@ void HandleMouseClick(const tWindow* window, const mouseButton_e button, const b
 
 void HandleMouseWheel(const tWindow* window, const mouseScroll_e mouseScrollDirection)
 {
-	auto windowSettings = window->GetSettings();
+	const auto& windowSettings = window->GetSettings();
 	switch (mouseScrollDirection)
 	{
 		case mouseScroll_e::down:
@@ -279,20 +279,17 @@ int main()
 
 	tWindow* window = manager->AddWindow(defaultSetting);
 
-	//printf("%s \n", manager->GetClipboardInfo().c_str());
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
-	//manager->ToggleFullscreenMode(window.get(), fullscreenMode_e::borderless, &manager->GetMonitors().at(0), 4);
+	manager->ToggleFullscreenMode(window, fullscreenMode_e::borderless, &manager->GetMonitors().at(0), 4);
 
 	while (window->GetShouldClose() == false)
 	{
 		manager->PollForEvents();
-		//HandleGamepadState(manager->GetGamepads()[0]);
 		if (spacePressed == true)
 		{
 			spacePresses++;
-			//window->SetWindowSize(vec2_t<unsigned int>(manager->GetMonitors().back()->resolution.width, manager->GetMonitors().back()->resolution.height));
-			//manager->ToggleFullscreen(window.get(), &manager->GetMonitors().at(0), 2);
+
 			/*clipboard_e clipType;
 			auto strings = manager->GetClipboardLatest(window.get(), clipType);
 			if (strings.empty() == false)
@@ -318,14 +315,13 @@ int main()
 			}*/
 
 			//manager->SetMousePositionInScreen(vec2_t<int32_t>(500, 500), manager->GetMonitors().back());
-			//manager->SetCursorIcon(window.get(), iconData, iconDimensions);
+			//manager->SetCursorIcon(window, iconData, iconDimensions);
 
-			//manager->ToggleFullscreenMode(window.get(), fullscreenMode_e::windowed, &manager->GetMonitors().at(0));
-			manager->ChangeMonitorSetting(&manager->GetMonitors().at(0), 3);
-			//manager->SetDecorators(window.get(), style_n::bare);
-			//manager->DisableDecorators(window.get(), decorator_e::titleBar | decorator_e::icon);
-			//manager->SetTitleBar(window.get(), "poopoo");
-			//manager->SetWindowSwapInterval(window.get(), 0);
+			//manager->ToggleFullscreenMode(window, fullscreenMode_e::windowed, &manager->GetMonitors().at(0));
+			//manager->ChangeMonitorSetting(&manager->GetMonitors().at(0), 3);
+			//manager->SetDecorators(window, style_n::bare);
+			manager->SetTitleBar(window, "poopoo");
+			//manager->SetWindowSwapInterval(window, 0);
 			spacePressed = false;
 		}
 		
@@ -335,8 +331,8 @@ int main()
 
 	manager->ShutDown();
 
-	//const windowManager* tempManager = manager.release();
-	//delete tempManager;
+	windowManager* tempManager = manager.release();
+	delete tempManager;
 	
 	return 0;
 }
