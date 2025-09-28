@@ -3475,7 +3475,11 @@ namespace TinyWindow
 				keyEntry(VK_CAPITAL, capsLock),
 			};
 
-			return keyLUT.at(wordParam);
+
+			auto it = keyLUT.find(wordParam);
+			if (it != keyLUT.end())
+				return it->second;
+			return 0; // or some default value
 		}
 
 		static void Windows_SetWindowIcon(tWindow* window, const char* icon, uint16_t width, uint16_t height)
