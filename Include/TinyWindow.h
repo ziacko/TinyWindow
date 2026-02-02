@@ -4619,6 +4619,7 @@ namespace TinyWindow
 				GLX_STENCIL_SIZE, window->settings.stencilBits,
 				GLX_BUFFER_SIZE, 32,
 				GLX_DOUBLEBUFFER, true,
+				GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB, true,
 				None
 			};
 

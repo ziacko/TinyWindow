@@ -1,9 +1,7 @@
 if os.host() == "linux" then
-    --local cmake = require "cmake"
-    --cmake.workspace_directory = _SCRIPT_DIR
-    --cmake.write_settings = {
-    --   CMAKE_CURRENT_SOURCE_DIR = _SCRIPT_DIR
-    --}
+    local cmake = require "cmake"
+    cmake.workspace_directory = _SCRIPT_DIR
+    cmake.write_settings = { CMAKE_CURRENT_SOURCE_DIR = _SCRIPT_DIR }
 
     location "proj/make"
 elseif os.host() == "windows" then

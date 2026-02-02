@@ -97,7 +97,7 @@ void HandleMouseClick(const tWindow* window, const mouseButton_e button, const b
 		}
 		break;
 	}
-	
+
 	case mouseButton_e::XFirst:
 	{
 		if (state == buttonState_e::down)
@@ -283,6 +283,9 @@ int main()
 
 	manager->ToggleFullscreenMode(window, fullscreenMode_e::borderless, &manager->GetMonitors().at(0), 4);
 
+	glEnable(GL_FRAMEBUFFER_SRGB);  // ← very important!
+
+
 	while (window->GetShouldClose() == false)
 	{
 		manager->PollForEvents();
@@ -324,7 +327,7 @@ int main()
 			//manager->SetWindowSwapInterval(window, 0);
 			spacePressed = false;
 		}
-		
+
 		manager->SwapDrawBuffers(window);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
@@ -333,6 +336,6 @@ int main()
 
 	windowManager* tempManager = manager.release();
 	delete tempManager;
-	
+
 	return 0;
 }
