@@ -281,9 +281,9 @@ int main()
 
 	glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 
-	manager->ToggleFullscreenMode(window, fullscreenMode_e::borderless, &manager->GetMonitors().at(0), 4);
+	//manager->ToggleFullscreenMode(window, fullscreenMode_e::borderless, &manager->GetMonitors().at(0), 4);
 
-	glEnable(GL_FRAMEBUFFER_SRGB);  // ← very important!
+	glEnable(GL_FRAMEBUFFER_SRGB);  // to enable SRGB
 
 
 	while (window->GetShouldClose() == false)

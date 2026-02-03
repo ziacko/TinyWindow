@@ -4609,7 +4609,7 @@ namespace TinyWindow
 
 		void GetBestFrameBufferConfig(tWindow* window)
 		{
-			const int visualAttributes[] =
+			std::vector<int> visualAttributes =
 			{
 				GLX_X_RENDERABLE, true,
 				GLX_DRAWABLE_TYPE, GLX_WINDOW_BIT,
@@ -4622,14 +4622,43 @@ namespace TinyWindow
 				GLX_DEPTH_SIZE, window->settings.depthBits,
 				GLX_STENCIL_SIZE, window->settings.stencilBits,
 				GLX_BUFFER_SIZE, 32,
-				GLX_DOUBLEBUFFER, true,
-				GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB, true,
-				None
+				GLX_DOUBLEBUFFER, true
 			};
+
+			//first make sure sRGB is enabled
+			bool srgbCapable_ARB = false;
+			bool srgbCapable_EXT = false;
+			auto glxExts = glXQueryExtensionsString(currentDisplay, 0);
+			if (glxExts != nullptr)
+			{
+				//first check ARB
+				srgbCapable_ARB = strstr(glxExts, "GLX_ARB_framebuffer_sRGB");
+
+				if (srgbCapable_ARB == false)
+				{
+					srgbCapable_EXT = strstr(glxExts, "GLX_EXT_framebuffer_sRGB");
+				}
+			}
+
+			if (window->settings.enableSRGB == true)
+			{
+				if (srgbCapable_ARB)
+				{
+					visualAttributes.push_back(GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
+				}
+				else if (srgbCapable_EXT)
+				{
+					visualAttributes.push_back(GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT);
+				}
+
+				visualAttributes.push_back(true);
+			}
+
+			visualAttributes.push_back(None);
 
 			int frameBufferCount = 0;
 			uint16_t bestBufferConfig = 0; //, bestNumSamples = 0;
-			GLXFBConfig* configs = glXChooseFBConfig(window->currentDisplay, 0, visualAttributes, &frameBufferCount);
+			GLXFBConfig* configs = glXChooseFBConfig(window->currentDisplay, 0, visualAttributes.data(), &frameBufferCount);
 
 			if (configs == nullptr || frameBufferCount == 0)
 			{
